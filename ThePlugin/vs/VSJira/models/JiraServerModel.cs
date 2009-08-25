@@ -40,7 +40,10 @@ namespace PaZu.models
 
         public ICollection<JiraServer> getAllServers()
         {
-            return serverMap.Values;
+            lock (serverMap)
+            {
+                return serverMap.Values;
+            }
         }
 
         public void load(Globals globals)

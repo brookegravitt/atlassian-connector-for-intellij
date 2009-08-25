@@ -13,6 +13,7 @@ using PaZu.models;
 using PaZu.ui;
 
 using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 
 namespace PaZu
 {
@@ -35,16 +36,85 @@ namespace PaZu
             builder = new JiraIssueListModelBuilder(facade);
     //        setupIssueTable();
         }
-        
+
+        private TreeColumn colKeyAndSummary = new TreeColumn();
+        private TreeColumn colPriority = new TreeColumn();
+        private NodeIcon controlIcon = new NodeIcon();
+        private NodeTextBox controlKeyAndSummary = new NodeTextBox();
+        private NodeTextBox controlPriority = new NodeTextBox();
+
+        private class IssueNode : Node
+        {
+            private JiraIssue issue;
+
+            public IssueNode(JiraIssue issue)
+            {
+                this.issue = issue;
+            }
+
+            Image Icon 
+            { 
+                get { return Properties.Resources.ide_plugin_161; }
+                set { }
+            }
+            string KeyAndSummary 
+            { 
+                get { return issue.Key + " - " + issue.Summary; }
+                set { }
+            }
+            string Priority 
+            { 
+                get { return "Not implemented"; }
+                set { }
+            }
+        }
+
         private void initIssuesTree()
         {
             issuesTree = new TreeViewAdv();
             issueTreeContainer.ContentPanel.Controls.Add(issuesTree);
-            this.issuesTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.issuesTree.Location = new System.Drawing.Point(0, 0);
-            this.issuesTree.Name = "issuesTree";
-            this.issuesTree.Size = new System.Drawing.Size(182, 215);
-            this.issuesTree.TabIndex = 0;
+            issuesTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            issuesTree.SelectionMode = TreeSelectionMode.Single;
+            issuesTree.FullRowSelect = true;
+            issuesTree.GridLineStyle = GridLineStyle.None;
+            issuesTree.UseColumns = true;
+            colKeyAndSummary.Header = "Summary";
+            colPriority.Header = "Priority";
+            colPriority.TextAlign = HorizontalAlignment.Right;
+            controlIcon.ParentColumn = colKeyAndSummary;
+            controlIcon.DataPropertyName = "Icon";
+            controlIcon.LeftMargin = 0;
+            controlKeyAndSummary.ParentColumn = colKeyAndSummary;
+            controlKeyAndSummary.DataPropertyName = "KeyAndSummary";
+            controlKeyAndSummary.Trimming = StringTrimming.EllipsisCharacter;
+            controlKeyAndSummary.UseCompatibleTextRendering = true;
+            controlKeyAndSummary.LeftMargin = 1;
+            controlPriority.ParentColumn = colPriority;
+            controlPriority.DataPropertyName = "Priority";
+            controlPriority.Trimming = StringTrimming.EllipsisCharacter;
+            controlPriority.UseCompatibleTextRendering = true;
+            controlPriority.LeftMargin = 2;
+
+            issuesTree.Columns.Add(colKeyAndSummary);
+            issuesTree.Columns.Add(colPriority);
+            issuesTree.NodeControls.Add(controlIcon);
+            issuesTree.NodeControls.Add(controlKeyAndSummary);
+            issuesTree.NodeControls.Add(controlPriority);
+
+            colKeyAndSummary.Width = issuesTree.ClientRectangle.Width - 100 - System.Windows.Forms.SystemInformation.VerticalScrollBarWidth;
+            //colKeyAndSummary.MaxColumnWidth = issuesTree.ClientRectangle.Width - 100;
+            //colKeyAndSummary.MinColumnWidth = issuesTree.ClientRectangle.Width - 100;
+            colPriority.Width = 100;
+            //colPriority.MaxColumnWidth = 100;
+            //colPriority.MinColumnWidth = 100;
+            issuesTree.ClientSizeChanged += new EventHandler(issuesTree_ClientSizeChanged);
+        }
+
+        void issuesTree_ClientSizeChanged(object sender, EventArgs e)
+        {
+            colKeyAndSummary.Width = issuesTree.ClientSize.Width - 100 - System.Windows.Forms.SystemInformation.VerticalScrollBarWidth;
+            //colKeyAndSummary.MaxColumnWidth = issuesTree.ClientRectangle.Width - 100;
+            //colKeyAndSummary.MinColumnWidth = issuesTree.ClientRectangle.Width - 100;
         }
 
         private void reloadKnownJiraServers()
@@ -52,7 +122,8 @@ namespace PaZu
             filtersTree.Nodes.Clear();
             getMoreIssues.Visible = false;
 
-            ICollection<JiraServer> servers = JiraServerModel.Instance.getAllServers();
+            // copy to local list so that we can reuse in our threads
+            List<JiraServer> servers = new List<JiraServer>(JiraServerModel.Instance.getAllServers());
             if (servers.Count == 0)
             {
                 jiraStatus.Text = "No JIRA servers defined";
@@ -97,6 +168,13 @@ namespace PaZu
                     ICollection<JiraIssue> issues = model.Issues;
 
                     setInfoStatus("Loaded " + issues.Count + " issues");
+
+                    TreeModel treeModel = new TreeModel();
+                    foreach (JiraIssue i in issues)
+                    {
+                        treeModel.Nodes.Add(new IssueNode(i));
+                    }
+                    issuesTree.Model = treeModel;
 
                     getMoreIssues.Visible = true;
                 }));
