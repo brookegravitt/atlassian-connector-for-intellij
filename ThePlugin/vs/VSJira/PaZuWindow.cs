@@ -11,6 +11,7 @@ using PaZu.api;
 using PaZu.dialogs;
 using PaZu.models;
 using PaZu.ui;
+using PaZu.ui.issues;
 
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
@@ -21,7 +22,7 @@ namespace PaZu
     {
         private JiraServerFacade facade = new JiraServerFacade();
 
-    //    private BindingSource issueSource = new BindingSource(); 
+        //    private BindingSource issueSource = new BindingSource(); 
 
         TreeViewAdv issuesTree;
 
@@ -34,7 +35,7 @@ namespace PaZu
             InitializeComponent();
             model.addListener(this);
             builder = new JiraIssueListModelBuilder(facade);
-    //        setupIssueTable();
+            //        setupIssueTable();
         }
 
         private TreeColumn colKeyAndSummary = new TreeColumn();
@@ -42,32 +43,6 @@ namespace PaZu
         private NodeIcon controlIcon = new NodeIcon();
         private NodeTextBox controlKeyAndSummary = new NodeTextBox();
         private NodeTextBox controlPriority = new NodeTextBox();
-
-        private class IssueNode : Node
-        {
-            private JiraIssue issue;
-
-            public IssueNode(JiraIssue issue)
-            {
-                this.issue = issue;
-            }
-
-            Image Icon 
-            { 
-                get { return Properties.Resources.ide_plugin_161; }
-                set { }
-            }
-            string KeyAndSummary 
-            { 
-                get { return issue.Key + " - " + issue.Summary; }
-                set { }
-            }
-            string Priority 
-            { 
-                get { return "Not implemented"; }
-                set { }
-            }
-        }
 
         private void initIssuesTree()
         {
@@ -138,8 +113,8 @@ namespace PaZu
                 {
                     foreach (JiraServer server in servers)
                     {
-                       setInfoStatus("Loading Saved Filters for server " + server.Name + "...");
-                       try 
+                        setInfoStatus("Loading Saved Filters for server " + server.Name + "...");
+                        try
                         {
                             List<JiraSavedFilter> filters = facade.getSavedFilters(server);
                             Invoke(new MethodInvoker(delegate
@@ -169,11 +144,7 @@ namespace PaZu
 
                     setInfoStatus("Loaded " + issues.Count + " issues");
 
-                    TreeModel treeModel = new TreeModel();
-                    foreach (JiraIssue i in issues)
-                    {
-                        treeModel.Nodes.Add(new IssueNode(i));
-                    }
+                    ITreeModel treeModel = new FlatIssueTreeModel(issues);
                     issuesTree.Model = treeModel;
 
                     getMoreIssues.Visible = true;
@@ -278,124 +249,40 @@ namespace PaZu
 
         }
 
-    //    private void JIRAWindow_Load(object sender, EventArgs e)
-    //    {
-    //        login.Enabled = false;
-    //    }
+        //    private void setupIssueTable()
+        //    {
+        //        issueTable.AutoGenerateColumns = false;
+        //        issueTable.AutoSize = true;
 
-    //    private class SavedFilterMenuEntry : ToolStripButton
-    //    {
-    //        public JiraSavedFilter filter;
+        //        issueTable.DataSource = issueSource;
 
-    //        public SavedFilterMenuEntry(JiraSavedFilter f): base(f.Name)
-    //        {
-    //            DisplayStyle = ToolStripItemDisplayStyle.Text;
-    //            filter = f;
-    //        }
-    //    }
+        //        DataGridViewColumn column = new DataGridViewTextBoxColumn();
+        //        column.DataPropertyName = "Key";
+        //        column.Name = "key";
+        //        column.Width = 50;
+        //        issueTable.Columns.Add(column);
+        //        column = new DataGridViewTextBoxColumn();
+        //        column.DataPropertyName = "Summary";
+        //        column.Name = "summary";
+        //        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+        //        issueTable.Columns.Add(column);
+        //    }
 
-    //    private void projects_SelectedIndexChanged(object sender, EventArgs e)
-    //    {
-    //        getSavedFilters();
-    //    }
-
-    //    private void savedFilters_SelectedIndexChanged(object sender, EventArgs e)
-    //    {
-    //    }
-
-    //    private void url_TextChanged(object sender, EventArgs e)
-    //    {
-    //        updateLoginButton();
-    //    }
-
-    //    private void login_Click(object sender, EventArgs e)
-    //    {
-    //        server = new JiraServer(url.Text, userName.Text, password.Text);
-    //        getSavedFilters();
-    //        statusMessage.Text = "Select saved filter from the menu";
-    //        //getProjects();
-    //    }
-
-    //    private void userName_TextChanged(object sender, EventArgs e)
-    //    {
-    //        updateLoginButton();
-    //    }
-
-    //    private void updateLoginButton()
-    //    {
-    //        login.Enabled = (url.Text.Length > 0) && (userName.Text.Length > 0);
-    //    }
-
-    //    private void savedFiltersMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-    //    {
-    //        string tooltip = savedFiltersMenu.ToolTipText;
-    //        savedFiltersMenu.Text = e.ClickedItem.Text;
-    //        savedFiltersMenu.ToolTipText = tooltip;
-
-    //        getFiteredIssues(((SavedFilterMenuEntry)e.ClickedItem).filter);
-    //    }
-
-    //    private void setupIssueTable()
-    //    {
-    //        issueTable.AutoGenerateColumns = false;
-    //        issueTable.AutoSize = true;
-
-    //        issueTable.DataSource = issueSource;
-
-    //        DataGridViewColumn column = new DataGridViewTextBoxColumn();
-    //        column.DataPropertyName = "Key";
-    //        column.Name = "key";
-    //        column.Width = 50;
-    //        issueTable.Columns.Add(column);
-    //        column = new DataGridViewTextBoxColumn();
-    //        column.DataPropertyName = "Summary";
-    //        column.Name = "summary";
-    //        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-    //        issueTable.Columns.Add(column);
-    //    }
-
-    //    private void getProjects()
-    //    {
-    //        try
-    //        {
-    //            List<JiraProject> list = facade.getProjects(server);
-    //            foreach (JiraProject p in list)
-    //            {
-    //                projects.Items.Add(p);
-    //            }
-    //            projects.SelectedIndex = 0;
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            MessageBox.Show(ex.Message);
-    //        }
-    //    }
-
-    //    private void getSavedFilters()
-    //    {
-    //        try
-    //        {
-    //            List<JiraSavedFilter> list = facade.getSavedFilters(server);
-    //            foreach (JiraSavedFilter f in list)
-    //            {
-    //                savedFiltersMenu.DropDown.Items.Add(new SavedFilterMenuEntry(f));
-    //            }
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            MessageBox.Show(ex.Message);
-    //        }
-    //    }
-
-    //    private void getFiteredIssues(JiraSavedFilter f)
-    //    {
-    //        issueSource.Clear();
-    //        List<JiraIssue> list = facade.getSavedFilterIssues(server, f);
-    //        foreach (JiraIssue issue in list)
-    //        {
-    //            issueSource.Add(issue);
-    //        }
-    //        statusMessage.Text = "Loaded " + list.Count + " issues";
-    //    }
+        //    private void getProjects()
+        //    {
+        //        try
+        //        {
+        //            List<JiraProject> list = facade.getProjects(server);
+        //            foreach (JiraProject p in list)
+        //            {
+        //                projects.Items.Add(p);
+        //            }
+        //            projects.SelectedIndex = 0;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show(ex.Message);
+        //        }
+        //    }
     }
 }
