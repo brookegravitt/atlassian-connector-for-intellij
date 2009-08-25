@@ -29,7 +29,7 @@ InstallDir "$PROGRAMFILES\Atlassian\Visual Studio Connector"
 InstallDirRegKey HKLM "Software\Atlassian\PaZu" "Install_Dir"
 
 ; Request application privileges for Windows Vista
-RequestExecutionLevel user
+RequestExecutionLevel admin
 
 ;--------------------------------
 
@@ -37,8 +37,8 @@ RequestExecutionLevel user
 
 !define MUI_ICON "icons\ide_plugin_32.ico"
 !define MUI_UNICON "icons\ide_plugin_32.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "icons\atlassian-installer.png"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "icons\atlassian-installer.png"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "icons\atlassian-installer.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "icons\atlassian-installer.bmp"
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE LICENSE
 !insertmacro MUI_PAGE_DIRECTORY
@@ -64,16 +64,16 @@ Section "PaZu (required)"
   
   ; Put file there
   File "bin\release\pazunet.dll"  
-  ;File "bin\release\pazunet.resources.dll"
-
+  File "bin\release\Aga.Controls.dll"
   File "pazunet.AddIn"
-  CreateDirectory $APPDATA\Microsoft\MSEnvShared\AddIns
-  CopyFiles $INSTDIR\pazunet.dll $APPDATA\Microsoft\MSEnvShared\AddIns
+  
+  CreateDirectory $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet
+  CopyFiles $INSTDIR\pazunet.dll $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet
   IfErrors 0 +2
 	Abort "Unable to copy pazunet.dll file to the Visual Studio Add-in directory"
-  ;CopyFiles $INSTDIR\pazunet.resources.dll $APPDATA\Microsoft\MSEnvShared\AddIns
-  ;IfErrors 0 +2
-	;Abort "Unable to copy pazunet.resources.dll file to the Visual Studio Add-in directory"
+  CopyFiles $INSTDIR\Aga.Controls.dll $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet
+  IfErrors 0 +2
+	Abort "Unable to copy Aga.Controls.dll file to the Visual Studio Add-in directory"
   CopyFiles $INSTDIR\pazunet.AddIn $APPDATA\Microsoft\MSEnvShared\AddIns
   IfErrors 0 +2
 	Abort "Unable to copy pazunet.AddIn file to the Visual Studio Add-in directory"
@@ -103,14 +103,15 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete $INSTDIR\pazunet.dll
-  ;Delete $INSTDIR\pazunet.resources.dll
+  Delete $INSTDIR\Aga.Controls.dll
   Delete $INSTDIR\pazunet.AddIn
-  Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.dll
-  ;Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.resources.dll
+  Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet\pazunet.dll
+  Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet\Aga.Controls.dll
   Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.AddIn
   Delete $INSTDIR\uninstall.exe
 
   ; Remove directories used
+  RMDir "$APPDATA\Microsoft\MSEnvShared\AddIns\pazunet"
   RMDir "$INSTDIR"
 
 SectionEnd

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSJira", "VSJira\VSJira.csproj", "{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pazunet", "VSJira\pazunet.csproj", "{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -30,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		serverCount = 0
 	EndGlobalSection
 EndGlobal
