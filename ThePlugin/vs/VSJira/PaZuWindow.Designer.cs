@@ -35,12 +35,17 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.jiraStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.jiraSplitter = new System.Windows.Forms.SplitContainer();
-            this.filterTree = new System.Windows.Forms.TreeView();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.buttonJiraFilterRefresh = new System.Windows.Forms.ToolStripButton();
+            this.filterTreeContainer = new System.Windows.Forms.ToolStripContainer();
+            this.issueTreeContainer = new System.Windows.Forms.ToolStripContainer();
             this.globalToolBar = new System.Windows.Forms.ToolStrip();
             this.buttonProjectProperties = new System.Windows.Forms.ToolStripButton();
             this.buttonAbout = new System.Windows.Forms.ToolStripButton();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.buttonRefreshAll = new System.Windows.Forms.ToolStripButton();
+            this.filtersTree = new System.Windows.Forms.TreeView();
+            this.getMoreIssues = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainContainer.ContentPanel.SuspendLayout();
             this.mainContainer.LeftToolStripPanel.SuspendLayout();
             this.mainContainer.SuspendLayout();
@@ -48,13 +53,19 @@
             this.tabJira.SuspendLayout();
             this.jiraContainer.BottomToolStripPanel.SuspendLayout();
             this.jiraContainer.ContentPanel.SuspendLayout();
-            this.jiraContainer.TopToolStripPanel.SuspendLayout();
             this.jiraContainer.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.jiraSplitter.Panel1.SuspendLayout();
+            this.jiraSplitter.Panel2.SuspendLayout();
             this.jiraSplitter.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.filterTreeContainer.ContentPanel.SuspendLayout();
+            this.filterTreeContainer.TopToolStripPanel.SuspendLayout();
+            this.filterTreeContainer.SuspendLayout();
+            this.issueTreeContainer.TopToolStripPanel.SuspendLayout();
+            this.issueTreeContainer.SuspendLayout();
             this.globalToolBar.SuspendLayout();
+            this.toolStripContainer1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainContainer
@@ -63,7 +74,7 @@
             // mainContainer.ContentPanel
             // 
             this.mainContainer.ContentPanel.Controls.Add(this.productTabs);
-            this.mainContainer.ContentPanel.Size = new System.Drawing.Size(677, 294);
+            this.mainContainer.ContentPanel.Size = new System.Drawing.Size(685, 294);
             this.mainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // mainContainer.LeftToolStripPanel
@@ -82,7 +93,7 @@
             this.productTabs.Location = new System.Drawing.Point(0, 0);
             this.productTabs.Name = "productTabs";
             this.productTabs.SelectedIndex = 0;
-            this.productTabs.Size = new System.Drawing.Size(677, 294);
+            this.productTabs.Size = new System.Drawing.Size(685, 294);
             this.productTabs.TabIndex = 0;
             // 
             // tabJira
@@ -91,7 +102,7 @@
             this.tabJira.Location = new System.Drawing.Point(4, 22);
             this.tabJira.Name = "tabJira";
             this.tabJira.Padding = new System.Windows.Forms.Padding(3);
-            this.tabJira.Size = new System.Drawing.Size(669, 268);
+            this.tabJira.Size = new System.Drawing.Size(677, 268);
             this.tabJira.TabIndex = 0;
             this.tabJira.Text = "Issues - JIRA";
             this.tabJira.UseVisualStyleBackColor = true;
@@ -106,26 +117,23 @@
             // jiraContainer.ContentPanel
             // 
             this.jiraContainer.ContentPanel.Controls.Add(this.jiraSplitter);
-            this.jiraContainer.ContentPanel.Size = new System.Drawing.Size(663, 215);
+            this.jiraContainer.ContentPanel.Size = new System.Drawing.Size(671, 240);
             this.jiraContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jiraContainer.Location = new System.Drawing.Point(3, 3);
             this.jiraContainer.Name = "jiraContainer";
-            this.jiraContainer.Size = new System.Drawing.Size(663, 262);
+            this.jiraContainer.Size = new System.Drawing.Size(671, 262);
             this.jiraContainer.TabIndex = 0;
             this.jiraContainer.Text = "toolStripContainer1";
-            // 
-            // jiraContainer.TopToolStripPanel
-            // 
-            this.jiraContainer.TopToolStripPanel.Controls.Add(this.toolStrip1);
             // 
             // statusStrip1
             // 
             this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.jiraStatus});
+            this.jiraStatus,
+            this.getMoreIssues});
             this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(663, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(671, 22);
             this.statusStrip1.TabIndex = 0;
             // 
             // jiraStatus
@@ -142,37 +150,49 @@
             // 
             // jiraSplitter.Panel1
             // 
-            this.jiraSplitter.Panel1.Controls.Add(this.filterTree);
-            this.jiraSplitter.Size = new System.Drawing.Size(663, 215);
-            this.jiraSplitter.SplitterDistance = 179;
+            this.jiraSplitter.Panel1.Controls.Add(this.filterTreeContainer);
+            // 
+            // jiraSplitter.Panel2
+            // 
+            this.jiraSplitter.Panel2.Controls.Add(this.issueTreeContainer);
+            this.jiraSplitter.Size = new System.Drawing.Size(671, 240);
+            this.jiraSplitter.SplitterDistance = 181;
             this.jiraSplitter.TabIndex = 0;
             // 
-            // filterTree
+            // filterTreeContainer
             // 
-            this.filterTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.filterTree.Location = new System.Drawing.Point(0, 0);
-            this.filterTree.Name = "filterTree";
-            this.filterTree.Size = new System.Drawing.Size(179, 215);
-            this.filterTree.TabIndex = 0;
             // 
-            // toolStrip1
+            // filterTreeContainer.ContentPanel
             // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonJiraFilterRefresh});
-            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(33, 25);
-            this.toolStrip1.TabIndex = 0;
+            this.filterTreeContainer.ContentPanel.Controls.Add(this.filtersTree);
+            this.filterTreeContainer.ContentPanel.Size = new System.Drawing.Size(181, 215);
+            this.filterTreeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterTreeContainer.Location = new System.Drawing.Point(0, 0);
+            this.filterTreeContainer.Name = "filterTreeContainer";
+            this.filterTreeContainer.Size = new System.Drawing.Size(181, 240);
+            this.filterTreeContainer.TabIndex = 0;
+            this.filterTreeContainer.Text = "toolStripContainer2";
             // 
-            // buttonJiraFilterRefresh
+            // filterTreeContainer.TopToolStripPanel
             // 
-            this.buttonJiraFilterRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonJiraFilterRefresh.Image = global::PaZu.Properties.Resources.refresh;
-            this.buttonJiraFilterRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonJiraFilterRefresh.Name = "buttonJiraFilterRefresh";
-            this.buttonJiraFilterRefresh.Size = new System.Drawing.Size(23, 22);
-            this.buttonJiraFilterRefresh.Text = "Refresh All";
+            this.filterTreeContainer.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            // 
+            // issueTreeContainer
+            // 
+            // 
+            // issueTreeContainer.ContentPanel
+            // 
+            this.issueTreeContainer.ContentPanel.Size = new System.Drawing.Size(486, 215);
+            this.issueTreeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.issueTreeContainer.Location = new System.Drawing.Point(0, 0);
+            this.issueTreeContainer.Name = "issueTreeContainer";
+            this.issueTreeContainer.Size = new System.Drawing.Size(486, 240);
+            this.issueTreeContainer.TabIndex = 0;
+            this.issueTreeContainer.Text = "toolStripContainer2";
+            // 
+            // issueTreeContainer.TopToolStripPanel
+            // 
+            this.issueTreeContainer.TopToolStripPanel.Controls.Add(this.toolStrip2);
             // 
             // globalToolBar
             // 
@@ -182,7 +202,7 @@
             this.buttonAbout});
             this.globalToolBar.Location = new System.Drawing.Point(0, 3);
             this.globalToolBar.Name = "globalToolBar";
-            this.globalToolBar.Size = new System.Drawing.Size(32, 74);
+            this.globalToolBar.Size = new System.Drawing.Size(24, 55);
             this.globalToolBar.TabIndex = 0;
             // 
             // buttonProjectProperties
@@ -191,7 +211,7 @@
             this.buttonProjectProperties.Image = global::PaZu.Properties.Resources.projectsettings;
             this.buttonProjectProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonProjectProperties.Name = "buttonProjectProperties";
-            this.buttonProjectProperties.Size = new System.Drawing.Size(30, 20);
+            this.buttonProjectProperties.Size = new System.Drawing.Size(22, 20);
             this.buttonProjectProperties.Text = "Project Configuration";
             this.buttonProjectProperties.Click += new System.EventHandler(this.buttonProjectProperties_Click);
             // 
@@ -201,18 +221,79 @@
             this.buttonAbout.Image = global::PaZu.Properties.Resources.about;
             this.buttonAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonAbout.Name = "buttonAbout";
-            this.buttonAbout.Size = new System.Drawing.Size(30, 20);
+            this.buttonAbout.Size = new System.Drawing.Size(22, 20);
             this.buttonAbout.Text = "About";
             this.buttonAbout.Click += new System.EventHandler(this.buttonAbout_Click);
             // 
-            // JiraWindow
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(709, 294);
+            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            this.toolStripContainer1.Size = new System.Drawing.Size(709, 319);
+            this.toolStripContainer1.TabIndex = 0;
+            this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonRefreshAll});
+            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(33, 25);
+            this.toolStrip1.TabIndex = 0;
+            // 
+            // toolStrip2
+            // 
+            this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip2.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip2.Name = "toolStrip2";
+            this.toolStrip2.Size = new System.Drawing.Size(109, 25);
+            this.toolStrip2.TabIndex = 0;
+            // 
+            // buttonRefreshAll
+            // 
+            this.buttonRefreshAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonRefreshAll.Image = global::PaZu.Properties.Resources.refresh;
+            this.buttonRefreshAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonRefreshAll.Name = "buttonRefreshAll";
+            this.buttonRefreshAll.Size = new System.Drawing.Size(23, 22);
+            this.buttonRefreshAll.Text = "toolStripButton1";
+            this.buttonRefreshAll.Click += new System.EventHandler(this.buttonRefreshAll_Click);
+            // 
+            // filtersTree
+            // 
+            this.filtersTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filtersTree.Location = new System.Drawing.Point(0, 0);
+            this.filtersTree.Name = "filtersTree";
+            this.filtersTree.Size = new System.Drawing.Size(181, 215);
+            this.filtersTree.TabIndex = 0;
+            this.filtersTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.filtersTree_AfterSelect);
+            // 
+            // getMoreIssues
+            // 
+            this.getMoreIssues.IsLink = true;
+            this.getMoreIssues.Name = "getMoreIssues";
+            this.getMoreIssues.Size = new System.Drawing.Size(97, 17);
+            this.getMoreIssues.Text = "Get More Issues...";
+            this.getMoreIssues.Visible = false;
+            this.getMoreIssues.Click += new System.EventHandler(this.getMoreIssues_Click);
+            // 
+            // PaZuWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.Controls.Add(this.mainContainer);
-            this.Name = "JiraWindow";
+            this.Controls.Add(this.toolStripContainer1);
+            this.Name = "PaZuWindow";
             this.Size = new System.Drawing.Size(709, 319);
+            this.Load += new System.EventHandler(this.PaZuWindow_Load);
             this.mainContainer.ContentPanel.ResumeLayout(false);
             this.mainContainer.LeftToolStripPanel.ResumeLayout(false);
             this.mainContainer.LeftToolStripPanel.PerformLayout();
@@ -223,18 +304,28 @@
             this.jiraContainer.BottomToolStripPanel.ResumeLayout(false);
             this.jiraContainer.BottomToolStripPanel.PerformLayout();
             this.jiraContainer.ContentPanel.ResumeLayout(false);
-            this.jiraContainer.TopToolStripPanel.ResumeLayout(false);
-            this.jiraContainer.TopToolStripPanel.PerformLayout();
             this.jiraContainer.ResumeLayout(false);
             this.jiraContainer.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.jiraSplitter.Panel1.ResumeLayout(false);
+            this.jiraSplitter.Panel2.ResumeLayout(false);
             this.jiraSplitter.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.filterTreeContainer.ContentPanel.ResumeLayout(false);
+            this.filterTreeContainer.TopToolStripPanel.ResumeLayout(false);
+            this.filterTreeContainer.TopToolStripPanel.PerformLayout();
+            this.filterTreeContainer.ResumeLayout(false);
+            this.filterTreeContainer.PerformLayout();
+            this.issueTreeContainer.TopToolStripPanel.ResumeLayout(false);
+            this.issueTreeContainer.TopToolStripPanel.PerformLayout();
+            this.issueTreeContainer.ResumeLayout(false);
+            this.issueTreeContainer.PerformLayout();
             this.globalToolBar.ResumeLayout(false);
             this.globalToolBar.PerformLayout();
+            this.toolStripContainer1.ResumeLayout(false);
+            this.toolStripContainer1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -248,11 +339,16 @@
         private System.Windows.Forms.ToolStrip globalToolBar;
         private System.Windows.Forms.ToolStripButton buttonProjectProperties;
         private System.Windows.Forms.SplitContainer jiraSplitter;
-        private System.Windows.Forms.TreeView filterTree;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel jiraStatus;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton buttonJiraFilterRefresh;
         private System.Windows.Forms.ToolStripButton buttonAbout;
+        private System.Windows.Forms.ToolStripContainer filterTreeContainer;
+        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        private System.Windows.Forms.ToolStripContainer issueTreeContainer;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton buttonRefreshAll;
+        private System.Windows.Forms.ToolStrip toolStrip2;
+        private System.Windows.Forms.TreeView filtersTree;
+        private System.Windows.Forms.ToolStripStatusLabel getMoreIssues;
     }
 }

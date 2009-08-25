@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using PaZu.api;
 using PaZu.models;
+using PaZu.ui;
 
 namespace PaZu.dialogs
 {
@@ -18,29 +19,14 @@ namespace PaZu.dialogs
         private TreeNode fisheyeRoot = new TreeNode("Fisheye Servers");
 
         private JiraServerModel jiraServerModel;
+        private JiraServerFacade facade;
 
-        private class JiraServerTreeNode : TreeNode
-        {
-            private JiraServer server;
-
-            public JiraServerTreeNode(JiraServer server)
-                : base(server.Name)
-            {
-                this.server = server;
-            }
-
-            public JiraServer Server 
-                { 
-                    get { return server; } 
-                    set { server = value; Text = server.Name; }
-                }
-        }
-
-        public ProjectConfiguration(JiraServerModel jiraServerModel)
+        public ProjectConfiguration(JiraServerModel jiraServerModel, JiraServerFacade facade)
         {
             InitializeComponent();
 
             this.jiraServerModel = jiraServerModel;
+            this.facade = facade;
 
             ICollection<JiraServer> jiraServers = jiraServerModel.getAllServers();
 
@@ -69,6 +55,8 @@ namespace PaZu.dialogs
             buttonAdd.Enabled = jiraRootSelected || jiraServerSelected;
             buttonEdit.Enabled = jiraServerSelected;
             buttonDelete.Enabled = jiraServerSelected;
+            buttonTest.Enabled = jiraServerSelected;
+
             if (jiraServerSelected)
             {
                 serverDetails.Text = createServerSummaryText(((JiraServerTreeNode)serverTree.SelectedNode).Server);
@@ -126,6 +114,12 @@ namespace PaZu.dialogs
             selectedNode.Remove();
             serverTree.ExpandAll();
             serverDetails.Text = "";
+        }
+
+        private void buttonTest_Click(object sender, EventArgs e)
+        {
+            JiraServerTreeNode selectedNode = (JiraServerTreeNode)serverTree.SelectedNode;
+            new TestJiraConnection(facade, selectedNode.Server).ShowDialog();
         }
     }
 }

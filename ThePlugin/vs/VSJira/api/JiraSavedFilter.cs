@@ -10,10 +10,5 @@ namespace PaZu.api
             : base(id, name)
         {
         }
-
-        public override string ToString()
-        {
-            return ID + ": " + Name;
-        }
     }
 }
