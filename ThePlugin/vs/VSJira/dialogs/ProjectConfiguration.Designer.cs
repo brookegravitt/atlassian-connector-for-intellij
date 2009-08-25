@@ -115,6 +115,7 @@
             this.buttonTest.TabIndex = 6;
             this.buttonTest.Text = "Test Connection";
             this.buttonTest.UseVisualStyleBackColor = true;
+            this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
             // 
             // ProjectConfiguration
             // 

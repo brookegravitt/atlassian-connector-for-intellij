@@ -16,7 +16,8 @@ namespace PaZu.models
         private static string USER_NAME = "UserName_";
         private static string USER_PASSWORD = "UserPassword_";
         private static string SERVER_URL = "serverUrl_";
-        private static string PAZU_KEY = "\\Software\\Atlassian\\PaZu";
+        private static string ATL_KEY = "Software\\Atlassian";
+        private static string PAZU_KEY = "PaZu";
 
         private bool changedSinceLoading = false;
 
@@ -49,7 +50,7 @@ namespace PaZu.models
             {
                 try
                 {
-                    RegistryKey key = Registry.CurrentUser.OpenSubKey(PAZU_KEY);
+                    RegistryKey key = Registry.CurrentUser.OpenSubKey(ATL_KEY + "\\" + PAZU_KEY);
 
                     int count = int.Parse(globals[SERVER_COUNT].ToString());
                     for (int i = 1; i <= count; ++i)
@@ -62,6 +63,8 @@ namespace PaZu.models
                         addServer(new JiraServer(guid, sName, url, uName, pwd));
                     }
                     changedSinceLoading = false;
+
+                    key.Close();
                 }
                 catch (Exception e)
                 {
@@ -78,14 +81,17 @@ namespace PaZu.models
                 return;
             }
 
-            globals[SERVER_COUNT] = serverMap.Values.Count.ToString();
-            globals.set_VariablePersists(SERVER_COUNT, true);
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(PAZU_KEY);
-
-            int i = 1;
-            foreach (JiraServer s in getAllServers())
+            try
             {
-                try
+
+                globals[SERVER_COUNT] = serverMap.Values.Count.ToString();
+                globals.set_VariablePersists(SERVER_COUNT, true);
+                RegistryKey atlKey = Registry.CurrentUser.CreateSubKey(ATL_KEY);
+                RegistryKey key = atlKey.CreateSubKey(PAZU_KEY);
+                atlKey.Close();
+
+                int i = 1;
+                foreach (JiraServer s in getAllServers())
                 {
                     string var = SERVER_GUID + i.ToString();
                     globals[var] = s.GUID.ToString();
@@ -98,13 +104,13 @@ namespace PaZu.models
                     globals.set_VariablePersists(var, true);
                     key.SetValue(USER_NAME + i.ToString(), s.UserName);
                     key.SetValue(USER_PASSWORD + i.ToString(), s.Password);
+                    ++i;
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
-
-                ++i;
+                key.Close();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
         }
 

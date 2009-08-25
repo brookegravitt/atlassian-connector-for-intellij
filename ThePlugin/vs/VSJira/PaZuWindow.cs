@@ -5,37 +5,41 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
+
 using PaZu.api;
 using PaZu.dialogs;
 using PaZu.models;
+using PaZu.ui;
 
 using Aga.Controls.Tree;
 
 namespace PaZu
 {
-    public partial class PaZuWindow : UserControl
+    public partial class PaZuWindow : UserControl, JiraIssueListModelListener
     {
-    //    private JiraServerFacade facade = new JiraServerFacade();
-    //    private JiraServer server;
+        private JiraServerFacade facade = new JiraServerFacade();
 
     //    private BindingSource issueSource = new BindingSource(); 
 
         TreeViewAdv issuesTree;
 
+        JiraIssueListModelBuilder builder;
+
+        private JiraIssueListModel model = JiraIssueListModel.Instance;
+
         public PaZuWindow()
         {
             InitializeComponent();
-
-            initIssuesTree();
+            model.addListener(this);
+            builder = new JiraIssueListModelBuilder(facade);
     //        setupIssueTable();
-    //        url.Text = "https://studio.atlassian.com";
-    //        statusMessage.Text = "Login to a JIRA server";
         }
-
+        
         private void initIssuesTree()
         {
             issuesTree = new TreeViewAdv();
-            this.jiraSplitter.Panel2.Controls.Add(issuesTree);
+            issueTreeContainer.ContentPanel.Controls.Add(issuesTree);
             this.issuesTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.issuesTree.Location = new System.Drawing.Point(0, 0);
             this.issuesTree.Name = "issuesTree";
@@ -43,14 +47,157 @@ namespace PaZu
             this.issuesTree.TabIndex = 0;
         }
 
+        private void reloadKnownJiraServers()
+        {
+            filtersTree.Nodes.Clear();
+            getMoreIssues.Visible = false;
+
+            ICollection<JiraServer> servers = JiraServerModel.Instance.getAllServers();
+            if (servers.Count == 0)
+            {
+                jiraStatus.Text = "No JIRA servers defined";
+            }
+
+            foreach (JiraServer server in servers)
+            {
+                filtersTree.Nodes.Add(new JiraServerTreeNode(server));
+            }
+
+            Thread savedFiltersThread = new Thread(new ThreadStart(delegate
+                {
+                    foreach (JiraServer server in servers)
+                    {
+                       setInfoStatus("Loading Saved Filters for server " + server.Name + "...");
+                       try 
+                        {
+                            List<JiraSavedFilter> filters = facade.getSavedFilters(server);
+                            Invoke(new MethodInvoker(delegate
+                                {
+                                    fillSavedFiltersForServer(server, filters);
+                                    setInfoStatus("Loaded saved filters for server " + server.Name);
+                                }));
+                        }
+                        catch (Exception e)
+                        {
+                            setErrorStatus("Failed to load saved filters", e);
+                        }
+                    }
+                    Invoke(new MethodInvoker(delegate
+                        {
+                            filtersTree.ExpandAll();
+                        }));
+                }));
+            savedFiltersThread.Start();
+        }
+
+        public void modelChanged()
+        {
+            Invoke(new MethodInvoker(delegate
+                {
+                    ICollection<JiraIssue> issues = model.Issues;
+
+                    setInfoStatus("Loaded " + issues.Count + " issues");
+
+                    getMoreIssues.Visible = true;
+                }));
+        }
+
+        private void setErrorStatus(string txt, Exception e)
+        {
+            Invoke(new MethodInvoker(delegate
+            {
+                jiraStatus.BackColor = Color.LightPink;
+                Exception inner = e.InnerException;
+                jiraStatus.Text = txt + ": " + (inner != null ? inner.Message : e.Message);
+            }));
+        }
+
+        private void setInfoStatus(string txt)
+        {
+            Invoke(new MethodInvoker(delegate
+            {
+                jiraStatus.BackColor = Color.Transparent;
+                jiraStatus.Text = txt;
+            }));
+        }
+
+        private void fillSavedFiltersForServer(JiraServer server, List<JiraSavedFilter> filters)
+        {
+            JiraServerTreeNode node = findNode(server);
+            if (node == null)
+            {
+                return;
+            }
+            foreach (JiraSavedFilter filter in filters)
+            {
+                node.Nodes.Add(new JiraSavedFilterTreeNode(server, filter));
+            }
+            node.ExpandAll();
+        }
+
+        private JiraServerTreeNode findNode(JiraServer server)
+        {
+            foreach (TreeNode node in filtersTree.Nodes)
+            {
+                JiraServerTreeNode tn = (JiraServerTreeNode)node;
+                if (tn.Server.GUID.Equals(server.GUID))
+                {
+                    return tn;
+                }
+            }
+            return null;
+        }
+
         private void buttonProjectProperties_Click(object sender, EventArgs e)
         {
-            new ProjectConfiguration(JiraServerModel.Instance).ShowDialog();
+            new ProjectConfiguration(JiraServerModel.Instance, facade).ShowDialog();
+
+            // todo: only do this on model change - add server model listeners
+            reloadKnownJiraServers();
         }
 
         private void buttonAbout_Click(object sender, EventArgs e)
         {
             new About().ShowDialog();
+        }
+
+        private void buttonRefreshAll_Click(object sender, EventArgs e)
+        {
+            reloadKnownJiraServers();
+        }
+
+        private void PaZuWindow_Load(object sender, EventArgs e)
+        {
+            initIssuesTree();
+            reloadKnownJiraServers();
+        }
+
+        private void filtersTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (filtersTree.SelectedNode is JiraSavedFilterTreeNode)
+            {
+                JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
+                setInfoStatus("Loading issues...");
+                getMoreIssues.Visible = false;
+                Thread issueLoadThread = new Thread(new ThreadStart(delegate
+                    {
+                        builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter);
+                    }));
+                issueLoadThread.Start();
+            }
+        }
+
+        private void getMoreIssues_Click(object sender, EventArgs e)
+        {
+            JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
+            setInfoStatus("Loading issues...");
+            getMoreIssues.Visible = false;
+            Thread issueLoadThread = new Thread(new ThreadStart(delegate
+            {
+                builder.updateModelWithSavedFilter(model, node.Server, node.Filter);
+            }));
+            issueLoadThread.Start();
+
         }
 
     //    private void JIRAWindow_Load(object sender, EventArgs e)

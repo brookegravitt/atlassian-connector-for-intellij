@@ -34,8 +34,6 @@ namespace PaZu.dialogs
             if (editing)
             {
                 name.Text = server.Name;
-                name.Enabled = false;
-
                 url.Text = server.Url;
                 user.Text = server.UserName;
                 password.Text = server.Password;
@@ -50,10 +48,15 @@ namespace PaZu.dialogs
 
         private void buttonAddOrEdit_Click(object sender, EventArgs e)
         {
-            server.Name = name.Text;
-            server.Url = url.Text;
-            server.UserName = user.Text;
-            server.Password = user.Text;
+            server.Name = name.Text.Trim();
+            string fixedUrl = url.Text.Trim();
+            if (!(fixedUrl.StartsWith("http://") || fixedUrl.StartsWith("https://")))
+            {
+                fixedUrl = "http://" + fixedUrl;
+            }
+            server.Url = fixedUrl;
+            server.UserName = user.Text.Trim();
+            server.Password = password.Text;
 
             DialogResult = DialogResult.OK;
             Close();
@@ -76,7 +79,7 @@ namespace PaZu.dialogs
 
         private void checkIfValid()
         {
-            buttonAddOrEdit.Enabled = name.TextLength > 0 && url.TextLength > 0 && user.TextLength > 0;
+            buttonAddOrEdit.Enabled = name.Text.Trim().Length > 0 && url.Text.Trim().Length > 0 && user.Text.Trim().Length > 0;
         }
 
         public JiraServer Server { get { return server; } }

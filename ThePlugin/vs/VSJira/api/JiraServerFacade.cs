@@ -23,6 +23,7 @@ namespace PaZu.api
 
         public void login(JiraServer server)
         {
+            new SoapSession(server.Url).login(server.UserName, server.Password);
         }
 
         public List<JiraProject> getProjects(JiraServer server)
@@ -35,10 +36,10 @@ namespace PaZu.api
             return getSoapSession(server).getSavedFilters();
         }
 
-        public List<JiraIssue> getSavedFilterIssues(JiraServer server, JiraSavedFilter filter)
+        public List<JiraIssue> getSavedFilterIssues(JiraServer server, JiraSavedFilter filter, int start, int count)
         {
             RssClient rss = new RssClient(server);
-            return rss.getSavedFilterIssues(filter.ID, "issuekey", "ASC", 0, 25);
+            return rss.getSavedFilterIssues(filter.ID, "issuekey", "ASC", start, count);
         }
     }
 }

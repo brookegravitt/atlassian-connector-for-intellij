@@ -76,6 +76,15 @@
     <Compile Include="api\JiraProject.cs" />
     <Compile Include="api\JiraSavedFilter.cs" />
     <Compile Include="api\JiraServer.cs" />
+    <Compile Include="dialogs\TestJiraConnection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\TestJiraConnection.Designer.cs">
+      <DependentUpon>TestJiraConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="models\JiraIssueListModelBuilder.cs" />
+    <Compile Include="models\JiraIssueListModel.cs" />
+    <Compile Include="models\JiraIssueListModelListener.cs" />
     <Compile Include="models\JiraServerModel.cs" />
     <Compile Include="PaZuWindow.cs">
       <SubType>UserControl</SubType>
@@ -101,6 +110,8 @@
     </Compile>
     <Compile Include="api\RssClient.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
+    <Compile Include="ui\JiraServerTreeNode.cs" />
     <Compile Include="Web References\JIRA\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -120,6 +131,10 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\TestJiraConnection.resx">
+      <DependentUpon>TestJiraConnection.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PaZuWindow.resx">
       <DependentUpon>PaZuWindow.cs</DependentUpon>
@@ -183,6 +198,8 @@
     <Content Include="icons\atlassian-538x235.png" />
     <Content Include="icons\atlassian-installer.bmp" />
     <Content Include="icons\Atlassian.png" />
+    <Content Include="icons\ide_plugin_16.bmp" />
+    <Content Include="icons\ide_plugin_16.ico" />
     <Content Include="icons\ide_plugin_300.png" />
     <Content Include="icons\ide_plugin_32.ico" />
     <Content Include="icons\pazu.bmp" />
