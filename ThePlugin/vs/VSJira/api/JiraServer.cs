@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PaZu.api
 {
@@ -30,11 +28,11 @@ namespace PaZu.api
         {
             if (other != null)
             {
-                this.guid = other.guid;
-                this.name = other.name;
-                this.url = other.url;
-                this.userName = other.userName;
-                this.password = other.password;
+                guid = other.guid;
+                name = other.name;
+                url = other.url;
+                userName = other.userName;
+                password = other.password;
             }
             else
             {
@@ -66,7 +64,9 @@ namespace PaZu.api
             set { password = value; }
         }
 
+// ReSharper disable InconsistentNaming
         public Guid GUID
+// ReSharper restore InconsistentNaming
         {
             get { return guid; }
             set { guid = value; }

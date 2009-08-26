@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
 using PaZu.api;
+using PaZu.models;
 
 namespace PaZu.ui.issues
 {
     public class IssueNode
     {
-        private JiraIssue issue;
+        private readonly JiraIssue issue;
 
         public IssueNode(JiraIssue issue)
         {
             this.issue = issue;
         }
 
-        public Image Icon
-        {
-            get { return Properties.Resources.ide_plugin_161; }
-        }
-        public string KeyAndSummary
-        {
-            get { return issue.Key + " - " + issue.Summary; }
-        }
-        public string Priority
-        {
-            get { return "Not implemented"; }
-        }
+        public Image IssueTypeIcon { get { return ImageCache.Instance.getImage(issue.IssueTypeIconUrl); } }
+        public string KeyAndSummary { get { return issue.Key + " - " + issue.Summary; } }
+        public Image PriorityIcon { get { return ImageCache.Instance.getImage(issue.PriorityIconUrl); } }
+        public string StatusText { get { return issue.Status; } }
+        public Image StatusIcon { get { return ImageCache.Instance.getImage(issue.StatusIconUrl); } }
+        public string Updated { get { return issue.UpdateDate; } }
     }
 }

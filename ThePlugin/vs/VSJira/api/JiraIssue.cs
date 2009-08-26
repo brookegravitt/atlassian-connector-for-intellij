@@ -1,59 +1,164 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml.XPath;
 
 namespace PaZu.api
 {
     public class JiraIssue
     {
-        public JiraIssue(string key, string description)
-        {
-            this.key = key;
-            this.summary = description;
-        }
+        public const int UNKNOWN = -1;
 
-        public JiraIssue(XPathNavigator nav)
+        public JiraIssue(JiraServer server, XPathNavigator nav)
         {
+            Server = server;
+
             nav.MoveToFirstChild();
             do
             {
                 switch (nav.Name)
                 {
                     case "key":
-                        key = nav.Value;
+                        Key = nav.Value;
+                        ProjectKey = Key.Substring(0, Key.LastIndexOf('-'));
                         break;
                     case "summary":
-                        summary = nav.Value;
+                        Summary = nav.Value;
+                        break;
+                    case "status":
+                        Status = nav.Value;
+                        StatusIconUrl = getAttributeSafely(nav, "iconUrl", null);
+                        StatusId = getAttributeSafely(nav, "id", UNKNOWN);
+                        break;
+                    case "priority":
+                        Priority = nav.Value;
+                        PriorityIconUrl = getAttributeSafely(nav, "iconUrl", null);
+                        PriorityId = getAttributeSafely(nav, "id", UNKNOWN);
+                        break;
+                    case "description":
+                        Description = nav.Value;
+                        break;
+                    case "type":
+                        IssueType = nav.Value;
+                        IssueTypeIconUrl = getAttributeSafely(nav, "iconUrl", null);
+                        IssueTypeId = getAttributeSafely(nav, "id", UNKNOWN);
+                        break;
+                    case "assignee":
+                        Assignee = nav.Value;
+                        break;
+                    case "reporter":
+                        Reporter = nav.Value;
+                        break;
+                    case "created":
+                        CreationDate = nav.Value;
+                        break;
+                    case "updated":
+                        UpdateDate = nav.Value;
+                        break;
+                    case "resolution":
+                        Resolution = nav.Value;
+                        break;
+                    case "timeestimate":
+                        RemainingEstimate = nav.Value;
+                        RemainingEstimateInSeconds = getAttributeSafely(nav, "seconds", UNKNOWN);
+                        break;
+                    case "timeoriginalestimate":
+                        OriginalEstimate = nav.Value;
+                        OriginalEstimateInSeconds = getAttributeSafely(nav, "seconds", UNKNOWN);
+                        break;
+                    case "timespent":
+                        TimeSpent = nav.Value;
+                        TimeSpentInSeconds = getAttributeSafely(nav, "seconds", UNKNOWN);
                         break;
                     default:
                         break;
                 }
             } while (nav.MoveToNext());
-            if (key == null || summary == null)
+            if (Key == null || Summary == null)
             {
                 throw new InvalidDataException();
             }
         }
 
-        private string key;
-        private string summary;
+        public JiraServer Server { get; private set; }
 
-        public string Key
+        public string IssueType { get; private set; }
+
+        public int IssueTypeId { get; private set; }
+
+        public string IssueTypeIconUrl { get; private set; }
+
+        public string Description { get; private set; }
+
+        public string Key { get; private set; }
+
+        public string Summary { get; private set; }
+
+        public string Status { get; private set; }
+
+        public int StatusId { get; private set; }
+
+        public string StatusIconUrl { get; private set; }
+
+        public string Priority { get; private set; }
+
+        public string PriorityIconUrl { get; private set; }
+
+        public int PriorityId { get; set; }
+
+        public string Resolution { get; private set; }
+
+        public string Reporter { get; private set; }
+
+        public string Assignee { get; private set; }
+
+        public string CreationDate { get; private set; }
+
+        public string UpdateDate { get; private set; }
+
+        public string ProjectKey { get; private set; }
+
+        public string OriginalEstimate { get; private set; }
+
+        public int OriginalEstimateInSeconds { get; private set; }
+
+        protected string RemainingEstimate { get; set; }
+
+        protected int RemainingEstimateInSeconds { get; set; }
+
+        protected string TimeSpent { get; set; }
+
+        protected int TimeSpentInSeconds { get; set; }
+
+        private static string getAttributeSafely(XPathNavigator nav, string name, string defaultValue)
         {
-            get
+            if (nav.HasAttributes && nav.MoveToFirstAttribute())
             {
-                return key;
+                do
+                {
+                    if (!nav.Name.Equals(name)) continue;
+                    string val = nav.Value;
+                    nav.MoveToParent();
+                    return val;
+                } while (nav.MoveToNextAttribute());
+                nav.MoveToParent();
             }
+            return defaultValue;
         }
 
-        public string Summary
+        private static int getAttributeSafely(XPathNavigator nav, string name, int defaultValue)
         {
-            get
+            if (nav.HasAttributes && nav.MoveToFirstAttribute())
             {
-                return summary;
+                do
+                {
+                    if (!nav.Name.Equals(name)) continue;
+                    int val = nav.ValueAsInt;
+                    nav.MoveToParent();
+                    return val;
+                } while (nav.MoveToNextAttribute());
+                nav.MoveToParent();
             }
+            return defaultValue;
         }
     }
 }

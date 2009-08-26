@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using EnvDTE;
 using System.Diagnostics;
 using PaZu.api;
@@ -9,12 +8,12 @@ namespace PaZu.models
 {
     public class JiraServerModel
     {
-        private static string SERVER_COUNT = "serverCount";
-        private static string SERVER_GUID = "serverGuid_";
-        private static string SERVER_NAME = "serverName_";
-        private static string SERVER_URL = "serverUrl_";
+        private const string SERVER_COUNT = "serverCount";
+        private const string SERVER_GUID = "serverGuid_";
+        private const string SERVER_NAME = "serverName_";
+        private const string SERVER_URL = "serverUrl_";
 
-        private bool changedSinceLoading = false;
+        private bool changedSinceLoading;
 
         public class ModelException: Exception 
         {
@@ -23,15 +22,15 @@ namespace PaZu.models
             }
         }
 
-        private SortedDictionary<Guid, JiraServer> serverMap = new SortedDictionary<Guid, JiraServer>();
+        private readonly SortedDictionary<Guid, JiraServer> serverMap = new SortedDictionary<Guid, JiraServer>();
 
         private JiraServerModel()
         {
         }
 
-        private static JiraServerModel instance = new JiraServerModel();
+        private static readonly JiraServerModel INSTANCE = new JiraServerModel();
 
-        public static JiraServerModel Instance { get { return instance; } }
+        public static JiraServerModel Instance { get { return INSTANCE; } }
 
         public ICollection<JiraServer> getAllServers()
         {
@@ -85,13 +84,13 @@ namespace PaZu.models
                 int i = 1;
                 foreach (JiraServer s in getAllServers())
                 {
-                    string var = SERVER_GUID + i.ToString();
+                    string var = SERVER_GUID + i;
                     globals[var] = s.GUID.ToString();
                     globals.set_VariablePersists(var, true);
-                    var = SERVER_NAME + s.GUID.ToString();
+                    var = SERVER_NAME + s.GUID;
                     globals[var] = s.Name;
                     globals.set_VariablePersists(var, true);
-                    var = SERVER_URL + s.GUID.ToString();
+                    var = SERVER_URL + s.GUID;
                     globals[var] = s.Url;
                     globals.set_VariablePersists(var, true);
                     CredentialsVault.Instance.saveCredentials(s);
@@ -132,11 +131,9 @@ namespace PaZu.models
         public void removeServer(Guid guid)
         {
             JiraServer s = getServer(guid);
-            if (s != null)
-            {
-                removeServer(guid, false);
-                CredentialsVault.Instance.deleteCredentials(s);
-            }
+            if (s == null) return;
+            removeServer(guid, false);
+            CredentialsVault.Instance.deleteCredentials(s);
         }
 
         public void removeServer(Guid guid, bool nothrow)
