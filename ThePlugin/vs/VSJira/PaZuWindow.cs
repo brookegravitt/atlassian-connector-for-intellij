@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
@@ -57,7 +56,8 @@ namespace PaZu
             issuesTree.FullRowSelect = true;
             issuesTree.GridLineStyle = GridLineStyle.None;
             issuesTree.UseColumns = true;
-            
+            issuesTree.NodeMouseDoubleClick += issuesTree_NodeMouseDoubleClick;
+            issuesTree.KeyPress += issuesTree_KeyPress;
             colKeyAndSummary.Header = "Summary";
             colStatus.Header = "Status";
             colPriority.Header = "P";
@@ -126,6 +126,27 @@ namespace PaZu
             colUpdated.TextAlign = HorizontalAlignment.Right;
 
             jiraSplitter.Panel2.SizeChanged += issuesTree_SizeChanged;
+        }
+
+        private void issuesTree_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != (char) Keys.Enter) return;
+            TreeNodeAdv selectedNode = issuesTree.SelectedNode;
+            if (selectedNode != null) openSelectedIssue(selectedNode.Tag as IssueNode);
+        }
+
+        private static void issuesTree_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
+        {
+            IssueNode node = e.Node.Tag as IssueNode;
+            openSelectedIssue(node);
+        }
+
+        private static void openSelectedIssue(IssueNode node)
+        {
+            if (node != null)
+            {
+                IssueDetailsWindow.Instance.openIssue(node.Issue);
+            }
         }
 
         private void setSummaryColumnWidth()
