@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using PaZu.JIRA;
 
 namespace PaZu.api.soap
 {
     public class SoapSession
     {
-        private string url;
+        private readonly string url;
         private string token;
-        private JiraSoapServiceService service = new JiraSoapServiceService();
+        private readonly JiraSoapServiceService service = new JiraSoapServiceService();
 
         public SoapSession(string u)
         {
@@ -35,7 +34,7 @@ namespace PaZu.api.soap
             List<JiraProject> list = new List<JiraProject>();
             foreach (RemoteProject p in pTable)
             {
-                list.Add(new JiraProject(p.id, p.key, p.name));
+                list.Add(new JiraProject(int.Parse(p.id), p.key, p.name));
             }
             return list;
         }
@@ -46,7 +45,7 @@ namespace PaZu.api.soap
             List<JiraSavedFilter> list = new List<JiraSavedFilter>();
             foreach (RemoteFilter f in fTable)
             {
-                list.Add(new JiraSavedFilter(f.id, f.name));
+                list.Add(new JiraSavedFilter(int.Parse(f.id), f.name));
             }
             return list;
         }
@@ -56,6 +55,32 @@ namespace PaZu.api.soap
             public LoginException(Exception e) : base("Login failed", e)
             {
             }
+        }
+
+        public List<JiraNamedEntity> getIssueTypes()
+        {
+            return createEntityList(service.getIssueTypes(token));
+        }
+
+        public List<JiraNamedEntity> getPriorities()
+        {
+            return createEntityList(service.getPriorities(token));
+        }
+
+        public List<JiraNamedEntity> getStatuses()
+        {
+            return createEntityList(service.getStatuses(token));
+        }
+
+        private static List<JiraNamedEntity> createEntityList(IEnumerable<AbstractRemoteConstant> vals)
+        {
+            List<JiraNamedEntity> list = new List<JiraNamedEntity>();
+            foreach (AbstractRemoteConstant val in vals)
+            {
+                list.Add(new JiraNamedEntity(int.Parse(val.id), val.name, val.icon));
+            }
+            return list;
+            
         }
     }
 }

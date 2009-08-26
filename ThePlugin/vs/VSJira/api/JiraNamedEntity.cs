@@ -1,34 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PaZu.api
+﻿namespace PaZu.api
 {
-    public abstract class JiraNamedEntity
+    public class JiraNamedEntity
     {
-        private string id;
-        private string name;
-
-        public JiraNamedEntity(string id, string name)
+        public JiraNamedEntity(int id, string name, string iconUrl)
         {
-            this.id = id;
-            this.name = name;
+            Id = id;
+            Name = name;
+            IconUrl = iconUrl;
         }
 
-        public string ID
-        {
-            get
-            {
-                return id;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
+        public int Id { get; private set; }
+        public string Name { get; private set; }
+        public string IconUrl { get; private set; }
     }
 }

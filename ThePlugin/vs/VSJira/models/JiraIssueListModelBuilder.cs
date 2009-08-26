@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using PaZu.api;
 
 namespace PaZu.models
 {
     public class JiraIssueListModelBuilder
     {
-        private JiraServerFacade facade;
+        private readonly JiraServerFacade facade;
 
         public JiraIssueListModelBuilder(JiraServerFacade facade)
         {

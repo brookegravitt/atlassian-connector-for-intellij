@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using PaZu.api.soap;
 
 namespace PaZu.api
 {
     public class JiraServerFacade
     {
-        private SortedDictionary<string, SoapSession> sessionMap = new SortedDictionary<string, SoapSession>();
+        private readonly SortedDictionary<string, SoapSession> sessionMap = new SortedDictionary<string, SoapSession>();
 
         private SoapSession getSoapSession(JiraServer server)
         {
@@ -31,6 +29,11 @@ namespace PaZu.api
             return getSoapSession(server).getProjects();
         }
 
+        public List<JiraNamedEntity> getIssueTypes(JiraServer server)
+        {
+            return getSoapSession(server).getIssueTypes();
+        }
+
         public List<JiraSavedFilter> getSavedFilters(JiraServer server)
         {
             return getSoapSession(server).getSavedFilters();
@@ -39,7 +42,17 @@ namespace PaZu.api
         public List<JiraIssue> getSavedFilterIssues(JiraServer server, JiraSavedFilter filter, int start, int count)
         {
             RssClient rss = new RssClient(server);
-            return rss.getSavedFilterIssues(filter.ID, "issuekey", "ASC", start, count);
+            return rss.getSavedFilterIssues(filter.Id, "issuekey", "ASC", start, count);
+        }
+
+        public List<JiraNamedEntity> getPriorities(JiraServer server)
+        {
+            return getSoapSession(server).getPriorities();
+        }
+
+        public List<JiraNamedEntity> getStatuses(JiraServer server)
+        {
+            return getSoapSession(server).getStatuses();
         }
     }
 }

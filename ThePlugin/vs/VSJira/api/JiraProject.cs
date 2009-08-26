@@ -1,30 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PaZu.api
+﻿namespace PaZu.api
 {
     public class JiraProject : JiraNamedEntity
     {
-        private string key;
-
-        public JiraProject(string id, string key, string name) :             
-            base(id, name)
+        public JiraProject(int id, string key, string name) :             
+            base(id, name, null)
         {
-            this.key = key;
+            Key = key;
         }
 
-        public string Key
-        {
-            get
-            {
-                return key;
-            }
-        }
+        public string Key { get; private set; }
 
         public override string ToString()
         {
-            return Key + ": " + Name;
+            return Name;
         }
     }
 }
