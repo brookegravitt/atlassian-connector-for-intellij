@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using EnvDTE;
 using System.Diagnostics;
-using Microsoft.Win32;
 using PaZu.api;
 
 namespace PaZu.models
@@ -13,11 +12,7 @@ namespace PaZu.models
         private static string SERVER_COUNT = "serverCount";
         private static string SERVER_GUID = "serverGuid_";
         private static string SERVER_NAME = "serverName_";
-        private static string USER_NAME = "UserName_";
-        private static string USER_PASSWORD = "UserPassword_";
         private static string SERVER_URL = "serverUrl_";
-        private static string ATL_KEY = "Software\\Atlassian";
-        private static string PAZU_KEY = "PaZu";
 
         private bool changedSinceLoading = false;
 
@@ -53,21 +48,19 @@ namespace PaZu.models
             {
                 try
                 {
-                    RegistryKey key = Registry.CurrentUser.OpenSubKey(ATL_KEY + "\\" + PAZU_KEY);
-
                     int count = int.Parse(globals[SERVER_COUNT].ToString());
                     for (int i = 1; i <= count; ++i)
                     {
-                        Guid guid = new Guid(globals[SERVER_GUID + i].ToString());
-                        string sName = globals[SERVER_NAME + i].ToString();
-                        string url = globals[SERVER_URL + i].ToString();
-                        string uName = key.GetValue(USER_NAME + i).ToString();
-                        string pwd = key.GetValue(USER_PASSWORD + i).ToString();
-                        addServer(new JiraServer(guid, sName, url, uName, pwd));
+                        string guidStr = globals[SERVER_GUID + i].ToString();
+                        Guid guid = new Guid(guidStr);
+                        string sName = globals[SERVER_NAME + guidStr].ToString();
+                        string url = globals[SERVER_URL + guidStr].ToString();
+                        JiraServer server = new JiraServer(guid, sName, url, null, null);
+                        server.UserName = CredentialsVault.Instance.getUserName(server);
+                        server.Password = CredentialsVault.Instance.getPassword(server);
+                        addServer(server);
                     }
                     changedSinceLoading = false;
-
-                    key.Close();
                 }
                 catch (Exception e)
                 {
@@ -86,12 +79,8 @@ namespace PaZu.models
 
             try
             {
-
                 globals[SERVER_COUNT] = serverMap.Values.Count.ToString();
                 globals.set_VariablePersists(SERVER_COUNT, true);
-                RegistryKey atlKey = Registry.CurrentUser.CreateSubKey(ATL_KEY);
-                RegistryKey key = atlKey.CreateSubKey(PAZU_KEY);
-                atlKey.Close();
 
                 int i = 1;
                 foreach (JiraServer s in getAllServers())
@@ -99,17 +88,15 @@ namespace PaZu.models
                     string var = SERVER_GUID + i.ToString();
                     globals[var] = s.GUID.ToString();
                     globals.set_VariablePersists(var, true);
-                    var = SERVER_NAME + i.ToString();
+                    var = SERVER_NAME + s.GUID.ToString();
                     globals[var] = s.Name;
                     globals.set_VariablePersists(var, true);
-                    var = SERVER_URL + i.ToString();
+                    var = SERVER_URL + s.GUID.ToString();
                     globals[var] = s.Url;
                     globals.set_VariablePersists(var, true);
-                    key.SetValue(USER_NAME + i.ToString(), s.UserName);
-                    key.SetValue(USER_PASSWORD + i.ToString(), s.Password);
+                    CredentialsVault.Instance.saveCredentials(s);
                     ++i;
                 }
-                key.Close();
             }
             catch (Exception e)
             {
@@ -144,7 +131,12 @@ namespace PaZu.models
 
         public void removeServer(Guid guid)
         {
-            removeServer(guid, false);
+            JiraServer s = getServer(guid);
+            if (s != null)
+            {
+                removeServer(guid, false);
+                CredentialsVault.Instance.deleteCredentials(s);
+            }
         }
 
         public void removeServer(Guid guid, bool nothrow)

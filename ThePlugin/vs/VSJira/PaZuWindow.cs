@@ -101,7 +101,7 @@ namespace PaZu
             List<JiraServer> servers = new List<JiraServer>(JiraServerModel.Instance.getAllServers());
             if (servers.Count == 0)
             {
-                jiraStatus.Text = "No JIRA servers defined";
+                setInfoStatus("No JIRA servers defined");
             }
 
             foreach (JiraServer server in servers)
@@ -113,7 +113,7 @@ namespace PaZu
                 {
                     foreach (JiraServer server in servers)
                     {
-                        setInfoStatus("Loading Saved Filters for server " + server.Name + "...");
+                        setInfoStatus("Loading saved filters for server " + server.Name + "...");
                         try
                         {
                             List<JiraSavedFilter> filters = facade.getSavedFilters(server);
