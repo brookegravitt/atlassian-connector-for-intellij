@@ -43,16 +43,11 @@ namespace PaZu.api
             url.Append("&pager/start=" + start);
             url.Append("&tempMax=" + max);
 
-            url.Append(appendAuthentication());
+            url.Append(appendAuthentication(false));
 
             try
             {
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url.ToString());
-                req.Timeout = 5000;
-                req.ReadWriteTimeout = 20000;
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-                Stream s = resp.GetResponseStream();
-                return createIssueList(s);
+                return createIssueList(getRssQueryResultStream(url));
             }
             catch (Exception e)
             {
@@ -61,11 +56,49 @@ namespace PaZu.api
             }
         }
 
-        private string appendAuthentication()
+        public JiraIssue getIssue(string key)
+        {
+//            StringBuffer url = new StringBuffer(getBaseUrl() + "/si/jira.issueviews:issue-xml/");
+//            url.append(issueKey).append('/').append(issueKey).append(".xml");
+//            url.append(appendAuthentication(true));
+
+
+            StringBuilder url = new StringBuilder(baseUrl + "/si/jira.issueviews:issue-xml/");
+            url.Append(key).Append("/").Append(key).Append(".xml");
+
+            url.Append(appendAuthentication(true));
+
+            try
+            {
+                List<JiraIssue> list = createIssueList(getRssQueryResultStream(url));
+                if (list.Count != 1)
+                {
+                    throw new ArgumentException("No such issue");
+                }
+                return list[0];
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                throw;
+            }
+
+        }
+
+        private static Stream getRssQueryResultStream(StringBuilder url)
+        {
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url.ToString());
+            req.Timeout = 5000;
+            req.ReadWriteTimeout = 20000;
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            return resp.GetResponseStream();
+        }
+
+        private string appendAuthentication(bool first)
         {
             if (userName != null)
             {
-                return "&os_username=" + HttpUtility.UrlEncode(userName)
+                return (first ? "?" : "&") + "os_username=" + HttpUtility.UrlEncode(userName)
                         + "&os_password=" + HttpUtility.UrlEncode(password);
             }
             return "";
@@ -73,7 +106,32 @@ namespace PaZu.api
 
         private List<JiraIssue> createIssueList(Stream s)
         {
+//            StringBuilder sb = new StringBuilder();
+//
+//            // used on each read operation
+//            byte[] buf = new byte[8192];
+//
+//            int count;
+//
+//            do
+//            {
+//                // fill the buffer with data
+//                count = s.Read(buf, 0, buf.Length);
+//
+//                // make sure we read some data
+//                if (count == 0) continue;
+//                // translate from bytes to ASCII text
+//                string tempString = Encoding.ASCII.GetString(buf, 0, count);
+//
+//                // continue building the string
+//                sb.Append(tempString);
+//            }
+//            while (count > 0); // any more data to read?
+
+//            XPathDocument doc = new XPathDocument(new StringReader(sb.ToString()));
+
             XPathDocument doc = new XPathDocument(s);
+
             XPathNavigator nav = doc.CreateNavigator();
             XPathExpression expr = nav.Compile("/rss/channel/item");
             XPathNodeIterator it = nav.Select(expr);

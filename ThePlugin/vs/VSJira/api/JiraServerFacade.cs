@@ -7,6 +7,14 @@ namespace PaZu.api
     {
         private readonly SortedDictionary<string, SoapSession> sessionMap = new SortedDictionary<string, SoapSession>();
 
+        private static readonly JiraServerFacade INSTANCE = new JiraServerFacade();
+
+        public static JiraServerFacade Instance { get { return INSTANCE; } }
+
+        private JiraServerFacade()
+        {
+        }
+
         private SoapSession getSoapSession(JiraServer server)
         {
             SoapSession s;
@@ -45,6 +53,12 @@ namespace PaZu.api
             return rss.getSavedFilterIssues(filter.Id, "issuekey", "ASC", start, count);
         }
 
+        public JiraIssue getIssue(JiraServer server, string key)
+        {
+            RssClient rss = new RssClient(server);
+            return rss.getIssue(key);
+        }
+
         public List<JiraNamedEntity> getPriorities(JiraServer server)
         {
             return getSoapSession(server).getPriorities();
@@ -53,6 +67,11 @@ namespace PaZu.api
         public List<JiraNamedEntity> getStatuses(JiraServer server)
         {
             return getSoapSession(server).getStatuses();
+        }
+
+        public void addComment(JiraIssue issue, string comment)
+        {
+            getSoapSession(issue.Server).addComment(issue, comment);
         }
     }
 }

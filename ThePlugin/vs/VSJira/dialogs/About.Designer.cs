@@ -51,6 +51,8 @@
             this.browser.Name = "browser";
             this.browser.Size = new System.Drawing.Size(538, 201);
             this.browser.TabIndex = 1;
+            this.browser.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.browser_Navigating);
+            this.browser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.browser_DocumentCompleted);
             // 
             // buttonClose
             // 
