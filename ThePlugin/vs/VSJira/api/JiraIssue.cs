@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.XPath;
 
@@ -7,6 +8,15 @@ namespace PaZu.api
     public class JiraIssue
     {
         public const int UNKNOWN = -1;
+
+        public class Comment
+        {
+            public string Body { get; internal set; }
+            public string Created { get; internal set; }
+            public string Author { get; internal set; }
+        }
+
+        private readonly List<Comment> comments = new List<Comment>();
 
         public JiraIssue(JiraServer server, XPathNavigator nav)
         {
@@ -69,6 +79,9 @@ namespace PaZu.api
                         TimeSpent = nav.Value;
                         TimeSpentInSeconds = getAttributeSafely(nav, "seconds", UNKNOWN);
                         break;
+                    case "comments":
+                        createComments(nav);
+                        break;
                     default:
                         break;
                 }
@@ -77,6 +90,25 @@ namespace PaZu.api
             {
                 throw new InvalidDataException();
             }
+        }
+
+        private void createComments(XPathNavigator nav)
+        {
+            XPathExpression expr = nav.Compile("comment");
+            XPathNodeIterator it = nav.Select(expr);
+
+            if (!nav.MoveToFirstChild()) return;
+            while (it.MoveNext())
+            {
+                Comment c = new Comment
+                                {
+                                    Body = it.Current.Value,
+                                    Author = getAttributeSafely(it.Current, "author", "Unknown"),
+                                    Created = getAttributeSafely(it.Current, "created", "Unknown")
+                                };
+                comments.Add(c);
+            }
+            nav.MoveToParent();
         }
 
         public JiraServer Server { get; private set; }
@@ -121,13 +153,15 @@ namespace PaZu.api
 
         public int OriginalEstimateInSeconds { get; private set; }
 
-        protected string RemainingEstimate { get; set; }
+        public string RemainingEstimate { get; set; }
 
-        protected int RemainingEstimateInSeconds { get; set; }
+        public int RemainingEstimateInSeconds { get; set; }
 
-        protected string TimeSpent { get; set; }
+        public string TimeSpent { get; set; }
 
-        protected int TimeSpentInSeconds { get; set; }
+        public int TimeSpentInSeconds { get; set; }
+
+        public List<Comment> Comments { get { return comments; } }
 
         private static string getAttributeSafely(XPathNavigator nav, string name, string defaultValue)
         {

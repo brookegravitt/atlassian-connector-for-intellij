@@ -50,6 +50,12 @@ namespace PaZu.api.soap
             return list;
         }
 
+
+        public void addComment(JiraIssue issue, string comment)
+        {
+            service.addComment(token, issue.Key, new RemoteComment {body = comment});
+        }
+
         public class LoginException : Exception
         {
             public LoginException(Exception e) : base("Login failed", e)

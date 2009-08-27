@@ -28,7 +28,11 @@ namespace PaZu
             string key = getIssueTabKey(issue);
             if (!issueTabs.TabPages.ContainsKey(key))
             {
-                issueTabs.TabPages.Add(key, issue.Key);
+                TabPage issueTab = new TabPage {Name = key, Text = issue.Key};
+                IssueDetailsPanel issuePanel = new IssueDetailsPanel(issue, issueTabs, issueTab);
+                issueTab.Controls.Add(issuePanel);
+                issuePanel.Dock = DockStyle.Fill;
+                issueTabs.TabPages.Add(issueTab);
             }
             issueTabs.SelectTab(key);
         }

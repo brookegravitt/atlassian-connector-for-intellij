@@ -17,7 +17,7 @@ namespace PaZu
 {
     public partial class PaZuWindow : UserControl, JiraIssueListModelListener
     {
-        private readonly JiraServerFacade facade = new JiraServerFacade();
+        private readonly JiraServerFacade facade = JiraServerFacade.Instance;
 
         TreeViewAdv issuesTree;
 
@@ -42,6 +42,7 @@ namespace PaZu
         private readonly NodeIcon controlStatusIcon = new NodeIcon();
         private readonly NodeIcon controlPriorityIcon = new NodeIcon();
         private readonly NodeTextBox controlUpdated = new NodeTextBox();
+        private const string RETRIEVING_ISSUES_FAILED = "Retrieving issues failed";
         private const int MARGIN = 16;
         private const int STATUS_WIDTH = 100;
         private const int UPDATED_WIDTH = 300;
@@ -253,6 +254,8 @@ namespace PaZu
                 {
                     ICollection<JiraIssue> issues = model.Issues;
 
+                    if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode)) return;
+
                     setInfoStatus("Loaded " + issues.Count + " issues");
 
                     ITreeModel treeModel = new FlatIssueTreeModel(issues);
@@ -343,7 +346,17 @@ namespace PaZu
                 setInfoStatus("Loading issues...");
                 getMoreIssues.Visible = false;
                 Thread issueLoadThread = 
-                    new Thread(() => builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter));
+                    new Thread(new ThreadStart(delegate
+                        {
+                            try
+                            {
+                                builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter);
+                            }
+                            catch (Exception ex)
+                            {
+                                setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
+                            }
+                        }));
                 issueLoadThread.Start();
             }
             else
@@ -357,46 +370,19 @@ namespace PaZu
             JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
             setInfoStatus("Loading issues...");
             getMoreIssues.Visible = false;
-            Thread issueLoadThread = 
-                new Thread(() => builder.updateModelWithSavedFilter(model, node.Server, node.Filter));
+            Thread issueLoadThread =
+                new Thread(new ThreadStart(delegate
+                       {
+                           try
+                           {
+                               builder.updateModelWithSavedFilter(model, node.Server, node.Filter);
+                           }
+                           catch (Exception ex)
+                           {
+                               setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
+                           }
+                       }));
             issueLoadThread.Start();
-
         }
-
-        //    private void setupIssueTable()
-        //    {
-        //        issueTable.AutoGenerateColumns = false;
-        //        issueTable.AutoSize = true;
-
-        //        issueTable.DataSource = issueSource;
-
-        //        DataGridViewColumn column = new DataGridViewTextBoxColumn();
-        //        column.DataPropertyName = "Key";
-        //        column.Name = "key";
-        //        column.Width = 50;
-        //        issueTable.Columns.Add(column);
-        //        column = new DataGridViewTextBoxColumn();
-        //        column.DataPropertyName = "Summary";
-        //        column.Name = "summary";
-        //        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-        //        issueTable.Columns.Add(column);
-        //    }
-
-        //    private void getProjects()
-        //    {
-        //        try
-        //        {
-        //            List<JiraProject> list = facade.getProjects(server);
-        //            foreach (JiraProject p in list)
-        //            {
-        //                projects.Items.Add(p);
-        //            }
-        //            projects.SelectedIndex = 0;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show(ex.Message);
-        //        }
-        //    }
     }
 }

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -76,6 +76,12 @@
     <Compile Include="api\JiraProject.cs" />
     <Compile Include="api\JiraSavedFilter.cs" />
     <Compile Include="api\JiraServer.cs" />
+    <Compile Include="dialogs\NewIssueComment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\NewIssueComment.Designer.cs">
+      <DependentUpon>NewIssueComment.cs</DependentUpon>
+    </Compile>
     <Compile Include="dialogs\TestJiraConnection.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,12 +155,17 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\NewIssueComment.resx">
+      <DependentUpon>NewIssueComment.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="dialogs\TestJiraConnection.resx">
       <DependentUpon>TestJiraConnection.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="IssueDetailsPanel.resx">
       <DependentUpon>IssueDetailsPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="IssueDetailsWindow.resx">
       <DependentUpon>IssueDetailsWindow.cs</DependentUpon>
@@ -170,8 +181,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -222,15 +233,24 @@
     <Content Include="icons\atlassian-538x235.png" />
     <Content Include="icons\atlassian-installer.bmp" />
     <Content Include="icons\Atlassian.png" />
+    <None Include="icons\close.png" />
+    <None Include="icons\collapse_all.png" />
+    <None Include="icons\expand_all.png" />
     <Content Include="icons\ide_plugin_16.bmp" />
     <Content Include="icons\ide_plugin_16.ico" />
     <Content Include="icons\ide_plugin_300.png" />
     <Content Include="icons\ide_plugin_32.ico" />
+    <None Include="icons\new_comment.png" />
     <Content Include="icons\pazu.bmp" />
     <Content Include="icons\projectsettings.png" />
     <Content Include="icons\refresh.png" />
     <None Include="icons\unknown.png" />
+    <None Include="icons\view_in_browser.png" />
     <Content Include="pazunet.AddIn" />
+    <None Include="Resources\comments_css.txt" />
+    <None Include="Resources\toggler_javascript.txt" />
+    <None Include="Resources\summary_and_description_css.txt" />
+    <None Include="Resources\about_html.txt" />
     <Content Include="third party\treeviewadv\Aga.Controls.dll" />
     <Content Include="third party\treeviewadv\license.txt" />
   </ItemGroup>

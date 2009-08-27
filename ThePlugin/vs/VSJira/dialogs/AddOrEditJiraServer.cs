@@ -54,6 +54,10 @@ namespace PaZu.dialogs
             {
                 fixedUrl = "http://" + fixedUrl;
             }
+            if (fixedUrl.EndsWith("/"))
+            {
+                fixedUrl = fixedUrl.Substring(0, fixedUrl.Length - 1);
+            }
             server.Url = fixedUrl;
             server.UserName = user.Text.Trim();
             server.Password = password.Text;
