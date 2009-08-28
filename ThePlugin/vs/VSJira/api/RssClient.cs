@@ -58,11 +58,6 @@ namespace PaZu.api
 
         public JiraIssue getIssue(string key)
         {
-//            StringBuffer url = new StringBuffer(getBaseUrl() + "/si/jira.issueviews:issue-xml/");
-//            url.append(issueKey).append('/').append(issueKey).append(".xml");
-//            url.append(appendAuthentication(true));
-
-
             StringBuilder url = new StringBuilder(baseUrl + "/si/jira.issueviews:issue-xml/");
             url.Append(key).Append("/").Append(key).Append(".xml");
 

@@ -104,6 +104,9 @@ namespace PaZu.ui.issues
         {
             JiraServerFacade.Instance.runIssueActionWithoutParams(issue, action);
             JiraIssue newIssue = JiraServerFacade.Instance.getIssue(issue.Server, issue.Key);
+
+            // todo - this is bad bad bad, we shoudl go through the issue model and notify everybody.
+            // Otherwise issue details window will not be updated automagically.
             Invoke(new MethodInvoker(() => ((FlatIssueTreeModel) tree.Model).updateIssue(newIssue)));
         }
     }

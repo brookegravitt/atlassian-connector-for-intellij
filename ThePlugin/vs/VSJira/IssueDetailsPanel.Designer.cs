@@ -1,4 +1,6 @@
-﻿namespace PaZu
+﻿using System.Text.RegularExpressions;
+
+namespace PaZu
 {
     partial class IssueDetailsPanel
     {
