@@ -88,5 +88,32 @@ namespace PaZu.api.soap
             return list;
             
         }
+
+        public List<JiraNamedEntity> getActionsForIssue(JiraIssue issue)
+        {
+            RemoteNamedObject[] actions = service.getAvailableActions(token, issue.Key);
+            List<JiraNamedEntity> list = new List<JiraNamedEntity>();
+            foreach (RemoteNamedObject action in actions)
+            {
+                list.Add(new JiraNamedEntity(int.Parse(action.id), action.name, null));
+            }
+            return list;
+        }
+
+        public List<JiraField> getFieldsForAction(JiraIssue issue, int id)
+        {
+            RemoteField[] fields = service.getFieldsForAction(token, issue.Key, id.ToString());
+            List<JiraField> list = new List<JiraField>();
+            foreach (RemoteField field in fields)
+            {
+                list.Add(new JiraField(field.id, field.name));
+            }
+            return list;
+        }
+
+        public void runIssueActionWithoutParams(JiraIssue issue, int id)
+        {
+            service.progressWorkflowAction(token, issue.Key, id.ToString(), null);
+        }
     }
 }

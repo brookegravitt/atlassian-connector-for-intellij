@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
@@ -29,6 +30,7 @@ namespace PaZu
         {
             InitializeComponent();
             model.addListener(this);
+
             builder = new JiraIssueListModelBuilder(facade);
         }
 
@@ -58,9 +60,17 @@ namespace PaZu
             issuesTree.GridLineStyle = GridLineStyle.None;
             issuesTree.UseColumns = true;
             issuesTree.NodeMouseDoubleClick += issuesTree_NodeMouseDoubleClick;
-            issuesTree.NodeMouseClick += issuesTree_NodeMouseClick;
             issuesTree.KeyPress += issuesTree_KeyPress;
-            issuesTree.ContextMenuStrip = new IssueContextMenu(issuesTree);
+            issuesTree.SelectionChanged += issuesTree_SelectionChanged;
+
+            ToolStripMenuItem[] items = new[]
+                {
+                    new ToolStripMenuItem("Open in IDE", Properties.Resources.open_in_ide, new EventHandler(openIssue)), 
+                    new ToolStripMenuItem("View in Browser", Properties.Resources.view_in_browser, new EventHandler(browseIssue)), 
+                    new ToolStripMenuItem("Edit in Browser", Properties.Resources.edit_in_browser, new EventHandler(browseEditIssue)), 
+                };
+            IssueContextMenu strip = new IssueContextMenu(issuesTree, items);
+            issuesTree.ContextMenuStrip = strip;
             colKeyAndSummary.Header = "Summary";
             colStatus.Header = "Status";
             colPriority.Header = "P";
@@ -129,39 +139,73 @@ namespace PaZu
             colUpdated.TextAlign = HorizontalAlignment.Right;
 
             jiraSplitter.Panel2.SizeChanged += issuesTree_SizeChanged;
+
+            updateIssueListButtons();
         }
 
-        void issuesTree_NodeMouseClick(object sender, TreeNodeAdvMouseEventArgs e)
+        void issuesTree_SelectionChanged(object sender, EventArgs e)
         {
-//            if (e.Button != MouseButtons.Right) return;
-//            TreeNodeAdv selectedNode = issuesTree.SelectedNode;
-//            if (selectedNode == null || !(selectedNode.Tag is IssueNode)) return;
-//            new IssueContextMenu(selectedNode.Tag as IssueNode)
-//                                    {
-//                                        Location = PointToScreen(new Point(Location.X + e.Location.X, Location.Y + e.Location.Y)),
-//                                        Visible = true
-//                                    };
+            updateIssueListButtons();
+        }
+
+        private void updateIssueListButtons()
+        {
+            bool issueSelected = (issuesTree.SelectedNode != null && issuesTree.SelectedNode.Tag is IssueNode);
+            buttonViewInBrowser.Enabled = issueSelected;
+            buttonEditInBrowser.Enabled = issueSelected;
+            buttonOpen.Enabled = issueSelected;
+            buttonRefresh.Enabled = filtersTree.SelectedNode != null &&
+                                    filtersTree.SelectedNode is JiraSavedFilterTreeNode;
+        }
+
+        private delegate void IssueAction(JiraIssue issue);
+
+        private void runSelectedIssueAction(IssueAction action)
+        {
+            TreeNodeAdv node = issuesTree.SelectedNode;
+            if (node == null || !(node.Tag is IssueNode)) return;
+            action((node.Tag as IssueNode).Issue);
+        }
+
+        private void browseIssue(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(browseSelectedIssue);
+        }
+
+        private static void browseSelectedIssue(JiraIssue issue)
+        {
+            Process.Start(issue.Server.Url + "/browse/" + issue.Key);
+        }
+
+        private void browseEditIssue(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(browseEditSelectedIssue);
+        }
+
+        private static void browseEditSelectedIssue(JiraIssue issue)
+        {
+            Process.Start(issue.Server.Url + "/secure/EditIssue!default.jspa?id=" + issue.Id);
+        }
+
+        private void openIssue(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(openSelectedIssue);
         }
 
         private void issuesTree_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar != (char) Keys.Enter) return;
-            TreeNodeAdv selectedNode = issuesTree.SelectedNode;
-            if (selectedNode != null) openSelectedIssue(selectedNode.Tag as IssueNode);
+            runSelectedIssueAction(openSelectedIssue);
         }
 
-        private static void issuesTree_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
+        private void issuesTree_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
         {
-            IssueNode node = e.Node.Tag as IssueNode;
-            openSelectedIssue(node);
+            runSelectedIssueAction(openSelectedIssue);
         }
 
-        private static void openSelectedIssue(IssueNode node)
+        private static void openSelectedIssue(JiraIssue issue)
         {
-            if (node != null)
-            {
-                IssueDetailsWindow.Instance.openIssue(node.Issue);
-            }
+            IssueDetailsWindow.Instance.openIssue(issue);
         }
 
         private void setSummaryColumnWidth()
@@ -276,6 +320,8 @@ namespace PaZu
                     issuesTree.Model = treeModel;
 
                     getMoreIssues.Visible = true;
+
+                    updateIssueListButtons();
                 }));
         }
 
@@ -354,29 +400,35 @@ namespace PaZu
 
         private void filtersTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            updateIssueListButtons();
             if (filtersTree.SelectedNode is JiraSavedFilterTreeNode)
             {
-                JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
-                setInfoStatus("Loading issues...");
-                getMoreIssues.Visible = false;
-                Thread issueLoadThread = 
-                    new Thread(new ThreadStart(delegate
-                        {
-                            try
-                            {
-                                builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter);
-                            }
-                            catch (Exception ex)
-                            {
-                                setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
-                            }
-                        }));
-                issueLoadThread.Start();
+                reloadIssues();
             }
             else
             {
                 model.clear(true);
             }
+        }
+
+        private void reloadIssues()
+        {
+            JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
+            setInfoStatus("Loading issues...");
+            getMoreIssues.Visible = false;
+            Thread issueLoadThread = 
+                new Thread(new ThreadStart(delegate
+                                               {
+                                                   try
+                                                   {
+                                                       builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter);
+                                                   }
+                                                   catch (Exception ex)
+                                                   {
+                                                       setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
+                                                   }
+                                               }));
+            issueLoadThread.Start();
         }
 
         private void getMoreIssues_Click(object sender, EventArgs e)
@@ -397,6 +449,26 @@ namespace PaZu
                            }
                        }));
             issueLoadThread.Start();
+        }
+
+        private void buttonOpen_Click(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(openSelectedIssue);
+        }
+
+        private void buttonViewInBrowser_Click(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(browseSelectedIssue);
+        }
+
+        private void buttonEditInBrowser_Click(object sender, EventArgs e)
+        {
+            runSelectedIssueAction(browseEditSelectedIssue);
+        }
+
+        private void buttonRefresh_Click(object sender, EventArgs e)
+        {
+            reloadIssues();
         }
     }
 }

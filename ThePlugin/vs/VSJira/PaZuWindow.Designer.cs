@@ -42,6 +42,10 @@
             this.buttonRefreshAll = new System.Windows.Forms.ToolStripButton();
             this.issueTreeContainer = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.buttonOpen = new System.Windows.Forms.ToolStripButton();
+            this.buttonViewInBrowser = new System.Windows.Forms.ToolStripButton();
+            this.buttonEditInBrowser = new System.Windows.Forms.ToolStripButton();
+            this.buttonRefresh = new System.Windows.Forms.ToolStripButton();
             this.globalToolBar = new System.Windows.Forms.ToolStrip();
             this.buttonProjectProperties = new System.Windows.Forms.ToolStripButton();
             this.buttonAbout = new System.Windows.Forms.ToolStripButton();
@@ -64,6 +68,7 @@
             this.toolStrip1.SuspendLayout();
             this.issueTreeContainer.TopToolStripPanel.SuspendLayout();
             this.issueTreeContainer.SuspendLayout();
+            this.toolStrip2.SuspendLayout();
             this.globalToolBar.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.SuspendLayout();
@@ -236,10 +241,55 @@
             // toolStrip2
             // 
             this.toolStrip2.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonOpen,
+            this.buttonViewInBrowser,
+            this.buttonEditInBrowser,
+            this.buttonRefresh});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(109, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(102, 25);
             this.toolStrip2.TabIndex = 0;
+            // 
+            // buttonOpen
+            // 
+            this.buttonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonOpen.Image = global::PaZu.Properties.Resources.open_in_ide;
+            this.buttonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonOpen.Name = "buttonOpen";
+            this.buttonOpen.Size = new System.Drawing.Size(23, 22);
+            this.buttonOpen.Text = "Open Issue";
+            this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
+            // 
+            // buttonViewInBrowser
+            // 
+            this.buttonViewInBrowser.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonViewInBrowser.Image = global::PaZu.Properties.Resources.view_in_browser;
+            this.buttonViewInBrowser.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonViewInBrowser.Name = "buttonViewInBrowser";
+            this.buttonViewInBrowser.Size = new System.Drawing.Size(23, 22);
+            this.buttonViewInBrowser.Text = "View in Browser";
+            this.buttonViewInBrowser.Click += new System.EventHandler(this.buttonViewInBrowser_Click);
+            // 
+            // buttonEditInBrowser
+            // 
+            this.buttonEditInBrowser.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonEditInBrowser.Image = global::PaZu.Properties.Resources.edit_in_browser;
+            this.buttonEditInBrowser.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonEditInBrowser.Name = "buttonEditInBrowser";
+            this.buttonEditInBrowser.Size = new System.Drawing.Size(23, 22);
+            this.buttonEditInBrowser.Text = "Edit in Browser";
+            this.buttonEditInBrowser.Click += new System.EventHandler(this.buttonEditInBrowser_Click);
+            // 
+            // buttonRefresh
+            // 
+            this.buttonRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonRefresh.Image = global::PaZu.Properties.Resources.refresh;
+            this.buttonRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(23, 22);
+            this.buttonRefresh.Text = "Refresh Issues";
+            this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
             // 
             // globalToolBar
             // 
@@ -323,6 +373,8 @@
             this.issueTreeContainer.TopToolStripPanel.PerformLayout();
             this.issueTreeContainer.ResumeLayout(false);
             this.issueTreeContainer.PerformLayout();
+            this.toolStrip2.ResumeLayout(false);
+            this.toolStrip2.PerformLayout();
             this.globalToolBar.ResumeLayout(false);
             this.globalToolBar.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
@@ -351,5 +403,9 @@
         private System.Windows.Forms.ToolStrip toolStrip2;
         private System.Windows.Forms.TreeView filtersTree;
         private System.Windows.Forms.ToolStripStatusLabel getMoreIssues;
+        private System.Windows.Forms.ToolStripButton buttonOpen;
+        private System.Windows.Forms.ToolStripButton buttonViewInBrowser;
+        private System.Windows.Forms.ToolStripButton buttonEditInBrowser;
+        private System.Windows.Forms.ToolStripButton buttonRefresh;
     }
 }

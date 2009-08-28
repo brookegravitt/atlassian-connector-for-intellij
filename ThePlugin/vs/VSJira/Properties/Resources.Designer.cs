@@ -106,11 +106,25 @@ namespace PaZu.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;style type=&quot;text/css&quot;&gt;
         ///.comment_header{
-        ///	background: lightblue;
+        ///	background: lightgrey;
         ///	width: 100%;
         ///	height: 1em;
         ///	padding: 0.2em 0.5em;
         ///	border-bottom: 1px dotted;
+        ///	font-family: Arial;
+        ///	font-size: 10pt;
+        ///}
+        ///
+        ///.author {
+        ///	position: relative;
+        ///	float: left;
+        ///	left: 1em;
+        ///	font-weight: bold;
+        ///}
+        ///
+        ///.date {
+        ///	font-style: italic;
+        ///	font-weight: normal;
         ///}
         ///
         ///.toggler {
@@ -121,17 +135,21 @@ namespace PaZu.Properties {
         ///}
         ///
         ///.comment_body {
-        ///	background: lightgrey;
+        ///	background: white;
         ///	width: 100%;
-        ///	padding: 0.5em;
-        ///}
-        ///&lt;/style&gt;
-        ///
-        ///.
+        ///	font-family: Arial;
+        ///	font-s [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string comments_css {
             get {
                 return ResourceManager.GetString("comments_css", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap edit_in_browser {
+            get {
+                object obj = ResourceManager.GetObject("edit_in_browser", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -159,6 +177,13 @@ namespace PaZu.Properties {
         internal static System.Drawing.Bitmap new_comment {
             get {
                 object obj = ResourceManager.GetObject("new_comment", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap open_in_ide {
+            get {
+                object obj = ResourceManager.GetObject("open_in_ide", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-
 using Aga.Controls.Tree;
 
 using PaZu.api;
@@ -10,8 +9,8 @@ namespace PaZu.ui.issues
 {
     class FlatIssueTreeModel : ITreeModel
     {
-        private List<IssueNode> nodes = new List<IssueNode>();
-        public FlatIssueTreeModel(ICollection<JiraIssue> issues)
+        private readonly List<IssueNode> nodes = new List<IssueNode>();
+        public FlatIssueTreeModel(IEnumerable<JiraIssue> issues)
         {
             foreach (JiraIssue issue in issues)
             {
@@ -21,18 +20,26 @@ namespace PaZu.ui.issues
 
         #region ITreeModel Members
 
-        System.Collections.IEnumerable ITreeModel.GetChildren(TreePath treePath)
+        IEnumerable ITreeModel.GetChildren(TreePath treePath)
         {
-            if (treePath.IsEmpty())
-            {
-                return nodes;
-            }
-            return null;
+            return treePath.IsEmpty() ? nodes : null;
         }
 
         bool ITreeModel.IsLeaf(TreePath treePath)
         {
             return true;
+        }
+
+        public void updateIssue(JiraIssue issue)
+        {
+            foreach (IssueNode node in nodes)
+            {
+                if (node.Issue.Id != issue.Id) continue;
+
+                node.Issue = issue;
+                NodesChanged(this, new TreeModelEventArgs(TreePath.Empty, new object[] { node }));
+                return;
+            }    
         }
 
         public event EventHandler<TreeModelEventArgs> NodesChanged;
