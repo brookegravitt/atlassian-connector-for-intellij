@@ -1,17 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
-
+using EnvDTE;
 using PaZu.api;
 using PaZu.dialogs;
+using Process=System.Diagnostics.Process;
+using Thread=System.Threading.Thread;
 
 namespace PaZu
 {
     public partial class IssueDetailsPanel : UserControl
     {
+        private readonly Solution solution;
+
         private readonly JiraServerFacade facade = JiraServerFacade.Instance;
 
         private JiraIssue issue;
@@ -22,8 +29,9 @@ namespace PaZu
         private bool issueSummaryLoaded;
         private const int A_LOT = 100000;
 
-        public IssueDetailsPanel(JiraIssue issue, TabControl tabWindow, TabPage myTab)
+        public IssueDetailsPanel(Solution solution, JiraIssue issue, TabControl tabWindow, TabPage myTab)
         {
+            this.solution = solution;
             InitializeComponent();
 
             this.issue = issue;
@@ -107,12 +115,38 @@ namespace PaZu
 
                 sb.Append("<div class=\"comment_body\" style=\"display:")
                     .Append(expanded ? "block" : "none").Append(";\" id=\"").Append(i).Append("\">")
-                    .Append(issue.Comments[i].Body).Append("</div>\n");
+                    .Append(createHyperlinedStackTrace(issue.Comments[i].Body)).Append("</div>\n");
             }
 
             sb.Append("</body></html>");
 
             return sb.ToString();
+        }
+
+        private static readonly Regex STACK_REGEX = new Regex(@"(\s*\w+\S+\(.*\)\s+\w+\s+)(\S+)(:\w+\s+)(\d+)");
+
+        private const string STACKLINE_URL_TYPE = "stackline:";
+        private const string STACKLINE_LINE_NUMBER_SEPARATOR = "@";
+
+        private static string createHyperlinedStackTrace(string body)
+        {
+            StringReader sr = new StringReader(body);
+
+            StringBuilder result = new StringBuilder();
+
+            string line = sr.ReadLine();
+            while (line != null)
+            {
+                if (STACK_REGEX.IsMatch(line))
+                {
+                    line = STACK_REGEX.Replace(line,
+                        "$1<a href=\"" + STACKLINE_URL_TYPE + "$2" + STACKLINE_LINE_NUMBER_SEPARATOR + "$4\">$2$3$4</a>");
+                }
+                result.Append(line).Append('\n');
+                line = sr.ReadLine();
+            }
+
+            return result.ToString();
         }
 
         private string createDescriptionHtml()
@@ -121,7 +155,7 @@ namespace PaZu
 
             sb.Append("<html>\n<head>\n").Append(Properties.Resources.summary_and_description_css)
                 .Append("\n</head>\n<body class=\"description\">\n")
-                .Append(issue.Description)
+                .Append(createHyperlinedStackTrace(issue.Description))
                 .Append("\n</body>\n</html>\n");
 
             return sb.ToString();            
@@ -254,12 +288,95 @@ namespace PaZu
         {
             if (!issueCommentsLoaded) return;
             if (e.Url.ToString().StartsWith("javascript:toggle(")) return;
+            if (handleStackUrl(e)) return;
             navigate(e);
+        }
+
+        private bool handleStackUrl(WebBrowserNavigatingEventArgs e)
+        {
+            string line = e.Url.ToString();
+
+            if (line.StartsWith(STACKLINE_URL_TYPE) && line.LastIndexOf(STACKLINE_LINE_NUMBER_SEPARATOR) != -1)
+            {
+                List<ProjectItem> files = new List<ProjectItem>();
+
+                string file = line.Substring(STACKLINE_URL_TYPE.Length,
+                                             line.LastIndexOf(STACKLINE_LINE_NUMBER_SEPARATOR) -
+                                             STACKLINE_URL_TYPE.Length);
+
+                foreach (Project project in solution.Projects)
+                {
+                    matchProjectItemChildren(file, files, project.ProjectItems);
+                }
+                if (files.Count == 0)
+                {
+                    MessageBox.Show("No matching files found for " + file, "Error");
+                    Debug.WriteLine("No matching files found for " + file);
+                }
+                else if (files.Count > 1)
+                {
+                    MessageBox.Show("Multiple matching files found for " + file, "Error");
+                    Debug.WriteLine("Multiple matching files found for " + file);
+                }
+                else
+                {
+                    string lineNoStr = line.Substring(line.LastIndexOf(STACKLINE_LINE_NUMBER_SEPARATOR) + 1);
+                    try
+                    {
+                        int lineNo = int.Parse(lineNoStr);
+                        if (lineNo < 0)
+                        {
+                            throw new ArgumentException();
+                        }
+                        Debug.WriteLine("opening file " + file + " at line number " + lineNo);
+
+                        Window w = files[0].Open(Constants.vsViewKindCode);
+                        w.Visible = true;
+                        w.Document.Activate();
+                        TextSelection sel = w.DTE.ActiveDocument.Selection as TextSelection;
+                        if (sel != null)
+                        {
+                            sel.SelectAll();
+                            sel.MoveToLineAndOffset(lineNo, 1, false);
+                            sel.SelectLine();
+                        } 
+                        else
+                        {
+                            throw new Exception("Cannot get text selection for the document");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Unable to open the specified file: " + ex.Message, "Error");
+                        Debug.WriteLine(ex);
+                    }
+                }
+
+                e.Cancel = true;
+
+                return true;
+            }
+            return false;
+        }
+
+        private static void matchProjectItemChildren(string file, ICollection<ProjectItem> files, ProjectItems items)
+        {
+            foreach (ProjectItem item in items)
+            {
+//                Debug.WriteLine(item.Name);
+                if (file.EndsWith(item.Name)) 
+                {
+//                    Debug.WriteLine("@@@matched against " + file);
+                    files.Add(item);
+                }
+                matchProjectItemChildren(file, files, item.ProjectItems);
+            }
         }
 
         private void issueDescription_Navigating(object sender, WebBrowserNavigatingEventArgs e)
         {
             if (!issueDescriptionLoaded) return;
+            if (handleStackUrl(e)) return;
             navigate(e);
         }
 
