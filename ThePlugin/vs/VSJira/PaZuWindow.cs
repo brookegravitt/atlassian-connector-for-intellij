@@ -58,7 +58,9 @@ namespace PaZu
             issuesTree.GridLineStyle = GridLineStyle.None;
             issuesTree.UseColumns = true;
             issuesTree.NodeMouseDoubleClick += issuesTree_NodeMouseDoubleClick;
+            issuesTree.NodeMouseClick += issuesTree_NodeMouseClick;
             issuesTree.KeyPress += issuesTree_KeyPress;
+            issuesTree.ContextMenuStrip = new IssueContextMenu(issuesTree);
             colKeyAndSummary.Header = "Summary";
             colStatus.Header = "Status";
             colPriority.Header = "P";
@@ -127,6 +129,18 @@ namespace PaZu
             colUpdated.TextAlign = HorizontalAlignment.Right;
 
             jiraSplitter.Panel2.SizeChanged += issuesTree_SizeChanged;
+        }
+
+        void issuesTree_NodeMouseClick(object sender, TreeNodeAdvMouseEventArgs e)
+        {
+//            if (e.Button != MouseButtons.Right) return;
+//            TreeNodeAdv selectedNode = issuesTree.SelectedNode;
+//            if (selectedNode == null || !(selectedNode.Tag is IssueNode)) return;
+//            new IssueContextMenu(selectedNode.Tag as IssueNode)
+//                                    {
+//                                        Location = PointToScreen(new Point(Location.X + e.Location.X, Location.Y + e.Location.Y)),
+//                                        Visible = true
+//                                    };
         }
 
         private void issuesTree_KeyPress(object sender, KeyPressEventArgs e)

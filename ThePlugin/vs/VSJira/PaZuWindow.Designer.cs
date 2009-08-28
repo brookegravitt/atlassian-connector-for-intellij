@@ -165,7 +165,7 @@
             // 
             this.jiraSplitter.Panel2.Controls.Add(this.issueTreeContainer);
             this.jiraSplitter.Size = new System.Drawing.Size(671, 215);
-            this.jiraSplitter.SplitterDistance = 181;
+            this.jiraSplitter.SplitterDistance = 180;
             this.jiraSplitter.TabIndex = 0;
             // 
             // filterTreeContainer
@@ -174,11 +174,11 @@
             // filterTreeContainer.ContentPanel
             // 
             this.filterTreeContainer.ContentPanel.Controls.Add(this.filtersTree);
-            this.filterTreeContainer.ContentPanel.Size = new System.Drawing.Size(181, 190);
+            this.filterTreeContainer.ContentPanel.Size = new System.Drawing.Size(180, 190);
             this.filterTreeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filterTreeContainer.Location = new System.Drawing.Point(0, 0);
             this.filterTreeContainer.Name = "filterTreeContainer";
-            this.filterTreeContainer.Size = new System.Drawing.Size(181, 215);
+            this.filterTreeContainer.Size = new System.Drawing.Size(180, 215);
             this.filterTreeContainer.TabIndex = 0;
             this.filterTreeContainer.Text = "toolStripContainer2";
             // 
@@ -192,7 +192,7 @@
             this.filtersTree.HideSelection = false;
             this.filtersTree.Location = new System.Drawing.Point(0, 0);
             this.filtersTree.Name = "filtersTree";
-            this.filtersTree.Size = new System.Drawing.Size(181, 190);
+            this.filtersTree.Size = new System.Drawing.Size(180, 190);
             this.filtersTree.TabIndex = 0;
             this.filtersTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.filtersTree_AfterSelect);
             // 
@@ -221,11 +221,11 @@
             // 
             // issueTreeContainer.ContentPanel
             // 
-            this.issueTreeContainer.ContentPanel.Size = new System.Drawing.Size(486, 190);
+            this.issueTreeContainer.ContentPanel.Size = new System.Drawing.Size(487, 190);
             this.issueTreeContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.issueTreeContainer.Location = new System.Drawing.Point(0, 0);
             this.issueTreeContainer.Name = "issueTreeContainer";
-            this.issueTreeContainer.Size = new System.Drawing.Size(486, 215);
+            this.issueTreeContainer.Size = new System.Drawing.Size(487, 215);
             this.issueTreeContainer.TabIndex = 0;
             this.issueTreeContainer.Text = "toolStripContainer2";
             // 

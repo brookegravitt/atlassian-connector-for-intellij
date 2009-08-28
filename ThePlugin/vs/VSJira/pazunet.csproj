@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -132,6 +132,9 @@
     <Compile Include="api\RssClient.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ui\issues\FlatIssueTreeModel.cs" />
+    <Compile Include="ui\issues\IssueContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ui\issues\IssueNode.cs" />
     <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
     <Compile Include="ui\JiraServerTreeNode.cs" />
