@@ -6,7 +6,7 @@ namespace PaZu.ui.issues
 {
     public class IssueNode
     {
-        public JiraIssue Issue { get; private set; }
+        public JiraIssue Issue { get; set; }
 
         public IssueNode(JiraIssue issue)
         {

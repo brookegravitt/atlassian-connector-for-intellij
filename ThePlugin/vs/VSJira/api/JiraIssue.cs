@@ -29,6 +29,7 @@ namespace PaZu.api
                 {
                     case "key":
                         Key = nav.Value;
+                        Id = getAttributeSafely(nav, "id", UNKNOWN);
                         ProjectKey = Key.Substring(0, Key.LastIndexOf('-'));
                         break;
                     case "summary":
@@ -120,6 +121,8 @@ namespace PaZu.api
         public string IssueTypeIconUrl { get; private set; }
 
         public string Description { get; private set; }
+
+        public int Id { get; private set; }
 
         public string Key { get; private set; }
 

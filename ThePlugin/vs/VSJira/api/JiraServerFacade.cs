@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PaZu.api.soap;
 
 namespace PaZu.api
@@ -72,6 +73,21 @@ namespace PaZu.api
         public void addComment(JiraIssue issue, string comment)
         {
             getSoapSession(issue.Server).addComment(issue, comment);
+        }
+
+        public List<JiraNamedEntity> getActionsForIssue(JiraIssue issue)
+        {
+            return getSoapSession(issue.Server).getActionsForIssue(issue);
+        }
+
+        public List<JiraField> getFieldsForAction(JiraIssue issue, int actionId)
+        {
+            return getSoapSession(issue.Server).getFieldsForAction(issue, actionId);
+        }
+
+        public void runIssueActionWithoutParams(JiraIssue issue, JiraNamedEntity action)
+        {
+            getSoapSession(issue.Server).runIssueActionWithoutParams(issue, action.Id);
         }
     }
 }
