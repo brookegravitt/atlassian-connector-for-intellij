@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using EnvDTE;
 using PaZu.api;
+using PaZu.models;
 
 namespace PaZu
 {
@@ -9,6 +10,8 @@ namespace PaZu
     {
         public static IssueDetailsWindow Instance { get; private set; }
         public Window WindowInstance { get; set; }
+
+        private readonly JiraIssueListModel model = JiraIssueListModel.Instance;
 
         public Solution Solution { get; set; }
 
@@ -32,7 +35,7 @@ namespace PaZu
             if (!issueTabs.TabPages.ContainsKey(key))
             {
                 TabPage issueTab = new TabPage {Name = key, Text = issue.Key};
-                IssueDetailsPanel issuePanel = new IssueDetailsPanel(Solution, issue, issueTabs, issueTab);
+                IssueDetailsPanel issuePanel = new IssueDetailsPanel(model, Solution, issue, issueTabs, issueTab);
                 issueTab.Controls.Add(issuePanel);
                 issuePanel.Dock = DockStyle.Fill;
                 issueTabs.TabPages.Add(issueTab);

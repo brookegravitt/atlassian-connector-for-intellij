@@ -32,7 +32,7 @@
             this.productTabs = new System.Windows.Forms.TabControl();
             this.tabJira = new System.Windows.Forms.TabPage();
             this.jiraContainer = new System.Windows.Forms.ToolStripContainer();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.jiraStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.getMoreIssues = new System.Windows.Forms.ToolStripStatusLabel();
             this.jiraSplitter = new System.Windows.Forms.SplitContainer();
@@ -58,7 +58,7 @@
             this.jiraContainer.BottomToolStripPanel.SuspendLayout();
             this.jiraContainer.ContentPanel.SuspendLayout();
             this.jiraContainer.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.jiraSplitter.Panel1.SuspendLayout();
             this.jiraSplitter.Panel2.SuspendLayout();
             this.jiraSplitter.SuspendLayout();
@@ -117,7 +117,7 @@
             // 
             // jiraContainer.BottomToolStripPanel
             // 
-            this.jiraContainer.BottomToolStripPanel.Controls.Add(this.statusStrip1);
+            this.jiraContainer.BottomToolStripPanel.Controls.Add(this.statusStrip);
             // 
             // jiraContainer.ContentPanel
             // 
@@ -130,16 +130,16 @@
             this.jiraContainer.TabIndex = 0;
             this.jiraContainer.Text = "toolStripContainer1";
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.jiraStatus,
             this.getMoreIssues});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(671, 22);
-            this.statusStrip1.TabIndex = 0;
+            this.statusStrip.Location = new System.Drawing.Point(0, 0);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(671, 22);
+            this.statusStrip.TabIndex = 0;
             // 
             // jiraStatus
             // 
@@ -357,8 +357,8 @@
             this.jiraContainer.ContentPanel.ResumeLayout(false);
             this.jiraContainer.ResumeLayout(false);
             this.jiraContainer.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.jiraSplitter.Panel1.ResumeLayout(false);
             this.jiraSplitter.Panel2.ResumeLayout(false);
             this.jiraSplitter.ResumeLayout(false);
@@ -392,7 +392,7 @@
         private System.Windows.Forms.ToolStrip globalToolBar;
         private System.Windows.Forms.ToolStripButton buttonProjectProperties;
         private System.Windows.Forms.SplitContainer jiraSplitter;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel jiraStatus;
         private System.Windows.Forms.ToolStripButton buttonAbout;
         private System.Windows.Forms.ToolStripContainer filterTreeContainer;

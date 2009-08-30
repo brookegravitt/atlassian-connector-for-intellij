@@ -12,12 +12,16 @@ namespace PaZu.ui.issues
 {
     public sealed class IssueContextMenu : ContextMenuStrip
     {
+        private readonly JiraIssueListModel model;
+        private readonly StatusLabel status;
         private readonly TreeViewAdv tree;
         private readonly ToolStripMenuItem[] items;
         private JiraIssue issue;
 
-        public IssueContextMenu(TreeViewAdv tree, ToolStripMenuItem[] items)
+        public IssueContextMenu(JiraIssueListModel model, StatusLabel status, TreeViewAdv tree, ToolStripMenuItem[] items)
         {
+            this.model = model;
+            this.status = status;
             this.tree = tree;
             this.items = items;
 
@@ -29,7 +33,7 @@ namespace PaZu.ui.issues
 
         void issueContextMenuOpening(object sender, CancelEventArgs e)
         {
-            TreeNodeAdv selected = tree.SelectedNode;
+            var selected = tree.SelectedNode;
             if (selected == null || !(selected.Tag is IssueNode))
             {
                 e.Cancel = true;
@@ -55,18 +59,18 @@ namespace PaZu.ui.issues
             {
                 actions = JiraServerFacade.Instance.getActionsForIssue(issue);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // todo - report in the status bar
+                status.setError("Failed to retrieve issue actions", e);
             }
             if (actions == null || actions.Count == 0) return;
 
             Invoke(new MethodInvoker(delegate
                      {
                          Items.Add(new ToolStripSeparator());
-                         foreach (JiraNamedEntity action in actions)
+                         foreach (var action in actions)
                          {
-                             JiraNamedEntity actionCopy = action;
+                             var actionCopy = action;
                              ToolStripMenuItem item = new ToolStripMenuItem(
                                  action.Name, null, new EventHandler(delegate { runAction(actionCopy); }));
                              Items.Add(item);
@@ -80,13 +84,16 @@ namespace PaZu.ui.issues
                {
                    try
                    {
-                       List<JiraField> fields = JiraServerFacade.Instance.getFieldsForAction(issue, action.Id);
+                       status.setInfo("Retrieveing fields for action \"" + action.Name + "\"...");
+                       var fields = JiraServerFacade.Instance.getFieldsForAction(issue, action.Id);
                        if (fields == null || fields.Count == 0)
                        {
                            runActionLocally(action);
                        }
                        else
                        {
+                           status.setInfo("Action \"" + action.Name 
+                               + "\" requires input fields, opening action screen in the browser...");
                            Process.Start(issue.Server.Url
                                + "/secure/WorkflowUIDispatcher.jspa?id=" + issue.Id
                                + "&action=" + action.Id);
@@ -94,7 +101,7 @@ namespace PaZu.ui.issues
                    }
                    catch (Exception e)
                    {
-                       // todo - report in the status bar 
+                       status.setError("Failed to run action " + action.Name + " on issue " + issue.Key, e);
                    }
                }));
             runner.Start();
@@ -102,12 +109,11 @@ namespace PaZu.ui.issues
 
         private void runActionLocally(JiraNamedEntity action)
         {
+            status.setInfo("Running action \"" + action.Name + "\" on issue " + issue.Key + "...");
             JiraServerFacade.Instance.runIssueActionWithoutParams(issue, action);
-            JiraIssue newIssue = JiraServerFacade.Instance.getIssue(issue.Server, issue.Key);
-
-            // todo - this is bad bad bad, we shoudl go through the issue model and notify everybody.
-            // Otherwise issue details window will not be updated automagically.
-            Invoke(new MethodInvoker(() => ((FlatIssueTreeModel) tree.Model).updateIssue(newIssue)));
+            status.setInfo("Action \"" + action.Name + "\" successfully run on issue " + issue.Key);
+            var newIssue = JiraServerFacade.Instance.getIssue(issue.Server, issue.Key);
+            Invoke(new MethodInvoker(() => model.updateIssue(newIssue)));
         }
     }
 }

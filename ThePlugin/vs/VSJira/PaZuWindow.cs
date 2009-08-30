@@ -26,9 +26,14 @@ namespace PaZu
 
         private readonly JiraIssueListModel model = JiraIssueListModel.Instance;
 
+        private readonly StatusLabel status;
+
         public PaZuWindow()
         {
             InitializeComponent();
+
+            status = new StatusLabel(statusStrip, jiraStatus);
+
             model.addListener(this);
 
             builder = new JiraIssueListModelBuilder(facade);
@@ -53,6 +58,10 @@ namespace PaZu
         private void initIssuesTree()
         {
             issuesTree = new TreeViewAdv();
+
+            ITreeModel treeModel = new FlatIssueTreeModel(model);
+            issuesTree.Model = treeModel;
+
             issueTreeContainer.ContentPanel.Controls.Add(issuesTree);
             issuesTree.Dock = DockStyle.Fill;
             issuesTree.SelectionMode = TreeSelectionMode.Single;
@@ -69,7 +78,7 @@ namespace PaZu
                     new ToolStripMenuItem("View in Browser", Properties.Resources.view_in_browser, new EventHandler(browseIssue)), 
                     new ToolStripMenuItem("Edit in Browser", Properties.Resources.edit_in_browser, new EventHandler(browseEditIssue)), 
                 };
-            IssueContextMenu strip = new IssueContextMenu(issuesTree, items);
+            IssueContextMenu strip = new IssueContextMenu(model, status, issuesTree, items);
             issuesTree.ContextMenuStrip = strip;
             colKeyAndSummary.Header = "Summary";
             colStatus.Header = "Status";
@@ -145,7 +154,7 @@ namespace PaZu
 
         void issuesTree_SelectionChanged(object sender, EventArgs e)
         {
-            updateIssueListButtons();
+            Invoke(new MethodInvoker(updateIssueListButtons));
         }
 
         private void updateIssueListButtons()
@@ -239,7 +248,7 @@ namespace PaZu
             List<JiraServer> servers = new List<JiraServer>(JiraServerModel.Instance.getAllServers());
             if (servers.Count == 0)
             {
-                setInfoStatus("No JIRA servers defined");
+                status.setInfo("No JIRA servers defined");
                 return;
             }
 
@@ -254,14 +263,14 @@ namespace PaZu
                     {
                         foreach (JiraServer server in servers)
                         {
-                            setInfoStatus("[" + server.Name + "] Loading project definitions...");
+                            status.setInfo("[" + server.Name + "] Loading project definitions...");
                             List<JiraProject> projects = facade.getProjects(server);
                             JiraServerCache.Instance.clearProjects();
                             foreach (JiraProject proj in projects)
                             {
                                 JiraServerCache.Instance.addProject(server, proj);
                             }
-                            setInfoStatus("[" + server.Name + "] Loading issue types...");
+                            status.setInfo("[" + server.Name + "] Loading issue types...");
                             List<JiraNamedEntity> issueTypes = facade.getIssueTypes(server);
                             JiraServerCache.Instance.clearIssueTypes();
                             foreach (JiraNamedEntity type in issueTypes)
@@ -269,7 +278,7 @@ namespace PaZu
                                 JiraServerCache.Instance.addIssueType(server, type);
                                 ImageCache.Instance.getImage(type.IconUrl);
                             }
-                            setInfoStatus("[" + server.Name + "] Loading issue priorities...");
+                            status.setInfo("[" + server.Name + "] Loading issue priorities...");
                             List<JiraNamedEntity> priorities = facade.getPriorities(server);
                             JiraServerCache.Instance.clearPriorities();
                             foreach (JiraNamedEntity prio in priorities)
@@ -277,22 +286,22 @@ namespace PaZu
                                 JiraServerCache.Instance.addPriority(server, prio);
                                 ImageCache.Instance.getImage(prio.IconUrl);
                             }
-                            setInfoStatus("[" + server.Name + "] Loading issue statuses...");
+                            status.setInfo("[" + server.Name + "] Loading issue statuses...");
                             List<JiraNamedEntity> statuses = facade.getStatuses(server);
                             JiraServerCache.Instance.clearStatuses();
-                            foreach (JiraNamedEntity status in statuses)
+                            foreach (JiraNamedEntity s in statuses)
                             {
-                                JiraServerCache.Instance.addStatus(server, status);
-                                ImageCache.Instance.getImage(status.IconUrl);
+                                JiraServerCache.Instance.addStatus(server, s);
+                                ImageCache.Instance.getImage(s.IconUrl);
                             }
 
-                            setInfoStatus("[" + server.Name + "] Loading saved filters...");
+                            status.setInfo("[" + server.Name + "] Loading saved filters...");
                             List<JiraSavedFilter> filters = facade.getSavedFilters(server);
                             JiraServer jiraServer = server;
                             Invoke(new MethodInvoker(delegate
                                                          {
                                                              fillSavedFiltersForServer(jiraServer, filters);
-                                                             setInfoStatus("Loaded saved filters for server " +
+                                                             status.setInfo("Loaded saved filters for server " +
                                                                            jiraServer.Name);
                                                          }));
                         }
@@ -300,7 +309,7 @@ namespace PaZu
                     }
                     catch (Exception e)
                     {
-                        setErrorStatus("Failed to load server metadata", e);
+                        status.setError("Failed to load server metadata", e);
                     }
                 }));
             metadataThread.Start();
@@ -314,10 +323,15 @@ namespace PaZu
 
                     if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode)) return;
 
-                    setInfoStatus("Loaded " + issues.Count + " issues");
+                    status.setInfo("Loaded " + issues.Count + " issues");
 
-                    ITreeModel treeModel = new FlatIssueTreeModel(issues);
-                    issuesTree.Model = treeModel;
+//                    FlatIssueTreeModel oldModel = issuesTree.Model as FlatIssueTreeModel;
+//                    if (oldModel != null)
+//                    {
+//                        oldModel.shutdown();
+//                    }
+//                    ITreeModel treeModel = new FlatIssueTreeModel(model);
+//                    issuesTree.Model = treeModel;
 
                     getMoreIssues.Visible = true;
 
@@ -325,23 +339,8 @@ namespace PaZu
                 }));
         }
 
-        private void setErrorStatus(string txt, Exception e)
+        public void issueChanged(JiraIssue issue)
         {
-            Invoke(new MethodInvoker(delegate
-            {
-                jiraStatus.BackColor = Color.LightPink;
-                Exception inner = e.InnerException;
-                jiraStatus.Text = txt + ": " + (inner != null ? inner.Message : e.Message);
-            }));
-        }
-
-        private void setInfoStatus(string txt)
-        {
-            Invoke(new MethodInvoker(delegate
-            {
-                jiraStatus.BackColor = Color.Transparent;
-                jiraStatus.Text = txt;
-            }));
         }
 
         private void fillSavedFiltersForServer(JiraServer server, IEnumerable<JiraSavedFilter> filters)
@@ -414,7 +413,7 @@ namespace PaZu
         private void reloadIssues()
         {
             JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
-            setInfoStatus("Loading issues...");
+            status.setInfo("Loading issues...");
             getMoreIssues.Visible = false;
             Thread issueLoadThread = 
                 new Thread(new ThreadStart(delegate
@@ -425,7 +424,7 @@ namespace PaZu
                                                    }
                                                    catch (Exception ex)
                                                    {
-                                                       setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
+                                                       status.setError(RETRIEVING_ISSUES_FAILED, ex);
                                                    }
                                                }));
             issueLoadThread.Start();
@@ -434,7 +433,7 @@ namespace PaZu
         private void getMoreIssues_Click(object sender, EventArgs e)
         {
             JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
-            setInfoStatus("Loading issues...");
+            status.setInfo("Loading issues...");
             getMoreIssues.Visible = false;
             Thread issueLoadThread =
                 new Thread(new ThreadStart(delegate
@@ -445,7 +444,7 @@ namespace PaZu
                            }
                            catch (Exception ex)
                            {
-                               setErrorStatus(RETRIEVING_ISSUES_FAILED, ex);
+                               status.setError(RETRIEVING_ISSUES_FAILED, ex);
                            }
                        }));
             issueLoadThread.Start();

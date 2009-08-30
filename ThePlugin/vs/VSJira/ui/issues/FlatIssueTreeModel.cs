@@ -4,17 +4,38 @@ using System.Collections.Generic;
 using Aga.Controls.Tree;
 
 using PaZu.api;
+using PaZu.models;
 
 namespace PaZu.ui.issues
 {
-    class FlatIssueTreeModel : ITreeModel
+    class FlatIssueTreeModel : ITreeModel, JiraIssueListModelListener
     {
+        private readonly JiraIssueListModel model;
         private readonly List<IssueNode> nodes = new List<IssueNode>();
-        public FlatIssueTreeModel(IEnumerable<JiraIssue> issues)
+        public FlatIssueTreeModel(JiraIssueListModel model)
         {
-            foreach (JiraIssue issue in issues)
+            this.model = model;
+            fillModel(model.Issues);
+            model.addListener(this);
+        }
+
+        public void shutdown()
+        {
+            model.removeListener(this);
+        }
+
+        private void fillModel(IEnumerable<JiraIssue> issues)
+        {
+            nodes.Clear();
+
+            foreach (var issue in issues)
             {
                 nodes.Add(new IssueNode(issue));
+            }
+
+            if (StructureChanged != null)
+            {
+                StructureChanged(this, new TreePathEventArgs(TreePath.Empty));
             }
         }
 
@@ -30,16 +51,29 @@ namespace PaZu.ui.issues
             return true;
         }
 
-        public void updateIssue(JiraIssue issue)
+        public void modelChanged()
         {
-            foreach (IssueNode node in nodes)
+            fillModel(model.Issues);
+        }
+
+        public void issueChanged(JiraIssue issue)
+        {
+            foreach (var node in nodes)
             {
                 if (node.Issue.Id != issue.Id) continue;
 
                 node.Issue = issue;
-                NodesChanged(this, new TreeModelEventArgs(TreePath.Empty, new object[] { node }));
+                if (NodesChanged != null)
+                {
+                    NodesChanged(this, new TreeModelEventArgs(TreePath.Empty, new object[] { node }));
+                }
+                
                 return;
-            }    
+            }
+        }
+
+        public void updateIssue(JiraIssue issue)
+        {
         }
 
         public event EventHandler<TreeModelEventArgs> NodesChanged;

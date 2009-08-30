@@ -106,7 +106,7 @@ namespace PaZu.api.soap
             List<JiraField> list = new List<JiraField>();
             foreach (RemoteField field in fields)
             {
-                list.Add(new JiraField(int.Parse(field.id).ToString(), field.name));
+                list.Add(new JiraField(field.id, field.name));
             }
             return list;
         }
