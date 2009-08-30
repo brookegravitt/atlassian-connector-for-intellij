@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using PaZu.models;
 
 namespace PaZu
 {
@@ -31,7 +32,7 @@ namespace PaZu
         private void InitializeComponent()
         {
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.jiraStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.issueTabs = new System.Windows.Forms.TabControl();
             this.tabSummary = new System.Windows.Forms.TabPage();
@@ -55,7 +56,7 @@ namespace PaZu
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.issueTabs.SuspendLayout();
             this.tabSummary.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -74,7 +75,7 @@ namespace PaZu
             // 
             // toolStripContainer1.BottomToolStripPanel
             // 
-            this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.statusStrip1);
+            this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.statusStrip);
             // 
             // toolStripContainer1.ContentPanel
             // 
@@ -91,15 +92,15 @@ namespace PaZu
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.jiraStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(785, 22);
-            this.statusStrip1.TabIndex = 0;
+            this.statusStrip.Location = new System.Drawing.Point(0, 0);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(785, 22);
+            this.statusStrip.TabIndex = 0;
             // 
             // jiraStatus
             // 
@@ -281,7 +282,7 @@ namespace PaZu
             this.buttonClose});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(110, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(79, 25);
             this.toolStrip1.TabIndex = 0;
             // 
             // buttonViewInBrowser
@@ -321,7 +322,7 @@ namespace PaZu
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "IssueDetailsPanel";
             this.Size = new System.Drawing.Size(785, 475);
-            this.Load += new System.EventHandler(this.IssueDetailsPanel_Load);
+            this.VisibleChanged += new System.EventHandler(this.IssueDetailsPanel_VisibleChanged);
             this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
@@ -329,8 +330,8 @@ namespace PaZu
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.issueTabs.ResumeLayout(false);
             this.tabSummary.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -355,7 +356,7 @@ namespace PaZu
         #endregion
 
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.TabControl issueTabs;
         private System.Windows.Forms.TabPage tabSummary;
         private System.Windows.Forms.TabPage tabPage2;

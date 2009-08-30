@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,16 +9,21 @@ using System.Diagnostics;
 using EnvDTE;
 using PaZu.api;
 using PaZu.dialogs;
+using PaZu.models;
+using PaZu.ui;
 using Process=System.Diagnostics.Process;
 using Thread=System.Threading.Thread;
 
 namespace PaZu
 {
-    public partial class IssueDetailsPanel : UserControl
+    public partial class IssueDetailsPanel : UserControl, JiraIssueListModelListener
     {
+        private readonly JiraIssueListModel model;
         private readonly Solution solution;
 
         private readonly JiraServerFacade facade = JiraServerFacade.Instance;
+
+        private readonly StatusLabel status;
 
         private JiraIssue issue;
         private readonly TabControl tabWindow;
@@ -29,21 +33,45 @@ namespace PaZu
         private bool issueSummaryLoaded;
         private const int A_LOT = 100000;
 
-        public IssueDetailsPanel(Solution solution, JiraIssue issue, TabControl tabWindow, TabPage myTab)
+        public IssueDetailsPanel(JiraIssueListModel model, Solution solution, JiraIssue issue, TabControl tabWindow, TabPage myTab)
         {
+            this.model = model;
             this.solution = solution;
             InitializeComponent();
+
+            status = new StatusLabel(statusStrip, jiraStatus);
 
             this.issue = issue;
             this.tabWindow = tabWindow;
             this.myTab = myTab;
         }
 
-        private void IssueDetailsPanel_Load(object sender, EventArgs e)
+        public void modelChanged()
         {
-            rebuildAllPanels(false);
-            setInfoStatus("No issue details yet");
+        }
+
+        public void issueChanged(JiraIssue i)
+        {
+            if (!i.Id.Equals(issue.Id)) return;
+            issue = i;
+            buttonRefresh.Enabled = false;
             runRefreshThread();
+        }
+
+        private void IssueDetailsPanel_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible)
+            {
+                model.addListener(this);
+
+                rebuildAllPanels(false);
+                status.setInfo("No issue details yet");
+                runRefreshThread();
+            }
+            else
+            {
+                model.removeListener(this);
+            }
         }
 
         private void rebuildAllPanels(bool enableRefresh)
@@ -63,36 +91,17 @@ namespace PaZu
                        {
                            try
                            {
-                               setInfoStatus("Retrieving issue details...");
+                               status.setInfo("Retrieving issue details...");
                                issue = facade.getIssue(issue.Server, issue.Key);
-                               setInfoStatus("Issue details retrieved");
+                               status.setInfo("Issue details retrieved");
                            }
                            catch (Exception e)
                            {
-                               setErrorStatus("Failed to retrieve issue details", e);
+                               status.setError("Failed to retrieve issue details", e);
                            }
                            rebuildAllPanels(true);
                        }));
             worker.Start();
-        }
-
-        private void setErrorStatus(string txt, Exception e)
-        {
-            Invoke(new MethodInvoker(delegate
-            {
-                jiraStatus.BackColor = Color.LightPink;
-                Exception inner = e.InnerException;
-                jiraStatus.Text = "[" + issue.Key + "] " + txt + ": " + (inner != null ? inner.Message : e.Message);
-            }));
-        }
-
-        private void setInfoStatus(string txt)
-        {
-            Invoke(new MethodInvoker(delegate
-            {
-                jiraStatus.BackColor = Color.Transparent;
-                jiraStatus.Text = "[" + issue.Key + "] " + txt;
-            }));
         }
 
         private string createCommentsHtml(bool expanded)
@@ -228,14 +237,14 @@ namespace PaZu
                          {
                              try
                              {
-                                 setInfoStatus("Adding comment to issue...");
+                                 status.setInfo("Adding comment to issue...");
                                  facade.addComment(issue, dlg.CommentBody);
-                                 setInfoStatus("Comment added, refreshing view...");
+                                 status.setInfo("Comment added, refreshing view...");
                                  runRefreshThread();
                              }
                              catch (Exception ex)
                              {
-                                 setErrorStatus("Adding comment failed", ex);
+                                 status.setError("Adding comment failed", ex);
                              }
                          }));
             addCommentThread.Start();
