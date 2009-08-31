@@ -56,8 +56,8 @@
                 <include>commons-lang:commons-lang</include>
                 <include>joda-time:joda-time:jar</include>
                 <include>axis:axis:jar</include>
-                <include>axis:axis-jaxrpc:jar</include>
-                <include>axis:axis-saaj:jar</include>
+                <include>org.apache.axis:axis-jaxrpc:jar</include>
+                <include>org.apache.axis:axis-saaj:jar</include>
                 <include>wsdl4j:wsdl4j:jar</include>
                 <include>net.sf.nachocalendar:nachocalendar:jar</include>
                 <include>com.thoughtworks.xstream:xstream:jar</include>
