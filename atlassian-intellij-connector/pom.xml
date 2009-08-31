@@ -170,6 +170,18 @@
 			<scope>compile</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis-jaxrpc</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis</groupId>
+            <artifactId>axis-saaj</artifactId>
+            <version>1.4</version>
+        </dependency>
+
 		<dependency>
 			<groupId>wsdl4j</groupId>
 			<artifactId>wsdl4j</artifactId>
@@ -436,6 +448,14 @@
 							<name>xmlrpc</name>
 							<exclude>true</exclude>
 						</library>
+                        <library>
+                            <name>axis-jaxrpc</name>
+                            <exclude>false</exclude>
+                        </library>
+                        <library>
+                            <name>axis-saaj</name>
+                            <exclude>false</exclude>
+                        </library>
 						<library>
 							<name>trove4j</name>
 							<exclude>true</exclude>
