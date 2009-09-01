@@ -20,7 +20,7 @@ import com.atlassian.theplugin.util.Htmlizer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.ActiveIcon;
@@ -30,8 +30,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.wm.IdeFrame;
-import com.intellij.openapi.diff.DiffManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.EmptyIcon;
@@ -149,7 +147,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             // in diff view turned out to be pretty sickly difficult
             // - getting to the toplevel window of the diff view is _NOT_ trivial
             DataContext dataContext = event.getDataContext();
-            Editor editor = PlatformDataKeys.EDITOR.getData(dataContext);
+            Editor editor = DataKeys.EDITOR.getData(dataContext);
             if (editor != null) {
                 JComponent c = editor.getComponent();
                 lctp.setTopFrame(getTopFrameFor(c));
