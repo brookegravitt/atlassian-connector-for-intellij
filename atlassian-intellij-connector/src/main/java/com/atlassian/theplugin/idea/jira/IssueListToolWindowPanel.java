@@ -1100,7 +1100,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         @Override
         public void serverConnectionDataChanged(final ServerId serverId) {
             JiraServerData server = projectCfgManager.getJiraServerr(serverId);
-            if (server.getServerType() == ServerType.JIRA_SERVER) {
+            if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
                 jiraServerModel.clear(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, true);
                 ProgressManager.getInstance().run(task);
@@ -1110,22 +1110,24 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         @Override
         public void serverNameChanged(final ServerId serverId) {
             JiraServerData server = projectCfgManager.getJiraServerr(serverId);
-            jiraServerModel.replace(server);
-            refreshFilterModel();
-            jiraFilterListModel.fireServerNameChanged();
+            if (server != null) {
+                jiraServerModel.replace(server);
+                refreshFilterModel();
+                jiraFilterListModel.fireServerNameChanged();
+            }
         }
 
         @Override
         public void serverDisabled(final ServerId serverId) {
             JiraServerData server = projectCfgManager.getJiraServerr(serverId);
-            if (server.getServerType() == ServerType.JIRA_SERVER) {
+            if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
                 removeServer(serverId, recenltyViewedAffected(server));
             }
         }
 
         @Override
         public void serverRemoved(final ServerData oldServer) {
-            if (oldServer.getServerType() == ServerType.JIRA_SERVER) {
+            if (oldServer != null && oldServer.getServerType() == ServerType.JIRA_SERVER) {
                 removeServer(oldServer.getServerId(), recenltyViewedAffected(oldServer));
             }
         }
@@ -1137,11 +1139,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverAdded(final ServerData newServer) {
-            addServer((JiraServerData) newServer, false);
+            addServer(newServer, false);
         }
 
         private void addServer(final ServerData server, boolean refreshIssueList) {
-            if (server.getServerType() == ServerType.JIRA_SERVER) {
+            if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
                 JiraServerData jiraServer = projectCfgManager.getJiraServerr(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(jiraServer, refreshIssueList);
                 ProgressManager.getInstance().run(task);
