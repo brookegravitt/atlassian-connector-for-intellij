@@ -586,7 +586,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	///////////////////// CONFIG LISTENERS ///////////////////////////
 	//////////////////////////////////////////////////////////////////
 
-	public void addProjectConfigurationListener(final ConfigurationListener configurationListener) {
+	public synchronized void addProjectConfigurationListener(final ConfigurationListener configurationListener) {
 
 		if (configurationListener == null) {
 			return;
@@ -598,7 +598,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		listeners.add(configurationListener);
 	}
 
-	public boolean removeProjectConfigurationListener(final ConfigurationListener configurationListener) {
+	public synchronized boolean removeProjectConfigurationListener(final ConfigurationListener configurationListener) {
 
 		if (configurationListener == null) {
 			return false;
@@ -696,7 +696,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		}
 	}
 
-	private void notifyListeners(ProjectListenerAction listenerAction) {
+	private synchronized void notifyListeners(ProjectListenerAction listenerAction) {
 		if (listeners != null) {
 			for (ConfigurationListener projectListener : listeners) {
 				listenerAction.run(projectListener);
