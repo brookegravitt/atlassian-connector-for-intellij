@@ -94,7 +94,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	public void rebuildModel(final UpdateReason updateReason) {
 		final long requestId = startNewRequest();
-		final List<CrucibleNotification> notifications = Collections.emptyList();
+		final List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 		final Map<CrucibleFilter, ReviewNotificationBean> newReviews;
 

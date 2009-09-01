@@ -339,8 +339,8 @@ public final class IdeaVersionFacade {
 		INFO, WARNING, ERROR
 	}
 
-	public void fireNofification(Project project, JComponent content, String message, String iconName, OperationStatus status,
-			Color color) {
+	public void fireNofification(final Project project, final JComponent content, String message, String iconName, OperationStatus status,
+			final Color color) {
 /*
 		if (isIdea8) {
 			ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
@@ -385,13 +385,17 @@ public final class IdeaVersionFacade {
 			}
 		} else {
 */
-		final WindowManager windowManager = WindowManager.getInstance();
-		if (windowManager != null) {
-			final StatusBar statusBar = windowManager.getStatusBar(project);
-			if (statusBar != null) {
-				statusBar.fireNotificationPopup(content, color);
-			}
-		}
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                final WindowManager windowManager = WindowManager.getInstance();
+                if (windowManager != null) {
+                    final StatusBar statusBar = windowManager.getStatusBar(project);
+                    if (statusBar != null) {
+                        statusBar.fireNotificationPopup(content, color);
+                    }
+                }
+            }
+        });
 //		}
 	}
 }
