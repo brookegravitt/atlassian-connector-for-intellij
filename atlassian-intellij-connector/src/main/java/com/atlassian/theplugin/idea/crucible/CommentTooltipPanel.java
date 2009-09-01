@@ -171,8 +171,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             return null;
         }
         Component parent = null;
-        do
-        {
+        do {
             component = component.getParent();
             if (component != null && component instanceof Window) {
                 parent = component;
