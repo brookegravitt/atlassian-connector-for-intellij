@@ -339,8 +339,8 @@ public final class IdeaVersionFacade {
 		INFO, WARNING, ERROR
 	}
 
-	public void fireNofification(final Project project, final JComponent content, String message, String iconName, OperationStatus status,
-			final Color color) {
+	public void fireNofification(final Project project, final JComponent content, String message,
+                                 String iconName, OperationStatus status, final Color color) {
 /*
 		if (isIdea8) {
 			ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
