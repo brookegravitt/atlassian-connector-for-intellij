@@ -19,6 +19,8 @@ import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.util.Htmlizer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.ActiveIcon;
@@ -28,6 +30,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.openapi.wm.IdeFrame;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.EmptyIcon;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -81,6 +86,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     private static final int MAX_HREF_LINK_LENGTH = 40;
     private static final Color EDITABLE_BACKGROUND_COLOR = new Color(0xd0, 0xd0, 0xd0);
     private boolean doneWithThisPanel;
+    private Window topFrame;
 
     public enum Mode {
         SHOW,
@@ -120,14 +126,18 @@ public abstract class CommentTooltipPanel extends JPanel {
                             return true;
                         }
                         Project proj = project != null ? project : IdeaHelper.getCurrentProject(event);
+                        Window topIdeaFrame = lctp.getTopFrame();
+                        if (topIdeaFrame != null) {
+                            return topIdeaFrame.isActive();
+                        }
                         return WindowManager.getInstance().getFrame(proj).isActive();
                     }
+
                 })
 				.setCancelKeyEnabled(true)
 				.createPopup();
 
 		lctp.setParentPopup(popup);
-
         if (event != null) {
             Component parentComponent = (Component) event.getPresentation().getClientProperty(JBPOPUP_PARENT_COMPONENT);
             lctp.setPopupOwner(parentComponent);
@@ -135,9 +145,44 @@ public abstract class CommentTooltipPanel extends JPanel {
         if (owner != null && location != null) {
             popup.showInScreenCoordinates(owner, location);
         } else if (event != null) {
-		    popup.showInBestPositionFor(event.getDataContext());
+            // PL-1775 - fixing the problem with not being able to close the popup
+            // in diff view turned out to be pretty sickly difficult
+            // - getting to the toplevel window of the diff view is _NOT_ trivial
+            DataContext dataContext = event.getDataContext();
+            Editor editor = PlatformDataKeys.EDITOR.getData(dataContext);
+            if (editor != null) {
+                JComponent c = editor.getComponent();
+                lctp.setTopFrame(getTopFrameFor(c));
+            } else {
+                lctp.setTopFrame(getTopFrameFor(lctp.popupOwner));
+            }
+            popup.showInBestPositionFor(dataContext);
         }
 	}
+
+    private void setTopFrame(Window topFrame) {
+        this.topFrame = topFrame;
+    }
+
+    public Window getTopFrame() {
+        return topFrame;
+    }
+
+    private static Window getTopFrameFor(Component component) {
+        if (component == null) {
+            return null;
+        }
+        Component parent = null;
+        do
+        {
+            component = component.getParent();
+            if (component != null && component instanceof Window) {
+                parent = component;
+                break;
+            }
+        } while (component != null);
+        return (Window) parent;
+    }
 
     public Project getProject() {
         return project;
@@ -166,7 +211,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 		super(new BorderLayout());
 
         project = IdeaHelper.getCurrentProject(event);
-
 		this.fileInfo = file;
         this.mode = mode;
 
