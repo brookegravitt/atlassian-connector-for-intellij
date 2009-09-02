@@ -37,7 +37,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testAddingReviewOnce() throws Exception {
-		model = new CrucibleReviewListModelImplAdapter();
+		model = null; //new CrucibleReviewListModelImplAdapter();
 
 		model.addReview(new ReviewAdapter(null, null));
 
