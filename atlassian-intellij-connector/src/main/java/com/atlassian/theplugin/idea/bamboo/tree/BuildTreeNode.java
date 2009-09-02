@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableHoverLabel;
 import com.atlassian.theplugin.util.Util;
@@ -51,6 +51,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private double dateWidth;
 	private static final int LABEL_PADDING = 5;
 	private boolean hover = false;
+    JPanel p;
 
 	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapter build) {
 		super(build.getPlanKey(), null, null);
@@ -99,13 +100,13 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
-		JPanel p = new JPanel();
+		p = new JPanel();
 
 		p.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		CellConstraints cc = new CellConstraints();
 
 		p.setBackground(UIUtil.getTreeTextBackground());
-
+        //
 		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
 		StringBuilder sb = new StringBuilder();
