@@ -51,9 +51,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private double dateWidth;
 	private static final int LABEL_PADDING = 5;
 	private boolean hover = false;
-    JPanel p;
+    private JPanel panel;
 
-	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapter build) {
+    public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapter build) {
 		super(build.getPlanKey(), null, null);
 
 		this.build = build;
@@ -100,14 +100,14 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
-		p = new JPanel();
+		panel = new JPanel();
 
-		p.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
+		panel.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		CellConstraints cc = new CellConstraints();
 
-		p.setBackground(UIUtil.getTreeTextBackground());
+		panel.setBackground(UIUtil.getTreeTextBackground());
         //
-		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
+		panel.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(build.getPlanKey());
@@ -120,15 +120,15 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 					.append(build.getTestsFailed())
 					.append(" Tests Failed");
 		}
-		p.add(new SelectableHoverLabel(selected, hover, enabled, sb.toString(), null,
+		panel.add(new SelectableHoverLabel(selected, hover, enabled, sb.toString(), null,
 				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(2 + 1, 1));
 
-		p.add(createPanelForOtherBuildDetails(selected, hover, enabled), cc.xy(2 + 2, 1));
+		panel.add(createPanelForOtherBuildDetails(selected, hover, enabled), cc.xy(2 + 2, 1));
 
 
-		addTooltipToPanel(build, p);
+		addTooltipToPanel(build, panel);
 
-		return p;
+		return panel;
 	}
 
 	@NotNull
