@@ -38,7 +38,7 @@ public class RemoveAction extends AbstractFilterAction {
             JiraCustomFilter manualFilter = ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter();
 
             int response = Messages.showYesNoDialog(
-						"Are you sure you want to delete the selected customm filter (" + manualFilter.getName() + ") ?",
+						"Are you sure you want to delete the selected custom filter (" + manualFilter.getName() + ") ?",
 						"Confirm server delete",
 						Messages.getQuestionIcon());
 
