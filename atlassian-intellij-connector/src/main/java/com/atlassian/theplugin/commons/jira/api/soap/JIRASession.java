@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Collection;
 
 public interface JIRASession {
 	void login(String userName, String password) throws RemoteApiException;
@@ -72,4 +73,6 @@ public interface JIRASession {
 	List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException;
 
 	boolean isLoggedIn();
+
+    Collection<JIRAAttachment> getIssueAttachements(JIRAIssue issue) throws RemoteApiException;
 }

@@ -36,6 +36,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JIRASessionImpl implements JIRASession {
@@ -624,4 +625,20 @@ public class JIRASessionImpl implements JIRASession {
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
+
+    public Collection<JIRAAttachment> getIssueAttachements(JIRAIssue issue) throws RemoteApiException {
+        try {
+            RemoteAttachment[] attachements = service.getAttachmentsFromIssue(token, issue.getKey());
+
+            List<JIRAAttachment> attachmentList = new ArrayList<JIRAAttachment>(attachements.length);
+            for (RemoteAttachment a : attachements) {
+                attachmentList.add(new JIRAAttachment(a.getId(),
+                        a.getAuthor(), a.getFilename(), a.getFilesize(), 
+                        a.getMimetype(), a.getCreated()));
+            }
+            return attachmentList;
+        } catch (RemoteException e) {
+            throw new RemoteApiException(e.toString(), e);
+        }
+    }
 }
