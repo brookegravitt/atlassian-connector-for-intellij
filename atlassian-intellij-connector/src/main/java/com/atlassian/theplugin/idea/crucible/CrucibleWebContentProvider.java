@@ -27,6 +27,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
+
 public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
 
 	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile, final Project project) {
@@ -40,6 +43,9 @@ public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
             // doggy workaround - PL-1287
             String serverUrl = review.getServerData().getUrl();
             String contentUrl = versionedVirtualFile.getContentUrl();
+
+            // PL-1776
+            contentUrl = URLDecoder.decode(contentUrl, "UTF-8");
 
             if (contentUrl == null) {
                 return null;
@@ -61,6 +67,8 @@ public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
         } catch (RemoteApiException e) {
             throw new ReviewFileContentException(e);
         } catch (ServerPasswordNotProvidedException e) {
+            throw new ReviewFileContentException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new ReviewFileContentException(e);
         }
     }
