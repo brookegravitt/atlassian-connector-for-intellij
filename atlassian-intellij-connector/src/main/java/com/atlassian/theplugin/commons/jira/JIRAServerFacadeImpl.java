@@ -35,6 +35,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
 import com.atlassian.theplugin.commons.jira.api.soap.JIRASession;
@@ -50,6 +51,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.Collection;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 
@@ -401,7 +403,17 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void progressWorkflowAction(JiraServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException {
+    public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue) throws JIRAException {
+        try {
+            JIRASession soap = getSoapSession(server);
+            return soap.getIssueAttachements(issue);
+        } catch (RemoteApiException e) {
+            soapSessions.remove(getSoapSessionKey(server));
+            throw new JIRAException(e.getMessage(), e);
+        }
+    }
+
+    public void progressWorkflowAction(JiraServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException {
 		progressWorkflowAction(server, issue, action, null);
 	}
 

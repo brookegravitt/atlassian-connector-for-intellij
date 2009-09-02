@@ -39,6 +39,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAStatusBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -47,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Collection;
+
 import junit.framework.TestCase;
 
 public class JIRAServerModelImplTest extends TestCase {
@@ -627,7 +630,12 @@ public class JIRAServerModelImplTest extends TestCase {
 			return null;
 		}
 
-		public void logWork(JiraServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
+        public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue)
+                throws JIRAException {
+            return null;
+        }
+
+        public void logWork(JiraServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
 				String comment, boolean updateEstimate, String newEstimate) throws JIRAException {
 		}
 

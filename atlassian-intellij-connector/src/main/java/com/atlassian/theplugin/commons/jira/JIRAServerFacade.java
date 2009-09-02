@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Collection;
 
 public interface JIRAServerFacade extends ProductServerFacade {    
 	List<JIRAIssue> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
@@ -85,4 +86,6 @@ public interface JIRAServerFacade extends ProductServerFacade {
 	JIRAUserBean getUser(JiraServerData server, String loginName) throws JIRAException, JiraUserNotFoundException;
 
 	List<JIRAComment> getComments(JiraServerData server, JIRAIssue issue) throws JIRAException;
+
+    Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue) throws JIRAException;
 }

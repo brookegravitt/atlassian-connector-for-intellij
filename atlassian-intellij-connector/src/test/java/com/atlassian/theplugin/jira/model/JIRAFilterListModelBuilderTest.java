@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -31,6 +32,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+
 import junit.framework.TestCase;
 
 /**
@@ -157,7 +160,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAQueryFragment> getSavedFilters(JiraServerData server) throws JIRAException {
+        public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue) throws JIRAException {
+            return null;
+        }
+
+        public List<JIRAQueryFragment> getSavedFilters(JiraServerData server) throws JIRAException {
 			List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
 			for (JiraServerCfg serverCfg : savedFilters.keySet()) {
 				if (server.getServerId().equals(serverCfg.getServerId())) {

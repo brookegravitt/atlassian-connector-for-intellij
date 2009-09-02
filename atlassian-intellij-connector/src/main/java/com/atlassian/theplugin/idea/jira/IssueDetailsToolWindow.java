@@ -222,6 +222,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
+        private AttachementsPanel attachementsPanel;
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
 		private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
@@ -239,6 +240,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			tabs.addTab("Details", detailsPanel);
 			descriptionAndCommentsPanel = new DescriptionAndCommentsPanel(tabs, 1);
 			tabs.addTab("Comments(0)", descriptionAndCommentsPanel);
+            attachementsPanel = new AttachementsPanel();
+            tabs.addTab("Attachements", attachementsPanel);
 
 			summaryPanel = new SummaryPanel();
 			setLayout(new BorderLayout());
@@ -356,6 +359,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
+            attachementsPanel.refresh();
+
 			if (selectedContent == this) {
 				reloadAvailableActions();
 			}
@@ -1094,8 +1099,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private void resetStackTraces() {
 				stackTraceCounter = 0;
 
-				while (tabs.getTabCount() > 2) {
-					tabs.remove(2);
+				while (tabs.getTabCount() > 3) {
+					tabs.remove(3);
 				}
 
 				String stack = Html2text.translate(params.issue.getDescription());
@@ -1152,6 +1157,53 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 			}
 		}
+
+        private class AttachementsPanel extends JPanel {
+            public void refresh() {
+                Runnable r = new Runnable() {
+                    public void run() {
+                        try {
+                            final Collection<JIRAAttachment> atts =
+                                    facade.getIssueAttachements(params.issue.getServer(), params.issue);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    removeAll();
+                                    setLayout(new VerticalFlowLayout());
+                                    for (final JIRAAttachment a : atts) {
+                                        HyperlinkLabel hl = new HyperlinkLabel(a.getFilename());
+                                        hl.addHyperlinkListener(new HyperlinkListener() {
+                                            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                                                BrowserUtil.launchBrowser(
+                                                        params.issue.getServerUrl()
+                                                                + "/secure/attachment/" + a.getId()
+                                                                + "/" + a.getFilename());
+                                            }
+                                        });
+                                        add(hl);
+                                    }
+                                }
+                            });
+                        } catch (JIRAException e) {
+                            setStatusMessage("Unable to retrieve attachements", e);
+                        }
+                    }
+                };
+                Thread t = new Thread(r, "Retrieving attachements for issue " + params.issue.getKey());
+                t.start();
+            }
+
+            private void setStatusMessage(final String message, final JIRAException e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        removeAll();
+                        setLayout(new BorderLayout());
+                        JLabel label = new JLabel(message + ": " + e.getMessage());
+                        label.setHorizontalAlignment(SwingConstants.CENTER);
+                        add(label, BorderLayout.CENTER);
+                    }
+                });
+            }
+        }
 
 		private final class MyHyperlinkLabel extends JPanel {
 			private MyHyperlinkLabel(String label, HyperlinkListener listener) {

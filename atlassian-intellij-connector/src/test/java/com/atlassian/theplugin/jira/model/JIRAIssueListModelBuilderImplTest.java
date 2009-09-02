@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import java.util.Collection;
 
 public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
@@ -231,7 +232,12 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAVersionBean> getVersions(JiraServerData server, String projectKey) throws JIRAException {
+        public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue)
+                throws JIRAException {
+            return null;
+        }
+
+        public List<JIRAVersionBean> getVersions(JiraServerData server, String projectKey) throws JIRAException {
 			return null;
 		}
 
