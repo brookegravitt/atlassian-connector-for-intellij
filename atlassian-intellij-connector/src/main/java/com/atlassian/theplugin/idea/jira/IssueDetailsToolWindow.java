@@ -12,6 +12,7 @@ import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -21,6 +22,7 @@ import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
@@ -47,15 +49,19 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * User: jgorycki
@@ -65,6 +71,8 @@ import java.util.List;
 public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
+
+    protected static final int ROW_HEIGHT = 16;
 
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
@@ -240,8 +248,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			tabs.addTab("Details", detailsPanel);
 			descriptionAndCommentsPanel = new DescriptionAndCommentsPanel(tabs, 1);
 			tabs.addTab("Comments(0)", descriptionAndCommentsPanel);
-            attachementsPanel = new AttachementsPanel();
-            tabs.addTab("Attachements", attachementsPanel);
+            attachementsPanel = new AttachementsPanel(tabs, 2);
+            tabs.addTab("Attachments(0)", attachementsPanel);
 
 			summaryPanel = new SummaryPanel();
 			setLayout(new BorderLayout());
@@ -1159,32 +1167,40 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
         private class AttachementsPanel extends JPanel {
+
+            private static final float SPLIT_RATIO = 0.6f;
+            private JTabbedPane tabs;
+            private int tabIndex;
+
+            private AttachementsPanel(JTabbedPane tabs, int tabIndex) {
+                this.tabs = tabs;
+                this.tabIndex = tabIndex;
+            }
+
             public void refresh() {
+                tabs.setTitleAt(tabIndex, "Refreshing attachments...");
                 Runnable r = new Runnable() {
                     public void run() {
                         try {
                             final Collection<JIRAAttachment> atts =
                                     facade.getIssueAttachements(params.issue.getServer(), params.issue);
+
+                            // get user names in the cache if they are not already there
+                            for (JIRAAttachment att : atts) {
+                                RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
+                                        .getUser(params.issue.getServer(), att.getAuthor());
+                            }
+
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     removeAll();
-                                    setLayout(new VerticalFlowLayout());
-                                    for (final JIRAAttachment a : atts) {
-                                        HyperlinkLabel hl = new HyperlinkLabel(a.getFilename());
-                                        hl.addHyperlinkListener(new HyperlinkListener() {
-                                            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
-                                                BrowserUtil.launchBrowser(
-                                                        params.issue.getServerUrl()
-                                                                + "/secure/attachment/" + a.getId()
-                                                                + "/" + a.getFilename());
-                                            }
-                                        });
-                                        add(hl);
-                                    }
+                                    fillContent(atts);
                                 }
                             });
                         } catch (JIRAException e) {
-                            setStatusMessage("Unable to retrieve attachements", e);
+                            setErrorMessage("Unable to retrieve attachements", e);
+                        } catch (JiraUserNotFoundException e) {
+                            setErrorMessage("Unable to retrieve attachement's author", e);
                         }
                     }
                 };
@@ -1192,11 +1208,170 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 t.start();
             }
 
-            private void setStatusMessage(final String message, final JIRAException e) {
+            private class AttachmentListModel extends DefaultListModel {
+                public AttachmentListModel(Collection<JIRAAttachment> attachments) {
+                    int i = 0;
+                    for (JIRAAttachment attachment : attachments) {
+                        add(i++, attachment);
+                    }
+                }
+            }
+
+            private JEditorPane previewEditor;
+
+            public void fillContent(Collection<JIRAAttachment> attachments) {
+                if (attachments == null || attachments.size() == 0) {
+                    add(new JLabel("No attachements in " + params.issue.getKey()));
+                    tabs.setTitleAt(tabIndex, "Attachments(0)");
+                    return;
+                }
+
+                tabs.setTitleAt(tabIndex, "Attachments(" + attachments.size() + ")");
+
+                Splitter split = new Splitter(false, SPLIT_RATIO);
+                split.setShowDividerControls(true);
+
+                JPanel listPanel = new JPanel();
+                listPanel.setLayout(new BorderLayout());
+
+                final JList attachmentList = new JList() {
+                    @Override
+                    public boolean getScrollableTracksViewportWidth() {
+                        return true;
+                    }
+                };
+                attachmentList.setModel(new AttachmentListModel(attachments));
+                attachmentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                attachmentList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (e.getValueIsAdjusting()) {
+                            return;
+                        }
+                        if (attachmentList.getSelectionModel().isSelectionEmpty()) {
+                            fillPreview(null);
+                        } else {
+                            fillPreview((JIRAAttachment) attachmentList.getSelectedValue());
+                        }
+                    }
+                });
+                attachmentList.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 2 && !attachmentList.getSelectionModel().isSelectionEmpty()) {
+                            launchAttachment((JIRAAttachment) attachmentList.getSelectedValue());
+                        }
+                    }
+                });
+                attachmentList.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_ENTER
+                                && !attachmentList.getSelectionModel().isSelectionEmpty()) {
+                            launchAttachment((JIRAAttachment) attachmentList.getSelectedValue());
+                        }
+                    }
+                });
+
+                attachmentList.setCellRenderer(new ListCellRenderer() {
+                    public Component getListCellRendererComponent(JList list, Object value, int index,
+                            boolean isSelected, boolean cellHasFocus) {
+                        try {
+                            ATTACHMENT_RENDERER_PANEL.setAttachment(params.issue, (JIRAAttachment) value);
+                        } catch (Exception e) {
+                            // ignore - not really possible
+                        }
+                        ATTACHMENT_RENDERER_PANEL.setSelected(isSelected);
+                        ATTACHMENT_RENDERER_PANEL.validate();
+                        return ATTACHMENT_RENDERER_PANEL;
+                    }
+                });
+                final JScrollPane scrollList = new JScrollPane(attachmentList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+                previewEditor = new JEditorPane();
+                previewEditor.setEditable(false);
+                previewEditor.setOpaque(true);
+                previewEditor.setBackground(Color.WHITE);
+                previewEditor.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+                previewEditor.addHyperlinkListener(new HyperlinkListener() {
+                    public void hyperlinkUpdate(HyperlinkEvent e) {
+                        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                            BrowserUtil.launchBrowser(e.getURL().toString());
+                        }
+                    }
+                });
+
+                final JScrollPane scrollPreview = new JScrollPane(previewEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                listPanel.add(scrollList, BorderLayout.CENTER);
+
+                split.setFirstComponent(listPanel);
+
+                JPanel attViewPanel = new JPanel();
+                attViewPanel.setLayout(new BorderLayout());
+                attViewPanel.add(new JLabel("Preview"), BorderLayout.NORTH);
+                attViewPanel.add(scrollPreview, BorderLayout.CENTER);
+
+                split.setSecondComponent(attViewPanel);
+                split.setShowDividerControls(false);
+
+                setLayout(new BorderLayout());
+                add(split, BorderLayout.CENTER);
+
+                if (attachments.size() == 1) {
+                    attachmentList.getSelectionModel().setSelectionInterval(0, 0);
+                }
+                validate();
+            }
+
+            private void fillPreview(JIRAAttachment a) {
+                previewEditor.setContentType("text/html");
+                if (a == null) {
+                    previewEditor.setText("<html><body><br><br><center>Nothing selected</center></body></html>");
+                } else if (a.getMimetype().startsWith("image/")){
+                    previewEditor.setText(
+                            "<html><body><center><a href=\"" + constructAttachmentUrl(a, false)
+                                    + "\"><img src=\"" + constructAttachmentUrl(a, true)
+                                    + "\" alt=\"" + constructAttachmentUrl(a, true) + "\"></a></center></body></html>");
+                } else if (a.getMimetype().startsWith("text/")) {
+                    try {
+                        Document doc = previewEditor.getDocument();
+                        doc.putProperty(Document.StreamDescriptionProperty, null);
+                        previewEditor.setText("Loading attachment text...");
+                        previewEditor.setPage(constructAttachmentUrl(a, true));
+                    } catch (IOException e) {
+                        LoggerImpl.getInstance().error(e);
+                    }
+                } else {
+                    previewEditor.setText(
+                            "<html><body><center>Unable to preview attachment type <b>" + a.getMimetype()
+                                    + "</b><br><a href=\"" + constructAttachmentUrl(a, false)
+                                    + "\">Click here to open the attachment in the browser</a></center></body></html>");
+                }
+            }
+
+            private void launchAttachment(JIRAAttachment a) {
+                BrowserUtil.launchBrowser(constructAttachmentUrl(a, false));
+            }
+
+            private String constructAttachmentUrl(JIRAAttachment a, boolean appendAuth) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(params.issue.getServerUrl())
+                        .append("/secure/attachment/").append(a.getId())
+                        .append("/").append(a.getFilename());
+                if (appendAuth) {
+                    sb.append("?os_username=").append(params.issue.getServer().getUsername());
+                    sb.append("&os_password=").append(params.issue.getServer().getPassword());
+                }
+                return sb.toString();
+            }
+
+            private void setErrorMessage(final String message, final Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         removeAll();
                         setLayout(new BorderLayout());
+                        tabs.setTitleAt(tabIndex, "Uanble to retrieve attachments");
                         JLabel label = new JLabel(message + ": " + e.getMessage());
                         label.setHorizontalAlignment(SwingConstants.CENTER);
                         add(label, BorderLayout.CENTER);
@@ -1496,6 +1671,49 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 	}
+
+    private static final AttachmentRendererPanel ATTACHMENT_RENDERER_PANEL = new AttachmentRendererPanel();
+
+    private static final class AttachmentRendererPanel extends JPanel {
+
+        private SelectableLabel name = new SelectableLabel(true, true, "NOTHING YET", ROW_HEIGHT, false, false);
+        private SelectableLabel author = new SelectableLabel(true, true, "NOTHING HERE ALSO", ROW_HEIGHT, true, false);
+        private SelectableLabel date = new SelectableLabel(true, true, "NEITHER HERE", ROW_HEIGHT, false, false);
+
+        private AttachmentRendererPanel() {
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.weightx = 1.0;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            add(name, gbc);
+            gbc.gridx++;
+            gbc.weightx = 0.0;
+            gbc.anchor = GridBagConstraints.LINE_END;
+            gbc.fill = GridBagConstraints.NONE;
+            author.setHorizontalAlignment(SwingConstants.RIGHT);
+            add(author, gbc);
+            gbc.gridx++;
+            add(date, gbc);
+        }
+
+        void setAttachment(JIRAIssue issue, JIRAAttachment attachment) throws JIRAException, JiraUserNotFoundException {
+            name.setText(" " + attachment.getFilename());
+            JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
+                    .getUser(issue.getServer(), attachment.getAuthor());
+            author.setText(u.getName());
+            DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+            String commitDate = dfo.format(attachment.getCreated().getTime());
+            date.setText(", " + commitDate + " ");
+        }
+
+        void setSelected(boolean selected) {
+            name.setSelected(selected);
+            author.setSelected(selected);
+            date.setSelected(selected);
+        }
+    }
 
 	private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
 		if (horizontal) {
