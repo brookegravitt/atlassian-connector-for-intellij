@@ -456,7 +456,7 @@ public final class CrucibleHelper {
 		@Override
 		public void onSuccess() {
 			if (exception != null) {
-				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
+				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching file"
 						+ niceFileMessage + ":\n" + exception.getMessage(), exception);
 				return;
 			}
