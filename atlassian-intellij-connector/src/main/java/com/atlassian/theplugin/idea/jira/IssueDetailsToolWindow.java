@@ -461,6 +461,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueResolution;
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
+            private JEditorPane issueEnvironment;
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
@@ -678,6 +679,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				panel.add(issueUpdateTime, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
+                String env = params.issue.getEnvironment();
+                if (env != null && env.length() > 0) {
+                    panel.add(new BoldLabel("Environment"), gbc1);
+                    panel.add(issueEnvironment, gbc2);
+                    gbc1.gridy++;
+                    gbc2.gridy++;
+                }
 				panel.add(affectsVersionsLabel, gbc1);
 				panel.add(affectsVersions, gbc2);
 				gbc1.gridy++;
@@ -733,6 +741,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
+                issueEnvironment = new JEditorPane();
+                issueEnvironment.setMargin(new Insets(0, 0, 0, 0));
+                issueEnvironment.setText(params.issue.getEnvironment());
 			}
 
 			public JLabel getAffectVersionsLabel() {
@@ -1247,8 +1258,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                             return;
                         }
                         if (attachmentList.getSelectionModel().isSelectionEmpty()) {
+                            attachmentList.setToolTipText(null);
                             fillPreview(null);
                         } else {
+                            attachmentList.setToolTipText("Press \"Enter\" or double-click to open in the browser");
                             fillPreview((JIRAAttachment) attachmentList.getSelectedValue());
                         }
                     }
@@ -1332,7 +1345,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     previewEditor.setText(
                             "<html><body><center><a href=\"" + constructAttachmentUrl(a, false)
                                     + "\"><img src=\"" + constructAttachmentUrl(a, true)
-                                    + "\" alt=\"" + constructAttachmentUrl(a, true) + "\"></a></center></body></html>");
+                                    + "\" alt=\"" + constructAttachmentUrl(a, false) + "\"></a></center></body></html>");
                 } else if (a.getMimetype().startsWith("text/")) {
                     try {
                         Document doc = previewEditor.getDocument();
