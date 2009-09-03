@@ -39,6 +39,8 @@ public interface JIRAIssue {
 
 	String getSummary();
 
+    String getEnvironment();
+
 	String getType();
 
 	String getTypeIconUrl();

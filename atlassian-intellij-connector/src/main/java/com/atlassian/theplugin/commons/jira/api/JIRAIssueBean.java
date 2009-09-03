@@ -65,8 +65,9 @@ public class JIRAIssueBean implements JIRAIssue {
 	private String remainingEstimateInSeconds;
 	private String timeSpentInSeconds;
 	private JIRASecurityLevelBean securityLevel;
+    private String environment;
 
-	public JIRAIssueBean() {
+    public JIRAIssueBean() {
 	}
 
 	public JIRAIssueBean(JiraServerData server) {
@@ -79,6 +80,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		key = issue.getKey();
 		summary = issue.getSummary();
 		status = issue.getStatus();
+        environment = issue.getEnvironment();
 		statusUrl = issue.getStatusTypeUrl();
 		type = issue.getType();
 		typeUrl = issue.getTypeIconUrl();
@@ -131,6 +133,8 @@ public class JIRAIssueBean implements JIRAIssue {
 			this.priorityId = 0;
 		}
 		this.description = getTextSafely(e, "description");
+        this.environment = getTextSafely(e, "environment");
+        
 		this.type = getTextSafely(e, "type");
 		this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
 		try {
@@ -310,7 +314,11 @@ public class JIRAIssueBean implements JIRAIssue {
 		return summary;
 	}
 
-	public String getType() {
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public String getType() {
 		return type;
 	}
 
