@@ -97,7 +97,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         }
 
         void reformatPanel(boolean selected, boolean enabled) {
-
+            buildStatusIcon.setIcon(build.getIcon());
             descriptionLabel.setBackground(SelectableHoverLabel.getBgColor(selected, hover));
             descriptionLabel.setEnabled(enabled);
 
