@@ -74,7 +74,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         private SelectableHoverLabel empty3;
         private SelectableHoverLabel date;
         private JPanel padding;
-        JLabel buildStatusIcon;//icon is changing due to status change
+        private JLabel buildStatusIcon;
 
         RendererPanel() {
             super(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));

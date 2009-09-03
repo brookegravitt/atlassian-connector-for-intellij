@@ -12,7 +12,6 @@ import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -49,19 +48,19 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.text.Document;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import java.io.IOException;
 
 /**
  * User: jgorycki
@@ -1301,7 +1300,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     }
                 });
 
-                final JScrollPane scrollPreview = new JScrollPane(previewEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                final JScrollPane scrollPreview = new JScrollPane(previewEditor,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 listPanel.add(scrollList, BorderLayout.CENTER);
 
@@ -1328,7 +1328,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 previewEditor.setContentType("text/html");
                 if (a == null) {
                     previewEditor.setText("<html><body><br><br><center>Nothing selected</center></body></html>");
-                } else if (a.getMimetype().startsWith("image/")){
+                } else if (a.getMimetype().startsWith("image/")) {
                     previewEditor.setText(
                             "<html><body><center><a href=\"" + constructAttachmentUrl(a, false)
                                     + "\"><img src=\"" + constructAttachmentUrl(a, true)
@@ -1421,7 +1421,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				label.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				String userNameFixed = userName.replace(" ", "&nbsp;");
 				if (useLink) {
-					label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
+					label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
+                            + "</u></font></body></html>");
 					addListener(serverUrl, userNameId);
 				} else {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
