@@ -1171,6 +1171,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						}
 					} catch (JIRAException e) {
 						tabs.setTitleAt(tabIndex, "Unable to retrieve comments");
+                        statusBarPane.setErrorMessage("Unable to retrieve comments", e);
 					}
 				}
 			}
