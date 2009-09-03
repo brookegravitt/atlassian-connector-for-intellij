@@ -1165,7 +1165,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-        private class AttachementsPanel extends JPanel {
+        private final class AttachementsPanel extends JPanel {
 
             private static final float SPLIT_RATIO = 0.6f;
             private JTabbedPane tabs;
