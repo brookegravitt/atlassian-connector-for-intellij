@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
@@ -697,8 +697,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	private synchronized void notifyListeners(ProjectListenerAction listenerAction) {
-		if (listeners != null) {
-			for (ConfigurationListener projectListener : listeners) {
+        Collection<ConfigurationListener> localListeners = new ArrayList<ConfigurationListener>(listeners);
+		if (localListeners != null) {
+			for (ConfigurationListener projectListener : localListeners) {
 				listenerAction.run(projectListener);
 			}
 		}
