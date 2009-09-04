@@ -714,7 +714,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
                     
                     // !!! ACHTUNG !!! - hairy scary ugly ugly
-                    // PL-1818 - in dfii view getCOntent() throws NoSuchMethod exception
+                    // PL-1818 - in diff view getCOntent() throws NoSuchMethod exception
                     // for some weird-ass reason. But granted, this is scary-hairy
                     // if the widget hierarchy ever changes, this will blow up bad
                     Point location = btnDelete.getParent().getParent().getLocationOnScreen();
