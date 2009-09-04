@@ -712,7 +712,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnDelete.setOpaque(false);
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-                    Point location = popup.getContent().getLocationOnScreen();
+                    
+                    // !!! ACHTUNG !!! - hairy scary ugly ugly
+                    // PL-1818 - in dfii view getCOntent() throws NoSuchMethod exception
+                    // for some weird-ass reason. But granted, this is scary-hairy
+                    // if the widget hierarchy ever changes, this will blow up bad
+                    Point location = btnDelete.getParent().getParent().getLocationOnScreen();
+//                    Point location = popup.getContent().getLocationOnScreen();
+
                     closePopup();
 					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
 					showCommentTooltipPopup(project, CommentTooltipPanel.this, getPopupOwner(), location);
