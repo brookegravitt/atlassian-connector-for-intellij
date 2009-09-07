@@ -94,8 +94,7 @@ public class Response {
 				headers.append(body.toString().getBytes("utf-8").length);
 			}
 			headers.append("\n");
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("failed to encode", e);
 		}
 	}

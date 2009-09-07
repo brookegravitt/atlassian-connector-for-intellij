@@ -69,8 +69,7 @@ public final class EmbeddedServer {
 					public void run() {
 						try {
 							server.start();
-						}
-						catch (IOException e) {
+						} catch (IOException e) {
 							LOGGER.warn("Failed to start server", e);
 						}
 					}
