@@ -1508,7 +1508,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     }
                     issueTreeBuilder.setProjectKeysToNames(projects);
                     issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-                } else if (srvcfg != null) {
+                } else if (srvcfg != null && jiraServerModel != null) {
                     Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
                     try {
                         for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
