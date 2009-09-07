@@ -97,8 +97,7 @@ public class FileBasedRequestHandler implements HttpRequestHandler {
 				out.close();
 				response.setBinaryContent(out.toByteArray());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.error("error reading file", e);
 			response.setError(e);
 			return response;
