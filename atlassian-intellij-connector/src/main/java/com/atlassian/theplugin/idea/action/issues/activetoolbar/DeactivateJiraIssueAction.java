@@ -42,7 +42,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+				boolean isOk = ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
 					public void success() {
 						if (conf != null) {
 							conf.setActiveJiraIssuee(null);
@@ -64,6 +64,12 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 						});
 					}
 				});
+
+
+                //success is invoked only if actions are selected (ie. stop progress action)
+                if (isOk && conf != null) {
+                    conf.setActiveJiraIssuee(null);
+                }
 			}
 		});
 	}
