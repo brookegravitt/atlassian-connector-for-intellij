@@ -222,6 +222,8 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<!-- newest version 2.7 fails to merge resources -->
+				<version>2.6</version>
 				<configuration>
 					<skip>false</skip>
 				</configuration>
