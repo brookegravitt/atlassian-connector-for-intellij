@@ -185,7 +185,9 @@ public final class VcsIdeaHelper {
 	}
 
 	public static boolean isFileDirty(final Project project, final VirtualFile virtualFile) {
-		return ChangeListManager.getInstance(project).getAffectedFiles().contains(virtualFile);
+
+
+		return !project.isDisposed() && ChangeListManager.getInstance(project).getAffectedFiles().contains(virtualFile);
 	}
 
 
