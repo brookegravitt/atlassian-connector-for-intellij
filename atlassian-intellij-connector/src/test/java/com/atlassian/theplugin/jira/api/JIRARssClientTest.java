@@ -16,24 +16,30 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import junit.framework.TestCase;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -63,6 +69,59 @@ public class JIRARssClientTest extends TestCase {
 */
 	}
 
+    public void testAuthenticationException_PL_1827() throws RemoteApiMalformedUrlException {
+        Server srv = new Server() {
+            ServerIdImpl serverId = new ServerIdImpl();
+            public ServerIdImpl getServerId() {
+                return serverId;
+            }
+
+            public String getName() {
+                return "name";
+            }
+
+            public String getUrl() {
+                return "http://atlassian.com";
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public boolean isUseDefaultCredentials() {
+                return false;
+            }
+
+            public String getUsername() {
+                return "userName";
+            }
+
+            public String getPassword() {
+                return "password";
+            }
+
+            public ServerType getServerType() {
+                return ServerType.JIRA_SERVER;
+            }
+        };
+        JIRARssClientPublic mockRssClient = new JIRARssClientPublic(new JiraServerData(srv, "userName", "password", true), new HttpSessionCallback() {
+            public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
+                return null;
+            }
+            public void configureHttpMethod(AbstractHttpSession session, HttpMethod method) {
+            }
+        });
+
+        List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
+        try {
+            mockRssClient.getIssues(list, "", "", 1, 100);
+            fail();
+        } catch (JIRAException e) {
+            assertTrue(e.getMessage().startsWith("Connection error"));
+        }
+
+
+    }
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
 		final JiraServerData server =
@@ -154,4 +213,20 @@ public class JIRARssClientTest extends TestCase {
 			}
 		};
 	}
+
+
+    private class JIRARssClientPublic extends JIRARssClient {
+
+        public JIRARssClientPublic(final JiraServerData server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
+            super(server, callback);
+        }
+
+        @Override
+        public Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
+            throw new AuthenticationException("ntlm authorization challenge expected, but not found: ntlm " +
+                            "authorization challenge expected, but not found");
+        }
+    }
+
+    
 }
