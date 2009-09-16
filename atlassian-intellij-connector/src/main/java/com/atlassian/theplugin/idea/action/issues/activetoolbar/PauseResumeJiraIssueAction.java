@@ -19,6 +19,7 @@ public class PauseResumeJiraIssueAction extends AbstractActiveJiraIssueAction {
     public void onUpdate(AnActionEvent event, boolean enabled) {
         final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
         updateState(isSelectedIssueActive(event, selectedIssue), event);
+        
     }
 
     public void actionPerformed(AnActionEvent event) {
