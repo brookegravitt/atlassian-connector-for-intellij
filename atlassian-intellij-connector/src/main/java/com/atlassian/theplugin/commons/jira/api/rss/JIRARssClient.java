@@ -22,11 +22,10 @@
  */
 package com.atlassian.theplugin.commons.jira.api.rss;
 
-import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
@@ -34,12 +33,15 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredExceptio
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.util.StringUtil;
+import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,13 +119,15 @@ public class JIRARssClient extends AbstractHttpSession {
 				return makeIssues(channel.getChildren("item"));
 			}
 			return Collections.emptyList();
-		} catch (IOException e) {
+		}  catch (AuthenticationException e) {
+            throw new JIRAException("Authentication error", e);
+        } catch (IOException e) {
 			throw new JIRAException("Connection error: " + e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (RemoteApiSessionExpiredException e) {
 			throw new JIRAException(e.getMessage(), e);
-		}
+        }
 
 	}
 
