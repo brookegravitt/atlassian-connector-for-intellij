@@ -6,21 +6,7 @@ import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -282,5 +268,10 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
     public void markAllCommentsRead(ServerData server, PermId reviewId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         facade.markAllCommentsRead(server.toConnectionCfg(), reviewId);
+    }
+
+    public List<User> getAllowedReviewers(ConnectionCfg server, String projectKey) throws RemoteApiException, 
+            ServerPasswordNotProvidedException {
+        return facade.getAllowedReviewers(server, projectKey);
     }
 }

@@ -16,21 +16,9 @@
 
 package com.atlassian.connector.intellij.crucible;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -220,4 +208,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
     void markAllCommentsRead(ServerData server, PermId reviewId)  throws RemoteApiException,
 			ServerPasswordNotProvidedException;
+
+    List<User> getAllowedReviewers(ConnectionCfg server, String projectKey) throws RemoteApiException,
+            ServerPasswordNotProvidedException;
 }

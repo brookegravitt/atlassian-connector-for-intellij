@@ -23,14 +23,14 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +39,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -181,7 +182,11 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	}
 
 	private static CrucibleProject makeCrucibleProject(String id, String key, String name) {
-		return new CrucibleProject(id, key, name);
+        Collection<String> usersNames = new ArrayList<String>();
+          usersNames.add("Ala");
+          usersNames.add("Zosia");
+
+		return new CrucibleProject(id, key, name, usersNames);
 	}
 
 	private static Repository makeRepository(String name) {
