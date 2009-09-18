@@ -894,14 +894,14 @@
          <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
                 text="Remove"
-                icon="/general/remove.png"
+                icon="/icons/jira/nodes/ico_jira_remove_filter.png"
                 description="Remove Custom filter">
         </action>
 
         <action id="ThePlugin.JiraIssues.CustomFilter.AddAction"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.AddAction"
                 text="Add Manual Filter"
-                icon="/general/add.png"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
                 description="Add Custom Filter">
          </action>
 

@@ -19,8 +19,9 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
-    private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
-    private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
+    private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_custom_filter.png");
+    private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_saved_filter.png");
+    private static final Icon JIRA_RECENTLY_OPEN_ISSUES_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_recent_issues.png");
     private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
@@ -57,7 +58,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         }
 
         if (value instanceof JiraRecentlyOpenTreeNode && c instanceof JLabel) {
-            ((JLabel) c).setIcon(JIRA_SAVED_FILTER_ICON);
+            ((JLabel) c).setIcon(JIRA_RECENTLY_OPEN_ISSUES_ICON);
             return c;
         }
 
