@@ -21,7 +21,8 @@ import java.util.Map;
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
     private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_custom_filter.png");
     private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_saved_filter.png");
-    private static final Icon JIRA_RECENTLY_OPEN_ISSUES_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_recent_issues.png");
+    private static final Icon JIRA_RECENTLY_OPEN_ISSUES_ICON =
+            IconLoader.getIcon("/icons/jira/nodes/ico_jira_recent_issues.png");
     private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
