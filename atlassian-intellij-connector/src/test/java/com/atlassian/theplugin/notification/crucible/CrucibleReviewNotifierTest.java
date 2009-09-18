@@ -282,8 +282,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 //		mgr.setFiles(review2, files2);
 
-		reviews.add(new ReviewAdapter(review1, null));
-		reviews.add(new ReviewAdapter(review2, null));
+		reviews.add(new ReviewAdapter(review1, null, null));
+		reviews.add(new ReviewAdapter(review2, null, null));
 
 		return reviews;
 	}

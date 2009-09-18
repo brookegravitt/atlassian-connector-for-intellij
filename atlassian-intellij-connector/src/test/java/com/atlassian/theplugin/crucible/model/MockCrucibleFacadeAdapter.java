@@ -34,7 +34,7 @@ import java.util.Set;
 
 
 public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
-	public Review createReview(ServerData server, Review review)
+	public ReviewAdapter createReview(ServerData server, Review review)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -54,7 +54,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return false;
 	}
 
-	public Review createReviewFromUpload(final ServerData server, final Review review,
+	public ReviewAdapter createReviewFromUpload(final ServerData server, final Review review,
 			final Collection<UploadItem> uploadItems)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
@@ -66,7 +66,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	}
 
 
-	public Review addItemsToReview(final ServerData server, final PermId permId, final Collection<UploadItem> items)
+	public ReviewAdapter addItemsToReview(final ServerData server, final PermId permId, final Collection<UploadItem> items)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -75,18 +75,18 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public Review createReviewFromRevision(ServerData server, Review review, List<String> revisions)
+	public ReviewAdapter createReviewFromRevision(ServerData server, Review review, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review addRevisionsToReview(ServerData server, PermId permId,
+	public ReviewAdapter addRevisionsToReview(ServerData server, PermId permId,
 			String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review addPatchToReview(ServerData server, PermId permId, String repository, String patch)
+	public ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -108,37 +108,37 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			@NotNull final Collection<String> userName) throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public Review approveReview(ServerData server, PermId permId)
+	public ReviewAdapter approveReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review submitReview(ServerData server, PermId permId)
+	public ReviewAdapter submitReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review summarizeReview(ServerData server, PermId permId)
+	public ReviewAdapter summarizeReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review abandonReview(ServerData server, PermId permId)
+	public ReviewAdapter abandonReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review closeReview(ServerData server, PermId permId, String summary)
+	public ReviewAdapter closeReview(ServerData server, PermId permId, String summary)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review recoverReview(ServerData server, PermId permId)
+	public ReviewAdapter recoverReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review reopenReview(ServerData server, PermId permId)
+	public ReviewAdapter reopenReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -147,27 +147,27 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public List<Review> getAllReviews(ServerData server)
+	public List<ReviewAdapter> getAllReviews(ServerData server)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public List<Review> getReviewsForFilter(ServerData server, PredefinedFilter filter)
+	public List<ReviewAdapter> getReviewsForFilter(ServerData server, PredefinedFilter filter)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public List<Review> getReviewsForCustomFilter(ServerData server, CustomFilter filter)
+	public List<ReviewAdapter> getReviewsForCustomFilter(ServerData server, CustomFilter filter)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review getReview(ServerData server, PermId permId)
+	public ReviewAdapter getReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public Review createReviewFromPatch(ServerData server, Review review, String patch)
+	public ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -282,7 +282,8 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
             throws RemoteApiException, ServerPasswordNotProvidedException {
     }
 
-    public List<User> getAllowedReviewers(ConnectionCfg server, String projectKey) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public List<User> getAllowedReviewers(ServerData server, String projectKey) 
+			throws RemoteApiException, ServerPasswordNotProvidedException {
         return null;  
     }
 }

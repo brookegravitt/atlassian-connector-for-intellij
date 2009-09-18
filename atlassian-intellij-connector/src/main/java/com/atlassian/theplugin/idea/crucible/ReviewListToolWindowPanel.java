@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -55,9 +54,6 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPopupMenu;
@@ -70,16 +66,17 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.TreeSpeedSearch;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.Timer;
-import javax.swing.ToolTipManager;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -512,8 +509,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
-				return new ReviewAdapter(r, server);
+				return IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
 				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
@@ -539,8 +535,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
-				ReviewAdapter ra = new ReviewAdapter(r, server);
+				ReviewAdapter ra = IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
 				IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(ra);
 				return ra;
 			} catch (RemoteApiException e) {

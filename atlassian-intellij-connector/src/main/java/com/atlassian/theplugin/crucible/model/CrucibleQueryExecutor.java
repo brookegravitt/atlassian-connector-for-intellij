@@ -75,13 +75,7 @@ public class CrucibleQueryExecutor {
 								throw new InterruptedException();
 							}
 
-							List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
-							List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
-							for (Review r : review) {
-								final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
-								reviewData.add(reviewAdapter);
-							}
-
+							final List<ReviewAdapter> reviewData = crucibleServerFacade.getReviewsForFilter(server, filter);
 							predefinedFiterNotificationBean.getReviews().addAll(reviewData);
 
 						} catch (ServerPasswordNotProvidedException exception) {
@@ -137,8 +131,8 @@ public class CrucibleQueryExecutor {
 								"Crucible: updating status for server: " + server.getUrl()
 										+ ", recenlty viewed reviews filter");
 
-						Review r = crucibleServerFacade.getReview(server, new PermId(recentReview.getReviewId()));
-						recenltyOpenFilterNotificationBean.getReviews().add(new ReviewAdapter(r, server));
+						ReviewAdapter r = crucibleServerFacade.getReview(server, new PermId(recentReview.getReviewId()));
+						recenltyOpenFilterNotificationBean.getReviews().add(r);
 
 					} catch (ServerPasswordNotProvidedException exception) {
 						MissingPasswordHandlerQueue.addHandler(
@@ -175,14 +169,7 @@ public class CrucibleQueryExecutor {
 				try {
 					PluginUtil.getLogger().debug("Crucible: updating status for server: "
 							+ server.getUrl() + ", custom filter");
-					List<Review> customFilter
-							= crucibleServerFacade.getReviewsForCustomFilter(server, manualFilter);
-
-					List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(customFilter.size());
-					for (Review r : customFilter) {
-						final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
-						reviewData.add(reviewAdapter);
-					}
+					final List<ReviewAdapter> reviewData = crucibleServerFacade.getReviewsForCustomFilter(server, manualFilter);
 
 					customFilterNotificationBean.getReviews().addAll(reviewData);
 
@@ -217,9 +204,8 @@ public class CrucibleQueryExecutor {
 						throw new InterruptedException();
 					}
 
-					Review r = crucibleServerFacade.getReview(review.getServerData(),
-							review.getPermId());
-					reviewNotificationBean.getReviews().add(new ReviewAdapter(r, review.getServerData()));
+					ReviewAdapter r = crucibleServerFacade.getReview(review.getServerData(), review.getPermId());
+					reviewNotificationBean.getReviews().add(r);
 				} catch (ServerPasswordNotProvidedException exception) {
 					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 					reviewNotificationBean.addException(review.getServerData(), exception);

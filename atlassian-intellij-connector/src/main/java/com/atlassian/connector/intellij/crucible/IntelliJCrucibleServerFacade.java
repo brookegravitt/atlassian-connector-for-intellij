@@ -1,26 +1,76 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.crucible.CrucibleServerFacade2;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 
-	private final CrucibleServerFacade2 facade = new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(),
+	
+	public class CrucibleProjectCacheImpl {
+		private final Map<ConnectionCfg, Map<String, CrucibleProject>> serverMap 
+				= new ConcurrentHashMap<ConnectionCfg, Map<String, CrucibleProject>>();
+
+		public Map<String, CrucibleProject> getProjects(ConnectionCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			Map<String, CrucibleProject> projects = serverMap.get(server);
+			if (projects == null) {
+				projects = refreshProjectsFromServer(server);
+			}
+			return projects;
+		}
+
+		@NotNull
+		private Map<String, CrucibleProject> refreshProjectsFromServer(ConnectionCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			final List<CrucibleProject> projects = facade.getProjects(server);
+
+			Map<String, CrucibleProject> map = new HashMap<String, CrucibleProject>(projects.size() + 1, 1);
+
+			for (CrucibleProject project : projects) {
+				map.put(project.getKey(), project);
+			}
+			serverMap.put(server, map);
+			return map;
+		}
+
+	}
+	
+	private final CrucibleServerFacadeImpl facade = new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(),
 			new IntelliJHttpSessionCallback());
 	private static IntelliJCrucibleServerFacade instance;
+	private final CrucibleProjectCacheImpl projectCache = new CrucibleProjectCacheImpl();
 
 	public static synchronized IntelliJCrucibleServerFacade getInstance() {
 		if (instance == null) {
@@ -33,9 +83,14 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 
 	}
 
-	public Review abandonReview(ServerData server, PermId permId)
+	public ReviewAdapter abandonReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.abandonReview(server.toConnectionCfg(), permId);
+		return toReviewAdapter(facade.abandonReview(server.toConnectionCfg(), permId), server);
+	}
+
+	private ReviewAdapter toReviewAdapter(@NotNull Review review, ServerData serverData)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return new ReviewAdapter(review, serverData, getProject(serverData, review.getProjectKey()));
 	}
 
 	public GeneralComment addGeneralComment(ServerData server, PermId permId, GeneralComment comment)
@@ -48,14 +103,14 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.addGeneralCommentReply(server.toConnectionCfg(), id, cId, comment);
 	}
 
-	public Review addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items) throws RemoteApiException,
-			ServerPasswordNotProvidedException {
-		return facade.addItemsToReview(server.toConnectionCfg(), permId, items);
+	public ReviewAdapter addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.addItemsToReview(server.toConnectionCfg(), permId, items), server);
 	}
 
-	public Review addPatchToReview(ServerData server, PermId permId, String repository, String patch)
+	public ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addPatchToReview(server.toConnectionCfg(), permId, repository, patch);
+		return toReviewAdapter(facade.addPatchToReview(server.toConnectionCfg(), permId, repository, patch), server);
 	}
 
 	public void addReviewers(ServerData server, PermId permId, Set<String> userName) throws RemoteApiException,
@@ -63,9 +118,9 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.addReviewers(server.toConnectionCfg(), permId, userName);
 	}
 
-	public Review addRevisionsToReview(ServerData server, PermId permId, String repository, List<String> revisions)
+	public ReviewAdapter addRevisionsToReview(ServerData server, PermId permId, String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addRevisionsToReview(server.toConnectionCfg(), permId, repository, revisions);
+		return toReviewAdapter(facade.addRevisionsToReview(server.toConnectionCfg(), permId, repository, revisions), server);
 	}
 
 	public VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
@@ -78,18 +133,18 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.addVersionedCommentReply(server.toConnectionCfg(), id, cId, comment);
 	}
 
-	public Review approveReview(ServerData server, PermId permId)
+	public ReviewAdapter approveReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.approveReview(server.toConnectionCfg(), permId);
+		return toReviewAdapter(facade.approveReview(server.toConnectionCfg(), permId), server);
 	}
 
 	public boolean checkContentUrlAvailable(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.checkContentUrlAvailable(server.toConnectionCfg());
 	}
 
-	public Review closeReview(ServerData server, PermId permId, String summary) throws RemoteApiException,
+	public ReviewAdapter closeReview(ServerData server, PermId permId, String summary) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		return facade.closeReview(server.toConnectionCfg(), permId, summary);
+		return toReviewAdapter(facade.closeReview(server.toConnectionCfg(), permId, summary), server);
 	}
 
 	public void completeReview(ServerData server, PermId permId, boolean complete) throws RemoteApiException,
@@ -97,38 +152,39 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.completeReview(server.toConnectionCfg(), permId, complete);
 	}
 
-	public Review createReview(ServerData server, Review review) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.createReview(server.toConnectionCfg(), review);
-	}
-
-	public Review createReviewFromPatch(ServerData server, Review review, String patch) throws RemoteApiException,
-			ServerPasswordNotProvidedException {
-		return facade.createReviewFromPatch(server.toConnectionCfg(), review, patch);
-	}
-
-	public Review createReviewFromRevision(ServerData server, Review review, List<String> revisions) throws RemoteApiException,
-			ServerPasswordNotProvidedException {
-		return facade.createReviewFromRevision(server.toConnectionCfg(), review, revisions);
-	}
-
-	public Review createReviewFromUpload(ServerData server, Review review, Collection<UploadItem> uploadItems)
+	public ReviewAdapter createReview(ServerData server, Review review)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.createReviewFromUpload(server.toConnectionCfg(), review, uploadItems);
+		return toReviewAdapter(facade.createReview(server.toConnectionCfg(), review), server);
 	}
 
-	public List<Review> getAllReviews(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.getAllReviews(server.toConnectionCfg());
+	public ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch) throws RemoteApiException,
+			ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.createReviewFromPatch(server.toConnectionCfg(), review, patch), server);
+	}
+
+	public ReviewAdapter createReviewFromRevision(ServerData server, Review review, List<String> revisions)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.createReviewFromRevision(server.toConnectionCfg(), review, revisions), server);
+	}
+
+	public ReviewAdapter createReviewFromUpload(ServerData server, Review review, Collection<UploadItem> uploadItems)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.createReviewFromUpload(server.toConnectionCfg(), review, uploadItems), server);
+	}
+
+	public List<ReviewAdapter> getAllReviews(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapterList(facade.getAllReviews(server.toConnectionCfg()), server);
 	}
 
 	public void fillDetailsForReview(ReviewAdapter reviewItem) throws RemoteApiException, ServerPasswordNotProvidedException {
 		facade.fillDetailsForReview(reviewItem.getServerData().toConnectionCfg(), reviewItem.getReview());
 	}
 
-	public String getDisplayName(ServerData server, String username) {
+	public String getDisplayName(@NotNull ServerData server, @NotNull String username) {
 		return facade.getDisplayName(server.toConnectionCfg(), username);
 	}
 
-	public byte[] getFileContent(ServerData server, String contentUrl) throws RemoteApiException,
+	public byte[] getFileContent(@NotNull ServerData server, String contentUrl) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		return facade.getFileContent(server.toConnectionCfg(), contentUrl);
 	}
@@ -148,13 +204,31 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.getMetrics(server.toConnectionCfg(), version);
 	}
 
-	public CrucibleProject getProject(ServerData server, String projectKey) throws RemoteApiException,
+	@Nullable
+	public CrucibleProject getProject(@NotNull ServerData server, @NotNull String projectKey) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		return facade.getProject(server.toConnectionCfg(), projectKey);
+		final Map<String, CrucibleProject> projectsByKey = projectCache.getProjects(server.toConnectionCfg());
+		final CrucibleProject crucibleProject = projectsByKey.get(projectKey);
+		if (crucibleProject == null) {
+			return projectCache.refreshProjectsFromServer(server.toConnectionCfg()).get(projectKey);
+		}
+		return crucibleProject;
 	}
 
+	private List<ReviewAdapter> toReviewAdapterList(Collection<Review> reviews, ServerData server)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		final ArrayList<ReviewAdapter> res = MiscUtil.buildArrayList(reviews.size());
+		for (Review review : reviews) {
+			res.add(toReviewAdapter(review, server));
+		}
+		return res;
+	}
+
+	/**
+	 * Does caching, as IntelliJ Connector does not have its own meta-data cache
+	 */
 	public List<CrucibleProject> getProjects(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.getProjects(server.toConnectionCfg());
+		return MiscUtil.buildArrayList(projectCache.getProjects(server.toConnectionCfg()).values());
 	}
 
 	public List<Repository> getRepositories(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -166,8 +240,9 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.getRepository(server.toConnectionCfg(), repoName);
 	}
 
-	public Review getReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.getReview(server.toConnectionCfg(), permId);
+	public ReviewAdapter getReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.getReview(server.toConnectionCfg(), permId), server);
 	}
 
 	public List<Reviewer> getReviewers(ServerData server, PermId permId) throws RemoteApiException,
@@ -175,14 +250,14 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.getReviewers(server.toConnectionCfg(), permId);
 	}
 
-	public List<Review> getReviewsForCustomFilter(ServerData server, CustomFilter filter) throws RemoteApiException,
+	public List<ReviewAdapter> getReviewsForCustomFilter(ServerData server, CustomFilter filter) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		return facade.getReviewsForCustomFilter(server.toConnectionCfg(), filter);
+		return toReviewAdapterList(facade.getReviewsForCustomFilter(server.toConnectionCfg(), filter), server);
 	}
 
-	public List<Review> getReviewsForFilter(ServerData server, PredefinedFilter filter) throws RemoteApiException,
+	public List<ReviewAdapter> getReviewsForFilter(ServerData server, PredefinedFilter filter) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		return facade.getReviewsForFilter(server.toConnectionCfg(), filter);
+		return toReviewAdapterList(facade.getReviewsForFilter(server.toConnectionCfg(), filter), server);
 	}
 
 	public List<User> getUsers(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -209,9 +284,9 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.publishComment(server.toConnectionCfg(), reviewId, commentId);
 	}
 
-	public Review recoverReview(ServerData server, PermId permId)
+	public ReviewAdapter recoverReview(ServerData server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.recoverReview(server.toConnectionCfg(), permId);
+		return toReviewAdapter(facade.recoverReview(server.toConnectionCfg(), permId), server);
 	}
 
 	public void removeComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
@@ -224,8 +299,9 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.removeReviewer(server.toConnectionCfg(), permId, userName);
 	}
 
-	public Review reopenReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.reopenReview(server.toConnectionCfg(), permId);
+	public ReviewAdapter reopenReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.reopenReview(server.toConnectionCfg(), permId), server);
 	}
 
 	public void setReviewers(@NotNull ServerData server, @NotNull PermId permId, @NotNull Collection<String> usernames)
@@ -233,13 +309,14 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.setReviewers(server.toConnectionCfg(), permId, usernames);
 	}
 
-	public Review submitReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.submitReview(server.toConnectionCfg(), permId);
+	public ReviewAdapter submitReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		return toReviewAdapter(facade.submitReview(server.toConnectionCfg(), permId), server);
 	}
 
-	public Review summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
+	public ReviewAdapter summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		return facade.summarizeReview(server.toConnectionCfg(), permId);
+		return toReviewAdapter(facade.summarizeReview(server.toConnectionCfg(), permId), server);
 	}
 
 	public void updateComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
@@ -270,8 +347,26 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
         facade.markAllCommentsRead(server.toConnectionCfg(), reviewId);
     }
 
-    public List<User> getAllowedReviewers(ConnectionCfg server, String projectKey) throws RemoteApiException, 
-            ServerPasswordNotProvidedException {
-        return facade.getAllowedReviewers(server, projectKey);
-    }
+	@Nullable
+	public List<User> getAllowedReviewers(ServerData server, String projectKey) throws RemoteApiException,
+			ServerPasswordNotProvidedException {
+
+		final CrucibleProject project = getProject(server, projectKey);
+		if (project == null) {
+			return null;
+		}
+		final Collection<String> allowedReviewersStr = project.getAllowedReviewers();
+		// this by the way will populate the cache so that subsequent getUser() have a chance to work
+		final List<User> allUsers = facade.getUsers(server.toConnectionCfg());
+		if (allowedReviewersStr != null) {
+
+			List<User> allowedReviewers = new ArrayList<User>();
+			for (String userName : allowedReviewersStr) {
+				allowedReviewers.add(facade.getUser(server.toConnectionCfg(), userName));
+			}
+			return allowedReviewers;
+		}
+		// otherwise we assume all users are allowed (old Crucible 1.6.x does not serve this data)
+		return allUsers;
+	}
 }
