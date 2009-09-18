@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -47,7 +47,7 @@ public class CrucibleCreatePostCommitReviewFromChangeListForm extends AbstractCr
 	}
 
 	@Override
-	protected Review createReview(final ServerData server, final ReviewProvider reviewProvider)
+	protected ReviewAdapter createReview(final ServerData server, final ReviewProvider reviewProvider)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return createReviewImpl(server, reviewProvider, changes);
 	}

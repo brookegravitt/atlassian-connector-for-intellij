@@ -149,9 +149,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
-                    review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(
-                            review.getServerData(), review.getPermId()),
-                            review.getServerData()));
+                    review.fillReview(crucibleServerFacade.getReview(review.getServerData(), review.getPermId()));
                 } catch (RemoteApiException e) {
                     PluginUtil.getLogger().warn(e);
                 } catch (ServerPasswordNotProvidedException e) {

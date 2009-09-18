@@ -702,6 +702,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 				return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
 			} else {
+				// @fixme !!!
 				return null;
 			}
 		}
@@ -722,6 +723,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 				return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
 			} else {
+				// @fixme !!!
 				return null;
 			}
 		}
@@ -772,7 +774,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 
-	protected abstract Review createReview(ServerData server, ReviewProvider reviewProvider)
+	protected abstract ReviewAdapter createReview(ServerData server, ReviewProvider reviewProvider)
 			throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
@@ -806,9 +808,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						ModalityState modalityState = ModalityState
 								.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
 
-						Review newlyCreated = null;
+						ReviewAdapter newlyCreated = null;
 						try {
-							final Review draftReview = createReview(server, new ReviewProvider(server));
+							final ReviewAdapter draftReview = createReview(server, new ReviewProvider(server));
 							if (draftReview == null) {
 								EventQueue.invokeLater(new Runnable() {
 									public void run() {
@@ -834,7 +836,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 							if (!leaveAsDraftCheckBox.isSelected()) {
 								try {
-									Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+									ReviewAdapter newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
 									if (newReview.getModerator().getUsername().equals(server.getUsername())) {
 										if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
 											newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
@@ -862,7 +864,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								newlyCreated = draftReview;
 							}
 
-							final Review newRevewFinal = newlyCreated != null
+							final ReviewAdapter newRevewFinal = newlyCreated != null
 									? crucibleServerFacade.getReview(server, newlyCreated.getPermId()) : null;
 
 							ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -870,7 +872,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 									final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
 									if (panel != null && newRevewFinal != null) {
 										panel.refresh(UpdateReason.REFRESH);
-										panel.openReview(new ReviewAdapter(newRevewFinal, server), true);
+										panel.openReview(newRevewFinal, true);
 									}
 								}
 							}, modalityState);

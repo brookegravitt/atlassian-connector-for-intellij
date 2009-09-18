@@ -639,7 +639,9 @@ class DetailsPanel extends JPanel {
 			}
 		}, "", "");
 		Review review = new Review("myReview");
-		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
+		review.setProjectKey("CR");
+		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc,
+				new CrucibleProject("myid", review.getProjectKey(), "My project"));
 		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"
 				+ "jldfjal jfdlkjafl jldfsjalfj ldsj fldjsf; ljWojciech Seliga fjdsalkfjs df\nA new line above\nand then some"
 				+ "very very very long lllllllllllllloooong string.");
@@ -655,9 +657,7 @@ class DetailsPanel extends JPanel {
 	}
 
 	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId file,
-			final VersionedComment parentComment,
-			final
-			VersionedComment comment) {
+			final VersionedComment parentComment, final VersionedComment comment) {
 	}
 
 	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,

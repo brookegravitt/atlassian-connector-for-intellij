@@ -19,7 +19,9 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -50,8 +52,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
@@ -75,7 +81,6 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private ChangeList[] changes;
 	private final Project project;
 	private PermId permId;
-	private String patch;
 	private final ProjectCfgManagerImpl projectCfgManager;
 	private AddMode mode;
 	private ServerData server;
@@ -338,14 +343,6 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 
-	private void addToReviewAdapterList(final List<ReviewAdapter> target, final Collection<Review> source,
-			final ServerData aServer) {
-
-		for (Review review : source) {
-			target.add(new ReviewAdapter(review, aServer));
-		}
-	}
-
 	private void fillReviewCombos() {
 		reviewComboBox.removeAllItems();
 		getOKAction().setEnabled(false);
@@ -359,13 +356,10 @@ public class CrucibleHelperForm extends DialogWrapper {
 				Collection<ServerData> servers = projectCfgManager.getAllEnabledCrucibleServerss();
 				for (ServerData serverData : servers) {
 					try {
-						addToReviewAdapterList(drafts,
-								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts), serverData);
-						addToReviewAdapterList(outForReview,
-								crucibleServerFacade.
-										getReviewsForFilter(serverData, PredefinedFilter.OutForReview), serverData);
-						addToReviewAdapterList(toSummarize, crucibleServerFacade.
-								getReviewsForFilter(serverData, PredefinedFilter.ToSummarize), serverData);
+						drafts.addAll(crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts));
+						outForReview.addAll(
+								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.OutForReview));
+						toSummarize.addAll(crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.ToSummarize));
 					} catch (RemoteApiException e) {
 						// nothing can be done here
 					} catch (ServerPasswordNotProvidedException e) {

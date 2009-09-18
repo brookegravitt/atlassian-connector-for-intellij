@@ -49,7 +49,7 @@ public final class ReviewCommentRendererTestUi {
 			}
 		}, "", "");
 		Review review = new Review("myReview");
-		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
+		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc, null);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");
 		VersionedVirtualFile vvf2 = new VersionedVirtualFile("mypath", "1.567");
 		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfoImpl(vvf1, vvf2, new PermId("mypermid"));

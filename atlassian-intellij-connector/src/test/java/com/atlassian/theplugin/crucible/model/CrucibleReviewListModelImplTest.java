@@ -24,6 +24,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private Date date = new Date();
 	private User moderator = new User("moderator");
 	private User author = new User("author");
+	private static final CrucibleProject PROJECT_1 = new CrucibleProject("My Id", "TEST", "My Test Project");
 
 	@Override
 	public void setUp() throws Exception {
@@ -39,7 +40,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingReviewOnce() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		model.addReview(new ReviewAdapter(null, null));
+		model.addReview(new ReviewAdapter(null, null, null));
 
 		assertEquals(1, model.getReviews().size());
 	}
@@ -53,7 +54,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Review r = new Review("test", "TEST", author, moderator);
 		r.setPermId(new PermId("test"));
 		r.setState(State.REVIEW);
-		ReviewAdapter ra = new ReviewAdapter(r, cfg);
+		ReviewAdapter ra = new ReviewAdapter(r, cfg, PROJECT_1);
 		model.addReview(ra);
 		model.addReview(ra);
 
@@ -75,7 +76,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingSingleReview() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		model.openReview(new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
+		model.openReview(new ReviewAdapter(null, null, null), UpdateReason.OPEN_IN_IDE);
 
 		assertEquals(0, model.getReviews().size());
 	}
@@ -88,7 +89,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Review r = new Review("test", "TEST", author, moderator);
 		r.setPermId(new PermId("test"));
 		r.setState(State.REVIEW);
-		ReviewAdapter ra = new ReviewAdapter(r, cfg);
+		ReviewAdapter ra = new ReviewAdapter(r, cfg, PROJECT_1);
 
 		model.addReview(ra);
 		model.openReview(ra, UpdateReason.OPEN_IN_IDE);
@@ -104,14 +105,14 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Review r = new Review("test", "TEST", author, moderator);
 		r.setPermId(new PermId("test"));
 		r.setState(State.REVIEW);
-		ReviewAdapter ra = new ReviewAdapter(r, cfg);
+		ReviewAdapter ra = new ReviewAdapter(r, cfg, PROJECT_1);
 
 		// add standard review
 		model.addReview(ra);
 		assertEquals(1, model.getReviews().size());
 
 		// add new review as open in ide
-		model.openReview(new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
+		model.openReview(new ReviewAdapter(null, null, null), UpdateReason.OPEN_IN_IDE);
 		assertEquals(1, model.getReviews().size());
 
 		// open the firsr review in ide (the review opened in ide before should disappear)
@@ -130,8 +131,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		r1.setPermId(new PermId("test1"));
 		Review r2 = new Review("test", "TEST", author, moderator);
 		r2.setPermId(new PermId("test2"));
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
-		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
+		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg, PROJECT_1);
+		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg, PROJECT_1);
 		model.addReview(ra1);
 		model.addReview(ra2);
 
@@ -146,8 +147,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Review r = new Review("test", "TEST", author, moderator);
 		r.setPermId(new PermId("test1"));
 		r.setState(State.REVIEW);
-		ReviewAdapter ra1 = new ReviewAdapter(r, cfg);
-		ReviewAdapter ra2 = new ReviewAdapter(r, cfg);
+		ReviewAdapter ra1 = new ReviewAdapter(r, cfg, PROJECT_1);
+		ReviewAdapter ra2 = new ReviewAdapter(r, cfg, PROJECT_1);
 		model.addReview(ra1);
 		model.addReview(ra2);
 
@@ -162,13 +163,13 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		ServerData cfg = createServerData(id);
 		Review r1 = new Review("test", "TEST", author, moderator);
 		r1.setPermId(new PermId("test1"));
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
+		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg, PROJECT_1);
 
 		model.addReview(ra1);
 		Review r2 = new Review("test", "TEST", author, moderator);
 		PermId permId = new PermId("test2");
 		r2.setPermId(permId);
-		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
+		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg, PROJECT_1);
 
 		model.addReview(ra2);
 		assertEquals(2, model.getReviews().size());
@@ -186,13 +187,13 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Review r1 = new Review("test", "TEST", author, moderator);
 		PermId permId1 = new PermId("test1");
 		r1.setPermId(permId1);
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
+		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg, PROJECT_1);
 
 		model.addReview(ra1);
 		Review r2 = new Review("test", "TEST", author, moderator);
 		PermId permId2 = new PermId("test2");
 		r2.setPermId(permId2);
-		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
+		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg, PROJECT_1);
 
 		model.removeReview(ra2, UpdateReason.REFRESH);
 		assertEquals(1, model.getReviews().size());
@@ -207,12 +208,12 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		ServerData cfg = createServerData(id);
 		Review r1 = new Review("test", "TEST", author, moderator);
 		r1.setPermId(new PermId("test1"));
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
+		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg, PROJECT_1);
 
 		listModel.addReview(ra1);
 		Review r2 = new Review("test", "TEST", author, moderator);
 		r2.setPermId(new PermId("test2"));
-		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
+		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg, PROJECT_1);
 
 		listModel.addReview(ra2);
 		assertEquals(2, listModel.getReviews().size());
@@ -508,7 +509,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		rb.setState(State.REVIEW);
 		rb.setActions(new HashSet<CrucibleAction>());
 
-		return new ReviewAdapter(rb, server);
+		return new ReviewAdapter(rb, server, PROJECT_1);
 	}
 
 	private ReviewAdapter createReviewAdapterWithComments(int id, ServerData server)
@@ -518,7 +519,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		rb.setPermId(pId);
 
 		// create review adapter
-		ReviewAdapter adapter = new ReviewAdapter(rb, server);
+		ReviewAdapter adapter = new ReviewAdapter(rb, server, PROJECT_1);
 		adapter.setFacade(new MyFacade());
 
 		// add general comments

@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.action.reviews;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -28,8 +27,6 @@ import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -44,8 +41,10 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.containers.HashSet;
-import java.awt.Component;
-import java.awt.EventQueue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -140,10 +139,10 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			// find serverReviews on all selected servers
 			for (ServerData server : servers) {
 				try {
-					Review review = IntelliJCrucibleServerFacade.getInstance().getReview(server,
+					ReviewAdapter review = IntelliJCrucibleServerFacade.getInstance().getReview(server,
 							new PermId(dialog.getSearchKey()));
 					if (review != null) {
-						serverReviews.add(new ReviewAdapter(review, server));
+						serverReviews.add(review);
 					}
 				} catch (final RemoteApiException e) {
 					Throwable cause = e.getCause();
@@ -183,6 +182,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 				List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
 				for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
+					//noinspection ThrowableResultOfMethodCallIgnored
 					PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
 					errorObjects.add(problem);
 				}

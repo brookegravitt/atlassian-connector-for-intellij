@@ -21,9 +21,10 @@ import com.atlassian.connector.intellij.crucible.content.ReviewFileContentExcept
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
@@ -34,8 +35,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.ReviewDifferenceProducer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -78,14 +78,16 @@ public class ReviewAdapter {
 	private CrucibleServerFacade facade;
 
 	private final Collection<CrucibleReviewListener> listeners = new HashSet<CrucibleReviewListener>();
+	private final CrucibleProject crucibleProject;
 
 	private Collection<CrucibleReviewListener> getListeners() {
 		return listeners;
 	}
 
-	public ReviewAdapter(Review review, ServerData server) {
+	public ReviewAdapter(Review review, ServerData server, CrucibleProject crucibleProject) {
 		this.review = review;
 		this.server = server;
+		this.crucibleProject = crucibleProject;
 
 		facade = IntelliJCrucibleServerFacade.getInstance();
 
@@ -103,7 +105,7 @@ public class ReviewAdapter {
 	}
 
 	public ReviewAdapter(ReviewAdapter reviewAdapter) {
-		this(reviewAdapter.review, reviewAdapter.server);
+		this(reviewAdapter.review, reviewAdapter.server, reviewAdapter.getCrucibleProject());
 	}
 
 	public boolean isCompleted() {
@@ -151,7 +153,7 @@ public class ReviewAdapter {
 	}
 
 	public CrucibleProject getCrucibleProject() {
-		return review.getCrucibleProject();
+		return crucibleProject;
 	}
 
 	public String getRepoName() {
