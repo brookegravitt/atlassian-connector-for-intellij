@@ -18,6 +18,6 @@ public class ReadCrucibleGutterIconRenderer extends AbstractCrucibleGutterIconRe
 
     @NotNull
     public Icon getIcon() {
-        return Constants.CRUCIBLE_REVIEW_PANEL_ICON;
+        return Constants.CRUCIBLE_COMMENT_READ_ICON;
     }
 }

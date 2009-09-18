@@ -434,12 +434,12 @@
 
 		<action id="ThePlugin.Crucible.Comment.Reply"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
-				text="Add Comment" icon="/icons/pin_replycomment.png">
+				text="Add Comment" icon="/icons/crucible/comments/ico_comment_right.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
 		</action>
 		<action id="ThePlugin.Crucible.Comment.AddGeneralComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddGeneralCommentAction"
-				text="Add General Comment" icon="/icons/pin_addcomment.png"/>
+				text="Add General Comment" icon="/icons/crucible/comments/ico_comment_add.png"/>
 		<action id="ThePlugin.Crucible.Comment.Edit"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
 				text="Edit Comment" icon="/actions/editSource.png"/>
@@ -452,7 +452,7 @@
 
 		<action id="ThePlugin.Crucible.Comment.Gutter.Reply"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.ReplyAction"
-				text="Reply" icon="/icons/pin_replycomment.png"/>
+				text="Reply" icon="/icons/crucible/comments/ico_comment_right.png"/>
 		<action id="ThePlugin.Crucible.Comment.Gutter.Edit"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.EditAction"
 				text="Edit" icon="/actions/editSource.png"/>
@@ -466,23 +466,23 @@
 		<action id="ThePlugin.Crucible.Comment.NextComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
 				text="Next Comment"
-				icon="/icons/moveDown-cru.png">
+				icon="/icons/crucible/comments/ico_comment_down.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="shift control alt PAGE_DOWN"/>
 		</action>
 		<action id="ThePlugin.Crucible.Comment.PrevComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.PrevCommentAction"
 				text="Previous Comment"
-				icon="/icons/moveUp-cru.png">
+				icon="/icons/crucible/comments/ico_comment_up.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="shift control alt PAGE_UP"/>
 		</action>
         <action id="ThePlugin.Crucible.Comment.OnlyUnread"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.OnlyNavigateToUnreadAction"
                 text="Skip Read Comments"
-                icon="/icons/crucible-unread-comment.png"/>
+                icon="/icons/crucible/comments/ico_comment_toggle_skip.png"/>
         <action id="ThePlugin.Crucible.Comment.MarkAllRead"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.MarkAllCommentsReadAction"
                 text="Mark All Comments Read"
-                icon="/icons/ico_crucible_green.png"/>
+                icon="/icons/crucible/comments/ico_comment_read.png"/>
         <action id="ThePlugin.Crucible.Comment.MarkRead"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentReadAction"
                 text="Mark Read"
@@ -491,12 +491,12 @@
         <action id="ThePlugin.Crucible.Comment.MarkLeaveUnread"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentLeaveUnreadAction"
                 text="Leave Unread"
-                icon="/icons/ico_crucible_red.png"/>
+                icon="/icons/crucible/comments/ico_comment_toggle_unread.png"/>
                 />
 		<action id="ThePlugin.Crucible.Comment.NextDiff"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
 				text="Next Difference"
-				icon="/actions/moveDown.png">
+				icon="/icons/crucible/comments/ico_comment_down.png">
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 		<action id="ThePlugin.Crucible.Comment.PrevDiff"
@@ -508,7 +508,7 @@
 
 		<action id="ThePlugin.Crucible.Add.Comment.In.Editor" class="com.atlassian.theplugin.idea.action.CommentAction"
 				text="Add Crucible Comment"
-				description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
+				description="Review lines of code with Crucible" icon="/icons/crucible/comments/ico_comment_add.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 			<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
