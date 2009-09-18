@@ -134,7 +134,7 @@ public final class Constants {
 	public static final Icon CRUCIBLE_REVIEW_TAB_ICON = IconLoader.getIcon("/icons/tab_crucible-white.png");
 	public static final Icon CRUCIBLE_REVIEW_PANEL_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
     public static final Icon CRUCIBLE_UNREAD_COMMENT_ICON =
-            IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_unread.png");
+            IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_unskip.png");
     public static final Icon CRUCIBLE_COMMENT_READ_ICON =
             IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_read.png");
 

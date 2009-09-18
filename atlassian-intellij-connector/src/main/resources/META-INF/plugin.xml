@@ -486,7 +486,7 @@
         <action id="ThePlugin.Crucible.Comment.MarkRead"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentReadAction"
                 text="Mark Read"
-                icon="/icons/ico_crucible_orange.png"/>
+                icon="/icons/crucible/comments/ico_comment_toggle_read.png"/>
                 />
         <action id="ThePlugin.Crucible.Comment.MarkLeaveUnread"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentLeaveUnreadAction"
@@ -496,7 +496,7 @@
 		<action id="ThePlugin.Crucible.Comment.NextDiff"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
 				text="Next Difference"
-				icon="/icons/crucible/comments/ico_comment_down.png">
+				icon="/actions/moveDown.png">
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 		<action id="ThePlugin.Crucible.Comment.PrevDiff"
