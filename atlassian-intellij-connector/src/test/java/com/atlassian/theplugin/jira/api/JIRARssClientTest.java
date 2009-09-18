@@ -69,7 +69,7 @@ public class JIRARssClientTest extends TestCase {
 */
 	}
 
-    public void testAuthenticationException_PL_1827() throws RemoteApiMalformedUrlException {
+    public void testAuthenticationException_PL_1827() throws RemoteApiMalformedUrlException, JIRAException {
         Server srv = new Server() {
             ServerIdImpl serverId = new ServerIdImpl();
             public ServerIdImpl getServerId() {
@@ -106,7 +106,7 @@ public class JIRARssClientTest extends TestCase {
         };
         JIRARssClientPublic mockRssClient = new JIRARssClientPublic(new JiraServerData(srv, "userName", "password", true), new HttpSessionCallback() {
             public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
-                return null;
+                return new HttpClient();
             }
             public void configureHttpMethod(AbstractHttpSession session, HttpMethod method) {
             }
@@ -219,7 +219,7 @@ public class JIRARssClientTest extends TestCase {
 
         public JIRARssClientPublic(final JiraServerData server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
             super(server, callback);
-        }
+}
 
         @Override
         public Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -228,5 +228,5 @@ public class JIRARssClientTest extends TestCase {
         }
     }
 
-    
+
 }
