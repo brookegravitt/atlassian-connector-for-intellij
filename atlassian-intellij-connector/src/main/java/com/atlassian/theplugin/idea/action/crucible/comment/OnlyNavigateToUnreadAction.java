@@ -14,8 +14,8 @@ import javax.swing.*;
  * Time: 1:00:07 PM
  */
 public class OnlyNavigateToUnreadAction extends ToggleAction {
-    private static Icon ON_ICON = IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_skip.png");
-    private static Icon OFF_ICON = IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_unskip.png");
+    private final static Icon ON_ICON = IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_skip.png");
+    private final static Icon OFF_ICON = IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_unskip.png");
 
     @Override
     public void update(AnActionEvent event) {
