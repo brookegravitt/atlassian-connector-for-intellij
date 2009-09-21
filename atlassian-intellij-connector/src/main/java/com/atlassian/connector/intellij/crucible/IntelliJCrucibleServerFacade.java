@@ -67,8 +67,7 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 
 	}
 	
-	private final CrucibleServerFacadeImpl facade = new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(),
-			new IntelliJHttpSessionCallback());
+	private final CrucibleServerFacadeImpl facade;
 	private static IntelliJCrucibleServerFacade instance;
 	private final CrucibleProjectCacheImpl projectCache = new CrucibleProjectCacheImpl();
 
@@ -80,7 +79,11 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 	}
 
 	private IntelliJCrucibleServerFacade() {
-
+		this(new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()));
+	}
+	
+	IntelliJCrucibleServerFacade(CrucibleServerFacadeImpl facade) {
+		this.facade = facade;
 	}
 
 	public ReviewAdapter abandonReview(ServerData server, PermId permId)
@@ -362,7 +365,10 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 
 			List<User> allowedReviewers = new ArrayList<User>();
 			for (String userName : allowedReviewersStr) {
-				allowedReviewers.add(facade.getUser(server.toConnectionCfg(), userName));
+				final User user = facade.getUser(server.toConnectionCfg(), userName);
+				if (user != null) {
+					allowedReviewers.add(user);
+				}
 			}
 			return allowedReviewers;
 		}
