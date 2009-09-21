@@ -127,7 +127,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				List<Reviewer> reviewers = new ArrayList<Reviewer>();
 
 				try {
-					users = crucibleServerFacade.getUsers(server);
+					users = crucibleServerFacade.getAllowedReviewers(server, reviewData.getProjectKey());
 					reviewers = crucibleServerFacade.getReviewers(server, reviewData.getPermId());
 				} catch (RemoteApiException e) {
 					// nothing can be done here
