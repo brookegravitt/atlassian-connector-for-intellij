@@ -85,7 +85,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
 
 
         dismissLabel = new LinkLabel();
-        dismissLabel.setText("dismiss");
+        dismissLabel.setText(" Dismiss");
         dismissLabel.setHorizontalTextPosition(SwingUtilities.LEFT);
         dismissLabel.addMouseListener(new MouseAdapter() {
 
