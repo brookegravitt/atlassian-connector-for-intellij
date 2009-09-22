@@ -36,9 +36,6 @@ import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -58,7 +55,11 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.vcsUtil.VcsUtil;
-import java.awt.EventQueue;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -212,7 +213,8 @@ public final class CrucibleHelper {
 				// @todo implement it handling of binary files
 				if (change.getBeforeRevision() != null) {
 					uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent().getBytes(),
-							change.getAfterRevision().getContent().getBytes(), change.getBeforeRevision().getRevisionNumber().asString()));
+							change.getAfterRevision().getContent().getBytes(),
+                            change.getBeforeRevision().getRevisionNumber().asString()));
 				} else {
 					uploadItems.add(new UploadItem(fileUrl, change.getAfterRevision().getContent().getBytes(),
 							change.getAfterRevision().getContent().getBytes(),
