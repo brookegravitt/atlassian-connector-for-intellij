@@ -19,6 +19,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.components.labels.LinkLabel;
 
 import javax.swing.*;
@@ -76,28 +77,34 @@ public class StatusBarPane extends JPanel implements StatusBar {
 
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.0;
-//		gbc.ipady = PAD_Y;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(textPanel, gbc);
 
 
-        dismissLabel = new LinkLabel();
-        dismissLabel.setText(" Dismiss");
+        dismissLabel = new LinkLabel("", IconLoader.getIcon("/actions/cleanLight.png"));
         dismissLabel.setHorizontalTextPosition(SwingUtilities.LEFT);
+        dismissLabel.setHorizontalAlignment(SwingUtilities.LEFT);
+        dismissLabel.setToolTipText("Dismiss message");
         dismissLabel.addMouseListener(new MouseAdapter() {
+
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 clear();
             }
         });
-        gbc.gridx++;
-        gbc.weightx = 1.0;
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
 //		gbc.ipady = PAD_Y;
         add(dismissLabel, gbc);
+
+
+        gbc.gridx++;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+//		gbc.ipady = PAD_Y;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(textPanel, gbc);
+
 
         gbc.gridx++;
         gbc.weightx = 0.0;
@@ -117,8 +124,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
         textPanel.setText(" " + message);
         textPanel.setBackground(defaultColor);
         setBackground(defaultColor);
-        additionalPanel.setBackground(defaultColor);
-        dismissLabel.setVisible(message != null && message.length() > 0);
+        dismissLabel.setVisible(false);
         dismissLabel.setBackground(defaultColor);
         errors.clear();
     }
