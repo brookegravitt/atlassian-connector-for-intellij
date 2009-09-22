@@ -36,6 +36,9 @@ import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -55,11 +58,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.vcsUtil.VcsUtil;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
+import java.awt.EventQueue;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -210,12 +209,13 @@ public final class CrucibleHelper {
 					fileUrl = StringUtils.difference(rootUrl, fileUrl);
 				}
 
+				// @todo implement it handling of binary files
 				if (change.getBeforeRevision() != null) {
-					uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent(),
-							change.getAfterRevision().getContent(), change.getBeforeRevision().getRevisionNumber().asString()));
+					uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent().getBytes(),
+							change.getAfterRevision().getContent().getBytes(), change.getBeforeRevision().getRevisionNumber().asString()));
 				} else {
-					uploadItems.add(new UploadItem(fileUrl, change.getAfterRevision().getContent(),
-							change.getAfterRevision().getContent(),
+					uploadItems.add(new UploadItem(fileUrl, change.getAfterRevision().getContent().getBytes(),
+							change.getAfterRevision().getContent().getBytes(),
 							change.getAfterRevision().getRevisionNumber().toString()));
 				}
 			} catch (VcsException e) {
@@ -235,7 +235,7 @@ public final class CrucibleHelper {
 	 * @param virtualFile	  file to fetch from VCS
 	 * @param line			 line to go to
 	 * @param column		   column to go to
-	 * @param action		   action to execute upon sucsessful completion of the fetching
+	 * @param action		   action to execute upon successful completion of the fetching
 	 */
 	// CHECKSTYLE:OFF
 	private static void fetchAndOpenFileWithDiffs(final Project project, final boolean modal,
