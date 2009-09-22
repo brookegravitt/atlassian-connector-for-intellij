@@ -225,14 +225,23 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         PluginSSLProtocolSocketFactory that = (PluginSSLProtocolSocketFactory) o;
 
-        if (logger != null ? !logger.equals(that.logger) : that.logger != null) return false;
-        if (trustManager != null ? !trustManager.equals(that.trustManager) : that.trustManager != null) return false;
+        if (logger != null ? !logger.equals(that.logger) : that.logger != null) {
+            return false;
+        }
+        if (trustManager != null ? !trustManager.equals(that.trustManager) : that.trustManager != null) {
+            return false;
+        }
 
         return true;
     }
