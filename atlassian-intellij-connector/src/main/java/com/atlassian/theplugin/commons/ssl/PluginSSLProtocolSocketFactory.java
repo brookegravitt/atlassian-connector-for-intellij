@@ -26,7 +26,11 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.Logger;
 import org.apache.axis.AxisProperties;
-import org.apache.axis.components.net.*;
+import org.apache.axis.components.net.BooleanHolder;
+import org.apache.axis.components.net.SecureSocketFactory;
+import org.apache.axis.components.net.SocketFactoryFactory;
+import org.apache.axis.components.net.TransportClientProperties;
+import org.apache.axis.components.net.TransportClientPropertiesFactory;
 import org.apache.axis.utils.Messages;
 import org.apache.axis.utils.StringUtils;
 import org.apache.axis.utils.XMLUtils;
@@ -35,7 +39,12 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -212,5 +221,27 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        PluginSSLProtocolSocketFactory that = (PluginSSLProtocolSocketFactory) o;
+
+        if (logger != null ? !logger.equals(that.logger) : that.logger != null) return false;
+        if (trustManager != null ? !trustManager.equals(that.trustManager) : that.trustManager != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (trustManager != null ? trustManager.hashCode() : 0);
+        result = 31 * result + (logger != null ? logger.hashCode() : 0);
+        return result;
     }
 }
