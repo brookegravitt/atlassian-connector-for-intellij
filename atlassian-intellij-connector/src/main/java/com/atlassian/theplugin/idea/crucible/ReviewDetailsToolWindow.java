@@ -290,8 +290,13 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		}
 
 		public void reviewChanged(final ReviewAdapter review, final java.util.List<CrucibleNotification> notifications) {
-			summaryPanel.refresh();
-			detailsPanel.refresh();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    summaryPanel.refresh();
+			        detailsPanel.refresh();
+                }
+            });
+
 		}
 
         public void commentReadStateChanged(final ReviewAdapter review, final Comment comment) {
