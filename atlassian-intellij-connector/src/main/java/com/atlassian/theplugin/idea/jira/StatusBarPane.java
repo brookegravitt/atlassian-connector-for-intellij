@@ -126,6 +126,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
         setBackground(defaultColor);
         dismissLabel.setVisible(false);
         dismissLabel.setBackground(defaultColor);
+        additionalPanel.setBackground(defaultColor);
         errors.clear();
     }
 
