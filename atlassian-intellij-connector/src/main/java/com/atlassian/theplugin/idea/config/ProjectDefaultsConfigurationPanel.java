@@ -520,7 +520,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		public Object getSelectedItem() {
 			for (CrucibleServerCfgWrapper server : getServers()) {
-                ServerData defaultCru = IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer();
+                //ServerData defaultCru = IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer();
+                final CrucibleServerCfg defaultCru = projectConfiguration.getDefaultCrucibleServer();
 				final ServerId defaultCrucibleServerId = defaultCru != null ? defaultCru.getServerId() : null;
 				if (server.getWrapped().getServerId().equals(
 						defaultCrucibleServerId != null ? defaultCrucibleServerId : null)) {
@@ -587,7 +588,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
-            ServerData defaultFsh = IdeaHelper.getProjectCfgManager(project).getDefaultFishEyeServer();
+            //ServerData defaultFsh = IdeaHelper.getProjectCfgManager(project).getDefaultFishEyeServer();
+            final FishEyeServer defaultFsh = projectConfiguration.getDefaultFishEyeServer();
             final ServerId defaultFisheyeServerId = defaultFsh != null ? defaultFsh.getServerId() : null;
 
 			for (FishEyeServerWrapper server : getServers()) {
@@ -655,7 +657,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
-            ServerData defaultJira = IdeaHelper.getProjectCfgManager(project).getDefaultJiraServer();
+            //ServerData defaultJira = IdeaHelper.getProjectCfgManager(project).getDefaultJiraServer();
+            final JiraServerCfg defaultJira = projectConfiguration.getDefaultJiraServer();
             final ServerId defaultJiraServerId = defaultJira != null ? defaultJira.getServerId() : null;
 
 			for (JiraServerCfgWrapper server : getServers()) {
