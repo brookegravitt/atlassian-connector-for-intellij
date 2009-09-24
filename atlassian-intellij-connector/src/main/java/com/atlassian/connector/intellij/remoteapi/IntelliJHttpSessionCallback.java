@@ -17,6 +17,8 @@ public class IntelliJHttpSessionCallback extends HttpSessionCallbackImpl {
 	public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
 		final HttpClient client = HttpClientFactory.getClient();
 		client.getParams().setParameter(HttpMethodParams.USER_AGENT, USER_AGENT);
+        //to get rid of warning message 
+        client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024*1024);
 		return client;
 	}
 
