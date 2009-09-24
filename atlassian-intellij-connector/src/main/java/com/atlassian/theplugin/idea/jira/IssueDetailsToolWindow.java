@@ -7,7 +7,14 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
+import com.atlassian.theplugin.commons.jira.api.JIRAComment;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -20,7 +27,11 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
-import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
+import com.atlassian.theplugin.idea.ui.ShowHideButton;
+import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -33,7 +44,11 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -55,12 +70,21 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Document;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -92,7 +116,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		this.projectCfgManager = projectCfgManager;
 	}
 
-	private final class IssueContentParameters implements ContentParameters {
+    public boolean setStatusErrorMessage(String key, String message, JIRAException e) {
+        IssuePanel panel = getContentPanel(key);
+        if (panel != null) {
+            panel.setStatusErrorMessage(message, e);
+        }
+
+        return panel != null;
+    }
+
+    private final class IssueContentParameters implements ContentParameters {
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
 		private JIRAIssue issue;
 		private final JIRAIssueListModel model;

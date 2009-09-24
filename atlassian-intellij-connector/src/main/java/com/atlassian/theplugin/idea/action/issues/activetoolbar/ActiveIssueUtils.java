@@ -26,9 +26,11 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -187,6 +189,7 @@ public final class ActiveIssueUtils {
 				}
 
 				public void failure(Throwable problem) {
+                    
 				}
 			});
 		}
@@ -294,6 +297,9 @@ public final class ActiveIssueUtils {
 		}
 
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+        final IssueDetailsToolWindow detailsPanel = IdeaHelper.getIssueDetailsToolWindow(project);
+
+
 
 		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing Issue Information", false) {
 			private JIRAIssue jiraIssue = null;
@@ -304,11 +310,30 @@ public final class ActiveIssueUtils {
 					// retrieve fresh issue instance from the server
 					jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
 					isOk = true;
-				} catch (JIRAException e) {
+				} catch (final JIRAException e) {
 					PluginUtil.getLogger().warn("Error starting work on issue: " + e.getMessage(), e);
+
 					if (panel != null) {
 						panel.setStatusErrorMessage("Error starting work on issue: " + e.getMessage(), e);
 					}
+
+                     boolean messageDisplayed = false;
+                    if (detailsPanel != null) {
+                        messageDisplayed = detailsPanel.setStatusErrorMessage(newActiveIssue.getIssueKey(),
+                                "Error starting work on issue: " + e.getMessage(), e);
+                        if (!messageDisplayed) {}
+                    }
+                    
+                    if (panel == null && detailsPanel == null || !messageDisplayed) {
+                        SwingUtilities.invokeLater(new Runnable(){
+
+                            public void run() {
+                                DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
+                                "Error starting work on issue:", e);
+                            }
+                        });
+
+                    }
 					isOk = false;
 				}
 			}

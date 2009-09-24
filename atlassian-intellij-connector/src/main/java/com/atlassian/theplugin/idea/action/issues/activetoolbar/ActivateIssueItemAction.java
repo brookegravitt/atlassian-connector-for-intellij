@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -81,15 +81,4 @@ public class ActivateIssueItemAction extends AnAction {
 			}
 		}
 	}
-
-//	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-////		if (activeIssue != null) {
-////			event.getPresentation().setText(activeIssue.getIssueKey());
-////		} else {
-////			event.getPresentation().setEnabled(false);
-////			event.getPresentation().setText("unknown");
-////		}
-//
-//
-//	}
 }
