@@ -299,62 +299,8 @@ public final class ActiveIssueUtils {
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
         final IssueDetailsToolWindow detailsPanel = IdeaHelper.getIssueDetailsToolWindow(project);
 
-
-
-		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing Issue Information", false) {
-			private JIRAIssue jiraIssue = null;
-			private boolean isOk = false;
-
-			public void run(@NotNull final ProgressIndicator indicator) {
-				try {
-					// retrieve fresh issue instance from the server
-					jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
-					isOk = true;
-				} catch (final JIRAException e) {
-					PluginUtil.getLogger().warn("Error starting work on issue: " + e.getMessage(), e);
-
-					if (panel != null) {
-						panel.setStatusErrorMessage("Error starting work on issue: " + e.getMessage(), e);
-					}
-
-                     boolean messageDisplayed = false;
-                    if (detailsPanel != null) {
-                        messageDisplayed = detailsPanel.setStatusErrorMessage(newActiveIssue.getIssueKey(),
-                                "Error starting work on issue: " + e.getMessage(), e);
-                        if (!messageDisplayed) {}
-                    }
-                    
-                    if (panel == null && detailsPanel == null || !messageDisplayed) {
-                        SwingUtilities.invokeLater(new Runnable(){
-
-                            public void run() {
-                                DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
-                                "Error starting work on issue:", e);
-                            }
-                        });
-
-                    }
-					isOk = false;
-				}
-			}
-
-			public void onSuccess() {
-				if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
-					if (!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
-							&& !"-1".equals(jiraIssue.getAssigneeId())) {
-						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
-										+ ".\nDo you want to overwrite assignee and start progress?",
-								"Issue " + jiraIssue.getKey(), Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-					}
-					if (isOk) {
-						//assign to me and start working
-						panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
-                                ActiveIssueUtils.getStatusBarPane(event));
-					}
-				}
-			}
-		});
+		ProgressManager.getInstance().run(
+                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event));
 	}
 
 	public static boolean deactivate(final AnActionEvent event, final DeactivateIssueResultHandler resultHandler) {
@@ -395,4 +341,79 @@ public final class ActiveIssueUtils {
 		}
 		return true;
 	}
+
+    private static class RefreshingIssueTask extends Task.Backgroundable {
+        private JIRAIssue jiraIssue;
+        private boolean isOk;
+        private final JiraServerData jiraServerCfg;
+        private final ActiveJiraIssue newActiveIssue;
+        private final IssueListToolWindowPanel panel;
+        private final IssueDetailsToolWindow detailsPanel;
+        private final AnActionEvent event;
+
+        public RefreshingIssueTask(Project project, JiraServerData jiraServerCfg,
+                                   ActiveJiraIssue newActiveIssue, IssueListToolWindowPanel panel,
+                                   IssueDetailsToolWindow detailsPanel, AnActionEvent event) {
+            super(project, "Refreshing Issue Information", false);
+            this.jiraServerCfg = jiraServerCfg;
+            this.newActiveIssue = newActiveIssue;
+            this.panel = panel;
+            this.detailsPanel = detailsPanel;
+            this.event = event;
+            jiraIssue = null;
+            isOk = false;
+        }
+
+        public void run(@NotNull final ProgressIndicator indicator) {
+            try {
+                // retrieve fresh issue instance from the server
+                jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
+                isOk = true;
+            } catch (final JIRAException e) {
+                PluginUtil.getLogger().warn("Error starting work on issue: " + e.getMessage(), e);
+
+                if (panel != null) {
+                    panel.setStatusErrorMessage("Error starting work on issue: " + e.getMessage(), e);
+                }
+
+                boolean messageDisplayed = false;
+                if (detailsPanel != null) {
+                    messageDisplayed = detailsPanel.setStatusErrorMessage(newActiveIssue.getIssueKey(),
+                            "Error starting work on issue: " + e.getMessage(), e);
+                    if (!messageDisplayed) {
+
+                    }
+                }
+
+                if (panel == null && detailsPanel == null || !messageDisplayed) {
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        public void run() {
+                            DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
+                                    "Error starting work on issue:", e);
+                        }
+                    });
+
+                }
+                isOk = false;
+            }
+        }
+
+        public void onSuccess() {
+            if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
+                if (!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
+                        && !"-1".equals(jiraIssue.getAssigneeId())) {
+                    isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+                            "Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
+                                    + ".\nDo you want to overwrite assignee and start progress?",
+                            "Issue " + jiraIssue.getKey(), Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+                }
+                if (isOk) {
+                    //assign to me and start working
+                    panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
+                            ActiveIssueUtils.getStatusBarPane(event));
+                }
+            }
+        }
+    }
 }
