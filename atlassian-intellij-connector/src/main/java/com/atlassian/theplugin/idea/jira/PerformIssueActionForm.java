@@ -19,8 +19,22 @@ import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.controls.*;
+import com.atlassian.theplugin.idea.jira.controls.ActionFieldEditor;
+import com.atlassian.theplugin.idea.jira.controls.CommentTextArea;
+import com.atlassian.theplugin.idea.jira.controls.FieldAffectsVersion;
+import com.atlassian.theplugin.idea.jira.controls.FieldComponents;
+import com.atlassian.theplugin.idea.jira.controls.FieldDueDate;
+import com.atlassian.theplugin.idea.jira.controls.FieldFixForVersion;
+import com.atlassian.theplugin.idea.jira.controls.FieldIssueType;
+import com.atlassian.theplugin.idea.jira.controls.FieldPriority;
+import com.atlassian.theplugin.idea.jira.controls.FieldResolution;
+import com.atlassian.theplugin.idea.jira.controls.FieldTextArea;
+import com.atlassian.theplugin.idea.jira.controls.FieldTextField;
+import com.atlassian.theplugin.idea.jira.controls.FieldTimeTracking;
+import com.atlassian.theplugin.idea.jira.controls.FieldUser;
+import com.atlassian.theplugin.idea.jira.controls.FreezeListener;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -219,7 +233,12 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
     }
 
     protected void doOKAction() {
-        super.doOKAction();
+        // PL-1784 - healing the sympthoms. I have absolutely no clue what could cause it. Could be some EAP brokenness
+        try {
+            super.doOKAction();
+        } catch (NullPointerException e) {
+            LoggerImpl.getInstance().error(e);
+        }
     }
 
     @Nullable
