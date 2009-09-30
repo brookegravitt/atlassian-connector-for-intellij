@@ -18,7 +18,7 @@ public class IntelliJHttpSessionCallback extends HttpSessionCallbackImpl {
 		final HttpClient client = HttpClientFactory.getClient();
 		client.getParams().setParameter(HttpMethodParams.USER_AGENT, USER_AGENT);
         //to get rid of warning message 
-        client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024);
+        client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, "1048576");        
 		return client;
 	}
 
