@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -122,7 +122,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 					JiraServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
 					if (ai != null && server != null) {
 						try {
-							JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(server, ai);
+							JiraIssueAdapter issue = ActiveIssueUtils.getJIRAIssue(server, ai);
 							WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
 									server, issue, checkinProjectPanel.getProject(), txtTimeSpent.getText(), false, config);
 							dlg.setRemainingEstimateUpdateMode(config.getRemainingEstimateUpdateMode());
@@ -205,7 +205,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 					// ok, this sucks a bit. I am creating a phony dialog just to
 					// make it return the start time, based on time spent and now()
 					// can't be bother to do something more intelligent though :P
-					final JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(server, activeIssue);
+					final JiraIssueAdapter issue = ActiveIssueUtils.getJIRAIssue(server, activeIssue);
 					WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
 							server, issue, checkinProjectPanel.getProject(),
 							txtTimeSpent.getText(), false, config);
@@ -219,7 +219,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 						public void run(@NotNull ProgressIndicator progressIndicator) {
 							try {
-								JIRAServerFacadeImpl.getInstance().logWork(server, issue,
+								IntelliJJiraServerFacade.getInstance().logWork(server, issue,
                                         txtTimeSpent.getText(), cal, null,
 										!config.getRemainingEstimateUpdateMode()
 												.equals(RemainingEstimateUpdateMode.UNCHANGED),

@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class OpenIssueAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
-		JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
+		JiraIssueAdapter issue = e.getData(Constants.ISSUE_KEY);
 		if (issue != null) {
 			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 			if (panel != null) {
@@ -24,7 +24,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 
 	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
-		JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
+		JiraIssueAdapter issue = event.getData(Constants.ISSUE_KEY);
 		if (enabled && issue != null) {
 			event.getPresentation().setEnabled(true);
 		} else if (ModelFreezeUpdater.getState(event) && issue != null) {

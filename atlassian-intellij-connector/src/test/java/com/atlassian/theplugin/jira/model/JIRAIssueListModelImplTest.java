@@ -15,8 +15,12 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.mockito.Mockito;
@@ -26,9 +30,42 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JIRAIssueListModelImplTest extends TestCase {
-
+    private JiraServerData jiraServerData;
 	public void setUp() throws Exception {
 		super.setUp();
+        jiraServerData = new JiraServerData(new Server(){
+            public ServerIdImpl getServerId() {
+                return null;
+            }
+
+            public String getName() {
+                return null;
+            }
+
+            public String getUrl() {
+                return null;
+            }
+
+            public boolean isEnabled() {
+                return false;
+            }
+
+            public boolean isUseDefaultCredentials() {
+                return false;
+            }
+
+            public String getUsername() {
+                return null;
+            }
+
+            public String getPassword() {
+                return null;
+            }
+
+            public ServerType getServerType() {
+                return ServerType.JIRA_SERVER;
+            }
+        }, new UserCfg(), true);
 	}
 
 	public void tearDown() throws Exception {
@@ -43,23 +80,23 @@ public class JIRAIssueListModelImplTest extends TestCase {
 
 	public void testAddMany() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
-		JIRAIssueBean proto = new JIRAIssueBean();
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
+		JiraIssueAdapter proto = new JiraIssueAdapter(jiraServerData);
 		proto.setKey("A-1");
-		list.add(new JIRAIssueBean(proto));
+		list.add(new JiraIssueAdapter(proto));
 		proto.setKey("A-2");
-		list.add(new JIRAIssueBean(proto));
+		list.add(new JiraIssueAdapter(proto));
 		proto.setKey("A-3");
-		list.add(new JIRAIssueBean(proto));
+		list.add(new JiraIssueAdapter(proto));
 		proto.setKey("A-4");
-		list.add(new JIRAIssueBean(proto));
+		list.add(new JiraIssueAdapter(proto));
 		model.addIssues(list);
 		assertEquals(list.size(), model.getIssues().size());
 	}
 
 	public void testClear() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		model.addIssues(Arrays.asList((JIRAIssue) new JIRAIssueBean()));
+		model.addIssues(Arrays.asList((JiraIssueAdapter) new JiraIssueAdapter(jiraServerData)));
 		assertEquals(1, model.getIssues().size());
 		model.clear();
 		assertEquals(0, model.getIssues().size());
@@ -71,7 +108,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	public void testListeners() {
 		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelListener l = new JIRAIssueListModelListener() {
-			public void issueUpdated(final JIRAIssue issue) {
+			public void issueUpdated(final JiraIssueAdapter issue) {
 
 			}
 

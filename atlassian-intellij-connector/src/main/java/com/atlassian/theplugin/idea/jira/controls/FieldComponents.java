@@ -15,7 +15,11 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.jira.api.*;
+
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -28,17 +32,17 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class FieldComponents extends AbstractFieldList {
-	public FieldComponents(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field,
+	public FieldComponents(final JIRAServerModel jiraServerModel, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super(jiraServerModel, issue, field, freezeListener);
 	}
 
-	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JiraIssueAdapter issue) {
 		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAProject> projects = serverModel.getProjects(issue.getServer());
+					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
 					JIRAProject issueProject = null;
 					for (JIRAProject project : projects) {
 						if (issue.getProjectKey().equals(project.getKey())) {
@@ -47,7 +51,7 @@ public class FieldComponents extends AbstractFieldList {
 						}
 					}
 					final List<JIRAComponentBean> versions =
-							serverModel.getComponents(issue.getServer(), issueProject, false);
+							serverModel.getComponents(issue.getJiraServerData(), issueProject, false);
 					SwingUtilities.invokeLater(new LocalComponentListFiller(listModel, versions, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e.getMessage());
@@ -60,10 +64,10 @@ public class FieldComponents extends AbstractFieldList {
 	private class LocalComponentListFiller implements Runnable {
 		private DefaultListModel listModel;
 		private List<JIRAComponentBean> components;
-		private JIRAIssue issue;
+		private JiraIssueAdapter issue;
 
 		public LocalComponentListFiller(final DefaultListModel listModel,
-				final List<JIRAComponentBean> components, final JIRAIssue issue) {
+				final List<JIRAComponentBean> components, final JiraIssueAdapter issue) {
 
 			this.listModel = listModel;
 			this.components = components;

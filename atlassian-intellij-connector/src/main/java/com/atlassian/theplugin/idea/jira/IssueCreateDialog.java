@@ -19,21 +19,25 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
-import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.jira.api.*;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -68,14 +72,14 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JList componentsList;
 	private JList versionsList;
 	private JList fixVersionsList;
-	private final JiraServerData jiraServer;
+	private final JiraServerData jiraServerData;
 	private IssueListToolWindowPanel issueListToolWindowPanel;
 	private Project project;
 	private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 
-	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
-			@NotNull Project project, JIRAServerModel model, JiraServerData server,
+    public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
+			@NotNull Project project, JIRAServerModel model, final JiraServerData jiraServerData,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
 		this.issueListToolWindowPanel = issueListToolWindowPanel;
@@ -87,7 +91,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		init();
 		pack();
 
-		this.jiraServer = server;
+		this.jiraServerData = jiraServerData;
 		setTitle("Create JIRA Issue");
 
 		projectComboBox.setRenderer(new ColoredListCellRenderer() {
@@ -183,7 +187,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAProject> projects = new ArrayList<JIRAProject>();
 
 			public void run() throws JIRAException {
-				projects = model.getProjects(jiraServer);
+				projects = model.getProjects(jiraServerData);
 			}
 
 			public void onSuccess() {
@@ -211,10 +215,10 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			// select default project
 			if (jiraConfiguration != null &&
-					jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServer.getServerId())) {
+					jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServerData.getServerId())) {
 
 				String project = jiraConfiguration.getView().getServerDefaultss().
-						get(jiraServer.getServerId()).getProject();
+						get(jiraServerData.getServerId()).getProject();
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -242,7 +246,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAPriorityBean> priorities = new ArrayList<JIRAPriorityBean>();
 
 			public void run() throws Exception {
-				priorities = model.getPriorities(jiraServer, myPerformAction);
+				priorities = model.getPriorities(jiraServerData, myPerformAction);
 			}
 
 			public void onSuccess() {
@@ -275,7 +279,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 
 			public void run() throws Exception {
-				issueTypes = model.getIssueTypes(jiraServer, project, true);
+				issueTypes = model.getIssueTypes(jiraServerData, project, true);
 			}
 
 			public void onSuccess() {
@@ -299,7 +303,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAComponentBean> components;
 
 			public void run() throws Exception {
-				components = model.getComponents(jiraServer, project, true);
+				components = model.getComponents(jiraServerData, project, true);
 			}
 
 			@Override
@@ -324,7 +328,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAVersionBean> versions;
 
 			public void run() throws Exception {
-				versions = model.getVersions(jiraServer, project, false);
+				versions = model.getVersions(jiraServerData, project, false);
 			}
 
 			@Override
@@ -349,7 +353,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAFixForVersionBean> versions;
 
 			public void run() throws Exception {
-				versions = model.getFixForVersions(jiraServer, project, false);
+				versions = model.getFixForVersions(jiraServerData, project, false);
 			}
 
 			@Override
@@ -416,15 +420,15 @@ public class IssueCreateDialog extends DialogWrapper {
 
 		if (projectComboBox.getSelectedItem() != null && jiraConfiguration != null && jiraConfiguration.getView() != null
 				&& jiraConfiguration.getView().getServerDefaultss() != null
-				&& jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServer.getServerId())) {
+				&& jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServerData.getServerId())) {
 
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 
 			String configProject = jiraConfiguration.getView().getServerDefaultss().
-					get(jiraServer.getServerId()).getProject();
+					get(jiraServerData.getServerId()).getProject();
 
 			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaultss().
-					get(jiraServer.getServerId()).getComponents();
+					get(jiraServerData.getServerId()).getComponents();
 
 			// select default components for specified project
 			if (selectedProject.equals(configProject)) {
@@ -456,17 +460,9 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
-	private JIRAIssueBean issueProxy;
-
-	JIRAIssue getJIRAIssue() {
-		return issueProxy;
-	}
 
 	@Override
 	protected void doOKAction() {
-		issueProxy = new JIRAIssueBean();
-		issueProxy.setSummary(summary.getText());
-
 		JIRAIssueBean newIssue;
 
 		newIssue = new JIRAIssueBean();
@@ -528,7 +524,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		// save selected project and components to the config
 		if (jiraConfiguration != null && jiraConfiguration.getView() != null) {
 			JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId(), p.getKey(), selectedComponents);
+			jiraConfiguration.getView().addServerDefault(jiraServerData.getServerId(), p.getKey(), selectedComponents);
 		}
 
 		createIssueAndCloseOnSuccess(newIssue);
@@ -543,7 +539,9 @@ public class IssueCreateDialog extends DialogWrapper {
 				indicator.setIndeterminate(true);
 
 				try {
-					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, newIssue);
+					final JiraIssueAdapter createdIssue = IntelliJJiraServerFacade.getInstance().createIssue(jiraServerData, newIssue);
+
+                    //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(createdIssue.getLocalConfigurationListener());
 
 					message = "New issue created: <a href="
 							+ createdIssue.getIssueUrl()

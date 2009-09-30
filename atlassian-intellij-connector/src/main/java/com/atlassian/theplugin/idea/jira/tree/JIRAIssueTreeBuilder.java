@@ -2,17 +2,17 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
 import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
@@ -21,10 +21,21 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class JIRAIssueTreeBuilder {
 
@@ -85,11 +96,12 @@ public class JIRAIssueTreeBuilder {
 	private class GroupByPriorityTreeNode extends JIRAIssueGroupTreeNode {
 		private JIRAPriorityBean priority;
 
-		public GroupByPriorityTreeNode(JIRAIssue issue) throws JIRAException {
+		public GroupByPriorityTreeNode(JiraIssueAdapter issue) throws JIRAException {
 			super(issueModel, issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
 					CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl()));
 
-			for (JIRAPriorityBean prio : jiraServerModel.getPriorities(issue.getServer(), false)) {
+			for (JIRAPriorityBean prio :
+                    jiraServerModel.getPriorities(issue.getJiraServerData(), false)) {
 				if (prio.getName().equals(issue.getPriority())) {
 					priority = prio;
 					break;
@@ -167,29 +179,29 @@ public class JIRAIssueTreeBuilder {
 
 	public synchronized void rebuild(JiraIssueListTree tree, JComponent treeParent) {
 
-		JIRAIssue selectedIsse = tree.getSelectedIssue();
+		JiraIssueAdapter selectedIsse = tree.getSelectedIssue();
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		reCreateTree(tree, treeParent, root);
 		if (isGroupSubtasksUnderParent) {
-			for (JIRAIssue issue : issueModel.getIssuesNoSubtasks()) {
+			for (JiraIssueAdapter issue : issueModel.getIssuesNoSubtasks()) {
 				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issue);
 				getPlace(issue, root).add(node);
 				if (!issue.getSubTaskKeys().isEmpty()) {
-					for (JIRAIssue sub : issueModel.getSubtasks(issue)) {
+					for (JiraIssueAdapter sub : issueModel.getSubtasks(issue)) {
 						node.add(new JIRAIssueTreeNode(sub));
 					}
 				}
 			}
-			Collection<JIRAIssue> orphans = issueModel.getSubtasks(null);
+			Collection<JiraIssueAdapter> orphans = issueModel.getSubtasks(null);
 			if (!orphans.isEmpty()) {
-				for (JIRAIssue i : orphans) {
+				for (JiraIssueAdapter i : orphans) {
 					JIRAIssueTreeNode node = new JIRAIssueTreeNode(i);
 					getPlace(i, root).add(node);
 				}
 			}
 		} else {
-			for (JIRAIssue issue : issueModel.getIssues()) {
+			for (JiraIssueAdapter issue : issueModel.getIssues()) {
 				getPlace(issue, root).add(new JIRAIssueTreeNode(issue));
 			}
 		}
@@ -203,7 +215,7 @@ public class JIRAIssueTreeBuilder {
 		selectIssueNode(tree, selectedIsse);
 	}
 
-	private void selectIssueNode(final JTree tree, final JIRAIssue selectedIssue) {
+	private void selectIssueNode(final JTree tree, final JiraIssueAdapter selectedIssue) {
 		if (selectedIssue == null) {
 			tree.clearSelection();
 			return;
@@ -272,7 +284,7 @@ public class JIRAIssueTreeBuilder {
 			isFlat = groupBy == JiraIssueGroupBy.NONE;
 		}
 
-		public DefaultMutableTreeNode getGroupNode(JIRAIssue issue, String name, Icon icon, Icon disabledIcon) {
+		public DefaultMutableTreeNode getGroupNode(JiraIssueAdapter issue, String name, Icon icon, Icon disabledIcon) {
 			if (isFlat) {
 				return (DefaultMutableTreeNode) getRoot();
 			}
@@ -353,7 +365,7 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
-	private DefaultMutableTreeNode getPlace(JIRAIssue issue, DefaultMutableTreeNode root) {
+	private DefaultMutableTreeNode getPlace(JiraIssueAdapter issue, DefaultMutableTreeNode root) {
 		String name;
 		String iconUrl = null;
 		switch (groupBy) {
@@ -388,7 +400,7 @@ public class JIRAIssueTreeBuilder {
 	// isn't this constant defined somewhere?
 	private static final int DAYS_IN_WEEK = 7;
 
-	private UpdateGroup updatedDate2Name(JIRAIssue issue) {
+	private UpdateGroup updatedDate2Name(JiraIssueAdapter issue) {
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 		UpdateGroup groupName;
 		try {
@@ -418,7 +430,7 @@ public class JIRAIssueTreeBuilder {
 		return groupName;
 	}
 
-	private String getProjectName(JIRAIssue issue) {
+	private String getProjectName(JiraIssueAdapter issue) {
 		if (projectKeysToNames == null
 				|| !projectKeysToNames.containsKey(new Pair<String, ServerId>(issue.getProjectKey(),
 				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()))) {

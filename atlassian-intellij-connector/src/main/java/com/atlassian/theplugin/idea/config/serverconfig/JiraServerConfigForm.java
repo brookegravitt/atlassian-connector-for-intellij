@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -40,7 +40,7 @@ public class JiraServerConfigForm {
     private JCheckBox cbUseBasicAuthentication;
     private final Project project;
     private final UserCfg defaultUser;
-    private final transient JIRAServerFacade jiraServerFacade;
+    private final transient JiraServerFacade jiraServerFacade;
 
     public JiraServerCfg getJiraServerCfg() {
         return jiraServerCfg;
@@ -48,7 +48,7 @@ public class JiraServerConfigForm {
 
     private JiraServerCfg jiraServerCfg;
 
-    public JiraServerConfigForm(Project project, final UserCfg defaultUser, JIRAServerFacade jiraServerFacade) {
+    public JiraServerConfigForm(Project project, final UserCfg defaultUser, JiraServerFacade jiraServerFacade) {
         this.project = project;
         this.defaultUser = defaultUser;
         this.jiraServerFacade = jiraServerFacade;

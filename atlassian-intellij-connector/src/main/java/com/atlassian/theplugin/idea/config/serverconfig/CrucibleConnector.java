@@ -35,9 +35,9 @@ public class CrucibleConnector implements Connector {
 
 	public synchronized void connect(final ServerData server) throws RemoteApiException {
 		isFisheye = false;
-		facade.testServerConnection(server.toConnectionCfg());
+		facade.testServerConnection(server.toHttpConnectionCfg());
 		try {
-			fishEyeServerFacade.testServerConnection(server.toConnectionCfg());
+			fishEyeServerFacade.testServerConnection(server.toHttpConnectionCfg());
 			isFisheye = true;
 		} catch (RemoteApiException e) {
 			// it's apparently not a FishEye instance

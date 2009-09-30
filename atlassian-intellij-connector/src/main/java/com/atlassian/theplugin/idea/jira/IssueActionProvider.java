@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 
 public interface IssueActionProvider {
 
@@ -26,5 +26,5 @@ public interface IssueActionProvider {
 	 */
 	void setStatusErrorMessage(final String error, Throwable exception);
 
-	ServerData getSelectedServer();
+	JiraServerData getSelectedServer();
 }

@@ -15,7 +15,10 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -27,17 +30,17 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class FieldPriority extends AbstractFieldComboBox {
-	public FieldPriority(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field,
+	public FieldPriority(final JIRAServerModel jiraServerModel, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super(jiraServerModel, issue, field, true, freezeListener);
 	}
 
-	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JiraIssueAdapter issue) {
 		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					final List<JIRAPriorityBean> priorities = serverModel.getPriorities(issue.getServer(), false);
+					final List<JIRAPriorityBean> priorities = serverModel.getPriorities(issue.getJiraServerData(), false);
 
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {

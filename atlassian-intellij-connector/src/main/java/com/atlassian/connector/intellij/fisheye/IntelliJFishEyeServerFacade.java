@@ -1,6 +1,6 @@
 package com.atlassian.connector.intellij.fisheye;
 
-import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.fisheye.FishEyeServerFacade2;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
@@ -30,15 +30,15 @@ public final class IntelliJFishEyeServerFacade implements FishEyeServerFacade {
 
 
 	public Collection<String> getRepositories(ServerData server) throws RemoteApiException {
-		return facade.getRepositories(server.toConnectionCfg());
+		return facade.getRepositories(server.toHttpConnectionCfg());
 	}
 
 	public ServerType getServerType() {
 		return facade.getServerType();
 	}
 
-	public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
-		facade.testServerConnection(connectionCfg);
+	public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+		facade.testServerConnection(httpConnectionCfg);
 	}
 
 }

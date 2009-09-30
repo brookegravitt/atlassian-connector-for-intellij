@@ -233,7 +233,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		} catch (RemoteApiException e) {
 			DialogWithDetails.showExceptionDialog(project,
 					e.getMessage() + "Error creating review: " + reviewData.getServerData().getUrl(), e);
-//			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
+//			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getJiraServerData().getUrl(), "");
 		} catch (ServerPasswordNotProvidedException e) {
 			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: "
 					+ reviewData.getServerData().getUrl(), "");

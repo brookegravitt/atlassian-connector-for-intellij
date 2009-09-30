@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.ModelFreezeUpdater;
@@ -46,7 +46,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		String text = "No active issue";
 		String tooltip = "";
-		JIRAIssue issue = null;
+		JiraIssueAdapter issue = null;
 		RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
 
 		if (activeIssue != null) {
@@ -91,9 +91,9 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
 				|| cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
 
-			for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
+			for (JiraIssueAdapter issue : cache.getLoadedRecenltyOpenIssues()) {
 				if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
-					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId(),
+					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getJiraServerData().getServerId(),
 							issue.getKey(), new DateTime());
 					group.add(new ActivateIssueItemAction(newActiveIsse, project));
 				}

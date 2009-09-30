@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
@@ -96,7 +96,7 @@ public final class Constants {
     public static final String STATUS_BAR_PANE = "com.atlassian.connector.statusbarpane";
     public static final DataKey<StatusBarPane> STATUS_BAR_PANE_KEY = DataKey.create(STATUS_BAR_PANE);    
 	public static final String ISSUE = "com.atlassian.connector.issue";
-	public static final DataKey<JIRAIssue> ISSUE_KEY = DataKey.create(ISSUE);
+	public static final DataKey<JiraIssueAdapter> ISSUE_KEY = DataKey.create(ISSUE);
 	public static final String REVIEW = "com.atlassian.connector.review";
 	public static final DataKey<ReviewAdapter> REVIEW_KEY = DataKey.create(REVIEW);
 	public static final String REVIEW_WINDOW_ENABLED = "com.atlassian.connector.review_window_enabled";

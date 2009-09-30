@@ -12,6 +12,7 @@
           <plan key="ACC-CS" />
           <plan key="ACC-CLO" />
           <plan key="ACC-DPL" />
+          <plan key="ACC-TST" />
           <plan key="ECL-COM" />
           <plan key="ECL-TST" />
           <plan key="INT-CS" />
@@ -22,14 +23,14 @@
       </bamboo>
       <jira>
         <server-id>d5b71692-3679-474f-bc0a-28165fd8f69b</server-id>
-        <name>Studio</name>
+        <name>Studioo</name>
         <url>https://studio.atlassian.com</url>
         <dontUseBasicAuth>false</dontUseBasicAuth>
       </jira>
       <crucible>
         <server-id>f398acb6-3be9-43b4-8985-485b57a146b9</server-id>
         <name>Atlaseye</name>
-        <url>https://svn.atlassian.com/atlaseye</url>
+        <url>https://atlaseye.atlassian.com</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <crucible>
@@ -52,10 +53,41 @@
       </jira>
       <fisheye>
         <server-id>f9eb736a-4d98-44e2-aa41-476185f26d84</server-id>
-        <name>Unnamed_1</name>
-        <url>https://svn.atlassian.com/atlaseye</url>
+        <name>AtlasEye</name>
+        <url>https://atlaseye.atlassian.com</url>
       </fisheye>
+      <bamboo>
+        <server-id>69c2a572-ce9a-4ff6-919f-43a21c586519</server-id>
+        <name>Panda</name>
+        <url>http://panda.sydney.atlassian.com:8080/bamboo</url>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <isBamboo2M9>true</isBamboo2M9>
+        <plans>
+          <plan key="BAM-MAIN" />
+          <plan key="BAM-NIGHTSTB" />
+        </plans>
+      </bamboo>
+      <jira>
+        <server-id>a5088764-a34a-4bd9-b3ca-789689e6bd37</server-id>
+        <name>EAC</name>
+        <url>https://extranet.atlassian.com/jira</url>
+        <dontUseBasicAuth>true</dontUseBasicAuth>
+      </jira>
+      <crucible>
+        <server-id>85e207bc-5895-4a02-a6a1-b9f805e241d0</server-id>
+        <name>JIRA Studio</name>
+        <url>https://studio.atlassian.com/source</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <crucible>
+        <server-id>d4292b00-cdbb-48fa-9fff-0b472d380652</server-id>
+        <name>SVN</name>
+        <url>https://svn.atlassian.com/atlaseye</url>
+        <isFisheyeInstance>false</isFisheyeInstance>
+      </crucible>
     </servers>
-    <default-jira-server>d5b71692-3679-474f-bc0a-28165fd8f69b</default-jira-server>
+    <default-fisheye-server>d5f90b60-7c6a-4d85-aa78-1ed7dff209ef</default-fisheye-server>
+    <default-fisheye-repo>studio</default-fisheye-repo>
   </project-configuration>
 </atlassian-ide-plugin>

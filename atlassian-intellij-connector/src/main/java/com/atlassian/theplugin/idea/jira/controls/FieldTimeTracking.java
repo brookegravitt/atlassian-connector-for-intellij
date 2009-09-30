@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.JiraTimeWdhmTextFieldListener;
 
 import javax.swing.*;
@@ -31,9 +31,9 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 	private static final int BOX_WIDTH = 5;
 
 	private FieldTextField textField;
-	private JIRAIssue issue;
+	private JiraIssueAdapter issue;
 
-	public FieldTimeTracking(final String text, final JIRAIssue issue, final JIRAActionField field,
+	public FieldTimeTracking(final String text, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super();
 

@@ -1,8 +1,11 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -28,13 +31,13 @@ public abstract class JIRAAbstractAction extends AnAction {
 //		onUpdate(event, enabled);
 
 		boolean enabled = false;
-		ServerData server = null;
-		JIRAIssue selectedIssue = event.getData(Constants.ISSUE_KEY);
+		JiraServerData server = null;
+		JiraIssueAdapter selectedIssue = event.getData(Constants.ISSUE_KEY);
 		if (selectedIssue != null) {
-			server = selectedIssue.getServer();
+            server = selectedIssue.getJiraServerData();
 		}
 		if (server == null && event.getData(Constants.SERVER_KEY) != null) {
-			server = event.getData(Constants.SERVER_KEY);
+			server = (JiraServerData) event.getData(Constants.SERVER_KEY);
 		}
 		if (server != null && server.isEnabled()) {
 			if (ModelFreezeUpdater.getState(event)) {
@@ -50,4 +53,9 @@ public abstract class JIRAAbstractAction extends AnAction {
 		}
 		onUpdate(event, enabled);
 	}
+
+    private JiraServerData getJiraServerData(AnActionEvent event, String serverId) {
+      ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+      return (JiraServerData)projectCfgManager.getJiraServerr(new ServerIdImpl(serverId));
+    }
 }

@@ -22,7 +22,7 @@
  */
 package com.atlassian.theplugin.commons.jira.api.rss;
 
-import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
@@ -49,19 +49,17 @@ import java.util.List;
 
 public class JIRARssClient extends AbstractHttpSession {
 	
-	/** this is dirty hack to finish 1st phase of refactoring faster. Remove it one day! */
-	@Deprecated
-	private final JiraServerData serverData;
-	
-	public JIRARssClient(final JiraServerData server, final HttpSessionCallback callback)
+	private final HttpConnectionCfg httpConnectionCfg;
+
+    public JIRARssClient(final HttpConnectionCfg httpConnectionCfg, final HttpSessionCallback callback)
             throws RemoteApiMalformedUrlException {
-		super(server.toConnectionCfg(), callback);
-		serverData = server;
-	}
+		super(httpConnectionCfg, callback);
+		this.httpConnectionCfg = httpConnectionCfg;
+    }
 
 	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
-        if (!serverData.isDontUseBasicAuth()) {
+        if (httpConnectionCfg.isUseBasicHttpAuth()) {
 		    method.addRequestHeader(new Header("Authorization", getAuthBasicHeaderValue()));
         }
 	}
@@ -226,7 +224,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private List<JIRAIssue> makeIssues(@NotNull List<Element> issueElements) {
 		List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
 		for (final Element issueElement : issueElements) {
-			JIRAIssueBean jiraIssue = new JIRAIssueBean(serverData, issueElement);
+			JIRAIssueBean jiraIssue = new JIRAIssueBean(httpConnectionCfg.getUrl(), issueElement);
 			CachedIconLoader.loadIcon(jiraIssue.getTypeIconUrl());
 			CachedIconLoader.loadIcon(jiraIssue.getPriorityIconUrl());
 			CachedIconLoader.loadIcon(jiraIssue.getStatusTypeUrl());
@@ -238,7 +236,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private String appendAuthentication(boolean firstItem) {
 		final String username = getUsername();
 		if (username != null) {
-            if (serverData.isDontUseBasicAuth()) {
+            if (!httpConnectionCfg.isUseBasicHttpAuth()) {
                 return (firstItem ? "?" : "&")
                         + "os_username=" + encodeUrl(username)
                         + "&os_password=" + encodeUrl(getPassword());

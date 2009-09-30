@@ -17,8 +17,8 @@ package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 
@@ -39,7 +39,7 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 		return list;
 	}
 
-	public AbstractFieldList(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field,
+	public AbstractFieldList(final JIRAServerModel serverModel, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 
 		this.field = field;
@@ -70,7 +70,7 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 	}
 
 	protected abstract void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel,
-			final JIRAIssue issue);
+			final JiraIssueAdapter issue);
 
 
 	public JIRAActionField getEditedFieldValue() {

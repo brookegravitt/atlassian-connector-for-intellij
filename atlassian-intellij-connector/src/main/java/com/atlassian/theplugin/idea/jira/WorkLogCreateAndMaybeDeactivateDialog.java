@@ -16,14 +16,13 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -80,7 +79,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	private JPanel commentPanel;
 	private JCheckBox chkLogWork;
 	private JCheckBox chkCommitChanges;
-    private JIRAIssue issue;
+    private JiraIssueAdapter issue;
     private final Project project;
 	private final boolean deactivateActiveIssue;
     private JiraWorkspaceConfiguration config;
@@ -89,7 +88,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	private WdhmInputListener timeSpentListener;
 	private WdhmInputListener remainingEstimateListener;
 	private MultipleChangeListBrowser changesBrowserPanel;
-    private JIRAServerFacade facade;
+    private JiraServerFacade facade;
     private JComboBox actionCombo;
     private JCheckBox cbPerformWorkflowAction;
 
@@ -146,7 +145,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
         actionCombo = new JComboBox();
 
-        java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+        java.util.List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
         if (actions != null) {
             fillActionCombo(actions);
         } else {
@@ -154,11 +153,11 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
                 @Override
                 public void run() {
                     try {
-                        JiraServerData jiraServer = issue.getServer();
+                        JiraServerData jiraServerData = issue.getJiraServerData();
 
-                        if (jiraServer != null) {
-                            final List<JIRAAction> actions = facade.getAvailableActions(jiraServer, issue);
-                            JiraIssueAdapter.get(issue).setCachedActions(actions);
+                        if (jiraServerData != null) {
+                            final List<JIRAAction> actions = facade.getAvailableActions(jiraServerData, issue);
+                            JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
 
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -493,7 +492,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return result;
 	}
 
-	public WorkLogCreateAndMaybeDeactivateDialog(final ServerData jiraServer, final JIRAIssue issue,
+	public WorkLogCreateAndMaybeDeactivateDialog(final JiraServerData jiraServer, final JiraIssueAdapter issue,
 			final Project project, final String timeSpent,
 			boolean deactivateActiveIssue, @NotNull final JiraWorkspaceConfiguration config) {
 
@@ -504,7 +503,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		this.deactivateActiveIssue = deactivateActiveIssue;
         this.config = config;
 
-        facade = JIRAServerFacadeImpl.getInstance();
+        facade = IntelliJJiraServerFacade.getInstance();
 
 		setupUI();
 

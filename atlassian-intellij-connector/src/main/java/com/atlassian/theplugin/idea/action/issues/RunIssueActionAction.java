@@ -1,20 +1,20 @@
 package com.atlassian.theplugin.idea.action.issues;
 
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueActionProvider;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
 import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -28,14 +28,14 @@ import java.awt.*;
 import java.util.List;
 
 public class RunIssueActionAction extends AnAction {
-	private final JIRAIssue issue;
+	private final JiraIssueAdapter issue;
 	private JIRAAction action;
-	private JIRAServerFacade facade;
+	private JiraServerFacade facade;
 	private IssueActionProvider window;
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 
-	public RunIssueActionAction(IssueActionProvider toolWindow, JIRAServerFacade facade,
-			JIRAIssue issue, JIRAAction jiraAction, final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
+    public RunIssueActionAction(IssueActionProvider toolWindow, JiraServerFacade facade,
+			JiraIssueAdapter issue, JIRAAction jiraAction, final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		super(jiraAction.getName());
 		this.issue = issue;
 		action = jiraAction;
@@ -72,7 +72,7 @@ public class RunIssueActionAction extends AnAction {
 
 			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...");
 
-			final JiraServerData server = issue.getServer();
+			final JiraServerData server = issue.getJiraServerData();
 
 			if (server != null) {
 				final List<JIRAActionField> fields;
@@ -88,11 +88,13 @@ public class RunIssueActionAction extends AnAction {
 				}
 
 				showInfo("Retrieving issue details");
-				final JIRAIssue detailedIssue;
+				final JiraIssueAdapter detailedIssue;
 				try {
-					JIRAIssue issueWithTime = facade.getIssue(issue.getServer(),
+					JiraIssueAdapter issueWithTime = facade.getIssue(issue.getJiraServerData(),
 							issue.getKey());
-					detailedIssue = facade.getIssueDetails(issue.getServer(), issueWithTime);
+					detailedIssue = facade.getIssueDetails(issue.getJiraServerData(), issueWithTime);
+                    //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(detailedIssue.getLocalConfigurationListener());
+                    
 				} catch (JIRAException e) {
 					showError("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), e);
 					showDialogDetailedInfo(project, e);
@@ -152,7 +154,7 @@ public class RunIssueActionAction extends AnAction {
 			JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
 		}
 
-		JiraIssueAdapter.get(issue).clearCachedActions();
+		JiraIssueCachedAdapter.get(issue).clearCachedActions();
 
 		if (jiraIssueListModelBuilder != null) {
 			jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
@@ -162,13 +164,13 @@ public class RunIssueActionAction extends AnAction {
 
 	private class LocalDisplayActionDialogRunnable implements Runnable {
 		private Project project;
-		private JIRAIssue detailedIssue;
+		private JiraIssueAdapter detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
 		private JiraServerData server;
         private DeactivateIssueResultHandler resultHandler;
 
         public LocalDisplayActionDialogRunnable(final Project project,
-                                                final JIRAIssue detailedIssue,
+                                                final JiraIssueAdapter detailedIssue,
                                                 final List<JIRAActionField> preFilleddfields,
                                                 final JiraServerData server,
                                                 DeactivateIssueResultHandler resultHandler) {

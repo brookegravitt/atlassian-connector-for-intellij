@@ -30,7 +30,7 @@ public class IssueRecentlyOpenBean {
 	}
 
 	public IssueRecentlyOpenBean(final ServerId serverId, final String issueKey) {
-		if (serverId instanceof ServerIdImpl) {
+		if (serverId instanceof ServerId) {
 			this.serverId = (ServerIdImpl) serverId;
 		}
 		this.issueKey = issueKey;

@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -41,12 +41,12 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		fireModelChanged();
 	}
 
-	public Collection<JIRAIssue> search(Collection<JIRAIssue> col) {
+	public Collection<JiraIssueAdapter> search(Collection<JiraIssueAdapter> col) {
 		if (searchTerm.length() == 0) {
 			return col;
 		}
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
-		for (JIRAIssue i : col) {
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
+		for (JiraIssueAdapter i : col) {
 			if (isMatch(i)) {
 				list.add(i);
 			}
@@ -54,29 +54,29 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		return list;
 	}
 
-	private boolean isMatch(JIRAIssue issue) {
+	private boolean isMatch(JiraIssueAdapter issue) {
 		return issue.getKey().toLowerCase().indexOf(searchTerm) > -1
 				|| issue.getSummary().toLowerCase().indexOf(searchTerm) > -1;
 	}
 
-	public Collection<JIRAIssue> getIssues() {
+	public Collection<JiraIssueAdapter> getIssues() {
 		return search(parent.getIssues());
 	}
 
 	/*
 	 * this version of the routine also returns issues that have subtasks matching the search term
 	 */
-	public Collection<JIRAIssue> getIssuesNoSubtasks() {
-		List<JIRAIssue> result = new ArrayList<JIRAIssue>();
+	public Collection<JiraIssueAdapter> getIssuesNoSubtasks() {
+		List<JiraIssueAdapter> result = new ArrayList<JiraIssueAdapter>();
 
-		Collection<JIRAIssue> issues = parent.getIssues();
-		for (JIRAIssue i : issues) {
+		Collection<JiraIssueAdapter> issues = parent.getIssues();
+		for (JiraIssueAdapter i : issues) {
 			if (!i.isSubTask()) {
 				if (isMatch(i)) {
 					result.add(i);
 				} else {
 					for (String subKey : i.getSubTaskKeys()) {
-						JIRAIssue sub = parent.findIssue(subKey);
+						JiraIssueAdapter sub = parent.findIssue(subKey);
 						if (sub != null && isMatch(sub)) {
 							result.add(i);
 							break;
@@ -89,22 +89,22 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 	}
 
 	@NotNull
-	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
+	public Collection<JiraIssueAdapter> getSubtasks(JiraIssueAdapter p) {
 		return search(parent.getSubtasks(p));
 	}
 
-	public JIRAIssue findIssue(String key) {
+	public JiraIssueAdapter findIssue(String key) {
 		return parent.findIssue(key);
 	}
 
 	public void clearCache() {
 	}
 
-	public Set<JIRAIssue> getIssuesCache() {
+	public Set<JiraIssueAdapter> getIssuesCache() {
 		return null;
 	}
 
-	public JIRAIssue getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
+	public JiraIssueAdapter getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
 		return null;
 	}
 

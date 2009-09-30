@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -10,11 +10,11 @@ public interface JIRAIssueListModel extends FrozenModel {
 
 //	void addIssue(JIRAIssue issue);
 
-	void addIssues(Collection<JIRAIssue> issues);
+	void addIssues(Collection<JiraIssueAdapter> issues);
 
-	Collection<JIRAIssue> getIssues();
+	Collection<JiraIssueAdapter> getIssues();
 
-	Collection<JIRAIssue> getIssuesNoSubtasks();
+	Collection<JiraIssueAdapter> getIssuesNoSubtasks();
 
 	/**
 	 * Returns list of subtasks of the issue
@@ -23,17 +23,17 @@ public interface JIRAIssueListModel extends FrozenModel {
 	 * @return subtasks for the parent
 	 */
 	@NotNull
-	Collection<JIRAIssue> getSubtasks(JIRAIssue parent);
+	Collection<JiraIssueAdapter> getSubtasks(JiraIssueAdapter parent);
 
-	JIRAIssue findIssue(String key);
+	JiraIssueAdapter findIssue(String key);
 
 //	void setSeletedIssue(JIRAIssue issue);
 
-	void updateIssue(JIRAIssue issue);
+	void updateIssue(JiraIssueAdapter issue);
 
 	void fireIssuesLoaded(int numberOfLoadedIssues);
 
-	void fireIssueUpdated(final JIRAIssue issue);
+	void fireIssueUpdated(final JiraIssueAdapter issue);
 
 	void fireModelChanged();
 

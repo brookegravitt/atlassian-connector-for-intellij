@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 
@@ -17,17 +17,17 @@ import java.util.List;
  */
 public class FieldResolution extends AbstractFieldComboBox {
 
-	public FieldResolution(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field,
+	public FieldResolution(final JIRAServerModel serverModel, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super(serverModel, issue, field, false, freezeListener);
 	}
 
-	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JiraIssueAdapter issue) {
 		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					final List<JIRAResolutionBean> resolutions = serverModel.getResolutions(issue.getServer(), false);
+					final List<JIRAResolutionBean> resolutions = serverModel.getResolutions(issue.getJiraServerData(), false);
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							comboModel.removeAllElements();

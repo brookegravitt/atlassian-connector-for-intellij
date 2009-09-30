@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 
 /**
  * IF YOU IMPLEMENT THE INTERFACE REMEMBER THAT:
  * Methods should be called in the order listed below!!!
  */
 public interface JIRAIssueListModelListener {
-	void issueUpdated(final JIRAIssue issue);
+	void issueUpdated(final JiraIssueAdapter issue);
 
 	/**
 	 * That method should be called always whenever model has changed

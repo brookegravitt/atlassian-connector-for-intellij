@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.jira.controls;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
@@ -35,7 +35,7 @@ public abstract class AbstractFieldComboBox extends JComboBox implements ActionF
 	private JIRAActionField field;
 	protected FreezeListener freezeListener;
 
-	public AbstractFieldComboBox(final JIRAServerModel serverModel, final JIRAIssue issue,
+	public AbstractFieldComboBox(final JIRAServerModel serverModel, final JiraIssueAdapter issue,
 			final JIRAActionField field, boolean showIcon, final FreezeListener freezeListener) {
 
 		this.field = field;
@@ -56,7 +56,7 @@ public abstract class AbstractFieldComboBox extends JComboBox implements ActionF
 	}
 
 	protected abstract void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel,
-			final JIRAIssue issue);
+			final JiraIssueAdapter issue);
 
 
 	public JIRAActionField getEditedFieldValue() {

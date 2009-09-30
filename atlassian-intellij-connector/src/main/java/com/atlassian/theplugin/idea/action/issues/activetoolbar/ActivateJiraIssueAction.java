@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -28,16 +28,16 @@ import org.joda.time.DateTime;
 public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(final AnActionEvent event) {
-		JIRAIssue selectedIssue;
+		JiraIssueAdapter selectedIssue;
 		selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (selectedIssue != null) {
 			if (!isSelectedIssueActive(event, selectedIssue)) {
-				if (selectedIssue.getServer() != null) {
+				if (selectedIssue.getJiraServerData() != null) {
 					ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
-							selectedIssue.getServer().getServerId(), selectedIssue.getKey(), new DateTime());
+							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
 
-					ActiveIssueUtils.activateIssue(event, newActiveIssue, selectedIssue.getServer());
+					ActiveIssueUtils.activateIssue(event, newActiveIssue, selectedIssue.getJiraServerData());
 				}
 			} else {
 				DeactivateJiraIssuePopupAction.runDeactivateTask(event);
@@ -49,7 +49,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+		final JiraIssueAdapter selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (isSelectedIssueActive(event, selectedIssue)) {
 			event.getPresentation().setEnabled(true);

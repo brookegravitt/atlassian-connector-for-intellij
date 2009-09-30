@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 
 import javax.management.timer.Timer;
 import java.util.Date;
@@ -26,21 +26,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class JiraIssueAdapter {
-	private JIRAIssue issue;
+public final class JiraIssueCachedAdapter {
+	private JiraIssueAdapter issue;
 	private boolean useIconDescription;
 
-	private static Map<JIRAIssue, JiraIssueAdapter> issueAdapterMap = new HashMap<JIRAIssue, JiraIssueAdapter>();
+	private static Map<JiraIssueAdapter, JiraIssueCachedAdapter> issueAdapterMap = new HashMap<JiraIssueAdapter, JiraIssueCachedAdapter>();
 
 	private List<JIRAAction> issueActionCache;
 	private long issueActionCacheTimestamp = 0;
 
-	public JiraIssueAdapter(JIRAIssue issue, boolean useIconDescription) {
+	public JiraIssueCachedAdapter(JiraIssueAdapter issue, boolean useIconDescription) {
 		this.issue = issue;
 		this.useIconDescription = useIconDescription;
 	}
 
-	public JIRAIssue getIssue() {
+
+
+    public JiraIssueAdapter getIssue() {
 		return issue;
 	}
 
@@ -165,10 +167,10 @@ public final class JiraIssueAdapter {
 		issueActionCache = null;
 	}
 
-	public static JiraIssueAdapter get(JIRAIssue issue) {
-		JiraIssueAdapter a = issueAdapterMap.get(issue);
+	public static JiraIssueCachedAdapter get(JiraIssueAdapter issue) {
+		JiraIssueCachedAdapter a = issueAdapterMap.get(issue);
 		if (a == null) {
-			a = new JiraIssueAdapter(issue, true);
+			a = new JiraIssueCachedAdapter(issue, true);
 			issueAdapterMap.put(issue, a);
 		}
 		return a;
@@ -177,7 +179,7 @@ public final class JiraIssueAdapter {
 		issueAdapterMap.clear();
 	}
 
-	public static void clearCache(final JIRAIssue issue) {
+	public static void clearCache(final JiraIssueAdapter issue) {
 		issueAdapterMap.remove(issue);
 	}
 }

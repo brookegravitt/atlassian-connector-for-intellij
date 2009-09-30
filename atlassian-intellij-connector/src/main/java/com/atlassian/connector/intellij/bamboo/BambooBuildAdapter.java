@@ -24,7 +24,8 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javax.swing.Icon;
+
+import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -53,7 +54,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 	}
 
 	public boolean isBamboo2() {
-//		final BambooServerCfg server = build.getServer();
+//		final BambooServerCfg server = build.getJiraServerData();
 //		return server != null && server.isBamboo2();
 		//todo: implement
 		return true;

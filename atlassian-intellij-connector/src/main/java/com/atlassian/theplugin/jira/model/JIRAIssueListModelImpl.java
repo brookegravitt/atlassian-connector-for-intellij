@@ -15,45 +15,49 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel, FrozenModel {
 
-	private Set<JIRAIssue> issues;
+	private Set<JiraIssueAdapter> issues;
 
 	private boolean modelFrozen = false;
 
 	public JIRAIssueListModelImpl() {
 		super(null);
-		issues = new HashSet<JIRAIssue>();
+		issues = new HashSet<JiraIssueAdapter>();
 	}
 
 	public void clear() {
 		issues.clear();
 	}
 
-	public void addIssues(Collection<JIRAIssue> list) {
+	public void addIssues(Collection<JiraIssueAdapter> list) {
 		issues.addAll(list);
 	}
 
-	public void updateIssue(JIRAIssue issue) {
+	public void updateIssue(JiraIssueAdapter issue) {
 		if (issue != null && issues.contains(issue)) {
 			issues.remove(issue);
 			issues.add(issue);
 		}
 	}
 
-	public Collection<JIRAIssue> getIssues() {
+	public Collection<JiraIssueAdapter> getIssues() {
 		return issues;
 	}
 
-	public Collection<JIRAIssue> getIssuesNoSubtasks() {
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+	public Collection<JiraIssueAdapter> getIssuesNoSubtasks() {
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
 
-		for (JIRAIssue i : issues) {
+		for (JiraIssueAdapter i : issues) {
 			if (!i.isSubTask()) {
 				list.add(i);
 			}
@@ -62,15 +66,15 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	@NotNull
-	public Collection<JIRAIssue> getSubtasks(JIRAIssue parent) {
+	public Collection<JiraIssueAdapter> getSubtasks(JiraIssueAdapter parent) {
 		if (parent == null) {
 			return getSubtasksWithMissingParents();
 		}
 
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
 
 		for (String key : parent.getSubTaskKeys()) {
-			JIRAIssue sub = findIssue(key);
+			JiraIssueAdapter sub = findIssue(key);
 			if (sub != null) {
 				list.add(sub);
 			}
@@ -79,10 +83,10 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	@NotNull
-	private Collection<JIRAIssue> getSubtasksWithMissingParents() {
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+	private Collection<JiraIssueAdapter> getSubtasksWithMissingParents() {
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
 
-		for (JIRAIssue i : getIssues()) {
+		for (JiraIssueAdapter i : getIssues()) {
 			if (i.isSubTask()) {
 				if (findIssue(i.getParentIssueKey()) == null) {
 					list.add(i);
@@ -92,8 +96,8 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		return list;
 	}
 
-	public JIRAIssue findIssue(String key) {
-		for (JIRAIssue issue : issues) {
+	public JiraIssueAdapter findIssue(String key) {
+		for (JiraIssueAdapter issue : issues) {
 			if (issue.getKey().equals(key)) {
 				return issue;
 			}

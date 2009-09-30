@@ -16,14 +16,11 @@
 
 package com.atlassian.theplugin.commons.jira;
 
-import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
@@ -35,7 +32,6 @@ import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
-import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
 import com.atlassian.theplugin.commons.jira.api.soap.JIRASession;
@@ -48,42 +44,35 @@ import com.atlassian.theplugin.commons.util.Logger;
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.Collection;
 
-public final class JIRAServerFacadeImpl implements JIRAServerFacade {
+public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 
 	private final HttpSessionCallback callback;
 	private static Logger logger;
 
-	private JIRAServerFacadeImpl() {
-		this.callback = new IntelliJHttpSessionCallback();
-	}
-
-	public static synchronized JIRAServerFacade getInstance() {
-		if (instance == null) {
-			instance = new JIRAServerFacadeImpl();
-		}
-		return instance;
-	}
-
 	private final Map<String, JIRARssClient> rssSessions = new WeakHashMap<String, JIRARssClient>();
-	private final Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
-	private static JIRAServerFacadeImpl instance;
+	private final Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();	
 
-	private String getSoapSessionKey(JiraServerData server) {
-		return server.getUsername() + server.getUrl() + server.getPassword();
+	private String getSoapSessionKey(HttpConnectionCfg httpConnectionCfg) {
+		return httpConnectionCfg.getUsername() + httpConnectionCfg.getUrl() + httpConnectionCfg.getPassword();
 	}
 
-	private synchronized JIRASession getSoapSession(JiraServerData server) throws RemoteApiException {
-		String key = getSoapSessionKey(server);
+
+    public JIRAServerFacade2Impl(HttpSessionCallback callback) {
+        this.callback = callback;
+    }
+
+    private synchronized JIRASession getSoapSession(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+		String key = getSoapSessionKey(httpConnectionCfg);
 
 		JIRASession session = soapSessions.get(key);
 		if (session == null) {
 			try {
-				session = new JIRASessionImpl(logger, server);
+				session = new JIRASessionImpl(logger, httpConnectionCfg);
 			} catch (MalformedURLException e) {
 				throw new RemoteApiException(e);
 			} catch (ServiceException e) {
@@ -91,13 +80,13 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			}
 
 
-			session.login(server.getUsername(), server.getPassword());
+			session.login(httpConnectionCfg.getUsername(), httpConnectionCfg.getPassword());
 			soapSessions.put(key, session);
 		}
 		return session;
 	}
 
-	private synchronized JIRARssClient getRssSession(JiraServerData server) throws RemoteApiException {
+	private synchronized JIRARssClient getRssSession(HttpConnectionCfg server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
 		String key = server.getUsername() + server.getUrl() + server.getPassword();
 		JIRARssClient session = rssSessions.get(key);
@@ -108,48 +97,15 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return session;
 	}
 
-	public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
-		testServerConnection(new JiraServerData(new Server() {
-			public boolean isUseDefaultCredentials() {
-				return false;
-			}
-			
-			public boolean isEnabled() {
-				return true;
-			}
-			
-			public String getUsername() {
-				return serverCfg.getUsername();
-			}
-			
-			public String getUrl() {
-				return serverCfg.getUrl();
-			}
-			
-			public ServerType getServerType() {
-				return ServerType.JIRA_SERVER;
-			}
-			
-			public ServerIdImpl getServerId() {
-				return new ServerIdImpl(serverCfg.getId());
-			}
-			
-			public String getPassword() {
-				return serverCfg.getPassword();
-			}
-			
-			public String getName() {
-				return "unknown name";
-			}
-
-
-		}, new UserCfg(), false) , serverCfg.getUsername(), serverCfg.getPassword());
+	public void testServerConnection(final HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+		testServerConnection(httpConnectionCfg, httpConnectionCfg.getUsername(), httpConnectionCfg.getPassword());
 	}
 
-	private void testServerConnection(JiraServerData server, String userName, String password) throws RemoteApiException {
+	private void testServerConnection(HttpConnectionCfg httpConnectionCfg, String userName, String password)
+            throws RemoteApiException {
 		JIRASession session;
 		try {
-			session = new JIRASessionImpl(logger, server);
+			session = new JIRASessionImpl(logger, httpConnectionCfg);
 		} catch (MalformedURLException e) {
 			throw new RemoteApiException(e);
 		} catch (ServiceException e) {
@@ -163,10 +119,10 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public static void setLogger(Logger logger) {
-		JIRAServerFacadeImpl.logger = logger;
+		JIRAServerFacade2Impl.logger = logger;
 	}
 
-	public List<JIRAIssue> getIssues(JiraServerData server,
+	public List<JIRAIssue> getIssues(HttpConnectionCfg httpConnectionCfg,
 			List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
@@ -174,14 +130,14 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			int size) throws JIRAException {
 		JIRARssClient rss;
 		try {
-			rss = getRssSession(server);
+			rss = getRssSession(httpConnectionCfg);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
 		return rss.getIssues(query, sort, sortOrder, start, size);
 	}
 
-	public List<JIRAIssue> getSavedFilterIssues(JiraServerData server,
+	public List<JIRAIssue> getSavedFilterIssues(HttpConnectionCfg httpConnectionCfg,
 			List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
@@ -189,7 +145,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			int size) throws JIRAException {
 		JIRARssClient rss;
 		try {
-			rss = getRssSession(server);
+			rss = getRssSession(httpConnectionCfg);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
@@ -200,17 +156,17 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAIssue getIssue(JiraServerData server, String key) throws JIRAException {
+	public JIRAIssue getIssue(HttpConnectionCfg httpConnectionCfg, String key) throws JIRAException {
 		JIRARssClient rss;
 		try {
-			rss = getRssSession(server);
+			rss = getRssSession(httpConnectionCfg);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
 		return rss.getIssue(key);
 	}
 
-	public List<JIRAProject> getProjects(JiraServerData server) throws JIRAException {
+	public List<JIRAProject> getProjects(HttpConnectionCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getProjects();
@@ -220,106 +176,106 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
+	public List<JIRAConstant> getIssueTypes(HttpConnectionCfg httpConnectionCfg) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getIssueTypes();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAConstant> getIssueTypesForProject(JiraServerData server, String project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getIssueTypesForProject(project);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData server) throws JIRAException {
+	public List<JIRAConstant> getSubtaskIssueTypes(HttpConnectionCfg httpConnectionCfg) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getSubtaskIssueTypes();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData server, String project) throws JIRAException {
+	public List<JIRAConstant> getSubtaskIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getSubtaskIssueTypesForProject(project);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
 
-	public List<JIRAConstant> getStatuses(JiraServerData server) throws JIRAException {
+	public List<JIRAConstant> getStatuses(HttpConnectionCfg connection) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(connection);
 			return soap.getStatuses();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(connection));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException {
+	public void addComment(HttpConnectionCfg httpConnectionCfg, String issueKey, String comment) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			soap.addComment(issueKey, comment);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public JIRAIssue createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue createIssue(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			JIRAIssue i = soap.createIssue(issue);
-			return getIssue(server, i.getKey());
+			return getIssue(httpConnectionCfg, i.getKey());
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public void logWork(JiraServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
+	public void logWork(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, String timeSpent, Calendar startDate,
 			String comment, boolean updateEstimate, String newEstimate)
 			throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			soap.logWork(issue, timeSpent, startDate, comment, updateEstimate, newEstimate);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAComponentBean> getComponents(JiraServerData server, String projectKey) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(HttpConnectionCfg httpConnectionCfg, String projectKey) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getComponents(projectKey);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAVersionBean> getVersions(JiraServerData server, String projectKey) throws JIRAException {
+	public List<JIRAVersionBean> getVersions(HttpConnectionCfg httpConnectionCfg, String projectKey) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getVersions(projectKey);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			if (e == null) {
 				logger.warn("PL-1710: e is null");
 			} else if (e.getMessage() == null) {
@@ -332,118 +288,118 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAPriorityBean> getPriorities(JiraServerData server) throws JIRAException {
+	public List<JIRAPriorityBean> getPriorities(HttpConnectionCfg httpConnectionCfg) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getPriorities();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAResolutionBean> getResolutions(JiraServerData server) throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(HttpConnectionCfg httpConnectionCfg) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getResolutions();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAQueryFragment> getSavedFilters(JiraServerData server) throws JIRAException {
+	public List<JIRAQueryFragment> getSavedFilters(HttpConnectionCfg httpConnectionCfg) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getSavedFilters();
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAAction> getAvailableActions(JiraServerData server, JIRAIssue issue) throws JIRAException {
+	public List<JIRAAction> getAvailableActions(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getAvailableActions(issue);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAActionField> getFieldsForAction(JiraServerData server, JIRAIssue issue, JIRAAction action)
+	public List<JIRAActionField> getFieldsForAction(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, JIRAAction action)
 			throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getFieldsForAction(issue, action);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public void setAssignee(JiraServerData server, JIRAIssue issue, String assignee) throws JIRAException {
+	public void setAssignee(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, String assignee) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			soap.setAssignee(issue, assignee);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public List<JIRAComment> getComments(JiraServerData server, JIRAIssue issue) throws JIRAException {
+	public List<JIRAComment> getComments(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getComments(issue);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-    public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue) throws JIRAException {
+    public Collection<JIRAAttachment> getIssueAttachements(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
         try {
-            JIRASession soap = getSoapSession(server);
+            JIRASession soap = getSoapSession(httpConnectionCfg);
             return soap.getIssueAttachements(issue);
         } catch (RemoteApiException e) {
-            soapSessions.remove(getSoapSessionKey(server));
+            soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
             throw new JIRAException(e.getMessage(), e);
         }
     }
 
-    public void progressWorkflowAction(JiraServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException {
-		progressWorkflowAction(server, issue, action, null);
+    public void progressWorkflowAction(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, JIRAAction action) throws JIRAException {
+		progressWorkflowAction(httpConnectionCfg, issue, action, null);
 	}
 
-	public void progressWorkflowAction(JiraServerData server, JIRAIssue issue,
+	public void progressWorkflowAction(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue,
 			JIRAAction action, List<JIRAActionField> fields) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			soap.progressWorkflowAction(issue, action, fields);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public JIRAIssue getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue getIssueDetails(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getIssueDetails(issue);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
 
-	public JIRAUserBean getUser(JiraServerData server, String loginName) throws JIRAException, JiraUserNotFoundException {
+	public JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName) throws JIRAException, JiraUserNotFoundException {
 		try {
-			JIRASession soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getUser(loginName);
 		} catch (RemoteApiException e) {
-			soapSessions.remove(getSoapSessionKey(server));
+			soapSessions.remove(getSoapSessionKey(httpConnectionCfg));
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}

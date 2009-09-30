@@ -24,7 +24,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
 
-	void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServer);
+	void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData);
 
 	void serverRemoved(final JIRAFilterListModel jiraFilterListModel);
 

@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
@@ -9,30 +8,23 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
@@ -182,7 +174,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
 
     private void testJiraConnection(final TestConnectionProcessor processor) {
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
-                new ProductConnector(JIRAServerFacadeImpl.getInstance()),
+                new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
                 new ServerData(generateJiraServerCfg(), defaultUser),
                 processor, "Testing JIRA Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");

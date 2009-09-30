@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -63,7 +63,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		if (recentlyOpenIssues.size() > 0) {
 			// prepare list of recentlyOpenIssues from the config list
 
-			List<JIRAIssue> issues = issuesWindow.getLoadedRecenltyOpenIssues();
+			List<JiraIssueAdapter> issues = issuesWindow.getLoadedRecenltyOpenIssues();
 
 			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
 					new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
@@ -74,23 +74,23 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		}
 	}
 
-	public static final class IssueListPopupStep extends BaseListPopupStep<JIRAIssue> {
+	public static final class IssueListPopupStep extends BaseListPopupStep<JiraIssueAdapter> {
 		private IssueListToolWindowPanel issuesWindow;
 		private static final int LENGHT = 40;
 
-		public IssueListPopupStep(final String title, final List<JIRAIssue> issues,
+		public IssueListPopupStep(final String title, final List<JiraIssueAdapter> issues,
 				final IssueListToolWindowPanel issuesWindow) {
 			super(title, issues);
 			this.issuesWindow = issuesWindow;
 		}
 
-		public Icon getIconFor(final JIRAIssue issue) {
+		public Icon getIconFor(final JiraIssueAdapter issue) {
 			return CachedIconLoader.getIcon(issue.getTypeIconUrl());
 		}
 
 		@NotNull
 		@Override
-		public String getTextFor(final JIRAIssue value) {
+		public String getTextFor(final JiraIssueAdapter value) {
 
 			if (value == null) {
 				return "null";
@@ -108,10 +108,10 @@ public class RecentlyOpenIssuesAction extends AnAction {
 
 			text.append(" (");
 
-			if (value.getServer().getName().length() > LENGHT) {
-				text.append(value.getServer().getName().substring(0, LENGHT - (2 + 1)));
+			if (value.getJiraServerData().getName().length() > LENGHT) {
+				text.append(value.getJiraServerData().getName().substring(0, LENGHT - (2 + 1)));
 			} else {
-				text.append(value.getServer().getName());
+				text.append(value.getJiraServerData().getName());
 			}
 
 			text.append(')');
@@ -120,7 +120,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		}
 
 		@Override
-		public PopupStep onChosen(final JIRAIssue selectedValue, final boolean finalChoice) {
+		public PopupStep onChosen(final JiraIssueAdapter selectedValue, final boolean finalChoice) {
 			// add review to the model (to show it in the main list) and open the review
 			issuesWindow.openIssue(selectedValue, true);
 

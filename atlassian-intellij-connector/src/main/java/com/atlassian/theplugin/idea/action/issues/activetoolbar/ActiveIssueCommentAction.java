@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -17,7 +17,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 		if (panel == null) {
 			return;
 		}
-		final JIRAIssue issue;
+		final JiraIssueAdapter issue;
 		try {
 			issue = ActiveIssueUtils.getJIRAIssue(event);
 		} catch (JIRAException e) {

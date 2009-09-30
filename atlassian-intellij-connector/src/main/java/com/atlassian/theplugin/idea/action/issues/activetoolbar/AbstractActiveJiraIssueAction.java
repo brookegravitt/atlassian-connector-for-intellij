@@ -15,12 +15,12 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		return ActiveIssueUtils.getJiraServer(event);
 	}
 
-    protected static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
+    protected static boolean isSelectedIssueActive(final AnActionEvent event, JiraIssueAdapter selectedIssue) {
         final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
         ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);

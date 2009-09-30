@@ -15,15 +15,15 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
@@ -39,27 +39,26 @@ import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAStatusBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Collection;
-
-import junit.framework.TestCase;
 
 public class JIRAServerModelImplTest extends TestCase {
 
-	private JIRATestServerFacade facade;
+	private JIRATestServerFacade2 facade;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		facade = new JIRATestServerFacade();
+		facade = new JIRATestServerFacade2();
 	}
 
 	@Override
@@ -457,16 +456,16 @@ public class JIRAServerModelImplTest extends TestCase {
 		}
 	}
 
-	private class JIRATestServerFacade implements JIRAServerFacade {
+	private class JIRATestServerFacade2 implements JiraServerFacade {
 		public int counter = 0;
 		public boolean throwException = false;
 
-		public List<JIRAIssue> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAIssue> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
+		public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
 				String sortOrder, int start, int size) throws JIRAException {
 			return null;
 		}
@@ -618,15 +617,15 @@ public class JIRAServerModelImplTest extends TestCase {
 		public void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException {
 		}
 
-		public JIRAIssue createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueUpdate(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueUpdate(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
@@ -650,14 +649,17 @@ public class JIRAServerModelImplTest extends TestCase {
 			return null;
 		}
 
-		public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
+		public void testServerConnection(final JiraServerData server) throws RemoteApiException {
 		}
 
-		public ServerType getServerType() {
+        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+        }
+
+        public ServerType getServerType() {
 			return null;
 		}
 
-		public JIRAIssue getIssue(JiraServerData server, String key) throws JIRAException {
+		public JiraIssueAdapter getIssue(JiraServerData server, String key) throws JIRAException {
 			return null;
 		}
 	}

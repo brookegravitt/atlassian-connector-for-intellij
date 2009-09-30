@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public final class JIRAIssueProgressTimestampCache {
 
-	private Map<ServerData, Map<JIRAIssue, Date>> serverMap = new HashMap<ServerData, Map<JIRAIssue, Date>>();
+	private Map<JiraServerData, Map<JiraIssueAdapter, Date>> serverMap = new HashMap<JiraServerData, Map<JiraIssueAdapter, Date>>();
 
 	private JIRAIssueProgressTimestampCache() {
 	}
@@ -20,25 +20,25 @@ public final class JIRAIssueProgressTimestampCache {
 		return instance;
 	}
 
-	private Map<JIRAIssue, Date> getIssueMap(ServerData server) {
-		Map<JIRAIssue, Date> issueMap = serverMap.get(server);
+	private Map<JiraIssueAdapter, Date> getIssueMap(JiraServerData server) {
+		Map<JiraIssueAdapter, Date> issueMap = serverMap.get(server);
 		if (issueMap == null) {
-			issueMap = new HashMap<JIRAIssue, Date>();
+			issueMap = new HashMap<JiraIssueAdapter, Date>();
 			serverMap.put(server, issueMap);
 		}
 
 		return issueMap;
 	}
-	public Date getTimestamp(ServerData server, JIRAIssue issue) {
+	public Date getTimestamp(JiraServerData server, JiraIssueAdapter issue) {
 		return getIssueMap(server).get(issue);
 	}
 
-	public void setTimestamp(ServerData server, JIRAIssue issue) {
-		getIssueMap(server).put(issue, new Date());
+	public void setTimestamp(JiraServerData jiraServerData, JiraIssueAdapter issue) {
+		getIssueMap(jiraServerData).put(issue, new Date());
 	}
 
-	public void removeTimestamp(ServerData server, JIRAIssue issue) {
-		Map<JIRAIssue, Date> issueMap = getIssueMap(server);
+	public void removeTimestamp(JiraServerData server, JIRAIssue issue) {
+		Map<JiraIssueAdapter, Date> issueMap = getIssueMap(server);
 		if (issueMap.containsKey(issue)) {
 			getIssueMap(server).remove(issue);
 		}

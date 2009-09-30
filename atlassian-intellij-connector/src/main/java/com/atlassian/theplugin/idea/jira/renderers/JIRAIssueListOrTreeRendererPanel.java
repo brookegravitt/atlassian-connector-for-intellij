@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira.renderers;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.jira.JiraTimeFormatter;
@@ -33,7 +33,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 
 	private SelectableLabel keyAndSummary;
 	private JLabel iconLabel;
-	private JIRAIssue issue;
+	private JiraIssueAdapter issue;
 
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
@@ -41,7 +41,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 	private static final int MAX_TOOLTIP_WIDTH = 400;
 	private static final int MAX_DESCRIPTION_LENGTH = 360;
 
-	public JIRAIssueListOrTreeRendererPanel(JIRAIssue issue) {
+	public JIRAIssueListOrTreeRendererPanel(JiraIssueAdapter issue) {
 		super(new FormLayout("1dlu, pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		this.issue = issue;
 
@@ -167,7 +167,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
 	}
 
-	private static String buildTolltip(JIRAIssue issue, int width) {
+	private static String buildTolltip(JiraIssueAdapter issue, int width) {
 		StringBuilder sb = new StringBuilder("<html>" + BODY_WITH_STYLE);
 
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
