@@ -68,7 +68,7 @@ public class IntelliJJiraServerFacade implements JiraServerFacade {
                                                        List<JIRAQueryFragment> query, String sort, String sortOrder,
                                                        int start, int size) throws JIRAException {
         List<JIRAIssue> list =
-                facade.getSavedFilterIssues(jiraServerData.toHttpConnectionCfg(), query,sort, sortOrder, start, size);
+                facade.getSavedFilterIssues(jiraServerData.toHttpConnectionCfg(), query, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
     }
 
