@@ -293,8 +293,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
         filterName = new JTextField();
         rootPanel.add(filterName, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         fixForLabel.setLabelFor(fixForScrollPane);
-        componentsLabel.setLabelFor(componentsScrollPane);
         componentsLabel.setNextFocusableComponent(componentsScrollPane);
+        componentsLabel.setLabelFor(componentsScrollPane);
         affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
         reporterLabel.setLabelFor(reporterComboBox);
         assigneeLabel.setLabelFor(assigneeComboBox);
