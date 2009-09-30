@@ -124,7 +124,8 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 
 	public ReviewAdapter addRevisionsToReview(ServerData server, PermId permId, String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return toReviewAdapter(facade.addRevisionsToReview(server.toHttpConnectionCfg(), permId, repository, revisions), server);
+		return toReviewAdapter(facade.addRevisionsToReview(server.toHttpConnectionCfg(), permId, repository, revisions),
+                server);
 	}
 
 	public VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
@@ -142,7 +143,8 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return toReviewAdapter(facade.approveReview(server.toHttpConnectionCfg(), permId), server);
 	}
 
-	public boolean checkContentUrlAvailable(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public boolean checkContentUrlAvailable(ServerData server)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.checkContentUrlAvailable(server.toHttpConnectionCfg());
 	}
 

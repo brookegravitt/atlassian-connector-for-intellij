@@ -22,7 +22,8 @@ public class FieldResolution extends AbstractFieldComboBox {
 		super(serverModel, issue, field, false, freezeListener);
 	}
 
-	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JiraIssueAdapter issue) {
+	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel,
+                             final JiraIssueAdapter issue) {
 		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {

@@ -32,7 +32,8 @@ public interface JIRAServerModel {
 
 	List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData, JIRAProject project, boolean includeAny) throws JIRAException;
+	List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData, JIRAProject project, boolean includeAny)
+            throws JIRAException;
 
 	List<JIRAConstant> getSubtaskIssueTypes(JiraServerData jiraServerData, JIRAProject project) throws JIRAException;
 
@@ -40,16 +41,17 @@ public interface JIRAServerModel {
 
 	List<JIRAPriorityBean> getPriorities(JiraServerData jiraServerData, boolean includeAny) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(JiraServerData jiraServerData, boolean includeAnyAndUnknown) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(JiraServerData jiraServerData, boolean includeAnyAndUnknown)
+            throws JIRAException;
 
 	List<JIRAVersionBean> getVersions(JiraServerData jiraServerData, JIRAProject project, boolean includeSpecialValues)
 			throws JIRAException;
 
-	List<JIRAFixForVersionBean> getFixForVersions(JiraServerData jiraServerData, JIRAProject project, boolean includeSpecialValues)
-			throws JIRAException;
+	List<JIRAFixForVersionBean> getFixForVersions(JiraServerData jiraServerData, JIRAProject project,
+                                                  boolean includeSpecialValues)	throws JIRAException;
 
-	List<JIRAComponentBean> getComponents(JiraServerData jiraServerData, JIRAProject project, final boolean includeSpecialValues)
-			throws JIRAException;
+	List<JIRAComponentBean> getComponents(JiraServerData jiraServerData, JIRAProject project,
+                                          final boolean includeSpecialValues) throws JIRAException;
 
 
 	Collection<JiraServerData> getServers();

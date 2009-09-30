@@ -30,7 +30,8 @@ public final class JiraIssueCachedAdapter {
 	private JiraIssueAdapter issue;
 	private boolean useIconDescription;
 
-	private static Map<JiraIssueAdapter, JiraIssueCachedAdapter> issueAdapterMap = new HashMap<JiraIssueAdapter, JiraIssueCachedAdapter>();
+	private static Map<JiraIssueAdapter, JiraIssueCachedAdapter> issueAdapterMap = new HashMap<JiraIssueAdapter,
+            JiraIssueCachedAdapter>();
 
 	private List<JIRAAction> issueActionCache;
 	private long issueActionCacheTimestamp = 0;

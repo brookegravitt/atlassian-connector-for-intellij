@@ -9,7 +9,8 @@ import java.util.Map;
 
 public final class JIRAIssueProgressTimestampCache {
 
-	private Map<JiraServerData, Map<JiraIssueAdapter, Date>> serverMap = new HashMap<JiraServerData, Map<JiraIssueAdapter, Date>>();
+	private Map<JiraServerData, Map<JiraIssueAdapter, Date>> serverMap =
+            new HashMap<JiraServerData, Map<JiraIssueAdapter, Date>>();
 
 	private JIRAIssueProgressTimestampCache() {
 	}

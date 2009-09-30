@@ -359,7 +359,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					public void run(@NotNull final ProgressIndicator indicator) {
 						try {
 							params.issue = facade.getIssue(params.issue.getJiraServerData(), params.issue.getKey());
-                            //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
+                            //IdeaHelper.getProjectCfgManager(project)
+                            // .addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
 							retrieved = true;
 						} catch (final JIRAException e) {
 							EventQueue.invokeLater(new Runnable() {
@@ -864,7 +865,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
 
-							final JiraIssueAdapter issueDetails = facade.getIssueDetails(params.issue.getJiraServerData(), params.issue);
+							final JiraIssueAdapter issueDetails =
+                                    facade.getIssueDetails(params.issue.getJiraServerData(), params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 							params.issue.setFixVersions(issueDetails.getFixVersions());
 							params.issue.setComponents(issueDetails.getComponents());
@@ -1089,7 +1091,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public void addComment(JIRAComment c) {
                 final ServerId id = params.issue.getJiraServerData().getServerId();
-                CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, projectCfgManager.getJiraServerr(id), tabs);
+                CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c,
+                        projectCfgManager.getJiraServerr(id), tabs);
 				comments.add(p);
 			}
 
@@ -1169,7 +1172,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
 							java.util.List<JIRAComment> cmts = null;
 
-							JiraIssueAdapter oneIssue = facade.getIssue(params.issue.getJiraServerData(), params.issue.getKey());
+							JiraIssueAdapter oneIssue = facade.getIssue(params.issue.getJiraServerData(),
+                                    params.issue.getKey());
 							if (oneIssue != null) {
 								descriptionPanel.setDescription(oneIssue.getDescription());
 								cmts = oneIssue.getComments();
@@ -1699,7 +1703,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private class LocalConfigListener extends ConfigurationListenerAdapter {
 
 			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-				( params.issue).setJiraServerData(params.issue.getJiraServerData());
+				(params.issue).setJiraServerData(params.issue.getJiraServerData());
 			}
 		}
 
