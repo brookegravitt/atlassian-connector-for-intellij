@@ -186,7 +186,8 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 		}
 	}
 
-	public List<JIRAConstant> getIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project)
+            throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getIssueTypesForProject(project);
@@ -206,7 +207,8 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 		}
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project) throws JIRAException {
+	public List<JIRAConstant> getSubtaskIssueTypesForProject(HttpConnectionCfg httpConnectionCfg, String project)
+            throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getSubtaskIssueTypesForProject(project);
@@ -359,7 +361,8 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 		}
 	}
 
-    public Collection<JIRAAttachment> getIssueAttachements(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException {
+    public Collection<JIRAAttachment> getIssueAttachements(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue)
+            throws JIRAException {
         try {
             JIRASession soap = getSoapSession(httpConnectionCfg);
             return soap.getIssueAttachements(issue);
@@ -369,7 +372,8 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
         }
     }
 
-    public void progressWorkflowAction(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, JIRAAction action) throws JIRAException {
+    public void progressWorkflowAction(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, JIRAAction action)
+            throws JIRAException {
 		progressWorkflowAction(httpConnectionCfg, issue, action, null);
 	}
 
@@ -394,7 +398,8 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 		}
 	}
 
-	public JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName) throws JIRAException, JiraUserNotFoundException {
+	public JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName)
+            throws JIRAException, JiraUserNotFoundException {
 		try {
 			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getUser(loginName);

@@ -7,7 +7,6 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
@@ -1078,7 +1077,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         if (serverCheck == null || !serverCheck) {
                             setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
                             MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
-                                    (JiraServerCfg) projectCfgManager.getServer((ServerIdImpl)server.getServerId()), project));
+                                    (JiraServerCfg) projectCfgManager.getServer(server.getServerId()), project));
                             continue;
                         }//@todo remove  saved filters download or merge with existing in listModel
 

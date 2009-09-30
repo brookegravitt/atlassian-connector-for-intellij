@@ -29,9 +29,11 @@ import java.util.List;
  * @date Sep 28, 2009
  */
 public interface JiraServerFacade extends ProductServerFacade {
-    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query, String sort, String sortOrder, int start, int size) throws JIRAException;
+    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+                                     String sort, String sortOrder, int start, int size) throws JIRAException;
 
-    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query, String sort, String sortOrder, int start, int size) throws JIRAException;
+    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+                                                String sort, String sortOrder, int start, int size) throws JIRAException;
 
     List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException;
 
@@ -57,11 +59,13 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     List<JIRAAction> getAvailableActions(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 
-    List<JIRAActionField> getFieldsForAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action) throws JIRAException;
+    List<JIRAActionField> getFieldsForAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action)
+            throws JIRAException;
 
     void progressWorkflowAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
-    void progressWorkflowAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action, List<JIRAActionField> fields) throws JIRAException;
+    void progressWorkflowAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action,
+                                List<JIRAActionField> fields) throws JIRAException;
 
     void addComment(JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException;
 
@@ -71,15 +75,18 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     JiraIssueAdapter getIssueDetails(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 
-    void logWork(JiraServerData jiraServerData, JIRAIssue issue, String timeSpent, Calendar startDate, String comment, boolean updateEstimate, String newEstimate) throws JIRAException;
+    void logWork(JiraServerData jiraServerData, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
+                 boolean updateEstimate, String newEstimate) throws JIRAException;
 
     void setAssignee(JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException;
 
-    JIRAUserBean getUser(JiraServerData jiraServerData, String loginName) throws JIRAException, JiraUserNotFoundException;
+    JIRAUserBean getUser(JiraServerData jiraServerData, String loginName)
+            throws JIRAException, JiraUserNotFoundException;
 
     List<JIRAComment> getComments(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 
-    Collection<JIRAAttachment> getIssueAttachements(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
+    Collection<JIRAAttachment> getIssueAttachements(JiraServerData jiraServerData, JIRAIssue issue)
+            throws JIRAException;
 
     void testServerConnection(JiraServerData jiraServerData) throws RemoteApiException;
 

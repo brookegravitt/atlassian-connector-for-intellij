@@ -85,7 +85,7 @@ public class JiraViewConfigurationBean {
 
 		JiraProjectDefaultComponentsBean tmp = new JiraProjectDefaultComponentsBean(projectKey, comp);
 
-		serverDefaultss.put( jiraServer, tmp);
+		serverDefaultss.put(jiraServer, tmp);
 	}
 
     public String getViewFilterType() {

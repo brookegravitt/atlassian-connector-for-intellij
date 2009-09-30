@@ -100,8 +100,8 @@ public class JIRAIssueTreeBuilder {
 			super(issueModel, issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
 					CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl()));
 
-			for (JIRAPriorityBean prio :
-                    jiraServerModel.getPriorities(issue.getJiraServerData(), false)) {
+			for (JIRAPriorityBean prio 
+                    : jiraServerModel.getPriorities(issue.getJiraServerData(), false)) {
 				if (prio.getName().equals(issue.getPriority())) {
 					priority = prio;
 					break;

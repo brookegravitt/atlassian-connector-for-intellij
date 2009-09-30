@@ -82,7 +82,8 @@ public final class ActiveIssueUtils {
 	}
 
 
-	public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue, final JiraIssueAdapter jiraIssue) {
+	public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue,
+                                          final JiraIssueAdapter jiraIssue) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 
@@ -248,7 +249,7 @@ public final class ActiveIssueUtils {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
 					public void run(final ProgressIndicator indicator) {
 
-						if (!issue.getJiraServerData().getUsername().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
+						if (!issue.getJiraServerData().getUsername().equals(issue.getAssigneeId())) {
 
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
@@ -380,9 +381,6 @@ public final class ActiveIssueUtils {
                 if (detailsPanel != null) {
                     messageDisplayed = detailsPanel.setStatusErrorMessage(newActiveIssue.getIssueKey(),
                             "Error starting work on issue: " + e.getMessage(), e);
-                    if (!messageDisplayed) {
-
-                    }
                 }
 
                 if (panel == null && detailsPanel == null || !messageDisplayed) {

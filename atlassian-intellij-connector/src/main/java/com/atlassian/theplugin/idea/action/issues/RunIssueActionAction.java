@@ -93,7 +93,8 @@ public class RunIssueActionAction extends AnAction {
 					JiraIssueAdapter issueWithTime = facade.getIssue(issue.getJiraServerData(),
 							issue.getKey());
 					detailedIssue = facade.getIssueDetails(issue.getJiraServerData(), issueWithTime);
-                    //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(detailedIssue.getLocalConfigurationListener());
+                    //IdeaHelper.getProjectCfgManager(project).
+                    // addProjectConfigurationListener(detailedIssue.getLocalConfigurationListener());
                     
 				} catch (JIRAException e) {
 					showError("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), e);

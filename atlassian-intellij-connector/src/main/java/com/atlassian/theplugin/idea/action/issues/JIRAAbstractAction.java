@@ -56,6 +56,6 @@ public abstract class JIRAAbstractAction extends AnAction {
 
     private JiraServerData getJiraServerData(AnActionEvent event, String serverId) {
       ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
-      return (JiraServerData)projectCfgManager.getJiraServerr(new ServerIdImpl(serverId));
+      return (JiraServerData) projectCfgManager.getJiraServerr(new ServerIdImpl(serverId));
     }
 }

@@ -42,7 +42,8 @@ import java.util.Map;
  */
 public class RecentlyOpenIssuesCache {
 	// ordered map
-	private final LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter> items = new LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter>();
+	private final LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter> items =
+            new LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter>();
 	private final ProjectCfgManagerImpl projectCfgManager;
 	private JiraWorkspaceConfiguration jiraWorkspaceConf;
 
