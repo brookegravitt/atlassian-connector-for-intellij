@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-
 import java.util.List;
 
 public interface JIRAIssue {
@@ -116,8 +114,6 @@ public interface JIRAIssue {
 	void setTimeSpent(String t);
 
 	List<JIRAComment> getComments();
-
-	JiraServerData getServer();
 
 	Object getRawSoapIssue();
 

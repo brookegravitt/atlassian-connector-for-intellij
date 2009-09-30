@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -58,14 +58,14 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
     private JPanel root;
     private JPanel contentPanel;
     private Project project;
-    private JIRAIssue issue;
+    private JiraIssueAdapter issue;
     private List<JIRAActionField> fields;
     private HashMap<String, Boolean> fieldsStatus = new HashMap<String, Boolean>();
     private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
     private int semaphore = 0;
     private CommentTextArea commentTextArea;
 
-    public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
+    public PerformIssueActionForm(final Project project, final JiraIssueAdapter issue, final List<JIRAActionField> fields,
                                   final String name) {
 
         super(project, true);

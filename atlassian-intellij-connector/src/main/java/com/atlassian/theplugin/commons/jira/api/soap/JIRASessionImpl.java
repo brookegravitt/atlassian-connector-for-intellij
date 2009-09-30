@@ -16,11 +16,52 @@
 
 package com.atlassian.theplugin.commons.jira.api.soap;
 
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.jira.api.*;
-import com.atlassian.theplugin.commons.jira.api.soap.axis.*;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
+import com.atlassian.theplugin.commons.jira.api.JIRAComment;
+import com.atlassian.theplugin.commons.jira.api.JIRACommentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueTypeBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.commons.jira.api.JIRASecurityLevelBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAStatusBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.JiraSoapService;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.JiraSoapServiceServiceLocator;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteAttachment;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteAuthenticationException;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteComment;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteComponent;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteField;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteFieldValue;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteFilter;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteIssue;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteIssueType;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteNamedObject;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemotePriority;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteProject;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteResolution;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteSecurityLevel;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteStatus;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteUser;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteVersion;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteWorklog;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -35,15 +76,15 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JIRASessionImpl implements JIRASession {
 
 	private String token;
 	private JiraSoapService service;
-	private JiraServerData server;
+	private HttpConnectionCfg httpConnectionCfg;
 
     public static final int ONE_DAY_AGO = -24;
 
@@ -120,15 +161,15 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
-	public JIRASessionImpl(Logger logger, JiraServerData server) throws ServiceException, MalformedURLException {
+	public JIRASessionImpl(Logger logger, HttpConnectionCfg httpConnectionCfg) throws ServiceException, MalformedURLException {
         this.logger = logger;
-        URL portAddress = new URL(server.getUrl() + "/rpc/soap/jirasoapservice-v2");
+        URL portAddress = new URL(httpConnectionCfg.getUrl() + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
 		AbstractHttpSession.setUrl(portAddress); // dirty hack
 		service = loc.getJirasoapserviceV2(portAddress);
 		setProxy();
 
-		this.server = server;
+		this.httpConnectionCfg = httpConnectionCfg;
 	}
 
 	public void login(String userName, String password) throws RemoteApiException {
@@ -236,7 +277,8 @@ public class JIRASessionImpl implements JIRASession {
 		}
 
 		// todo: fill in all other fields. For now only the issue key and URL is being displayed
-		JIRAIssueBean retVal = new JIRAIssueBean(server);
+		JIRAIssueBean retVal = new JIRAIssueBean(httpConnectionCfg.getUrl(), remoteIssue);
+
 		retVal.setKey(remoteIssue.getKey());
 		return retVal;
 	}
@@ -456,7 +498,7 @@ public class JIRASessionImpl implements JIRASession {
                 // PL-1164 - The "i" parameter defines the order in which priorities
                 // are shown in the issue tree. I am assuming that JIRA returns the
                 // list of priorities in the order that the user defined, and not
-                // in some random order. This does seem to be the case with my test server
+                // in some random order. This does seem to be the case with my test httpConnectionCfg
 				prioritiesList.add(new JIRAPriorityBean(Long.valueOf(p.getId()), i, p.getName(), new URL(p.getIcon())));
                 ++i;
 			}

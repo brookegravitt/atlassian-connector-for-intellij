@@ -16,16 +16,20 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
-import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteIssue;
 import org.jdom.Element;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class JIRAIssueBean implements JIRAIssue {
-	private JiraServerData server;
 	private Long id;
+    private String serverUrl;
 	private String key;
 	private String summary;
 	private String status;
@@ -70,12 +74,7 @@ public class JIRAIssueBean implements JIRAIssue {
     public JIRAIssueBean() {
 	}
 
-	public JIRAIssueBean(JiraServerData server) {
-		this.server = server;
-	}
-
 	public JIRAIssueBean(JIRAIssue issue) {
-		server = issue.getServer();
 		id = issue.getId();
 		key = issue.getKey();
 		summary = issue.getSummary();
@@ -110,10 +109,10 @@ public class JIRAIssueBean implements JIRAIssue {
 		remainingEstimateInSeconds = issue.getRemainingEstimateInSeconds();
 		timeSpent = issue.getTimeSpent();
 		timeSpentInSeconds = issue.getTimeSpentInSeconds();
+        serverUrl = issue.getServerUrl();
 	}
 
-	public JIRAIssueBean(JiraServerData server, Element e) {
-		this.server = server;
+	public JIRAIssueBean(String serverUrl, Element e) {
 		this.summary = getTextSafely(e, "summary");
 		this.key = getTextSafely(e, "key");
 		this.id = new Long(getAttributeSafely(e, "key", "id"));
@@ -169,6 +168,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.originalEstimateInSeconds = getAttributeSafely(e, "timeoriginalestimate", "seconds");
 		this.remainingEstimateInSeconds = getAttributeSafely(e, "timeestimate", "seconds");
 		this.timeSpentInSeconds = getAttributeSafely(e, "timespent", "seconds");
+        this.serverUrl = serverUrl;
 
 		Element comments = e.getChild("comments");
 		if (comments != null) {
@@ -193,7 +193,48 @@ public class JIRAIssueBean implements JIRAIssue {
 		}
 	}
 
-	public JIRAPriorityBean getPriorityConstant() {
+    public JIRAIssueBean(String url, RemoteIssue remoteIssue) {
+        this.serverUrl = url;
+        id = Long.valueOf(remoteIssue.getId());
+		key = remoteIssue.getKey();
+		summary = remoteIssue.getSummary();
+		status = remoteIssue.getStatus();
+        environment = remoteIssue.getEnvironment();
+		//statusUrl
+		type = remoteIssue.getType();
+		//typeUrl = remoteIssue.getTypeIconUrl();
+		priority = remoteIssue.getPriority();
+		//priorityUrl = remoteIssue.getPriorityIconUrl();
+		description = remoteIssue.getDescription();
+		projectKey = remoteIssue.getProject();
+		//statusConstant
+		//typeConstant
+		//priorityConstant = remoteIssue.getPriorityConstant();
+		assignee = remoteIssue.getAssignee();
+		//assigneeId = remoteIssue.getAssigneeId();
+		reporter = remoteIssue.getReporter();
+		//reporterId = issue.getReporterId();
+		resolution = remoteIssue.getResolution();
+		//created = remoteIssue.getCreated();
+		//updated = remoteIssue.getUpdated();
+		//statusId = remoteIssue.getStatusId();
+		//priorityId = issue.getPriorityId();
+		//typeId = issue.getTypeId();
+		//thisIsASubTask = remoteIssue.isSubTask();
+		//subTaskList = remoteIssue.getSubTaskKeys();
+		//parentIssueKey = remoteIssue.getParentIssueKey();
+		//originalEstimate = remoteIssue.getOriginalEstimate();
+		//originalEstimateInSeconds = remoteIssue.getOriginalEstimateInSeconds();
+		//remainingEstimate = remoteIssue.getRemainingEstimate();
+		//remainingEstimateInSeconds = remoteIssue.getRemainingEstimateInSeconds();
+		//timeSpent = remoteIssue.getTimeSpent();
+		//timeSpentInSeconds = issue.getTimeSpentInSeconds();
+
+    }
+
+
+
+    public JIRAPriorityBean getPriorityConstant() {
 		return priorityConstant;
 	}
 
@@ -202,8 +243,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.priorityConstant = priority;
 	}
 
-	public JIRAIssueBean(JiraServerData server, Map params) {
-		this.server = server;
+	public JIRAIssueBean(Map params) {
 		this.summary = (String) params.get("summary");
 		this.status = (String) params.get("status");
 		this.key = (String) params.get("key");
@@ -251,20 +291,17 @@ public class JIRAIssueBean implements JIRAIssue {
 	}
 
 	public String getServerUrl() {
-		return server.getUrl();
+		return serverUrl;
 	}
 
 	public String getProjectUrl() {
-		return server.getUrl() + "/browse/" + getProjectKey();
+		return getServerUrl() + "/browse/" + getProjectKey();
 	}
 
 	public String getIssueUrl() {
-		return server.getUrl() + "/browse/" + getKey();
+		return getServerUrl() + "/browse/" + getKey();
 	}
 
-	public void setServer(final JiraServerData server) {
-		this.server = server;
-	}
 
 	public Long getId() {
 		return id;
@@ -429,22 +466,16 @@ public class JIRAIssueBean implements JIRAIssue {
 		if (key != null ? !key.equals(that.key) : that.key != null) {
 			return false;
 		}
-		if (server != null ? !server.equals(that.server) : that.server != null) {
-			return false;
-		}
 
 		return true;
-//		return !(summary != null ? !summary.equals(that.summary) : that.summary != null);
-
 	}
 
 	private static final int ONE_EFF = 31;
 
 	public int hashCode() {
-		int result;
-		result = (server != null ? server.hashCode() : 0);
+		int result = 0;
+
 		result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
-//		result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
 		return result;
 	}
 
@@ -528,11 +559,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		return commentsList;
 	}
 
-	public JiraServerData getServer() {
-		return server;
-	}
-
-	public Object getRawSoapIssue() {
+    public Object getRawSoapIssue() {
 		return rawSoapIssue;
 	}
 

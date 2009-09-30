@@ -19,12 +19,18 @@ import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
@@ -139,7 +145,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 		EasyMock.replay(fishEyeServerFacade);
 
-		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
+		final JiraServerFacade jiraServerFacade = EasyMock.createNiceMock(JiraServerFacade.class);
 		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
 		EasyMock.expect(jiraServerFacade.getProjects(getServerData(jiraServerCfg1))).andReturn(jiraProjects1)

@@ -1,13 +1,20 @@
 package com.atlassian.theplugin.commons.jira.cache;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.Logger;
 
 import java.util.Collection;
@@ -21,31 +28,31 @@ import java.util.Map;
  * Time: 9:01:03 PM
  */
 public abstract class JIRAServerModelImpl implements JIRAServerModel {
-	private JIRAServerFacade facade;
+	private JiraServerFacade facade;
 
 	private final Map<JiraServerData, JIRAServerCache> serverInfoMap = new HashMap<JiraServerData, JIRAServerCache>();
 	private boolean changed = false;
 
-	public JIRAServerModelImpl(Logger logger) {
-		facade = JIRAServerFacadeImpl.getInstance();
-        JIRAServerFacadeImpl.setLogger(logger);
+    public JIRAServerModelImpl(Logger logger) {
+		facade = IntelliJJiraServerFacade.getInstance();
+        JIRAServerFacade2Impl.setLogger(logger);
 	}
 
 	// for unit testing
-	public void setFacade(JIRAServerFacade newFacade) {
+	public void setFacade(JiraServerFacade newFacade) {
 		facade = newFacade;
 	}
 
-	private synchronized JIRAServerCache getServer(JiraServerData cfg) {
-		if (serverInfoMap.containsKey(cfg)) {
-			return serverInfoMap.get(cfg);
+	private synchronized JIRAServerCache getServer(JiraServerData jiraServerData) {
+		if (serverInfoMap.containsKey(jiraServerData)) {
+			return serverInfoMap.get(jiraServerData);
 		}
 
 		JIRAServerCache srv = null;
 
 		if (!changed) {
-			srv = new JIRAServerCache(cfg, facade);
-			serverInfoMap.put(cfg, srv);
+			srv = new JIRAServerCache(jiraServerData, facade);
+			serverInfoMap.put(jiraServerData, srv);
 		}
 		return srv;
 	}
@@ -67,9 +74,9 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 			return;
 		}
 
-		ServerData server = null;
+		JiraServerData server = null;
 
-		for (ServerData s : serverInfoMap.keySet()) {
+		for (JiraServerData s : serverInfoMap.keySet()) {
 			if (s.getServerId().equals(serverId)) {
 				server = s;
 				break;
@@ -83,22 +90,22 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		}
 	}
 
-	public synchronized void replace(JiraServerData newServer) {
-		if (newServer == null) {
+	public synchronized void replace(JiraServerData newJiraServerData) {
+		if (newJiraServerData == null) {
 			return;
 		}
 
-		ServerData oldServer = null;
+		JiraServerData oldServer = null;
 
-		for (ServerData s : serverInfoMap.keySet()) {
-			if (s.getServerId().equals(newServer.getServerId())) {
+		for (JiraServerData s : serverInfoMap.keySet()) {
+			if (s.getServerId().equals(newJiraServerData.getServerId())) {
 				oldServer = s;
 				break;
 			}
 		}
 
 		if (oldServer != null) {
-			serverInfoMap.put(newServer, serverInfoMap.get(oldServer));
+			serverInfoMap.put(newJiraServerData, serverInfoMap.get(oldServer));
 			serverInfoMap.remove(oldServer);
 		}
 
@@ -116,12 +123,12 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		serverInfoMap.clear();
 	}
 
-	public Boolean checkServer(JiraServerData cfg) throws RemoteApiException {
-		if (cfg == null) {
+	public Boolean checkServer(JiraServerData jiraServerData) throws RemoteApiException {
+		if (jiraServerData == null) {
 			return null;
 		}
 
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		if (srv != null) {
 			return srv.checkServer();
 		}
@@ -129,11 +136,11 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		return null;
 	}
 
-	public String getErrorMessage(JiraServerData cfg) {
-		if (cfg == null) {
+	public String getErrorMessage(JiraServerData jiraServerData) {
+		if (jiraServerData == null) {
 			return "No Server configuration";
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		if (srv != null) {
 			return srv.getErrorMessage();
 		}
@@ -142,89 +149,89 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 	}
 
 
-	public List<JIRAProject> getProjects(JiraServerData cfg) throws JIRAException {
-		if (cfg == null) {
+	public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getProjects();
 	}
 
-	public List<JIRAConstant> getStatuses(JiraServerData cfg) throws JIRAException {
-		if (cfg == null) {
+	public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getStatuses();
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerData cfg, JIRAProject project, boolean includeAny)
+	public List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData, JIRAProject project, boolean includeAny)
 			throws JIRAException {
-		if (cfg == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getIssueTypes(project, includeAny);
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData cfg, JIRAProject project) throws JIRAException {
-		if (cfg == null) {
+	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData jiraServerData, JIRAProject project) throws JIRAException {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getSubtaskIssueTypes(project);
 	}
 
-	public List<JIRAQueryFragment> getSavedFilters(JiraServerData cfg) throws JIRAException {
-		if (cfg == null) {
+	public List<JIRAQueryFragment> getSavedFilters(JiraServerData jiraServerData) throws JIRAException {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getSavedFilters();
 	}
 
-	public List<JIRAPriorityBean> getPriorities(JiraServerData cfg, boolean includeAny) throws JIRAException {
-		if (cfg == null) {
+	public List<JIRAPriorityBean> getPriorities(JiraServerData jiraServerData, boolean includeAny) throws JIRAException {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getPriorities(includeAny);
 	}
 
-	public List<JIRAResolutionBean> getResolutions(JiraServerData cfg, boolean includeAnyAndUnknown)
+	public List<JIRAResolutionBean> getResolutions(JiraServerData jiraServerData, boolean includeAnyAndUnknown)
             throws JIRAException {
-		if (cfg == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getResolutions(includeAnyAndUnknown);
 	}
 
-	public List<JIRAVersionBean> getVersions(JiraServerData cfg, JIRAProject project, boolean includeSpecialValues)
+	public List<JIRAVersionBean> getVersions(JiraServerData jiraServerData, JIRAProject project, boolean includeSpecialValues)
 			throws JIRAException {
-		if (cfg == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getVersions(project, includeSpecialValues);
 	}
 
-	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerData cfg, JIRAProject project,
+	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerData jiraServerData, JIRAProject project,
 			boolean includeSpecialValues) throws JIRAException {
-		if (cfg == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getFixForVersions(project, includeSpecialValues);
 	}
 
-	public List<JIRAComponentBean> getComponents(JiraServerData cfg, JIRAProject project,
+	public List<JIRAComponentBean> getComponents(JiraServerData jiraServerData, JIRAProject project,
                                                  final boolean includeSpecialValues)
 			throws JIRAException {
-		if (cfg == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
-		JIRAServerCache srv = getServer(cfg);
+		JIRAServerCache srv = getServer(jiraServerData);
 		return (srv == null) ? null : srv.getComponents(project, includeSpecialValues);
 	}
 

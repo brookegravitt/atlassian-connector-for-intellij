@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 
 /**
  * User: kalamon
@@ -11,7 +11,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 public class PauseResumeJiraIssueDetailsAction extends PauseResumeJiraIssueAction {
     @Override
     public void onUpdate(AnActionEvent event, boolean enabled) {
-        final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+        final JiraIssueAdapter selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
         updateState(isSelectedIssueActive(event, selectedIssue), event);
     }
 }

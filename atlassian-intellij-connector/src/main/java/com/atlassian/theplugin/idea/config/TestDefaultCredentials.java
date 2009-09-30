@@ -20,7 +20,7 @@ import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade2;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -39,7 +39,11 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: pmaruszak
@@ -66,14 +70,14 @@ public class TestDefaultCredentials {
 
 	private final Project project;
 	private final JComponent parentComponent;
-	private final JIRAServerFacade jiraServerFacade;
+	private final JIRAServerFacade2 jiraServerFacade;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final BambooServerFacade bambooServerFacade;
 	private Map<ServerData, String> errors = new HashMap<ServerData, String>();
 
 	public TestDefaultCredentials(final Project project, final JComponent parentComponent,
-			JIRAServerFacade jiraServerFacade, final CrucibleServerFacade crucibleServerFacade,
+			JIRAServerFacade2 jiraServerFacade, final CrucibleServerFacade crucibleServerFacade,
 			final FishEyeServerFacade fishEyeServerFacade, final BambooServerFacade bambooServerFacade) {
 
 		this.project = project;

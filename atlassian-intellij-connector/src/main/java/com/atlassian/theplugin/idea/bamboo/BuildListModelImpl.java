@@ -20,11 +20,12 @@ import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +52,7 @@ public class BuildListModelImpl implements BuildListModel {
 		this.cfgManager = cfgManager;
 
 //		for (BambooBuildAdapter build : allBuilds) {
-//			if (build.getServer().getServerId().equals(serverId)) {
+//			if (build.getJiraServerData().getServerId().equals(serverId)) {
 //				allBuilds.remove(build); // todo copy on write
 //				BambooBuild b = new BambooBuildInfo();
 //				allBuilds.add(new BambooBuildAdapter())

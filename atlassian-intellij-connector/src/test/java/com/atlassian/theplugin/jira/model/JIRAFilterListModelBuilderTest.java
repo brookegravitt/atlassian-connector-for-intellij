@@ -1,40 +1,41 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
-
-import junit.framework.TestCase;
 
 /**
  * User: pmaruszak
@@ -44,13 +45,47 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	private JIRAFilterListModel listModel;
 	private Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
 	private JIRAServerModelImpl serverModel;
+    private JiraServerData jiraServerData;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+        jiraServerData = new JiraServerData(new Server(){
+            public ServerIdImpl getServerId() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getUrl() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public boolean isEnabled() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public boolean isUseDefaultCredentials() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getUsername() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getPassword() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public ServerType getServerType() {
+                return ServerType.JIRA_SERVER;
+            }
+        }, new UserCfg(), true);
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 
-		final JIRATestServerFacade facade = new JIRATestServerFacade();
+		final JIRATestServerFacade2 facade = new JIRATestServerFacade2();
 
 
 		serverModel = new JIRAServerModelIdea();
@@ -105,69 +140,72 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 	}
 
-	class JIRATestServerFacade implements JIRAServerFacade {
+	class JIRATestServerFacade2 implements JiraServerFacade {
 
-		private List<JIRAIssue> createIssueList(int size) {
-			List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+		private List<JiraIssueAdapter> createIssueList(int size) {
+			List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
 			for (int i = 0; i < size; ++i) {
-				JIRAIssueBean issue = new JIRAIssueBean();
+				JiraIssueAdapter issue = new JiraIssueAdapter(jiraServerData);
 				list.add(issue);
 			}
 			return list;
 		}
 
-		public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
+		public void testServerConnection(final JiraServerData jiraServerData) throws RemoteApiException {
 		}
 
-		public ServerType getServerType() {
+        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+        }
+
+        public ServerType getServerType() {
 			return null;
 		}
 
-		public List<JIRAIssue> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
 
-		public List<JIRAIssue> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
 
-		public List<JIRAProject> getProjects(JiraServerData server) throws JIRAException {
+		public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
+		public List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getStatuses(JiraServerData server) throws JIRAException {
+		public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getIssueTypesForProject(JiraServerData server, String project) throws JIRAException {
+		public List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, String project) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData server) throws JIRAException {
+		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData server, String project)
+		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, String project)
                 throws JIRAException {
 			return null;
 		}
 
-        public Collection<JIRAAttachment> getIssueAttachements(JiraServerData server, JIRAIssue issue) throws JIRAException {
+        public Collection<JIRAAttachment> getIssueAttachements(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
             return null;
         }
 
-        public List<JIRAQueryFragment> getSavedFilters(JiraServerData server) throws JIRAException {
+        public List<JIRAQueryFragment> getSavedFilters(JiraServerData jiraServerData) throws JIRAException {
 			List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
 			for (JiraServerCfg serverCfg : savedFilters.keySet()) {
-				if (server.getServerId().equals(serverCfg.getServerId())) {
+				if (jiraServerData.getServerId().equals(serverCfg.getServerId())) {
 					for (JIRAQueryFragment query : savedFilters.get(serverCfg)) {
 						list.add(query);
 					}
@@ -176,71 +214,71 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return list;
 		}
 
-		public List<JIRAComponentBean> getComponents(JiraServerData server, String projectKey) throws JIRAException {
+		public List<JIRAComponentBean> getComponents(JiraServerData jiraServerData, String projectKey) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAVersionBean> getVersions(JiraServerData server, String projectKey) throws JIRAException {
+		public List<JIRAVersionBean> getVersions(JiraServerData jiraServerData, String projectKey) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAPriorityBean> getPriorities(JiraServerData server) throws JIRAException {
+		public List<JIRAPriorityBean> getPriorities(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAResolutionBean> getResolutions(JiraServerData server) throws JIRAException {
+		public List<JIRAResolutionBean> getResolutions(JiraServerData jiraServerData) throws JIRAException {
 			return new ArrayList<JIRAResolutionBean>();
 		}
 
-		public List<JIRAAction> getAvailableActions(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public List<JIRAAction> getAvailableActions(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAActionField> getFieldsForAction(JiraServerData server, JIRAIssue issue, JIRAAction action)
+		public List<JIRAActionField> getFieldsForAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action)
 				throws JIRAException {
 			return null;
 		}
 
-		public void progressWorkflowAction(JiraServerData server, JIRAIssue issue, JIRAAction action)
+		public void progressWorkflowAction(JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action)
 				throws JIRAException {
 		}
 
-		public void progressWorkflowAction(final JiraServerData server, final JIRAIssue issue, final JIRAAction action,
+		public void progressWorkflowAction(final JiraServerData jiraServerData, final JIRAIssue issue, final JIRAAction action,
 				final List<JIRAActionField> fields)
 				throws JIRAException {
 		}
 
-		public void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException {
+		public void addComment(JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException {
 		}
 
-		public JIRAIssue createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter createIssue(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueUpdate(final JiraServerData server, final JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueUpdate(final JiraServerData server, final JiraIssueAdapter issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssue(JiraServerData server, String key) throws JIRAException {
+		public JiraIssueAdapter getIssue(JiraServerData jiraServerData, String key) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueDetails(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public void logWork(JiraServerData server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
+		public void logWork(JiraServerData jiraServerData, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
 				boolean updateEstimate, String newEstimate) throws JIRAException {
 		}
 
-		public void setAssignee(JiraServerData server, JIRAIssue issue, String assignee) throws JIRAException {
+		public void setAssignee(JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException {
 		}
 
-		public JIRAUserBean getUser(JiraServerData server, String loginName) throws JIRAException {
+		public JIRAUserBean getUser(JiraServerData jiraServerData, String loginName) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAComment> getComments(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public List<JIRAComment> getComments(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 	}

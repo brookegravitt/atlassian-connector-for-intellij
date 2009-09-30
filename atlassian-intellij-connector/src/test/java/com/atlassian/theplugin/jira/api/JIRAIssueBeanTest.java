@@ -17,12 +17,10 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
@@ -30,10 +28,11 @@ import org.jdom.input.SAXBuilder;
 public class JIRAIssueBeanTest extends TestCase {
 	private JIRAIssueBean issue;
 	private Document doc;
+    JiraServerData server;
 
 	protected void setUp() throws Exception {
 		doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/single-issue.xml"));
-		JiraServerData server = new JiraServerData(
+		server = new JiraServerData(
                 new JiraServerCfg(true, "name", "http://jira.com", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
@@ -43,7 +42,7 @@ public class JIRAIssueBeanTest extends TestCase {
 				return null;
 			}
 		}, "", "", true);
-		issue = new JIRAIssueBean(server, doc.getRootElement());
+		issue = new JIRAIssueBean(server.getUrl(), doc.getRootElement());
 	}
 
 	public void testFromXml() throws Exception {
@@ -79,20 +78,10 @@ public class JIRAIssueBeanTest extends TestCase {
 		modyfiedIssue.setKey(issue.getKey() + "modyfied");
 		assertFalse(issue.equals(modyfiedIssue));
 
-		modyfiedIssue = new JIRAIssueBean(issue.getServer(), doc.getRootElement());
+		modyfiedIssue = new JIRAIssueBean("url", doc.getRootElement());
 		assertEquals(issue, modyfiedIssue);
-		modyfiedIssue = new JIRAIssueBean(
-				new JiraServerData(
-                        new JiraServerCfg(true, issue.getServer().getName() + "modyfied", "", new ServerIdImpl(), true) {
-					public ServerType getServerType() {
-						return null;
-					}
-
-					public JiraServerCfg getClone() {
-						return null;
-					}
-				}, "", "", true),
-				doc.getRootElement());
+		modyfiedIssue = new JIRAIssueBean("urll",doc.getRootElement());
+        modyfiedIssue.setKey("krukkey");
 		assertFalse(issue.equals(modyfiedIssue));
 
 	}

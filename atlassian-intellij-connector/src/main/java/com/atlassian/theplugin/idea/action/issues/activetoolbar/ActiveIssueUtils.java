@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -28,7 +28,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -82,7 +82,7 @@ public final class ActiveIssueUtils {
 	}
 
 
-	public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue, final JIRAIssue jiraIssue) {
+	public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue, final JiraIssueAdapter jiraIssue) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 
@@ -95,7 +95,7 @@ public final class ActiveIssueUtils {
 		}
 	}
 
-	public static JIRAIssue getSelectedJiraIssue(final AnActionEvent event) {
+	public static JiraIssueAdapter getSelectedJiraIssue(final AnActionEvent event) {
 		return event.getData(Constants.ISSUE_KEY);
 	}
 
@@ -113,12 +113,12 @@ public final class ActiveIssueUtils {
 
 	//invokeLater necessary
 
-	public static JIRAIssue getJIRAIssue(final AnActionEvent event) throws JIRAException {
+	public static JiraIssueAdapter getJIRAIssue(final AnActionEvent event) throws JIRAException {
 		return getJIRAIssue(IdeaHelper.getCurrentProject(event));
 	}
 
 	//invokeLater necessary
-	public static JIRAIssue getJIRAIssue(final Project project) throws JIRAException {
+	public static JiraIssueAdapter getJIRAIssue(final Project project) throws JIRAException {
 		JiraServerData jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(project);
@@ -127,11 +127,11 @@ public final class ActiveIssueUtils {
 		return null;
 	}
 
-	public static JIRAIssue getJIRAIssue(final JiraServerData jiraServer, final ActiveJiraIssue activeIssue)
+	public static JiraIssueAdapter getJIRAIssue(final JiraServerData jiraServer, final ActiveJiraIssue activeIssue)
 			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
-			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+			JiraServerFacade facade = IntelliJJiraServerFacade.getInstance();
 
 			try {
 				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
@@ -201,21 +201,21 @@ public final class ActiveIssueUtils {
 	 * @param issue issue
 	 * @return boolean
 	 */
-	private static boolean isInProgress(final JIRAIssue issue) {
-		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+	private static boolean isInProgress(final JiraIssueAdapter issue) {
+		List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
 
 		if (actions == null) {
 
-			JiraServerData jiraServer = issue.getServer();
+			JiraServerData jiraServer = issue.getJiraServerData();
 
 			if (jiraServer != null) {
 				try {
-					actions = JIRAServerFacadeImpl.getInstance().getAvailableActions(jiraServer, issue);
+					actions = IntelliJJiraServerFacade.getInstance().getAvailableActions(jiraServer, issue);
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
 				}
 
-				JiraIssueAdapter.get(issue).setCachedActions(actions);
+				JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
 			}
 		}
 
@@ -238,17 +238,17 @@ public final class ActiveIssueUtils {
 	 * @param project project
 	 * @param issue   issue
 	 */
-	public static void checkIssueState(final Project project, final JIRAIssue issue) {
+	public static void checkIssueState(final Project project, final JiraIssueAdapter issue) {
 		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
 		if (issue != null && activeIssue != null) {
 
-			if (issue.getServer() != null && issue.getKey().equals(activeIssue.getIssueKey())
-					&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
+			if (issue.getJiraServerData() != null && issue.getKey().equals(activeIssue.getIssueKey())
+					&& issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
 
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
 					public void run(final ProgressIndicator indicator) {
 
-						if (!issue.getServer().getUsername().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
+						if (!issue.getJiraServerData().getUsername().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
 
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
@@ -314,7 +314,7 @@ public final class ActiveIssueUtils {
 			if (activeIssue != null) {
 				final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 				try {
-					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
+					final JiraIssueAdapter jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 					if (panel != null && jiraIssue != null) {
 						boolean isOk;
 						final JiraServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
@@ -343,7 +343,7 @@ public final class ActiveIssueUtils {
 	}
 
     private static class RefreshingIssueTask extends Task.Backgroundable {
-        private JIRAIssue jiraIssue;
+        private JiraIssueAdapter jiraIssue;
         private boolean isOk;
         private final JiraServerData jiraServerCfg;
         private final ActiveJiraIssue newActiveIssue;

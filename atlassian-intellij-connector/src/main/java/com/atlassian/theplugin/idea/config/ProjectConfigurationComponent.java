@@ -26,12 +26,22 @@ import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.SettingsSavingComponent;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -43,18 +53,8 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.SettingsSavingComponent;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.VirtualFile;
-import javax.swing.Icon;
-import javax.swing.JComponent;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -364,7 +364,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				new ProjectConfigurationPanel(project, configuration.getClone(), IntelliJCrucibleServerFacade.getInstance(),
 						IntelliJFishEyeServerFacade.getInstance(), 
 						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
-						JIRAServerFacadeImpl.getInstance(), uiTaskExecutor, selectedServer, projectCfgManager
+						IntelliJJiraServerFacade.getInstance(), uiTaskExecutor, selectedServer, projectCfgManager
 								.getDefaultCredentials().getClone(),
 				projectCfgManager.isDefaultCredentialsAsked(), projectConfigurationBean);
 		return projectConfigurationPanel;

@@ -3,17 +3,17 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
 import com.atlassian.theplugin.commons.jira.api.JIRAComment;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
@@ -97,7 +97,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
     protected static final int ROW_HEIGHT = 16;
 
-	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+	private static JiraServerFacade facade = IntelliJJiraServerFacade.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;
@@ -105,7 +105,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	private ContentPanel selectedContent = null;
 
-	public IssueDetailsToolWindow(@NotNull final Project project,
+    public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull ProjectCfgManagerImpl projectCfgManager) {
@@ -127,16 +127,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
     private final class IssueContentParameters implements ContentParameters {
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
-		private JIRAIssue issue;
+		private JiraIssueAdapter issue;
 		private final JIRAIssueListModel model;
 
-		private IssueContentParameters(JIRAIssue issue, JIRAIssueListModel model) {
+		private IssueContentParameters(JiraIssueAdapter issue, JIRAIssueListModel model) {
 			this.issue = issue;
 			this.model = model;
 		}
 	}
 
-	public void showIssue(final JIRAIssue issue, JIRAIssueListModel model) {
+	public void showIssue(final JiraIssueAdapter issue, JIRAIssueListModel model) {
 		final IssueContentParameters issueContentParameters = new IssueContentParameters(issue, model);
 		showToolWindow(project, issueContentParameters,
 				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON,
@@ -154,9 +154,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		return getContentKey(icp.issue);
 	}
 
-	protected String getContentKey(JIRAIssue issue) {
-		ServerData server = issue.getServer();
-		return server != null ? server.getUrl() + server.getUsername() + issue.getKey() : "";
+	protected String getContentKey(JiraIssueAdapter issueCached) {
+		JiraServerData jiraServerData = issueCached.getJiraServerData();
+		return jiraServerData != null ? jiraServerData.getUrl() + jiraServerData.getUsername() + issueCached.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {
@@ -172,8 +172,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 //	public boolean isServerEnabled(String key) {
 //		IssuePanel ip = getContentPanel(key);
-//		ServerCfg serverCfg = projectCfgManager.getServer(
-//				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
+//		ServerCfg serverCfg = projectCfgManager.getJiraServerData(
+//				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getJiraServerData() : null);
 //
 //		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
 //	}
@@ -202,7 +202,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	public void editIssueInBrowser(String key) {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			JIRAIssue issue = ip.params.issue;
+			JiraIssueAdapter issue = ip.params.issue;
 			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
 		}
 	}
@@ -222,7 +222,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	public void refresh(JIRAIssue issue) {
+	public void refresh(JiraIssueAdapter issue) {
 		IssuePanel ip = getContentPanel(getContentKey(issue));
 		if (ip != null) {
 			ip.refresh();
@@ -324,8 +324,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			statusBarPane.setErrorMessage(error, exception);
 		}
 
-		public ServerData getSelectedServer() {
-			return params != null && params.issue != null ? params.issue.getServer()
+		public JiraServerData getSelectedServer() {
+            return params != null && params.issue != null
+                    ? params.issue.getJiraServerData()
 					: null;
 		}
 
@@ -336,10 +337,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			projectCfgManager.removeProjectConfigurationListener(configurationListener);
 		}
 
-		private JiraServerData getJiraServerCfg() {
+		private JiraServerData getJiraServerData() {
 			if (params != null && params.issue != null) {
-				if (params.issue.getServer() != null) {
-					return params.issue.getServer();
+				if (params.issue.getJiraServerData() != null) {
+					return params.issue.getJiraServerData();
 				}
 			}
 
@@ -349,15 +350,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		public void refresh() {
 			retrieveIssueFromModel();
 
-			ServerData jiraServerCfg = getJiraServerCfg();
+			JiraServerData jiraServerData = getJiraServerData();
 
-			if (params.issue != null && jiraServerCfg != null) {
+			if (params.issue != null && jiraServerData != null) {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
 					private boolean retrieved = false;
 
 					public void run(@NotNull final ProgressIndicator indicator) {
 						try {
-							params.issue = facade.getIssue(params.issue.getServer(), params.issue.getKey());
+							params.issue = facade.getIssue(params.issue.getJiraServerData(), params.issue.getKey());
+                            //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
 							retrieved = true;
 						} catch (final JIRAException e) {
 							EventQueue.invokeLater(new Runnable() {
@@ -384,9 +386,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		private void retrieveIssueFromModel() {
-			ServerData jiraServerCfg = getJiraServerCfg();
-			for (JIRAIssue i : params.model.getIssues()) {
-				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerCfg.getUrl())) {
+			JiraServerData jiraServerData = getJiraServerData();
+			for (JiraIssueAdapter i : params.model.getIssues()) {
+				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerData.getUrl())) {
 					params.issue = i;
 					// todo check active issue
 //					ActiveIssueUtils.checkIssueState(project, i);
@@ -409,10 +411,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		void reloadAvailableActions() {
 			final RunJiraActionGroup actionGroup = getAvailableActionsGroup();
 
-			final JIRAIssue issue = params.issue;
+			final JiraIssueAdapter issue = params.issue;
 			if (issue != null) {
 				actionGroup.clearActions(project);
-				java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+				java.util.List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
 				if (actions != null) {
 					for (JIRAAction a : actions) {
 						actionGroup.addAction(project,
@@ -423,14 +425,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						@Override
 						public void run() {
 							try {
-								JiraServerData jiraServer =
-										params != null && params.issue != null ? params.issue.getServer() : null;
+								JiraServerData jiraServerData =
+										params != null && params.issue != null ? params.issue.getJiraServerData() : null;
 
-								if (jiraServer != null) {
+								if (jiraServerData != null) {
 									final java.util.List<JIRAAction> actions = facade
-											.getAvailableActions(jiraServer, issue);
+											.getAvailableActions(jiraServerData, issue);
 
-									JiraIssueAdapter.get(issue).setCachedActions(actions);
+									JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
 									SwingUtilities.invokeLater(new Runnable() {
 										public void run() {
 											actionGroup.clearActions(project);
@@ -466,7 +468,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				return params.issue;
 			}
 			if (dataId.equals(Constants.SERVER)) {
-				return getJiraServerCfg();
+				return getJiraServerData();
 			}
 
 			if (dataId.equals(Constants.STATUS_BAR_PANE)) {
@@ -475,7 +477,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			return null;
 		}
 
-		private class DetailsPanel extends JPanel {
+        private class DetailsPanel extends JPanel {
 
 			private JLabel affectsVersions = new JLabel("Fetching...");
 			private JLabel fixVersions = new JLabel("Fetching...");
@@ -586,10 +588,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			private void openSelectedSubtask(JList list) {
 				Object o = list.getSelectedValue();
-				if (o != null && o instanceof JIRAIssue) {
+				if (o != null && o instanceof JiraIssueAdapter) {
 					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 					if (panel != null) {
-						panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer(), false);
+						panel.openIssue(((JiraIssueAdapter) o).getKey(), params.issue.getJiraServerData(), false);
 					}
 				}
 			}
@@ -597,12 +599,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private void createFetchSubtasksBackgroundTask(final List<String> keys) {
 				getSubTasksTask = new Task.Backgroundable(project,
 						"Fetching subtasks for issue " + params.issue.getKey(), true) {
-					private List<JIRAIssue> subtasks = new ArrayList<JIRAIssue>();
+					private List<JiraIssueAdapter> subtasks = new ArrayList<JiraIssueAdapter>();
 
 					public void run(@NotNull ProgressIndicator progressIndicator) {
-						Collection<JIRAIssue> subtasksInModel = params.model.getSubtasks(params.issue);
-						Map<String, JIRAIssue> subKeysInModel = new HashMap<String, JIRAIssue>();
-						for (JIRAIssue sub : subtasksInModel) {
+						Collection<JiraIssueAdapter> subtasksInModel = params.model.getSubtasks(params.issue);
+						Map<String, JiraIssueAdapter> subKeysInModel = new HashMap<String, JiraIssueAdapter>();
+						for (JiraIssueAdapter sub : subtasksInModel) {
 							subKeysInModel.put(sub.getKey(), sub);
 						}
 						for (String key : keys) {
@@ -610,7 +612,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								if (subKeysInModel.keySet().contains(key)) {
 									subtasks.add(subKeysInModel.get(key));
 								} else {
-									JIRAIssue subtask = facade.getIssue(params.issue.getServer(), key);
+									JiraIssueAdapter subtask = facade.getIssue(params.issue.getJiraServerData(), key);
 									if (subtask != null) {
 										subtasks.add(subtask);
 									}
@@ -629,7 +631,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					@Override
 					public void onSuccess() {
 						subtaskListModel.clear();
-						for (JIRAIssue subtask : subtasks) {
+						for (JiraIssueAdapter subtask : subtasks) {
 							subtaskListModel.addElement(subtask);
 						}
 						getSubTasksTask = null;
@@ -677,7 +679,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
 							IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 							if (panel != null) {
-								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer(), false);
+								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getJiraServerData(), false);
 							}
 						}
 					}), gbc2);
@@ -858,11 +860,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				public void run() {
 
 					try {
-						if (params != null && params.issue != null && params.issue.getServer() != null) {
+						if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
 
-							final JIRAIssue issueDetails = facade.getIssueDetails(params.issue.getServer(), params.issue);
+							final JiraIssueAdapter issueDetails = facade.getIssueDetails(params.issue.getJiraServerData(), params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 							params.issue.setFixVersions(issueDetails.getFixVersions());
 							params.issue.setComponents(issueDetails.getComponents());
@@ -936,14 +938,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				getIssueDetails();
 			}
 
-			private Map<JIRAIssue, JIRAIssueListOrTreeRendererPanel> rendererMap =
-					new HashMap<JIRAIssue, JIRAIssueListOrTreeRendererPanel>();
+			private Map<JiraIssueAdapter, JIRAIssueListOrTreeRendererPanel> rendererMap =
+					new HashMap<JiraIssueAdapter, JIRAIssueListOrTreeRendererPanel>();
 
 			private class SubtaskListCellRenderer extends DefaultListCellRenderer {
 				public Component getListCellRendererComponent(JList list, Object value, int index,
 						boolean isSelected, boolean cellHasFocus) {
-					if (value != null && value instanceof JIRAIssue) {
-						JIRAIssue issue = (JIRAIssue) value;
+					if (value != null && value instanceof JiraIssueAdapter) {
+						JiraIssueAdapter issue = (JiraIssueAdapter) value;
 						JIRAIssueListOrTreeRendererPanel r = rendererMap.get(issue);
 						if (r == null) {
 							r = new JIRAIssueListOrTreeRendererPanel(issue);
@@ -1086,7 +1088,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			public void addComment(JIRAComment c) {
-				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, params.issue.getServer(), tabs);
+                final ServerId id = params.issue.getJiraServerData().getServerId();
+                CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, projectCfgManager.getJiraServerr(id), tabs);
 				comments.add(p);
 			}
 
@@ -1115,8 +1118,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							try {
-								if (params != null && params.issue != null && params.issue.getServer() != null) {
-									facade.addComment(params.issue.getServer(), params.issue.getKey(),
+								if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
+									facade.addComment(params.issue.getJiraServerData(), params.issue.getKey(),
 											issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
@@ -1163,10 +1166,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private class RefreshDescriptionAndCommentsRunnable implements Runnable {
 				public void run() {
 					try {
-						if (params != null && params.issue != null && params.issue.getServer() != null) {
+						if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
 							java.util.List<JIRAComment> cmts = null;
 
-							JIRAIssue oneIssue = facade.getIssue(params.issue.getServer(), params.issue.getKey());
+							JiraIssueAdapter oneIssue = facade.getIssue(params.issue.getJiraServerData(), params.issue.getKey());
 							if (oneIssue != null) {
 								descriptionPanel.setDescription(oneIssue.getDescription());
 								cmts = oneIssue.getComments();
@@ -1174,13 +1177,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 							if (cmts == null) {
 								// oh well, no comments in XML - can it even happen? Fall back to SOAP
-								cmts = facade.getComments(params.issue.getServer(), params.issue);
+								cmts = facade.getComments(params.issue.getJiraServerData(), params.issue);
 							}
 
 							for (JIRAComment c : cmts) {
 								try {
 									JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
-											.getUser(getJiraServerCfg(), c.getAuthor());
+											.getUser(getJiraServerData(), c.getAuthor());
 									c.setAuthorFullName(u.getName());
 								} catch (JiraUserNotFoundException e) {
 									c.setAuthorFullName(c.getAuthor());
@@ -1227,12 +1230,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     public void run() {
                         try {
                             final Collection<JIRAAttachment> atts =
-                                    facade.getIssueAttachements(params.issue.getServer(), params.issue);
+                                    facade.getIssueAttachements(params.issue.getJiraServerData(), params.issue);
 
                             // get user names in the cache if they are not already there
                             for (JIRAAttachment att : atts) {
                                 RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
-                                        .getUser(params.issue.getServer(), att.getAuthor());
+                                        .getUser(params.issue.getJiraServerData(), att.getAuthor());
                             }
 
                             SwingUtilities.invokeLater(new Runnable() {
@@ -1407,8 +1410,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                         .append("/secure/attachment/").append(a.getId())
                         .append("/").append(a.getFilename());
                 if (appendAuth) {
-                    sb.append("?os_username=").append(params.issue.getServer().getUsername());
-                    sb.append("&os_password=").append(params.issue.getServer().getPassword());
+                    sb.append("?os_username=").append(params.issue.getJiraServerData().getUsername());
+                    sb.append("&os_password=").append(params.issue.getJiraServerData().getPassword());
                 }
                 return sb.toString();
             }
@@ -1696,13 +1699,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private class LocalConfigListener extends ConfigurationListenerAdapter {
 
 			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-				((JIRAIssueBean) params.issue).setServer(params.issue.getServer());
+				( params.issue).setJiraServerData(params.issue.getJiraServerData());
 			}
 		}
 
 		private class LocalModelListener implements JIRAIssueListModelListener {
 
-			public void issueUpdated(final JIRAIssue issue) {
+			public void issueUpdated(final JiraIssueAdapter issue) {
 			}
 
 			public void modelChanged(final JIRAIssueListModel model) {
@@ -1746,10 +1749,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             add(date, gbc);
         }
 
-        void setAttachment(JIRAIssue issue, JIRAAttachment attachment) throws JIRAException, JiraUserNotFoundException {
+        void setAttachment(JiraIssueAdapter issue, JIRAAttachment attachment) throws JIRAException, JiraUserNotFoundException {
             name.setText(" " + attachment.getFilename());
             JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
-                    .getUser(issue.getServer(), attachment.getAuthor());
+                    .getUser(issue.getJiraServerData(), attachment.getAuthor());
             author.setText(u.getName());
             DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
             String commitDate = dfo.format(attachment.getCreated().getTime());

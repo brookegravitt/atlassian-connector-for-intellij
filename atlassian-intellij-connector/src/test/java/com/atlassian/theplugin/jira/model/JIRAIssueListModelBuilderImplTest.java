@@ -15,32 +15,47 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAAttachment;
+import com.atlassian.theplugin.commons.jira.api.JIRAComment;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.Collection;
 
 public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
-	private JIRATestServerFacade facade;
+	private JIRATestServerFacade2 facade;
 
 	@Override
 	public void setUp() throws Exception {
-		facade = new JIRATestServerFacade();
+		facade = new JIRATestServerFacade2();
 		super.setUp();
 	}
 
@@ -55,7 +70,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			builder.addIssuesToModel(
                     new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query), server, 2, true);
 			assertEquals(0, model.getIssues().size());
-//			builder.setServer(server);
+//			builder.setHttpConnectionCfg(server);
 			assertEquals(0, model.getIssues().size());
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
@@ -133,7 +148,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 			}
 
-			public void issueUpdated(final JIRAIssue issue) {
+			public void issueUpdated(final JiraIssueAdapter issue) {
 			}
 		});
 		try {
@@ -165,36 +180,74 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		assertEquals(0, model.getIssues().size());
 	}
 
-	private class JIRATestServerFacade implements JIRAServerFacade {
+	private class JIRATestServerFacade2 implements JiraServerFacade {
 
 		private int idx;
-		private final JIRAIssueBean proto = new JIRAIssueBean();
+        private final JiraServerData jiraServerData = new JiraServerData(new Server() {
+            public ServerIdImpl getServerId() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
 
-		private List<JIRAIssue> createIssueList(int size) {
-			List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+            public String getName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getUrl() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public boolean isEnabled() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public boolean isUseDefaultCredentials() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getUsername() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getPassword() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public ServerType getServerType() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }, new UserCfg() {}, true);
+
+        private final JiraIssueAdapter proto = new JiraIssueAdapter(jiraServerData
+        );
+		private List<JiraIssueAdapter> createIssueList(int size) {
+			List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
 			for (int i = 0; i < size; ++i) {
 				proto.setKey("A-" + Long.valueOf(idx).toString());
 				++idx;
-				JIRAIssueBean issue = new JIRAIssueBean(proto);
+				JiraIssueAdapter issue = new JiraIssueAdapter(proto);
 				list.add(issue);
 			}
 			return list;
 		}
 
-		public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
+		public void testServerConnection(JiraServerData server) throws RemoteApiException {
 		}
 
-		public ServerType getServerType() {
+        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+            
+        }
+
+        public ServerType getServerType() {
 			return null;
 		}
 
-		public List<JIRAIssue> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
 
-		public List<JIRAIssue> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
@@ -271,15 +324,15 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		public void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException {
 		}
 
-		public JIRAIssue createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
-		public JIRAIssue getIssueUpdate(JiraServerData server, JIRAIssue issue) throws JIRAException {
+		public JiraIssueAdapter getIssueUpdate(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
@@ -298,7 +351,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-		public JIRAIssue getIssue(JiraServerData server, String key) throws JIRAException {
+		public JiraIssueAdapter getIssue(JiraServerData server, String key) throws JIRAException {
 			return null;
 		}
 	}

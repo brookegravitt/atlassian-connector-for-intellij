@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.cache;
 
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
 import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
@@ -28,11 +29,10 @@ import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAStatusBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class JIRAServerCache {
 	public static final int UNKNOWN_COMPONENT_ID = -1;
 	private static final int UNRESOLVED_ID = -1;
 
-	private final JiraServerData server;
+	private final JiraServerData jiraServerData;
 	private boolean validServer;
 	private String errorMessage;
 
@@ -66,24 +66,24 @@ public class JIRAServerCache {
 	private final Map<String, List<JIRAVersionBean>> serverVersionsCache;
 	private final Map<String, List<JIRAComponentBean>> componentsCache;
 
-	private final JIRAServerFacade jiraServerFacade;
+	private final JiraServerFacade jiraServerFacade;
 
-	public JIRAServerCache(JiraServerData server, JIRAServerFacade jiraServerFacade) {
+    public JIRAServerCache(JiraServerData jiraServerData, JiraServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.subtaskIssueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
 		this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
-		this.server = server;
+		this.jiraServerData = jiraServerData;
 	}
 
-	public ServerData getServer() {
-		return server;
+	public JiraServerData getJiraServerData() {
+		return jiraServerData;
 	}
 
 	public boolean checkServer() throws RemoteApiException {
 		try {
-			jiraServerFacade.testServerConnection(server.toConnectionCfg());
+			jiraServerFacade.testServerConnection(jiraServerData);
 			validServer = true;
 
 		} catch (RemoteApiLoginException e) {
@@ -99,7 +99,7 @@ public class JIRAServerCache {
 	public List<JIRAProject> getProjects() throws JIRAException {
 		if (projects == null) {
 			try {
-				List<JIRAProject> retrieved = jiraServerFacade.getProjects(server);
+				List<JIRAProject> retrieved = jiraServerFacade.getProjects(jiraServerData);
 				projects = new ArrayList<JIRAProject>();
 				projects.add(new JIRAProjectBean(ANY_ID, "Any"));
 				projects.addAll(retrieved);
@@ -114,7 +114,7 @@ public class JIRAServerCache {
 	public List<JIRAConstant> getStatuses() throws JIRAException {
 		if (statuses == null) {
 			try {
-				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(server);
+				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(jiraServerData);
 				statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
 				statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
 				statuses.addAll(retrieved);
@@ -145,9 +145,9 @@ public class JIRAServerCache {
 			List<JIRAConstant> retrieved;
 			try {
 				if (project == null || project.getKey() == null) {
-					retrieved = jiraServerFacade.getIssueTypes(server);
+					retrieved = jiraServerFacade.getIssueTypes(jiraServerData);
 				} else {
-					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(project.getId()));
+					retrieved = jiraServerFacade.getIssueTypesForProject(jiraServerData, Long.toString(project.getId()));
 				}
 				issueTypes = new ArrayList<JIRAConstant>(retrieved.size());
 				issueTypes.addAll(retrieved);
@@ -187,9 +187,9 @@ public class JIRAServerCache {
 			List<JIRAConstant> retrieved;
 			try {
 				if (project == null || project.getKey() == null) {
-					retrieved = jiraServerFacade.getSubtaskIssueTypes(server);
+					retrieved = jiraServerFacade.getSubtaskIssueTypes(jiraServerData);
 				} else {
-					retrieved = jiraServerFacade.getSubtaskIssueTypesForProject(server, Long.toString(project.getId()));
+					retrieved = jiraServerFacade.getSubtaskIssueTypesForProject(jiraServerData, Long.toString(project.getId()));
 				}
 				subtaskTypes = new ArrayList<JIRAConstant>(retrieved.size());
 				subtaskTypes.addAll(retrieved);
@@ -219,7 +219,7 @@ public class JIRAServerCache {
 	public List<JIRAQueryFragment> getSavedFilters() throws JIRAException {
 		if (savedFilters == null) {
 			try {
-				savedFilters = jiraServerFacade.getSavedFilters(server);
+				savedFilters = jiraServerFacade.getSavedFilters(jiraServerData);
 			} catch (JIRAException e) {
                 errorMessage = e.getMessage();
 				throw e;
@@ -231,7 +231,7 @@ public class JIRAServerCache {
 	public List<JIRAPriorityBean> getPriorities(boolean includeAny) throws JIRAException {
 		if (priorities == null) {
 			try {
-				List<JIRAPriorityBean> retrieved = jiraServerFacade.getPriorities(server);
+				List<JIRAPriorityBean> retrieved = jiraServerFacade.getPriorities(jiraServerData);
 				priorities = new ArrayList<JIRAPriorityBean>(retrieved.size() + 1);
 				priorities.addAll(retrieved);
 				for (JIRAConstant priority : priorities) {
@@ -254,7 +254,7 @@ public class JIRAServerCache {
 	public List<JIRAResolutionBean> getResolutions(boolean includeAnyAndUnknown) throws JIRAException {
 		if (resolutions == null) {
 			try {
-				List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(server);
+				List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(jiraServerData);
 				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size());
 				resolutions.addAll(retrieved);
 			} catch (JIRAException e) {
@@ -281,7 +281,7 @@ public class JIRAServerCache {
 		if (versions == null) {
 			try {
 				if (project != null && project.getKey() != null) {
-					versions = jiraServerFacade.getVersions(server, project.getKey());
+					versions = jiraServerFacade.getVersions(jiraServerData, project.getKey());
                     Collections.reverse(versions);
 					serverVersionsCache.put(project.getKey(), versions);
 				} else {
@@ -377,7 +377,7 @@ public class JIRAServerCache {
 		if (components == null) {
 			try {
 				if (project != null && project.getKey() != null) {
-					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, project.getKey());
+					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(jiraServerData, project.getKey());
 
 					components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
 					if (includeSpecialValues) {

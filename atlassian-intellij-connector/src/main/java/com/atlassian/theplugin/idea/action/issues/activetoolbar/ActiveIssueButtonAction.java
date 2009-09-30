@@ -1,25 +1,24 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.actionSystem.impl.ActionButtonWithText;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
+import com.intellij.openapi.actionSystem.impl.ActionButtonWithText;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.EmptyIcon;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 
 import javax.swing.*;
-
 import java.awt.*;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * User: kalamon
@@ -43,7 +42,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 final Project currentProject = IdeaHelper.getCurrentProject(event);
-                final JIRAIssue issue;
+                final JiraIssueAdapter issue;
                 if (currentProject != null) {
                     final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(currentProject);
                     try {
@@ -68,7 +67,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
         String text = "No active issue";
         String tooltip = "";
-        JIRAIssue issue = null;
+        JiraIssueAdapter issue = null;
         RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
 
         if (activeIssue != null) {

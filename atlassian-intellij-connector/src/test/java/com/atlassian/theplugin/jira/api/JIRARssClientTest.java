@@ -135,7 +135,7 @@ public class JIRARssClientTest extends TestCase {
 			}
 		}, "", "", true);
 
-		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
+		JIRARssClient c = new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -169,7 +169,7 @@ public class JIRARssClientTest extends TestCase {
 			}
 		}, "", "", true);
 
-		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
+		JIRARssClient c = new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -205,7 +205,7 @@ public class JIRARssClientTest extends TestCase {
 				return null;
 			}
 		}, userName, password, true);
-		return new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
+		return new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {
 				mostRecentUrl = url;
@@ -218,7 +218,7 @@ public class JIRARssClientTest extends TestCase {
     private class JIRARssClientPublic extends JIRARssClient {
 
         public JIRARssClientPublic(final JiraServerData server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
-            super(server, callback);
+            super(server.toHttpConnectionCfg(), callback);
 }
 
         @Override

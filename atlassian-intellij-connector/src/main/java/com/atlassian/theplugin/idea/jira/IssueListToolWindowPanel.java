@@ -2,16 +2,21 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -26,15 +31,37 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.atlassian.theplugin.idea.jira.tree.*;
+import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
+import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
+import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.JIRAManualFilterTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.JIRAServerTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.FrozenModel;
+import com.atlassian.theplugin.jira.model.FrozenModelListener;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
+import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -54,16 +81,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
@@ -84,7 +120,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     @NotNull
     private JIRAFilterTree jiraFilterTree;
 
-    private JIRAServerFacade jiraServerFacade;
+    private JiraServerFacade jiraServerFacade;
 
     private JIRAIssueListModel currentIssueListModel;
 
@@ -122,7 +158,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
         this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 
-        jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+        jiraServerFacade = IntelliJJiraServerFacade.getInstance();
 
         if (jiraWorkspaceConfiguration.getView() != null && jiraWorkspaceConfiguration.getView().getGroupBy() != null) {
             groupBy = jiraWorkspaceConfiguration.getView().getGroupBy();
@@ -180,9 +216,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         addJiraFilterTreeListeners();
 
         jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-            public void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServer) {
+            public void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
                 // refresh issue list
-                refreshIssues(manualFilter, jiraServer, true);
+                refreshIssues(manualFilter, jiraServerData, true);
             }
 
             public void modelChanged(final JIRAFilterListModel listModel) {
@@ -328,7 +364,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         getRightTree().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                JIRAIssue issue = getSelectedIssue();
+                JiraIssueAdapter issue = getSelectedIssue();
                 if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
                     openIssue(issue, true);
                 }
@@ -339,7 +375,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
             @Override
             public void mouseClicked(final MouseEvent e) {
-                final JIRAIssue issue = getSelectedIssue();
+                final JiraIssueAdapter issue = getSelectedIssue();
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
                     openIssue(issue, true);
                 }
@@ -387,8 +423,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         };
         actionGroup.add(submenu);
 
-        final JIRAIssue issue = getSelectedIssue();
-        List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+        final JiraIssueAdapter issue = getSelectedIssue();
+        List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
         if (actions != null) {
             for (JIRAAction a : actions) {
                 submenu.add(new RunIssueActionAction(this, jiraServerFacade, issue, a, jiraIssueListModelBuilder));
@@ -398,12 +434,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 @Override
                 public void run() {
                     try {
-                        JiraServerData jiraServer = issue.getServer();
+                        JiraServerData jiraServer = issue.getJiraServerData();
 
                         if (jiraServer != null) {
                             final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
 
-                            JiraIssueAdapter.get(issue).setCachedActions(actions);
+                            JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     JPopupMenu pMenu = popup.getComponent();
@@ -431,12 +467,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    private JIRAIssue getSelectedIssue() {
+    private JiraIssueAdapter getSelectedIssue() {
         return getRightTree().getSelectedIssue();
     }
 
-    public void openIssue(@NotNull JIRAIssue issue, boolean reload) {
-        if (issue.getServer() != null) {
+    public void openIssue(@NotNull JiraIssueAdapter issue, boolean reload) {
+        if (issue.getJiraServerData() != null) {
             recentlyOpenIssuesCache.addIssue(issue);
             // todo check active issue
             IdeaHelper.getIssueDetailsToolWindow(getProject()).showIssue(issue, baseIssueListModel);
@@ -447,10 +483,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public void openIssue(@NotNull final String issueKey, @NotNull final JiraServerData jiraServer, final boolean modal) {
-        JIRAIssue issue = null;
-        for (JIRAIssue i : baseIssueListModel.getIssues()) {
-            if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
+    public void openIssue(@NotNull final String issueKey, @NotNull final JiraServerData jiraServerData, final boolean modal) {
+        JiraIssueAdapter issue = null;
+        for (JiraIssueAdapter i : baseIssueListModel.getIssues()) {
+            if (i.getKey().equals(issueKey) && i.getJiraServerData().getServerId().equals(jiraServerData.getServerId())) {
                 issue = i;
                 break;
             }
@@ -460,7 +496,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             openIssue(issue, true);
         } else {
             Task task;
-            final IssueFetcher fetcher = new IssueFetcher(jiraServer, issueKey);
+            final IssueFetcher fetcher = new IssueFetcher(jiraServerData, issueKey);
             if (modal) {
                 task = new Task.Modal(getProject(), "Fetching JIRA issue " + issueKey, false) {
                     public void run(final ProgressIndicator indicator) {
@@ -489,20 +525,20 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     private class IssueFetcher {
-        private JIRAIssue issue;
+        private JiraIssueAdapter issue;
         private Throwable exception;
-        private JiraServerData jiraServer;
+        private JiraServerData jiraServerData;
         private String issueKey;
 
-        public IssueFetcher(final JiraServerData jiraServer, final String issueKey) {
-            this.jiraServer = jiraServer;
+        public IssueFetcher(final JiraServerData jiraServerData, final String issueKey) {
+            this.jiraServerData = jiraServerData;
             this.issueKey = issueKey;
         }
 
         public void run() {
             try {
-                if (jiraServer != null) {
-                    issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+                if (jiraServerData != null) {
+                    issue = jiraServerFacade.getIssue(jiraServerData, issueKey);
                     jiraIssueListModelBuilder.updateIssue(issue);
                 } else {
                     exception = new RuntimeException("No JIRA server defined!");
@@ -517,7 +553,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 return;
             }
             if (exception != null) {
-                final String serverName = jiraServer != null ? jiraServer.getName() : "[UNDEFINED!]";
+                final String serverName = jiraServerData != null ? jiraServerData.getUrl() : "[UNDEFINED!]";
                 DialogWithDetails.showExceptionDialog(getProject(),
                         "Cannot fetch issue " + issueKey + " from server " + serverName, exception);
                 return;
@@ -550,7 +586,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
+    public void assignIssueToMyself(@NotNull final JiraIssueAdapter issue) {
         // todo remove if statement
         if (issue == null) {
             return;
@@ -566,7 +602,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public void assignIssueToSomebody(@NotNull final JIRAIssue issue) {
+    public void assignIssueToSomebody(@NotNull final JiraIssueAdapter issue) {
         if (issue == null) {
             return;
         }
@@ -581,7 +617,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    private void assignIssue(final JIRAIssue issue, final String assignee) {
+    private void assignIssue(final JiraIssueAdapter issue, final String assignee) {
 
         Task.Backgroundable assign = new Task.Backgroundable(getProject(), "Assigning Issue", false) {
 
@@ -590,11 +626,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
 
-                    JiraServerData jiraServer = getSelectedServer();
-                    if (jiraServer != null) {
-                        jiraServerFacade.setAssignee(jiraServer, issue, assignee);
+                    JiraServerData httpConnectionCfg = getSelectedServer();
+                    if (httpConnectionCfg != null) {
+                        jiraServerFacade.setAssignee(httpConnectionCfg, issue, assignee);
                         setStatusInfoMessage("Assigned issue " + issue.getKey() + " to " + assignee);
-                        jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
+                        jiraIssueListModelBuilder.reloadIssue(issue.getKey(), httpConnectionCfg);
                     }
                 } catch (JIRAException e) {
                     setStatusErrorMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), e);
@@ -605,7 +641,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         ProgressManager.getInstance().run(assign);
     }
 
-    public boolean createChangeListAction(@NotNull final JIRAIssue issue) {
+    public boolean createChangeListAction(@NotNull final JiraIssueAdapter issue) {
         String changeListName = issue.getKey() + " - " + issue.getSummary();
         final ChangeListManager changeListManager = ChangeListManager.getInstance(getProject());
         ChangesetCreate c;
@@ -634,13 +670,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     public void addCommentToSelectedIssue() {
         // todo move getSelectedIssue from the model to the tree
-        final JIRAIssue issue = getSelectedIssue();
+        final JiraIssueAdapter issue = getSelectedIssue();
         if (issue != null) {
-            addCommentToIssue(issue.getKey(), issue.getServer());
+            addCommentToIssue(issue.getKey(), issue.getJiraServerData());
         }
     }
 
-    public void addCommentToIssue(final String issueKey, final JiraServerData jiraServer) {
+    public void addCommentToIssue(final String issueKey, final JiraServerData jiraServerData) {
         final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issueKey);
         issueCommentDialog.show();
         if (issueCommentDialog.isOK()) {
@@ -653,8 +689,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         }
                     });
                     try {
-                        if (jiraServer != null) {
-                            jiraServerFacade.addComment(jiraServer, issueKey, issueCommentDialog.getComment());
+                        if (jiraServerData != null) {
+                            jiraServerFacade.addComment(jiraServerData, issueKey, issueCommentDialog.getComment());
                             EventQueue.invokeLater(new Runnable() {
                                 public void run() {
                                     setStatusInfoMessage("Commented issue " + issueKey);
@@ -675,7 +711,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final JiraServerData jiraServer, String initialLog,
+    public boolean logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,
                                             final boolean deactivateIssue, DeactivateIssueResultHandler resultHandler) {
         if (issue != null) {
             final WorkLogCreateAndMaybeDeactivateDialog dialog =
@@ -698,14 +734,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
      * @param issue issue to work on
      * @return modified issue or the same issue if no modification performed
      */
-    private JIRAIssue assignIssueAndPutInProgress(@NotNull final JIRAIssue issue, StatusBarPane statusBarPane) {
-        JIRAIssue updatedIssue = issue;
-        final JiraServerData server = issue.getServer();
+    private JiraIssueAdapter assignIssueAndPutInProgress(@NotNull final JiraIssueAdapter issue, StatusBarPane statusBarPane) {
+        JiraIssueAdapter updatedIssue = issue;
+        final JiraServerData jiraServerData = issue.getJiraServerData();
 
-        if (!issue.getAssigneeId().equals(server.getUsername())) {
+        if (!issue.getAssigneeId().equals(jiraServerData.getUsername())) {
             setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
             try {
-                jiraServerFacade.setAssignee(server, issue, server.getUsername());
+                jiraServerFacade.setAssignee(jiraServerData, issue, jiraServerData.getUsername());
             } catch (JIRAException e) {
                 final String msg = "Error starting progress on issue. Assigning failed: ";
                 setStatusErrorMessage(msg + e.getMessage(), e);
@@ -717,7 +753,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         setStatusInfoMessage("Retrieving available actions for issue");
         List<JIRAAction> actions;
         try {
-            actions = jiraServerFacade.getAvailableActions(server, issue);
+            actions = jiraServerFacade.getAvailableActions(jiraServerData, issue);
         } catch (JIRAException e) {
             final String msg = "Error starting progress on issue. Retrieving actions failed: ";
             setStatusErrorMessage(msg + e.getMessage(), e);
@@ -730,7 +766,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
                 setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
                 try {
-                    jiraServerFacade.progressWorkflowAction(server, issue, a);
+                    jiraServerFacade.progressWorkflowAction(jiraServerData, issue, a);
                     statusChanged = true;
                 } catch (JIRAException e) {
                     final String msg = "Error starting progress on issue. Perform workflow action failed: ";
@@ -738,7 +774,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     PluginUtil.getLogger().warn(msg + e.getMessage(), e);
                     return updatedIssue;
                 }
-                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServerData, issue);
                 break;
             }
         }
@@ -751,7 +787,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         setStatusInfoMessage("Refreshing issue");
         try {
-            updatedIssue = jiraServerFacade.getIssue(server, issue.getKey());
+            updatedIssue = jiraServerFacade.getIssue(jiraServerData, issue.getKey());
         } catch (JIRAException e) {
             setStatusErrorMessage("Error starting progress on issue: " + e.getMessage(), e);
             PluginUtil.getLogger().warn("Error refreshing issue: " + e.getMessage(), e);
@@ -767,7 +803,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         return updatedIssue;
     }
 
-    public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue,
+    public void startWorkingOnIssueAndActivate(@NotNull final JiraIssueAdapter issue, final ActiveJiraIssue newActiveIssue,
                                                final StatusBarPane statusBarPane) {
 
         final boolean isOk = createChangeListAction(issue);
@@ -775,7 +811,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         if (isOk) {
             ProgressManager.getInstance().run(new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 
-                private JIRAIssue updatedIssue = issue;
+                private JiraIssueAdapter updatedIssue = issue;
 
                 @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
@@ -811,18 +847,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     public void refreshIssues(final boolean reload) {
         JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
         JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
-        JiraServerData serverCfg = getSelectedServer();
+        JiraServerData jiraServerData = getSelectedServer();
         if (savedFilter != null) {
-            refreshIssues(savedFilter, serverCfg, reload);
+            refreshIssues(savedFilter, jiraServerData, reload);
         } else if (manualFilter != null) {
-            refreshIssues(manualFilter, serverCfg, reload);
+            refreshIssues(manualFilter, jiraServerData, reload);
         } else if (jiraFilterTree.isRecentlyOpenSelected()) {
             refreshRecenltyOpenIssues(reload);
         }
     }
 
     private void refreshIssues(final JiraCustomFilter manualFilter,
-                               final JiraServerData jiraServerCfg, final boolean reload) {
+                               final JiraServerData jiraServerData, final boolean reload) {
         if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
             return;
         }
@@ -831,7 +867,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
                     getStatusBarPane().setInfoMessage("Loading issues...", false);
-                    jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerCfg,
+                    jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
                 } catch (JIRAException e) {
                     setStatusErrorMessage(e.getMessage(), e);
@@ -842,7 +878,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     private void refreshIssues(final JIRASavedFilter savedFilter,
-                               final JiraServerData jiraServerCfg, final boolean reload) {
+                               final JiraServerData jiraServerData, final boolean reload) {
         if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
             return;
         }
@@ -851,7 +887,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
                     getStatusBarPane().setInfoMessage("Loading issues...", false);
-                    jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerCfg,
+                    jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
                 } catch (JIRAException e) {
                     setStatusErrorMessage(e.getMessage(), e);
@@ -918,11 +954,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             return;
         }
 
-        final JiraServerData server = getSelectedServer();
+        final JiraServerData jiraServerData = getSelectedServer();
 
-        if (server != null) {
+        if (jiraServerData != null) {
             final IssueCreateDialog issueCreateDialog =
-                    new IssueCreateDialog(this, project, jiraServerModel, server, jiraWorkspaceConfiguration);
+                    new IssueCreateDialog(this, project, jiraServerModel, jiraServerData, jiraWorkspaceConfiguration);
 
             issueCreateDialog.initData();
             issueCreateDialog.show();
@@ -961,7 +997,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         if (getSelectedIssue() != null) {
-            return getSelectedIssue().getServer();
+            ServerId serverId = getSelectedIssue().getJiraServerData().getServerId();
+            return projectCfgManager.getJiraServerr(serverId);
         }
 
         if (projectCfgManager.getDefaultJiraServer() != null) {
@@ -978,8 +1015,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     /**
      * @return list of recenlty open issues loaded earlier
      */
-    public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
-        return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
+    public List<JiraIssueAdapter> getLoadedRecenltyOpenIssues() {
+        return new ArrayList<JiraIssueAdapter>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
     }
 
     public JiraCustomFilter getSelectedManualFilter() {
@@ -1019,12 +1056,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         /**
          * Add requestes server's data to the server model
          *
-         * @param server           server added to the model with all fetched data
+         * @param jiraServerData           server added to the model with all fetched data
          * @param refreshIssueList refresh issue list
          */
-        public MetadataFetcherBackgroundableTask(final JiraServerData server, boolean refreshIssueList) {
+        public MetadataFetcherBackgroundableTask(final JiraServerData jiraServerData, boolean refreshIssueList) {
             super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
-            this.servers = Arrays.asList(server);
+            this.servers = Arrays.asList(jiraServerData);
             this.refreshIssueList = refreshIssueList;
         }
 
@@ -1041,7 +1078,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         if (serverCheck == null || !serverCheck) {
                             setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
                             MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
-                                    (JiraServerCfg) projectCfgManager.getServer(server.getServerId()), project));
+                                    (JiraServerCfg) projectCfgManager.getServer((ServerIdImpl)server.getServerId()), project));
                             continue;
                         }//@todo remove  saved filters download or merge with existing in listModel
 
@@ -1062,7 +1099,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraServerModel.getProjects(server);
                         setStatusInfoMessage(serverStr + "Server data query finished");
                     } catch (RemoteApiException e) {
-                        setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), e);
+                        setStatusErrorMessage("Unable to connect to server. "
+                                + jiraServerModel.getErrorMessage(server), e);
                     } catch (JIRAException e) {
                         setStatusErrorMessage("Cannot download details:" + e.getMessage(), e);
                     }
@@ -1192,7 +1230,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 Object node = tp.getLastPathComponent();
                 if (node instanceof JIRAIssueTreeNode) {
                     JIRAIssueTreeNode jitn = (JIRAIssueTreeNode) node;
-                    JIRAIssue issue = jitn.getIssue();
+                    JiraIssueAdapter issue = jitn.getIssue();
                     return issue.getKey().toLowerCase().contains(s.toLowerCase())
                             || issue.getSummary().toLowerCase().contains(s.toLowerCase());
                 } else {
@@ -1227,18 +1265,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     private class LocalJiraFilterTreeSelectionListener implements JiraFilterTreeSelectionListener {
 
-        public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerCfg) {
-            refreshIssues(savedFilter, jiraServerCfg, true);
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerCfg.getServerId());
+        public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
+            refreshIssues(savedFilter, jiraServerData, true);
+            jiraWorkspaceConfiguration.getView().setViewServerIdd(jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
         }
 
-        public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerCfg) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerCfg.getServerId());
+        public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
+            jiraWorkspaceConfiguration.getView().setViewServerIdd(jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
             jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
-            refreshIssues(manualFilter, jiraServerCfg, true);
+            refreshIssues(manualFilter, jiraServerData, true);
         }
 
         public void selectionCleared() {
@@ -1258,14 +1296,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     private class LogWorkWorkerTask extends Task.Backgroundable {
-        private final JIRAIssue issue;
+        private final JiraIssueAdapter issue;
         private final WorkLogCreateAndMaybeDeactivateDialog dialog;
-        private final JiraServerData jiraServer;
+        private final JiraServerData jiraServerData;
         private final boolean deactivateIssue;
         private DeactivateIssueResultHandler resultHandler;
         private boolean commitSuccess;
 
-        public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
+        public LogWorkWorkerTask(JiraIssueAdapter issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
                                  JiraServerData jiraServer, boolean deactivateIssue,
                                  DeactivateIssueResultHandler resultHandler) {
 
@@ -1274,7 +1312,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
             this.issue = issue;
             this.dialog = dialog;
-            this.jiraServer = jiraServer;
+            this.jiraServerData = jiraServer;
             this.deactivateIssue = deactivateIssue;
             this.resultHandler = resultHandler;
         }
@@ -1282,7 +1320,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         @Override
         public void run(@NotNull final ProgressIndicator indicator) {
             try {
-                if (jiraServer != null) {
+                if (jiraServerData != null) {
                     if (!deactivateIssue) {
                         logWork();
                     } else {
@@ -1321,7 +1359,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                                 // 4.
                                 setStatusInfoMessage("Deactivated issue " + issue.getKey());
-//								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
+//								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServerData);
                             } catch (JIRAException e) {
                                 if (resultHandler != null) {
                                     resultHandler.failure(e);
@@ -1423,13 +1461,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 String newRemainingEstimate = dialog.getRemainingEstimateUpdateMode()
                         .equals(RemainingEstimateUpdateMode.MANUAL)
                         ? dialog.getRemainingEstimateString() : null;
-                jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
+                jiraServerFacade.logWork(jiraServerData, issue, dialog.getTimeSpentString(),
                         cal, null,
                         !dialog.getRemainingEstimateUpdateMode()
                                 .equals(RemainingEstimateUpdateMode.UNCHANGED),
                         newRemainingEstimate);
                 JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
-                        jiraServer, issue);
+                        jiraServerData, issue);
                 setStatusInfoMessage("Logged work for issue " + issue.getKey());
             }
         }
@@ -1448,11 +1486,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
         private boolean singleIssueChanged = false;
 
-        public void issueUpdated(final JIRAIssue issue) {
+        public void issueUpdated(final JiraIssueAdapter issue) {
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     singleIssueChanged = true;
-                    JiraIssueAdapter.clearCache(issue);
+                    JiraIssueCachedAdapter.clearCache(issue);
                     ActiveIssueUtils.checkIssueState(project, issue);
                 }
             });
@@ -1489,7 +1527,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     return;
                 }
 
-                JiraIssueAdapter.clearCache();
+                JiraIssueCachedAdapter.clearCache();
                 JiraServerData srvcfg = getSelectedServer();
                 if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
                     setStatusInfoMessage("Nothing selected");

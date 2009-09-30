@@ -1,13 +1,17 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.jira.model.FrozenModel;
+import com.atlassian.theplugin.jira.model.FrozenModelListener;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -248,7 +252,7 @@ public class JIRAFilterTree extends AbstractTree {
 		}
 	}
 
-	private void createFilterNodes(ServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
+	private void createFilterNodes(JiraServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
 		if (aListModel != null) {
 			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
 				node.add(new JIRASavedFilterTreeNode(savedFilter, jiraServer));
@@ -339,15 +343,15 @@ public class JIRAFilterTree extends AbstractTree {
 			}
 		}
 
-		private void fireSelectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData serverCfg) {
+		private void fireSelectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
-				listener.selectedSavedFilterNode(savedFilter, serverCfg);
+				listener.selectedSavedFilterNode(savedFilter, jiraServerData);
 			}
 		}
 
-		private void fireSelectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData serverCfg) {
+		private void fireSelectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
-				listener.selectedManualFilterNode(manualFilter, serverCfg);
+				listener.selectedManualFilterNode(manualFilter, jiraServerData);
 			}
 		}
 

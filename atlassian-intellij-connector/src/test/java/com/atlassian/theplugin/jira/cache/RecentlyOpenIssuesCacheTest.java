@@ -1,12 +1,10 @@
 package com.atlassian.theplugin.jira.cache;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import junit.framework.TestCase;
 
@@ -14,9 +12,9 @@ import junit.framework.TestCase;
 public class RecentlyOpenIssuesCacheTest extends TestCase {
 	private RecentlyOpenIssuesCache cache;
 	private JiraServerData server;
-	private JIRAIssueBean issue1;
-	private JIRAIssueBean issue2;
-	private JIRAIssueBean issue3;
+	private JiraIssueAdapter issue1;
+	private JiraIssueAdapter issue2;
+	private JiraIssueAdapter issue3;
 
 	public void setUp() throws Exception {
 		cache = new RecentlyOpenIssuesCache(null, new JiraWorkspaceConfiguration());
@@ -30,13 +28,13 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 			}
 		}, "", "", true);
 
-		issue1 = new JIRAIssueBean(server);
+		issue1 = new JiraIssueAdapter(server);
 		issue1.setKey("1");
 
-		issue2 = new JIRAIssueBean(server);
+		issue2 = new JiraIssueAdapter(server);
 		issue2.setKey("2");
 
-		issue3 = new JIRAIssueBean(server);
+		issue3 = new JiraIssueAdapter(server);
 		issue3.setKey("3");
 	}
 
@@ -71,12 +69,12 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 	}
 
 	public void testGetLoadedRecenltyOpenIssue() throws Exception {
-		assertNull(cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getServer().getServerId()));
+		assertNull(cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getJiraServerData().getServerId()));
 
 		cache.addIssue(issue1);
 		cache.addIssue(issue2);
 
-		assertEquals(issue1, cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getServer().getServerId()));
+		assertEquals(issue1, cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getJiraServerData().getServerId()));
 	}
 
 	public void testAddIssue() {
@@ -117,7 +115,7 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 		cache.addIssue(issue1);
 		cache.addIssue(issue2);
 		for (int i = 0; i < JiraWorkspaceConfiguration.RECENLTY_OPEN_ISSUES_LIMIT - 2; ++i) {
-			JIRAIssueBean issue = new JIRAIssueBean(server);
+			JiraIssueAdapter issue = new JiraIssueAdapter(server);
 			issue.setKey(Integer.toString(i + 100));
 			cache.addIssue(issue);
 		}

@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public abstract class JIRAIssueListModelListenerHolder
 		}
 	}
 
-	public void issueUpdated(JIRAIssue issue) {
+	public void issueUpdated(JiraIssueAdapter issue) {
 		for (JIRAIssueListModelListener l : listeners) {
 			l.issueUpdated(issue);
 		}
@@ -108,7 +108,7 @@ public abstract class JIRAIssueListModelListenerHolder
 //		}
 //	}
 
-	public void addIssues(Collection<JIRAIssue> issues) {
+	public void addIssues(Collection<JiraIssueAdapter> issues) {
 		if (parent != null) {
 			parent.addIssues(issues);
 		}
@@ -120,7 +120,7 @@ public abstract class JIRAIssueListModelListenerHolder
 //		}
 //	}
 
-	public void updateIssue(JIRAIssue issue) {
+	public void updateIssue(JiraIssueAdapter issue) {
 		if (parent != null) {
 			parent.updateIssue(issue);
 		}
@@ -130,7 +130,7 @@ public abstract class JIRAIssueListModelListenerHolder
 		modelChanged(this);
 	}
 
-	public void fireIssueUpdated(final JIRAIssue issue) {
+	public void fireIssueUpdated(final JiraIssueAdapter issue) {
 		issueUpdated(issue);
 	}
 

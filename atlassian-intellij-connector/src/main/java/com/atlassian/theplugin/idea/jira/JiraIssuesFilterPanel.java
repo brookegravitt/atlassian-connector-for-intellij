@@ -16,11 +16,19 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRAAssigneeBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAReporterBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -285,8 +293,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
         filterName = new JTextField();
         rootPanel.add(filterName, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         fixForLabel.setLabelFor(fixForScrollPane);
-        componentsLabel.setNextFocusableComponent(componentsScrollPane);
         componentsLabel.setLabelFor(componentsScrollPane);
+        componentsLabel.setNextFocusableComponent(componentsScrollPane);
         affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
         reporterLabel.setLabelFor(reporterComboBox);
         assigneeLabel.setLabelFor(assigneeComboBox);
@@ -419,14 +427,17 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
             public void run() {
                 try {
-                    final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject, true);
-                    final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg,
+                    final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(
+                            jiraServerCfg, currentJiraProject, true);
+                    final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(
+                            jiraServerCfg,
                             currentJiraProject, true);
 
                     final List<JIRAComponentBean> finalComponents = jiraServerModel
                             .getComponents(jiraServerCfg, currentJiraProject, true);
 
-                    final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject, true);
+                    final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg,
+                            currentJiraProject, true);
                     ApplicationManager.getApplication().invokeLater(new Runnable() {
                         public void run() {
                             if (JiraIssuesFilterPanel.this.isShowing()) {
@@ -569,16 +580,19 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                     currentJiraProject = null;
                 }
 
-                issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject, true).toArray());
+                issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg,
+                        currentJiraProject, true).toArray());
                 statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
                 prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg, true).toArray());
                 resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg, true).toArray());
-                fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject, true).toArray());
+                fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg,
+                        currentJiraProject, true).toArray());
 
                 JiraIssuesFilterPanel.this.componentsList.setListData(
                         jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, false).toArray());
 
-                affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject, true).toArray());
+                affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg,
+                        currentJiraProject, true).toArray());
 
                 reporterComboBox.removeAllItems();
                 reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));

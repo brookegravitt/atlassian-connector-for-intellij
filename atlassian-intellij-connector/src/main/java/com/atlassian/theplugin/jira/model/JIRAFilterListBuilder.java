@@ -1,11 +1,10 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraCustomFilterMap;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -14,7 +13,11 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: pmaruszak
@@ -43,22 +46,18 @@ public class JIRAFilterListBuilder {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-			Collection<JiraServerData> serversToAdd = new ArrayList<JiraServerData>();
+			Collection<JiraServerData> connectionsToAdd = new ArrayList<JiraServerData>();
 
-			for (JiraServerData jiraServer : jiraServerModel.getServers()) {
+			for (JiraServerData jiraServerData : jiraServerModel.getServers()) {
 				try {
-					if (jiraServerModel.getServers().contains(jiraServer)) {
-						loadServerSavedFilter(jiraServer, jiraServerModel);
-					} else {
-						serversToAdd.add(jiraServer);
-					}
+					loadServerSavedFilter(jiraServerData, jiraServerModel);
 				} catch (JIRAException exc) {
-					e.addException(jiraServer, exc);
+					e.addException(jiraServerData, exc);
 				}
-				loadManualFilter(jiraServer);
+				loadManualFilter(jiraServerData);
 			}
 			//add non existing servers
-			for (JiraServerData newServer : serversToAdd) {
+			for (JiraServerData newServer : connectionsToAdd) {
 				try {
 					loadServerSavedFilter(newServer, jiraServerModel);
 				} catch (JIRAException e1) {
@@ -75,11 +74,11 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadServerSavedFilter(final JiraServerData jiraServer,
+	private void loadServerSavedFilter(final JiraServerData jiraServerData,
 			final JIRAServerModel jiraServerModel) throws JIRAException {
 
 		if (jiraServerModel != null) {
-			List<JIRAQueryFragment> filters = jiraServerModel.getSavedFilters(jiraServer);
+			List<JIRAQueryFragment> filters = jiraServerModel.getSavedFilters(jiraServerData);
 
 			List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters != null ? filters.size() : 0);
 
@@ -87,7 +86,7 @@ public class JIRAFilterListBuilder {
 				for (JIRAQueryFragment query : filters) {
 					savedFilters.add((JIRASavedFilter) query);
 				}
-				listModel.setSavedFilters(jiraServer, savedFilters);
+				listModel.setSavedFilters(jiraServerData, savedFilters);
 			}
 
 
@@ -96,12 +95,12 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadManualFilter(final JiraServerData jiraServer) {
+	private void loadManualFilter(final JiraServerData jiraServerData) {
 
 		if (jiraWorkspaceCfg != null) {
 
 			JiraCustomFilterMap filterMap =
-					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServer.getServerId());
+					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServerData.getServerId());
 
 
 
@@ -112,7 +111,7 @@ public class JIRAFilterListBuilder {
 
 
 			final JiraCustomFilter jiraManualFilter = new JiraCustomFilter(bean.getUid(), bean.getName(), query);
-                listModel.addManualFilter(jiraServer, jiraManualFilter);
+                listModel.addManualFilter(jiraServerData, jiraManualFilter);
             }
         }
     }
@@ -123,14 +122,14 @@ public class JIRAFilterListBuilder {
 	}
 
 	public class JIRAServerFiltersBuilderException extends Exception {
-		private Map<ServerData, JIRAException> exceptions = new HashMap<ServerData, JIRAException>();
+		private Map<JiraServerData, JIRAException> exceptions = new HashMap<JiraServerData, JIRAException>();
 
-		public void addException(ServerData server, JIRAException e) {
+		public void addException(JiraServerData jiraServerData, JIRAException e) {
 			//noinspection ThrowableResultOfMethodCallIgnored
-			exceptions.put(server, e);
+			exceptions.put(jiraServerData, e);
 		}
 
-		public Map<ServerData, JIRAException> getExceptions() {
+		public Map<JiraServerData, JIRAException> getExceptions() {
 			return exceptions;
 		}
 	}

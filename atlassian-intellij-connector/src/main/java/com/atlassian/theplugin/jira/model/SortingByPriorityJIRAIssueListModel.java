@@ -1,14 +1,14 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 
 import java.util.Comparator;
 import java.util.Set;
 
 public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssueListModel {
-	static final Comparator<JIRAIssue> PRIORITY_ORDER = new Comparator<JIRAIssue>() {
-		public int compare(JIRAIssue i1, JIRAIssue i2) {
+	static final Comparator<JiraIssueAdapter> PRIORITY_ORDER = new Comparator<JiraIssueAdapter>() {
+		public int compare(JiraIssueAdapter i1, JiraIssueAdapter i2) {
 			return (int) (i1.getPriorityId() - i2.getPriorityId());
 		}
 	};
@@ -17,7 +17,7 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 		super(parent);
 	}
 
-	protected Comparator<JIRAIssue> getComparator() {
+	protected Comparator<JiraIssueAdapter> getComparator() {
 		return PRIORITY_ORDER;
 	}
 
@@ -31,11 +31,11 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 	public void clearCache() {
 	}
 
-	public Set<JIRAIssue> getIssuesCache() {
+	public Set<JiraIssueAdapter> getIssuesCache() {
 		return null;
 	}
 
-	public JIRAIssue getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
+	public JiraIssueAdapter getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
 		return null;
 	}
 }

@@ -15,7 +15,11 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.jira.api.*;
+
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -28,17 +32,17 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class FieldAffectsVersion extends AbstractFieldList {
-	public FieldAffectsVersion(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field,
+	public FieldAffectsVersion(final JIRAServerModel jiraServerModel, final JiraIssueAdapter issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super(jiraServerModel, issue, field, freezeListener);
 	}
 
-	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JiraIssueAdapter issue) {
 		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAProject> projects = serverModel.getProjects(issue.getServer());
+					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
 					JIRAProject issueProject = null;
 					for (JIRAProject project : projects) {
 						if (issue.getProjectKey().equals(project.getKey())) {
@@ -47,7 +51,7 @@ public class FieldAffectsVersion extends AbstractFieldList {
 						}
 					}
 					final List<JIRAVersionBean> versions =
-							serverModel.getVersions(issue.getServer(), issueProject, false);
+							serverModel.getVersions(issue.getJiraServerData(), issueProject, false);
 					SwingUtilities.invokeLater(new LocalVersionListFiller(listModel, versions, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e.getMessage());
@@ -60,10 +64,10 @@ public class FieldAffectsVersion extends AbstractFieldList {
 	private class LocalVersionListFiller implements Runnable {
 		private final DefaultListModel listModel;
 		private final List<JIRAVersionBean> versions;
-		private final JIRAIssue issue;
+		private final JiraIssueAdapter issue;
 
 		public LocalVersionListFiller(
-				final DefaultListModel listModel, final List<JIRAVersionBean> versions, final JIRAIssue issue) {
+				final DefaultListModel listModel, final List<JIRAVersionBean> versions, final JiraIssueAdapter issue) {
 			this.listModel = listModel;
 			this.versions = versions;
 			this.issue = issue;

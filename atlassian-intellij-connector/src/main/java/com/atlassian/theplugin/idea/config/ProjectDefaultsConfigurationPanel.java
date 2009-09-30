@@ -21,16 +21,24 @@ import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials.TestDefaultCredentialsDialog;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials.TestDefaultCredentialsDialog;
 import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -67,7 +75,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final BambooServerFacade bambooServerFacade;
-	private final JIRAServerFacade jiraServerFacade;
+	private final JiraServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private UserCfg defaultCredentials;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
@@ -141,7 +149,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 
 
-	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
+    private CrucibleServerCfg getCurrentCrucibleServerCfg() {
         ServerId serverId = projectConfiguration.getDefaultCrucibleServerId();
 		if (serverId == null) {
             ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
@@ -255,7 +263,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
-			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
+			final BambooServerFacade bambooServerFacade, final JiraServerFacade jiraServerFacade,
 			final UiTaskExecutor uiTaskExecutor, @NotNull UserCfg defaultCredentials) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;

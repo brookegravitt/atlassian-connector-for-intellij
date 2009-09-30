@@ -1,15 +1,15 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
 
 public class JIRAIssueTreeNode extends AbstractTreeNode {
-	private final JIRAIssue issue;
+	private final JiraIssueAdapter issue;
 
-	public JIRAIssueTreeNode(JIRAIssue issue) {
+	public JIRAIssueTreeNode(JiraIssueAdapter issue) {
 		super(issue.getKey() + ": " + issue.getSummary(), null, null);
 		this.issue = issue;
 		renderer = new JIRAIssueListOrTreeRendererPanel(issue);
@@ -23,7 +23,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		return renderer;
 	}
 
-	public JIRAIssue getIssue() {
+	public JiraIssueAdapter getIssue() {
 		return issue;
 	}
 

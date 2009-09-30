@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -42,7 +42,7 @@ public class OpenActiveJiraIssue extends AnAction {
 			public void run() {
 				final Project currentProject = IdeaHelper
 						.getCurrentProject(event);
-				final JIRAIssue issue;
+				final JiraIssueAdapter issue;
 				if (currentProject != null) {
 					final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(currentProject);
 					try {

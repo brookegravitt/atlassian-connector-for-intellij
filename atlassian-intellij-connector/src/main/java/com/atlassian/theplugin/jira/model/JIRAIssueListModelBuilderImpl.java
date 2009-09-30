@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
-	private JIRAServerFacade facade;
+	private JiraServerFacade facade;
 
 	private static final String SORT_BY = "priority";
 	private static final String SORT_ORDER = "DESC";
@@ -27,15 +27,15 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
-	public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
+    public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 		this.project = null;
-		facade = JIRAServerFacadeImpl.getInstance();
+		facade = IntelliJJiraServerFacade.getInstance();
 		startFrom = 0;
 	}
 
 	// for testing
-	public void setFacade(JIRAServerFacade newFacade) {
+	public void setFacade(JiraServerFacade newFacade) {
 		facade = newFacade;
 	}
 
@@ -51,7 +51,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
-		List<JIRAIssue> l = null;
+		List<JiraIssueAdapter> l = null;
 		try {
 			model.setModelFrozen(true);
 			if (jiraServerCfg == null || model == null || manualFilter == null) {
@@ -89,7 +89,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
-		List<JIRAIssue> l = null;
+		List<JiraIssueAdapter> l = null;
 		try {
 			model.setModelFrozen(true);
 			if (jiraServerCfg == null || model == null || savedFilter == null) {
@@ -131,7 +131,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			return;
 		}
 
-		List<JIRAIssue> issues = null;
+		List<JiraIssueAdapter> issues = null;
 
 		try {
 			model.setModelFrozen(true);
@@ -169,7 +169,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 		model.setModelFrozen(true);
 
-		JIRAIssue updatedIssue;
+		JiraIssueAdapter updatedIssue;
 
 		try {
 			updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
@@ -192,7 +192,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	 *
 	 * @param issue fresh issue to update in the model
 	 */
-	public synchronized void updateIssue(final JIRAIssue issue) {
+	public synchronized void updateIssue(final JiraIssueAdapter issue) {
 		if (model == null) {
 			return;
 		}
@@ -217,12 +217,12 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 //		}
 	}
 
-	public void checkActiveIssue(final Collection<JIRAIssue> newIssues) {
+	public void checkActiveIssue(final Collection<JiraIssueAdapter> newIssues) {
 		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
 		if (activeIssue != null) {
-			for (JIRAIssue issue : newIssues) {
-				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getServer() != null
-						&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
+			for (JiraIssueAdapter issue : newIssues) {
+				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getJiraServerData() != null
+						&& issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
 					ActiveIssueUtils.checkIssueState(project, issue);
 				}
 			}

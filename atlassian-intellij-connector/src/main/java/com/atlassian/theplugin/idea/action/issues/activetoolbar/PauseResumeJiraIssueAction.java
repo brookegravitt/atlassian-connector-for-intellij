@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.util.IconLoader;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
 
 /**
  * User: kalamon
@@ -17,13 +17,13 @@ public class PauseResumeJiraIssueAction extends AbstractActiveJiraIssueAction {
 
     @Override
     public void onUpdate(AnActionEvent event, boolean enabled) {
-        final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+        final JiraIssueAdapter selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
         updateState(isSelectedIssueActive(event, selectedIssue), event);
         
     }
 
     public void actionPerformed(AnActionEvent event) {
-        JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+        JiraIssueAdapter selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
         if (selectedIssue != null && isSelectedIssueActive(event, selectedIssue)) {
             setIssuePaused(ActiveIssueUtils.getActiveJiraIssue(event));
         }

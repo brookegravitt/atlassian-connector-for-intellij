@@ -1,9 +1,13 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public abstract class AbstractSortingJIRAIssueListModel extends JIRAIssueListModelListenerHolder {
 
@@ -11,31 +15,31 @@ public abstract class AbstractSortingJIRAIssueListModel extends JIRAIssueListMod
 		super(parent);
 	}
 
-	protected abstract Comparator<JIRAIssue> getComparator();
+	protected abstract Comparator<JiraIssueAdapter> getComparator();
 
-	private Collection<JIRAIssue> sort(Collection<JIRAIssue> col) {
-		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
-		for (JIRAIssue i : col) {
+	private Collection<JiraIssueAdapter> sort(Collection<JiraIssueAdapter> col) {
+		List<JiraIssueAdapter> list = new ArrayList<JiraIssueAdapter>();
+		for (JiraIssueAdapter i : col) {
 			list.add(i);
 		}
 		Collections.sort(list, getComparator());
 		return list;
 	}
 
-	public Collection<JIRAIssue> getIssues() {
+	public Collection<JiraIssueAdapter> getIssues() {
 		return sort(parent.getIssues());
 	}
 
-	public Collection<JIRAIssue> getIssuesNoSubtasks() {
+	public Collection<JiraIssueAdapter> getIssuesNoSubtasks() {
 		return sort(parent.getIssuesNoSubtasks());
 	}
 
 	@NotNull
-	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
+	public Collection<JiraIssueAdapter> getSubtasks(JiraIssueAdapter p) {
 		return sort(parent.getSubtasks(p));
 	}
 
-	public JIRAIssue findIssue(String key) {
+	public JiraIssueAdapter findIssue(String key) {
 		return parent.findIssue(key);
 	}
 }
