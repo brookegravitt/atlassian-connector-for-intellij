@@ -1,12 +1,47 @@
+/**
+ * Copyright (C) 2008 Atlassian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.fields.*;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.fields.AffectsVersionsFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.AssigneeFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.ComponentsFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.CustomFieldFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.DescriptionFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.DueDateFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.EnvironmentFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.FieldFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.FixVersionsFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.IssueTypeFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.PriorityFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.ReporterFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.ResolutionFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.SecurityFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.SummaryFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.TimeTrackingFiller;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * User: jgorycki

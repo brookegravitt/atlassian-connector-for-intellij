@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
+import com.atlassian.theplugin.commons.jira.api.commons.beans.AbstractJIRAConstantBean;
+
 import java.util.ArrayList;
 import java.util.List;
 

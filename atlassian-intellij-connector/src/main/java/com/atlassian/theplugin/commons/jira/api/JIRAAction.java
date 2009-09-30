@@ -16,5 +16,7 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
+
 public interface JIRAAction extends JIRAConstant {
 }

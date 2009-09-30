@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraCustomFilterMap;

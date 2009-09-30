@@ -2,18 +2,18 @@ package com.atlassian.theplugin.commons.jira.cache;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2Impl;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
 

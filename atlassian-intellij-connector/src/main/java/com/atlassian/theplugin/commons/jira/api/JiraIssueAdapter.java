@@ -2,6 +2,12 @@ package com.atlassian.theplugin.commons.jira.api;
 
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComment;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASecurityLevelBean;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.List;

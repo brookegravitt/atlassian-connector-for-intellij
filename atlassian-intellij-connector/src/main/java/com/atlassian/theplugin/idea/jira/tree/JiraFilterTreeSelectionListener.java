@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 
 /**

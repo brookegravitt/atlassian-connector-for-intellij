@@ -7,7 +7,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
@@ -146,7 +146,7 @@ public class RunIssueActionAction extends AnAction {
 	 * Should be called in the background thread
 	 *
 	 * @param server
-	 * @throws JIRAException
+	 * @throws com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException
 	 */
 	private void performPostActionActivity(final JiraServerData server) throws JIRAException {
 		if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {

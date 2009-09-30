@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
+
 import java.util.List;
 
 public interface JIRAActionField extends JIRAConstant {

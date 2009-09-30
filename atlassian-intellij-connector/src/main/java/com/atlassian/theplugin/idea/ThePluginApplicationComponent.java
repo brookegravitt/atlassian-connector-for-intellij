@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade2Impl;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;

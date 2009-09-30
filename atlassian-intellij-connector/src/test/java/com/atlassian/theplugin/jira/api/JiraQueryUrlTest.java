@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
-import com.atlassian.theplugin.commons.jira.api.JiraQueryUrl;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilterBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JiraQueryUrl;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;

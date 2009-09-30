@@ -17,16 +17,16 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRAAssigneeBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRAReporterBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
@@ -293,8 +293,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
         filterName = new JTextField();
         rootPanel.add(filterName, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         fixForLabel.setLabelFor(fixForScrollPane);
-        componentsLabel.setNextFocusableComponent(componentsScrollPane);
         componentsLabel.setLabelFor(componentsScrollPane);
+        componentsLabel.setNextFocusableComponent(componentsScrollPane);
         affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
         reporterLabel.setLabelFor(reporterComboBox);
         assigneeLabel.setLabelFor(assigneeComboBox);
