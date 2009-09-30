@@ -2,6 +2,7 @@ package com.atlassian.connector.intellij.crucible.content;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 /**
@@ -17,5 +18,5 @@ public interface ReviewFileContentProvider {
 
 	CrucibleFileInfo getFileInfo();
 
-    boolean isLocalFileDirty();
+	boolean isLocalFileDirty();
 }

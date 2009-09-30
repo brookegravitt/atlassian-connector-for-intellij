@@ -16,26 +16,12 @@
 
 package com.atlassian.connector.intellij.crucible;
 
-import com.atlassian.connector.intellij.crucible.content.ReviewFileContent;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.ReviewDifferenceProducer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -43,16 +29,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 public class ReviewAdapter {
 	private final Review review;
@@ -64,11 +42,11 @@ public class ReviewAdapter {
 	@SuppressWarnings("serial")
 	private final Map<String, ReviewFileContent> fetchedFilesCache = Collections.synchronizedMap(
 			new LinkedHashMap<String, ReviewFileContent>() {
-		@Override
-		protected boolean removeEldestEntry(final Map.Entry<String, ReviewFileContent> eldest) {
-			return (size() > 100);
-		}
-	});
+				@Override
+				protected boolean removeEldestEntry(final Map.Entry<String, ReviewFileContent> eldest) {
+					return (size() > 100);
+				}
+			});
 
 	private final Map<String, ReviewFileContentProvider> contentProviders = Collections.synchronizedMap(
 			new HashMap<String, ReviewFileContentProvider>());
@@ -289,13 +267,12 @@ public class ReviewAdapter {
 	/**
 	 * Removes general review comment from the server and model. It SHOULD NOT be called from the EVENT DISPATCH THREAD
 	 * as it calls facade method.
-	 * 
-	 * @param generalComment
-	 *            Comment to be removed
+	 *
+	 * @param generalComment Comment to be removed
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
-	 *             in case password is missing
+	 *          in case password is missing
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException
-	 *             in case of communication problem
+	 *          in case of communication problem
 	 */
 	public synchronized void removeGeneralComment(final GeneralComment generalComment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
@@ -352,17 +329,15 @@ public class ReviewAdapter {
 	/**
 	 * Removes file comment from the server and model. It SHOULD NOT be called from the EVENT DISPATCH THREAD as it
 	 * calls facade method.
-	 * 
-	 * @param versionedComment
-	 *            Comment to be removed
-	 * @param file
-	 *            file containing the comment
+	 *
+	 * @param versionedComment Comment to be removed
+	 * @param file			 file containing the comment
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
-	 *             in case password is missing
+	 *          in case password is missing
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException
-	 *             in case of communication problem
+	 *          in case of communication problem
 	 * @throws com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized
-	 * 
+	 *
 	 */
 	public void removeVersionedComment(final VersionedComment versionedComment, final CrucibleFileInfo file)
 			throws RemoteApiException, ServerPasswordNotProvidedException, ValueNotYetInitialized {
@@ -418,77 +393,77 @@ public class ReviewAdapter {
 		}
 	}
 
-    public void markCommentRead(final Comment comment)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
+	public void markCommentRead(final Comment comment)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
 
-        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
-            ((CommentBean) comment).setReadState(Comment.ReadState.READ);
-            for (CrucibleReviewListener listener : getListeners()) {
-                listener.commentReadStateChanged(this, comment);
-            }
-        }
-    }
+		if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+			((CommentBean) comment).setReadState(Comment.ReadState.READ);
+			for (CrucibleReviewListener listener : getListeners()) {
+				listener.commentReadStateChanged(this, comment);
+			}
+		}
+	}
 
-    public void markCommentLeaveUnread(final Comment comment)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markCommentLeaveUnread(getServerData(), getPermId(), comment.getPermId());
+	public void markCommentLeaveUnread(final Comment comment)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		facade.markCommentLeaveUnread(getServerData(), getPermId(), comment.getPermId());
 
-        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
-            ((CommentBean) comment).setReadState(Comment.ReadState.LEAVE_UNREAD);
-            for (CrucibleReviewListener listener : getListeners()) {
-                listener.commentReadStateChanged(this, comment);
-            }
-        }
-    }
+		if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+			((CommentBean) comment).setReadState(Comment.ReadState.LEAVE_UNREAD);
+			for (CrucibleReviewListener listener : getListeners()) {
+				listener.commentReadStateChanged(this, comment);
+			}
+		}
+	}
 
-    public void markAllCommentsRead() throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markAllCommentsRead(getServerData(), getPermId());
+	public void markAllCommentsRead() throws RemoteApiException, ServerPasswordNotProvidedException {
+		facade.markAllCommentsRead(getServerData(), getPermId());
 
-        try {
-            List<GeneralComment> gcs = getGeneralComments();
-            for (Comment generalComment : gcs) {
-                markLeaveUnreadCommentRead(generalComment);
-            }
-            Set<CrucibleFileInfo> files = getFiles();
-            for (CrucibleFileInfo file : files) {
-                for (VersionedComment versionedComment : file.getVersionedComments()) {
-                    markLeaveUnreadCommentRead(versionedComment);
-                }
-            }
-        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-            throw new RuntimeException(valueNotYetInitialized);
-        }
-    }
+		try {
+			List<GeneralComment> gcs = getGeneralComments();
+			for (Comment generalComment : gcs) {
+				markLeaveUnreadCommentRead(generalComment);
+			}
+			Set<CrucibleFileInfo> files = getFiles();
+			for (CrucibleFileInfo file : files) {
+				for (VersionedComment versionedComment : file.getVersionedComments()) {
+					markLeaveUnreadCommentRead(versionedComment);
+				}
+			}
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			throw new RuntimeException(valueNotYetInitialized);
+		}
+	}
 
-    private void markLeaveUnreadCommentRead(Comment comment)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-        if (comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-            facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
-        }
-        List<Comment> replies = comment.getReplies();
-        for (Comment reply : replies) {
-            if (reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-                facade.markCommentRead(getServerData(), getPermId(), reply.getPermId());
-            }
-        }
-        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
-            ((CommentBean) comment).setReadState(Comment.ReadState.READ);
-            for (CrucibleReviewListener listener : listeners) {
-                listener.commentReadStateChanged(this, comment);
-            }
-            for (Comment reply : replies) {
-                if (reply.getReadState() != Comment.ReadState.UNKNOWN) {
-                    ((CommentBean) reply).setReadState(Comment.ReadState.READ);
-                    for (CrucibleReviewListener listener : listeners) {
-                        listener.commentReadStateChanged(this, reply);
-                    }
-                }
-            }
-        }
-    }
+	private void markLeaveUnreadCommentRead(Comment comment)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		if (comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+			facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
+		}
+		List<Comment> replies = comment.getReplies();
+		for (Comment reply : replies) {
+			if (reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+				facade.markCommentRead(getServerData(), getPermId(), reply.getPermId());
+			}
+		}
+		if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+			((CommentBean) comment).setReadState(Comment.ReadState.READ);
+			for (CrucibleReviewListener listener : listeners) {
+				listener.commentReadStateChanged(this, comment);
+			}
+			for (Comment reply : replies) {
+				if (reply.getReadState() != Comment.ReadState.UNKNOWN) {
+					((CommentBean) reply).setReadState(Comment.ReadState.READ);
+					for (CrucibleReviewListener listener : listeners) {
+						listener.commentReadStateChanged(this, reply);
+					}
+				}
+			}
+		}
+	}
 
-    public void publishGeneralComment(final GeneralComment comment) throws RemoteApiException,
+	public void publishGeneralComment(final GeneralComment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.publishComment(getServerData(), getPermId(), comment.getPermId());
 
@@ -529,9 +504,8 @@ public class ReviewAdapter {
 	*/
 	/**
 	 * Copies all data from the parameter into itself
-	 * 
-	 * @param newReview
-	 *            source of Review data
+	 *
+	 * @param newReview source of Review data
 	 * @return
 	 */
 	public synchronized List<CrucibleNotification> fillReview(final ReviewAdapter newReview) {
@@ -612,7 +586,7 @@ public class ReviewAdapter {
 	/**
 	 * @return total number of versioned comments including replies (for all files)
 	 * @throws com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized
-	 * 
+	 *
 	 */
 	public int getNumberOfVersionedComments() throws ValueNotYetInitialized {
 		return review.getNumberOfVersionedComments();
@@ -662,9 +636,9 @@ public class ReviewAdapter {
 		return review.getNumberOfVersionedCommentsDrafts(userName);
 	}
 
-    public int getNumberOfUnreadComments() throws ValueNotYetInitialized {
-        return review.getNumberOfUnreadComments();
-    }
+	public int getNumberOfUnreadComments() throws ValueNotYetInitialized {
+		return review.getNumberOfUnreadComments();
+	}
 
 	public List<CustomFieldDef> getMetricDefinitions() {
 		return metricDefinitions;
