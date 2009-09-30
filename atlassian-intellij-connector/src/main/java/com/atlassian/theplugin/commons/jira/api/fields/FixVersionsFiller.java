@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.commons.jira.api.fields;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteIssue;
-import com.atlassian.theplugin.commons.jira.api.soap.axis.RemoteVersion;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteIssue;
+import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteVersion;
 
 import java.util.ArrayList;
 import java.util.List;

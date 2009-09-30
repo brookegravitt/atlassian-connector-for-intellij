@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.commons.jira;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
 
 import java.util.Date;
 import java.util.HashMap;

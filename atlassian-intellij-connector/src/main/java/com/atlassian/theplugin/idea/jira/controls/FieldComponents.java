@@ -17,10 +17,10 @@ package com.atlassian.theplugin.idea.jira.controls;
 
 
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 

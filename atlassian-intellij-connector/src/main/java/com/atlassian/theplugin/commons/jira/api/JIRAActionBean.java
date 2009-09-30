@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
+import com.atlassian.theplugin.commons.jira.api.commons.beans.AbstractJIRAConstantBean;
+
 public class JIRAActionBean extends AbstractJIRAConstantBean implements JIRAAction {
     public JIRAActionBean(long id, String name) {
 		super(id, name, null);

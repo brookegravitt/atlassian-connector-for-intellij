@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 

@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

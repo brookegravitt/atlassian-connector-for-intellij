@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.commons.jira.api.fields;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
 
 import java.util.ArrayList;
 import java.util.List;

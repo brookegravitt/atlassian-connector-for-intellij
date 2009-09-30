@@ -1,6 +1,17 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAIssueTypeBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAStatusBean;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
 import junit.framework.TestCase;
 
 import java.net.MalformedURLException;

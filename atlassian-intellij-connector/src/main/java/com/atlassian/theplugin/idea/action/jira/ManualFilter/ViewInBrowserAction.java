@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 
-import com.atlassian.theplugin.commons.jira.api.JiraQueryUrl;
+import com.atlassian.theplugin.commons.jira.api.commons.beans.JiraQueryUrl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;

@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.commons.jira.api.rss;
 
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRARssClient;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 
