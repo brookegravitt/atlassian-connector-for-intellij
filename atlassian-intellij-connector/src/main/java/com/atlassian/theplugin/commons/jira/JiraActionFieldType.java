@@ -50,7 +50,7 @@ import java.util.TreeMap;
  */
 public final class JiraActionFieldType {
 
-	public enum WidgetType {
+    public enum WidgetType {
 		UNSUPPORTED,
 		ASSIGNEE,
 		REPORTER,
@@ -118,11 +118,11 @@ public final class JiraActionFieldType {
 
 	}
 
-	public static WidgetType getFiledTypeForFieldId(@NotNull JIRAActionField field) {
-		return getFiledTypeForFieldId(field.getFieldId());
+	public static WidgetType getFieldTypeForFieldId(@NotNull JIRAActionField field) {
+		return getFieldTypeForFieldId(field.getFieldId());
 	}
 
-	public static WidgetType getFiledTypeForFieldId(String fieldId) {
+	public static WidgetType getFieldTypeForFieldId(String fieldId) {
 
 		if (typeMap.containsKey(fieldId)) {
 			return typeMap.get(fieldId).getWidgetType();

@@ -115,6 +115,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		timeSpent = issue.getTimeSpent();
 		timeSpentInSeconds = issue.getTimeSpentInSeconds();
         serverUrl = issue.getServerUrl();
+        rawSoapIssue = issue.getRawSoapIssue();
 	}
 
 	public JIRAIssueBean(String serverUrl, Element e) {

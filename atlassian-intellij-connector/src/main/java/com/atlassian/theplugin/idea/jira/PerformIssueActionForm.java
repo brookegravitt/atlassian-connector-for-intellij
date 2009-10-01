@@ -102,7 +102,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
             ActionFieldEditor editor = null;
             String row = null;
 
-            switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
+            switch (JiraActionFieldType.getFieldTypeForFieldId(field)) {
                 case SUMMARY:
                     editor = new FieldTextField(issue.getSummary(), field);
                     row = ", pref, 3dlu";
