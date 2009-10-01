@@ -280,13 +280,22 @@ public class JiraIssueAdapter implements JIRAIssue {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())  {
+            return false;
+        }
 
         JiraIssueAdapter that = (JiraIssueAdapter) o;
 
-        if (!jiraIssue.equals(that.jiraIssue)) return false;
-        if (!jiraServerData.equals(that.jiraServerData)) return false;
+        if (!jiraIssue.equals(that.jiraIssue)) {
+            return false;
+        }
+        
+        if (!jiraServerData.equals(that.jiraServerData)) {
+            return false;
+        }
 
         return true;
     }
