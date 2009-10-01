@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.commons.jira.api.commons;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
@@ -99,7 +100,11 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 		testServerConnection(httpConnectionCfg, httpConnectionCfg.getUsername(), httpConnectionCfg.getPassword());
 	}
 
-	private void testServerConnection(HttpConnectionCfg httpConnectionCfg, String userName, String password)
+    public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
+        //shouldn't be used
+    }
+
+    private void testServerConnection(HttpConnectionCfg httpConnectionCfg, String userName, String password)
             throws RemoteApiException {
 		JIRASession session;
 		try {

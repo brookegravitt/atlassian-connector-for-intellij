@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
@@ -235,6 +236,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
         public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
             
+        }
+
+        public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public ServerType getServerType() {

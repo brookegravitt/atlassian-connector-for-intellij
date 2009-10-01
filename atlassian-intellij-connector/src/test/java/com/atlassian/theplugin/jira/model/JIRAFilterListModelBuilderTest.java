@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
@@ -155,6 +156,10 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
         public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
+        }
+
+        public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
+            
         }
 
         public ServerType getServerType() {
