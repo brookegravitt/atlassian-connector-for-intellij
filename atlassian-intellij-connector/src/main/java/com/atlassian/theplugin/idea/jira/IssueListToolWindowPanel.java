@@ -1267,13 +1267,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
             refreshIssues(savedFilter, jiraServerData, true);
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl)jiraServerData.getServerId());
+            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
         }
 
         public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl)jiraServerData.getServerId());
+            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
             jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
             refreshIssues(manualFilter, jiraServerData, true);
