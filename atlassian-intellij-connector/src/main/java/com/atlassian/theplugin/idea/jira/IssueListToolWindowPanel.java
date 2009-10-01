@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
@@ -1266,13 +1267,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
             refreshIssues(savedFilter, jiraServerData, true);
-            jiraWorkspaceConfiguration.getView().setViewServerIdd(jiraServerData.getServerId());
+            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl)jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
         }
 
         public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd(jiraServerData.getServerId());
+            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl)jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
             jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
             refreshIssues(manualFilter, jiraServerData, true);
