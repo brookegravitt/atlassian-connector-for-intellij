@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.intellij.util.xmlb.annotations.Transient;
 
@@ -26,24 +27,24 @@ import java.util.LinkedHashSet;
 
 
 public class JiraViewConfigurationBean {
-	private ServerId viewServerIdd;
+	private ServerIdImpl viewServerIdd;
 	private String viewFilterId;
 	private JiraIssueGroupBy groupBy;
 	private boolean collapseSubtasksUnderParent;
 
 	// selected projects per server in the Issue Crea+te Dialog
-	private HashMap<ServerId, JiraProjectDefaultComponentsBean> serverDefaultss =
-			new HashMap<ServerId, JiraProjectDefaultComponentsBean>();
+	private HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> serverDefaultss =
+			new HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean>();
     private String viewFilterType;
 
     public JiraViewConfigurationBean() {
 	}
 
-	public ServerId getViewServerIdd() {
+	public ServerIdImpl getViewServerIdd() {
 		return viewServerIdd;
 	}
 
-	public void setViewServerIdd(final ServerId viewServerIdd) {
+	public void setViewServerIdd(final ServerIdImpl viewServerIdd) {
 		this.viewServerIdd = viewServerIdd;
 	}
 
@@ -71,11 +72,11 @@ public class JiraViewConfigurationBean {
 		this.collapseSubtasksUnderParent = collapseSubtasksUnderParent;
 	}
 
-	public HashMap<ServerId, JiraProjectDefaultComponentsBean> getServerDefaultss() {
+	public HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> getServerDefaultss() {
 		return serverDefaultss;
 	}
 
-	public void setServerDefaultss(final HashMap<ServerId, JiraProjectDefaultComponentsBean> serverDefaultss) {
+	public void setServerDefaultss(final HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> serverDefaultss) {
 		this.serverDefaultss = serverDefaultss;
 	}
 
@@ -85,7 +86,7 @@ public class JiraViewConfigurationBean {
 
 		JiraProjectDefaultComponentsBean tmp = new JiraProjectDefaultComponentsBean(projectKey, comp);
 
-		serverDefaultss.put(jiraServer, tmp);
+		serverDefaultss.put((ServerIdImpl) jiraServer, tmp);
 	}
 
     public String getViewFilterType() {
