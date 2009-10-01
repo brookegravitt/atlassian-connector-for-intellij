@@ -21,10 +21,12 @@ import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.components.labels.LinkLabel;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.EditorKit;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -52,6 +54,12 @@ public class StatusBarPane extends JPanel implements StatusBar {
         textPanel.setMinimumSize(ED_PANE_MINE_SIZE);
         textPanel.setOpaque(false);
         textPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+        // PL-1826 - need to explicitly set editor kit apparently
+        EditorKit kit = new ClasspathHTMLEditorKit();
+        textPanel.setEditorKit(kit);
+        textPanel.setEditorKitForContentType("text/html", kit);
+
         textPanel.setContentType("text/html");
         textPanel.setEditable(false);
         textPanel.setMargin(new Insets(5, 5, 5, 5));
