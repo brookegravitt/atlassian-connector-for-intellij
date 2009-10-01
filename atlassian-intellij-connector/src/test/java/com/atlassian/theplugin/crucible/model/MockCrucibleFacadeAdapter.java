@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
@@ -279,7 +280,11 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	public void testServerConnection(final HttpConnectionCfg serverCfg) throws RemoteApiException {
 	}
 
-	public ServerType getServerType() {
+    public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
+        
+    }
+
+    public ServerType getServerType() {
 		return null;
 	}
 

@@ -338,6 +338,10 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.testServerConnection(httpConnectionCfg);
 	}
 
+    public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
+        facade.testServerConnection(connectionCfg);
+    }
+
     public void markCommentRead(ServerData server, PermId reviewId, PermId commentId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         facade.markCommentRead(server.toHttpConnectionCfg(), reviewId, commentId);

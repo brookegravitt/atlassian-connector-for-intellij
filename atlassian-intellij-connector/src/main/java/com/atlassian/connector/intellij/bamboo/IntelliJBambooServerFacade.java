@@ -189,10 +189,13 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
 		facade.testServerConnection(httpConnectionCfg);
-
 	}
 
-	private interface SubscribedPlansProvider {
+    public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
+        facade.testServerConnection(connectionCfg);
+    }
+
+    private interface SubscribedPlansProvider {
 		ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
 				throws ServerPasswordNotProvidedException, RemoteApiLoginException;

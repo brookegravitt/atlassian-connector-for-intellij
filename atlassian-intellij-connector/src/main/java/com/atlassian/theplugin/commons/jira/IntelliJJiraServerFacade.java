@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.commons.jira;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
@@ -190,6 +191,10 @@ public class IntelliJJiraServerFacade implements JiraServerFacade {
 
     public void testServerConnection(final HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
         facade.testServerConnection(httpConnectionCfg);
+    }
+
+    public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
+        facade.testServerConnection(connectionCfg);
     }
 
     public ServerType getServerType() {
