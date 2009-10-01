@@ -354,7 +354,16 @@ public class JIRASessionImpl implements JIRASession {
 			throw new RemoteApiException(e.toString(), e);
 		} catch (ClassCastException e) {
 			throw new RemoteApiException(e.toString(), e);
-		}
+        } catch (Exception e) {
+            // PL-1644 - there is this bloke who seems to have some customized RPC plugin,
+            // which returns non-standard fields in SOAP response. Axis croaks on it,
+            // we have to intercept  
+            if (e instanceof SAXException && logger != null) {
+                logger.warn("Soap method 'getIssue' thrown SAXException. "
+                            + "Probably some JIRA error or weird JIRA SOAP plugin.", e);
+            }
+            throw new RemoteApiException(e);
+        }
 
 	}
 
