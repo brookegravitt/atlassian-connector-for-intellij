@@ -148,7 +148,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             detailsPanel.add(empty1, gbc);
 
             // reason
-            gbc.gridx = 0;
+            gbc.gridx++;
             gbc.weightx = 0.0;
             gbc.fill = GridBagConstraints.NONE;
             reason = new SelectableHoverLabel(selected, aHover, enabled, getBuildReasonString(build), null,

@@ -55,6 +55,7 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.2: A lot of incrementally added awesomeness</li>
 			<li>2.1.1: Bugfix release</li>
 		    <li>2.1.0: Many significant improvements. Issue workflow actions, activation; improved handling of reviews</li>
 			<li>2.0.1: Bugfix release</li>
