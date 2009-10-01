@@ -79,44 +79,50 @@ public class JIRAIssueBean implements JIRAIssue {
     public JIRAIssueBean() {
 	}
 
-	public JIRAIssueBean(JIRAIssue issue) {
-		id = issue.getId();
-		key = issue.getKey();
-		summary = issue.getSummary();
-		status = issue.getStatus();
-        environment = issue.getEnvironment();
-		statusUrl = issue.getStatusTypeUrl();
-		type = issue.getType();
-		typeUrl = issue.getTypeIconUrl();
-		priority = issue.getPriority();
-		priorityUrl = issue.getPriorityIconUrl();
-		description = issue.getDescription();
-		projectKey = issue.getProjectKey();
-		statusConstant = issue.getStatusConstant();
-		typeConstant = issue.getTypeConstant();
-		priorityConstant = issue.getPriorityConstant();
-		assignee = issue.getAssignee();
-		assigneeId = issue.getAssigneeId();
-		reporter = issue.getReporter();
-		reporterId = issue.getReporterId();
-		resolution = issue.getResolution();
-		created = issue.getCreated();
-		updated = issue.getUpdated();
-		statusId = issue.getStatusId();
-		priorityId = issue.getPriorityId();
-		typeId = issue.getTypeId();
-		thisIsASubTask = issue.isSubTask();
-		subTaskList = issue.getSubTaskKeys();
-		parentIssueKey = issue.getParentIssueKey();
-		originalEstimate = issue.getOriginalEstimate();
-		originalEstimateInSeconds = issue.getOriginalEstimateInSeconds();
-		remainingEstimate = issue.getRemainingEstimate();
-		remainingEstimateInSeconds = issue.getRemainingEstimateInSeconds();
-		timeSpent = issue.getTimeSpent();
-		timeSpentInSeconds = issue.getTimeSpentInSeconds();
-        serverUrl = issue.getServerUrl();
-        rawSoapIssue = issue.getRawSoapIssue();
-	}
+    public JIRAIssueBean(JIRAIssue issue) {
+        this.id = issue.getId();
+        this.serverUrl = issue.getServerUrl();
+        this.key = issue.getKey();
+        this.summary = issue.getSummary();
+        this.status = issue.getStatus();
+        this.statusUrl = issue.getStatusTypeUrl();
+        this.type = issue.getType();
+        this.typeUrl = issue.getTypeIconUrl();
+        this.priority = issue.getPriority();
+        this.priorityUrl = issue.getProjectUrl();
+        this.description = issue.getDescription();
+        this.projectKey = issue.getProjectKey();
+        this.statusConstant = issue.getStatusConstant();
+        this.typeConstant = issue.getTypeConstant();
+        this.priorityConstant = issue.getPriorityConstant();
+        this.assignee = issue.getAssignee();
+        this.assigneeId = issue.getAssigneeId();
+        this.reporter = issue.getReporter();
+        this.reporterId = issue.getReporterId();
+        this.resolution = issue.getResolution();
+        this.created = issue.getCreated();
+        this.updated = issue.getUpdated();
+        this.statusId = issue.getStatusId();
+        this.priorityId = issue.getPriorityId();
+        this.typeId = issue.getTypeId();
+        this.affectsVersions = issue.getAffectsVersions();
+        this.fixVersions = issue.getFixVersions();
+        this.components = issue.getComponents();
+        this.subTaskList = issue.getSubTaskKeys();
+        this.thisIsASubTask = issue.isSubTask();
+        this.parentIssueKey = issue.getParentIssueKey();
+        this.originalEstimate = issue.getOriginalEstimate();
+        this.remainingEstimate = issue.getRemainingEstimate();
+        this.timeSpent = issue.getTimeSpent();
+        this.commentsList = issue.getComments();
+        this.rawSoapIssue = issue.getRawSoapIssue();
+        this.originalEstimateInSeconds = issue.getOriginalEstimateInSeconds();
+        this.remainingEstimateInSeconds = issue.getRemainingEstimateInSeconds();
+        this.timeSpentInSeconds = issue.getTimeSpentInSeconds();
+        this.securityLevel = issue.getSecurityLevel();
+        this.environment = issue.getEnvironment();
+    }
+
 
 	public JIRAIssueBean(String serverUrl, Element e) {
 		this.summary = getTextSafely(e, "summary");
