@@ -292,12 +292,9 @@ public class JiraIssueAdapter implements JIRAIssue {
         if (!jiraIssue.equals(that.jiraIssue)) {
             return false;
         }
-        
-        if (!jiraServerData.equals(that.jiraServerData)) {
-            return false;
-        }
 
-        return true;
+        return jiraServerData.equals(that.jiraServerData);
+
     }
 
     @Override
