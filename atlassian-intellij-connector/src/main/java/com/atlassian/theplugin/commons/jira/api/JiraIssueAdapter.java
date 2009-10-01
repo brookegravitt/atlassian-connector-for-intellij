@@ -277,4 +277,24 @@ public class JiraIssueAdapter implements JIRAIssue {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JiraIssueAdapter that = (JiraIssueAdapter) o;
+
+        if (!jiraIssue.equals(that.jiraIssue)) return false;
+        if (!jiraServerData.equals(that.jiraServerData)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = jiraIssue.hashCode();
+        result = 31 * result + jiraServerData.hashCode();
+        return result;
+    }
 }
