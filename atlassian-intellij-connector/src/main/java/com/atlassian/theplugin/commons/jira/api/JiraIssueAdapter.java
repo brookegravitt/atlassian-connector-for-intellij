@@ -23,7 +23,7 @@ public class JiraIssueAdapter implements JIRAIssue {
 
 
     public JiraIssueAdapter(JIRAIssueBean jiraIssue, JiraServerData jiraServerData) {
-        this.jiraIssue = jiraIssue;
+        this.jiraIssue = new JIRAIssueBean(jiraIssue);
         this.jiraServerData = jiraServerData;
     }
 
@@ -33,7 +33,7 @@ public class JiraIssueAdapter implements JIRAIssue {
     }
 
     public JiraIssueAdapter(JiraIssueAdapter issueAdapter) {
-        this.jiraIssue = issueAdapter.jiraIssue;
+        this.jiraIssue = new JIRAIssueBean(issueAdapter.jiraIssue);
         this.jiraServerData = issueAdapter.jiraServerData;
     }
 
