@@ -108,7 +108,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 				"3dlu, fill:pref:grow, 3dlu",
 				"3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, fill:pref:grow, 3dlu"));
 
-		chkLogWork = new JCheckBox("Log Work", config.isActiveIssueLogWork());
+		chkLogWork = new JCheckBox("Log Work", config.isActiveIssueLogWork() || !deactivateActiveIssue);
 		contentPane.add(createTimePanel(), cc.xy(2, 6));
 
 		if (deactivateActiveIssue) {
