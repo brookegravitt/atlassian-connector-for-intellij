@@ -24,7 +24,7 @@ public class SearchBuildDialog extends DialogWrapper {
 
     private JTextField queryField;
     private static final String PROMPT_TEXT =
-            "Quick Search (enter build plan key and build number, sparated by hyphen):";
+            "Quick Search (enter build plan key and build number, separated by hyphen):";
     private static final char HYPHEN = '-';
 
     public SearchBuildDialog(Project project) {
