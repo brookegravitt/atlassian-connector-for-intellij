@@ -55,7 +55,7 @@ public class IntelliJJiraServerFacade implements JiraServerFacade {
         return facade;
     }
 
-    public IntelliJJiraServerFacade(JIRAServerFacade2Impl facade) {
+    private IntelliJJiraServerFacade(JIRAServerFacade2Impl facade) {
         this.facade = facade;
     }
 
