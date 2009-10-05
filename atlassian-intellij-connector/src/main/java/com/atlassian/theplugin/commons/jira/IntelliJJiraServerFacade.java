@@ -34,7 +34,7 @@ import java.util.List;
  * @author pmaruszak
  * @date Sep 28, 2009
  */
-public class IntelliJJiraServerFacade implements JiraServerFacade {
+public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private final JIRAServerFacade2 facade;
 	private static IntelliJJiraServerFacade instance;
 
