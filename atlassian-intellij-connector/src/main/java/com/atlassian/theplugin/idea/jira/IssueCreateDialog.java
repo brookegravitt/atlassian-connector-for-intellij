@@ -38,6 +38,7 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -541,7 +542,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				try {
 					final JiraIssueAdapter createdIssue = IntelliJJiraServerFacade.getInstance().createIssue(jiraServerData, newIssue);
 
-                    //IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(createdIssue.getLocalConfigurationListener());
+                    IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(createdIssue.getLocalConfigurationListener());
 
 					message = "New issue created: <a href="
 							+ createdIssue.getIssueUrl()

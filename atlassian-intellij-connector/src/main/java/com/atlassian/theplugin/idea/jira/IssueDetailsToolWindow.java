@@ -870,6 +870,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 							params.issue.setFixVersions(issueDetails.getFixVersions());
 							params.issue.setComponents(issueDetails.getComponents());
+                            
 						}
 					} catch (JIRAException e) {
 						errorString = new String[]{"Unable to retrieve"};
