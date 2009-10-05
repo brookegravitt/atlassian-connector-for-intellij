@@ -332,6 +332,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 			private CommentsPanel(final boolean retrieveDetails) {
 				super(new BorderLayout());
+                requestFocusInWindow();
 				setBackground(UIUtil.getTreeTextBackground());
 				reviewItemTreePanel = new ReviewItemTreePanel(project,
 						CrucibleFilteredModelProvider.Filter.FILES_ALL,
