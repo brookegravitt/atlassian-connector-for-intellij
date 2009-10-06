@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
@@ -265,7 +263,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         private AttachementsPanel attachementsPanel;
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
-		private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
+		//private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
 		private Task.Backgroundable getSubTasksTask;
 		private DefaultListModel subtaskListModel;
 		private IssueDetailsToolWindow.IssuePanel.LocalModelListener modelListener;
@@ -294,7 +292,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				params.model.addModelListener(modelListener);
 			}
 
-			projectCfgManager.addProjectConfigurationListener(configurationListener);
+			//projectCfgManager.addProjectConfigurationListener(configurationListener);
 
 			addComponentListener(new ComponentAdapter() {
 				@Override
@@ -334,7 +332,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			if (params.model != null) {
 				params.model.removeModelListener(modelListener);
 			}
-			projectCfgManager.removeProjectConfigurationListener(configurationListener);
+			//projectCfgManager.removeProjectConfigurationListener(configurationListener);
 		}
 
 		private JiraServerData getJiraServerData() {
@@ -359,8 +357,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					public void run(@NotNull final ProgressIndicator indicator) {
 						try {
 							params.issue = facade.getIssue(params.issue.getJiraServerData(), params.issue.getKey());
-                            //IdeaHelper.getProjectCfgManager(project)
-                            // .addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
+                            IdeaHelper.getProjectCfgManager(project)
+                             .addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
 							retrieved = true;
 						} catch (final JIRAException e) {
 							EventQueue.invokeLater(new Runnable() {
@@ -1701,12 +1699,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class LocalConfigListener extends ConfigurationListenerAdapter {
-
-			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-				(params.issue).setJiraServerData(params.issue.getJiraServerData());
-			}
-		}
+//		private class LocalConfigListener extends ConfigurationListenerAdapter {
+//
+//			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
+//				(params.issue).setJiraServerData(IdeaHelper.getProjectCfgManager(project).
+//                        getJiraServerr(params.issue.getJiraServerData().getServerId()));
+//            }
+//
+//		}
 
 		private class LocalModelListener implements JIRAIssueListModelListener {
 
