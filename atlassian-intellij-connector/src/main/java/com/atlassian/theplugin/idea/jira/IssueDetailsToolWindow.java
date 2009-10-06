@@ -1426,7 +1426,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     public void run() {
                         removeAll();
                         setLayout(new BorderLayout());
-                        tabs.setTitleAt(tabIndex, "Uanble to retrieve attachments");
+                        tabs.setTitleAt(tabIndex, "Unable to retrieve attachments");
                         JLabel label = new JLabel(message + ": " + e.getMessage());
                         label.setHorizontalAlignment(SwingConstants.CENTER);
                         add(label, BorderLayout.CENTER);
