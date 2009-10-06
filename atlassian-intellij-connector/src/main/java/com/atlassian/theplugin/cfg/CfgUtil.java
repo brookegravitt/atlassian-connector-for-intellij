@@ -132,9 +132,15 @@ public final class CfgUtil {
 		ServerData enabledServer = null;
 		ServerData disabledServer = null;
 
+        String trimmedServerUrl;
+        if (serverUrl.endsWith("/")) {
+            trimmedServerUrl = serverUrl.substring(0, serverUrl.lastIndexOf("/"));
+        } else {
+            trimmedServerUrl = serverUrl;
+        }
 		// find matching server
 		for (ServerData server : servers) {
-			if (server.getUrl().trim().equals(serverUrl)) {
+			if (server.getUrl().trim().equals(trimmedServerUrl)) {
 				if (server.isEnabled()) {
 					enabledServer = server;
 					break;
@@ -155,9 +161,9 @@ public final class CfgUtil {
 		URL url;
 
 		try {
-			url = new URL(serverUrl);
+			url = new URL(trimmedServerUrl);
 		} catch (MalformedURLException e) {
-			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + serverUrl + "]", e);
+			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + trimmedServerUrl + "]", e);
 			return null;
 		}
 
