@@ -271,8 +271,8 @@ public class JiraIssueAdapter implements JIRAIssue {
             if (serverData.getServerId().equals(jiraServerData.getServerId())) {
                 if (serverData instanceof JiraServerData) {
                     jiraServerData = (JiraServerData) serverData;
-                } else {
-                    assert false;
+//                } else {
+//                    assert false;
                 }
             }
         }
