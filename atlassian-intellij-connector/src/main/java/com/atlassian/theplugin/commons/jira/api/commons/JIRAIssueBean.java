@@ -89,7 +89,7 @@ public class JIRAIssueBean implements JIRAIssue {
         this.type = issue.getType();
         this.typeUrl = issue.getTypeIconUrl();
         this.priority = issue.getPriority();
-        this.priorityUrl = issue.getProjectUrl();
+        this.priorityUrl = issue.getPriorityIconUrl();
         this.description = issue.getDescription();
         this.projectKey = issue.getProjectKey();
         this.statusConstant = issue.getStatusConstant();
