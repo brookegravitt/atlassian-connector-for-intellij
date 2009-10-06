@@ -268,6 +268,13 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				String filePath = (path == null ? file : path + "/" + file);
 				// find file by name (and path if provided)
 				Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
+                if (psiFiles == null || psiFiles.size() == 0) {
+                    psiFiles = new ArrayList<PsiFile>();
+                    PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
+                    if (psiFile != null) {
+                        psiFiles.add(psiFile);
+                    }
+                }
 
 				// narrow found list of files by VCS
 				if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
