@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.idea;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class BugReporting {
 
@@ -69,6 +70,10 @@ public final class BugReporting {
         versionMap.put("2.1.0", "10927");
         versionMap.put("2.1.1", "11095");
         versionMap.put("2.2.0", "11075");
+        //the same number as 2.2.1
+        versionMap.put("2.2.0-beta-1", "11314");
+        versionMap.put("2.2.1", "11314");
+        
 	}
 
     private static final int MAX_URI_LENGTH = 4096;
