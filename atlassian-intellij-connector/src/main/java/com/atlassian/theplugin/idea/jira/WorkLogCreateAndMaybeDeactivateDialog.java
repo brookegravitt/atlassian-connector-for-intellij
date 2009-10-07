@@ -300,7 +300,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		explanationText.setFont(new Font(explanationText.getFont().getName(), explanationText.getFont().getStyle(), 10));
 		explanationText.setOpaque(false);
 
-		timePanel.add(explanationText, cc.xywh(4, 4, 1, 5));
+		timePanel.add(explanationText, cc.xywh(4, 4, 1, 4));
 
 		timePanel.add(new JLabel("Remaining Estimate:"), cc.xyw(6, 2, 2));
 
