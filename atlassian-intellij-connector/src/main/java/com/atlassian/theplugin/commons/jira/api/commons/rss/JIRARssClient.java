@@ -23,11 +23,11 @@
 package com.atlassian.theplugin.commons.jira.api.commons.rss;
 
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -92,7 +92,7 @@ public class JIRARssClient extends AbstractHttpSession {
 
 		List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
 		for (JIRAQueryFragment jiraQueryFragment : fragments) {
-			if (jiraQueryFragment.getId() != JIRAServerCache.ANY_ID) {
+			if (jiraQueryFragment.getId() != CacheConstants.ANY_ID) {
 				fragmentsWithoutAnys.add(jiraQueryFragment);
 			}
 		}

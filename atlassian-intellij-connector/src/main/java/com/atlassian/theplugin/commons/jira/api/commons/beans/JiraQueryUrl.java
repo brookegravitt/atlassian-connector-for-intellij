@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.commons.jira.api.commons.beans;
 
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +149,7 @@ public final class JiraQueryUrl {
 
         List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
         for (JIRAQueryFragment jiraQueryFragment : queryFragments) {
-            if (jiraQueryFragment.getId() != JIRAServerCache.ANY_ID) {
+            if (jiraQueryFragment.getId() != CacheConstants.ANY_ID) {
                 fragmentsWithoutAnys.add(jiraQueryFragment);
             }
         }

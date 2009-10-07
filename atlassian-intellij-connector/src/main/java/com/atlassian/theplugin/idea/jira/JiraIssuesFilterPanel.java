@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
@@ -27,7 +28,6 @@ import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
@@ -411,7 +411,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
     private void refreshProjectDependentLists() {
         if (currentJiraProject != null) {
-            if (currentJiraProject.getId() == JIRAServerCache.ANY_ID) {
+            if (currentJiraProject.getId() == CacheConstants.ANY_ID) {
                 clearProjectDependentLists();
             } else {
                 setProjectDependendListValues();
@@ -595,11 +595,11 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                         currentJiraProject, true).toArray());
 
                 reporterComboBox.removeAllItems();
-                reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
+                reporterComboBox.addItem(new JIRAReporterBean(CacheConstants.ANY_ID, "Any User", null));
                 reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
                 assigneeComboBox.removeAllItems();
-                assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
+                assigneeComboBox.addItem(new JIRAAssigneeBean(CacheConstants.ANY_ID, "Any User", ""));
                 assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
                 assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
