@@ -336,7 +336,8 @@ public class JIRAServerCache {
 				if (includeSpecialValues) {
 					fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.ANY_ID, "Any", false));
 					fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.NO_VERSION_ID, "No version", false));
-                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.UNRELEASED_VERSION_ID, "Unreleased versions", true));
+                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.UNRELEASED_VERSION_ID,
+                            "Unreleased versions", true));
 				}
 
                 for (JIRAVersionBean jiraQueryFragment : retrieved) {
@@ -346,7 +347,8 @@ public class JIRAServerCache {
                 }
 
 				if (includeSpecialValues) {
-                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.RELEASED_VERSION_ID, "Released versions", false));
+                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.RELEASED_VERSION_ID,
+                            "Released versions", false));
 				}
 
                 for (JIRAVersionBean jiraQueryFragment : retrieved) {
