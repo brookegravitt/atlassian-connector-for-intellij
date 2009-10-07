@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.jira.api.commons.soap;
 
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionBean;
@@ -61,7 +62,6 @@ import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteStatus;
 import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteUser;
 import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteVersion;
 import com.atlassian.theplugin.commons.jira.api.commons.soap.axis.RemoteWorklog;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -224,7 +224,7 @@ public class JIRASessionImpl implements JIRASession {
 		remoteIssue.setProject(issue.getProjectKey());
 		remoteIssue.setType(String.valueOf(issue.getTypeConstant().getId()));
 		remoteIssue.setSummary(issue.getSummary());
-		if (issue.getPriorityConstant().getId() != JIRAServerCache.ANY_ID) {
+		if (issue.getPriorityConstant().getId() != CacheConstants.ANY_ID) {
 			remoteIssue.setPriority(String.valueOf(issue.getPriorityConstant().getId()));
 		}
 

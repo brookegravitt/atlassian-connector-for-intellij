@@ -35,13 +35,13 @@
       </crucible>
       <crucible>
         <server-id>962d5cd2-1c2a-47cc-963e-6c54966f65b2</server-id>
-        <name>EAC Cru</name>
+        <name>Extranet</name>
         <url>https://extranet.atlassian.com/crucible</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <crucible>
         <server-id>d5f90b60-7c6a-4d85-aa78-1ed7dff209ef</server-id>
-        <name>Lech_1</name>
+        <name>Lech</name>
         <url>http://lech:8020/crucible-2.0</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
@@ -86,8 +86,14 @@
         <url>https://svn.atlassian.com/atlaseye</url>
         <isFisheyeInstance>false</isFisheyeInstance>
       </crucible>
+      <crucible>
+        <server-id>34a84f5e-ee1e-4a73-b4f8-885fb9da7ec6</server-id>
+        <name>Lech (proxy https)</name>
+        <url>https://lech/crucible-2.0</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
     </servers>
-    <default-fisheye-server>d5f90b60-7c6a-4d85-aa78-1ed7dff209ef</default-fisheye-server>
-    <default-fisheye-repo>studio</default-fisheye-repo>
+    <default-fisheye-server>f9eb736a-4d98-44e2-aa41-476185f26d84</default-fisheye-server>
+    <default-jira-server>d5b71692-3679-474f-bc0a-28165fd8f69b</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>

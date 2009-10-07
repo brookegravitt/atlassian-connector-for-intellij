@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
@@ -11,7 +12,6 @@ import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAStatusBean;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +130,7 @@ public final class JiraCustomFilter {
 	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key,
 			final JIRAQueryFragment fragment, final boolean skipAnyValues) {
 
-		if (!skipAnyValues || fragment.getId() != JIRAServerCache.ANY_ID) {
+		if (!skipAnyValues || fragment.getId() != CacheConstants.ANY_ID) {
 			if (!map.containsKey(key)) {
 				map.put(key, new ArrayList<String>());
 			}

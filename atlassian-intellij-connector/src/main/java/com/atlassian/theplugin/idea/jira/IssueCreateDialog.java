@@ -17,6 +17,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
@@ -31,14 +32,13 @@ import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -205,7 +205,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		projectComboBox.removeAllItems();
 
 		for (JIRAProject project : projects) {
-			if (project.getId() != JIRAServerCache.ANY_ID) {
+			if (project.getId() != CacheConstants.ANY_ID) {
 				projectComboBox.addItem(project);
 			}
 		}
@@ -263,7 +263,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private void addIssuePriorities(List<JIRAPriorityBean> priorieties) {
 		priorityComboBox.removeAllItems();
 		for (JIRAConstant constant : priorieties) {
-			if (constant.getId() != JIRAServerCache.ANY_ID) {
+			if (constant.getId() != CacheConstants.ANY_ID) {
 				priorityComboBox.addItem(constant);
 			}
 		}
@@ -376,7 +376,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		versionsList.removeAll();
 		final DefaultListModel listModel = new DefaultListModel();
 		for (JIRAVersionBean version : versions) {
-			if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
+			if (version != null && version.getId() != CacheConstants.ANY_ID) {
 				listModel.addElement(new VersionWrapper(version));
 			}
 		}
@@ -389,7 +389,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		fixVersionsList.removeAll();
 		final DefaultListModel listModel = new DefaultListModel();
 		for (JIRAFixForVersionBean version : versions) {
-			if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
+			if (version != null && version.getId() != CacheConstants.ANY_ID) {
 				listModel.addElement(new VersionWrapper(version));
 			}
 		}
@@ -401,7 +401,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private void addIssueTypes(List<JIRAConstant> issueTypes) {
 		typeComboBox.removeAllItems();
 		for (JIRAConstant constant : issueTypes) {
-			if (constant.getId() != JIRAServerCache.ANY_ID) {
+			if (constant.getId() != CacheConstants.ANY_ID) {
 				typeComboBox.addItem(constant);
 			}
 		}
@@ -413,7 +413,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private void addComponents(Collection<JIRAComponentBean> components) {
 		final DefaultListModel listModel = new DefaultListModel();
 		for (JIRAComponentBean constant : components) {
-			if (constant != null && constant.getId() != JIRAServerCache.ANY_ID) {
+			if (constant != null && constant.getId() != CacheConstants.ANY_ID) {
 				listModel.addElement(new ComponentWrapper(constant));
 			}
 		}
@@ -486,7 +486,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		for (Object selectedObject : componentsList.getSelectedValues()) {
 			if (selectedObject instanceof ComponentWrapper) {
 				ComponentWrapper componentWrapper = (ComponentWrapper) selectedObject;
-				if (componentWrapper.getWrapped().getId() == JIRAServerCache.UNKNOWN_COMPONENT_ID) {
+				if (componentWrapper.getWrapped().getId() == CacheConstants.UNKNOWN_COMPONENT_ID) {
 					if (componentsList.getSelectedValues().length > 1) {
 						Messages.showErrorDialog(getContentPane(), "You cannot select \"Unknown\" with a specific component.");
 						return;

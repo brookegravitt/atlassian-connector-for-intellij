@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.cache;
 
+import com.atlassian.connector.commons.jira.cache.CacheConstants;
+import com.atlassian.connector.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
@@ -41,13 +43,6 @@ import java.util.Map;
 
 public class JIRAServerCache {
 	private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
-	public static final int ANY_ID = -1000;
-	private static final int NO_VERSION_ID = -1;
-	private static final int RELEASED_VERSION_ID = -3;
-	private static final int UNRELEASED_VERSION_ID = -2;
-	public static final int UNKNOWN_COMPONENT_ID = -1;
-	private static final int UNRESOLVED_ID = -1;
-
 	private final JiraServerData jiraServerData;
 	private boolean validServer;
 	private String errorMessage;
@@ -101,7 +96,7 @@ public class JIRAServerCache {
 			try {
 				List<JIRAProject> retrieved = jiraServerFacade.getProjects(jiraServerData);
 				projects = new ArrayList<JIRAProject>();
-				projects.add(new JIRAProjectBean(ANY_ID, "Any"));
+				projects.add(new JIRAProjectBean(CacheConstants.ANY_ID, "Any"));
 				projects.addAll(retrieved);
 			} catch (JIRAException e) {
                 errorMessage = e.getMessage();
@@ -116,7 +111,7 @@ public class JIRAServerCache {
 			try {
 				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(jiraServerData);
 				statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-				statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
+				statuses.add(new JIRAStatusBean(CacheConstants.ANY_ID, "Any", null));
 				statuses.addAll(retrieved);
 				for (JIRAConstant status : statuses) {
 					CachedIconLoader.getIcon(status.getIconUrl());
@@ -172,7 +167,7 @@ public class JIRAServerCache {
 
 		List<JIRAConstant> result = new ArrayList<JIRAConstant>();
 		if (includeAny) {
-			result.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
+			result.add(new JIRAIssueTypeBean(CacheConstants.ANY_ID, "Any", null));
 		}
 		result.addAll(issueTypes);
 
@@ -245,7 +240,7 @@ public class JIRAServerCache {
 
 		List<JIRAPriorityBean> result = new ArrayList<JIRAPriorityBean>();
 		if (includeAny) {
-			result.add(new JIRAPriorityBean(ANY_ID, -1, "Any", null));
+			result.add(new JIRAPriorityBean(CacheConstants.ANY_ID, -1, "Any", null));
 		}
 		result.addAll(priorities);
 		return result;
@@ -265,8 +260,8 @@ public class JIRAServerCache {
 		List<JIRAResolutionBean> result;
 		result = new ArrayList<JIRAResolutionBean>();
 		if (includeAnyAndUnknown) {
-			result.add(new JIRAResolutionBean(ANY_ID, "Any"));
-			result.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
+			result.add(new JIRAResolutionBean(CacheConstants.ANY_ID, "Any"));
+			result.add(new JIRAResolutionBean(CacheConstants.UNRESOLVED_ID, "Unresolved"));
 		}
 		result.addAll(resolutions);
 
@@ -303,9 +298,9 @@ public class JIRAServerCache {
 			if (!retrieved.isEmpty()) {
 				versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
 				if (includeSpecialValues) {
-					versions.add(new JIRAVersionBean(ANY_ID, "Any", false));
-					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version", false));
-                    versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions", false));
+					versions.add(new JIRAVersionBean(CacheConstants.ANY_ID, "Any", false));
+					versions.add(new JIRAVersionBean(CacheConstants.NO_VERSION_ID, "No version", false));
+                    versions.add(new JIRAVersionBean(CacheConstants.UNRELEASED_VERSION_ID, "Unreleased versions", false));
 				}
 
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
@@ -314,7 +309,7 @@ public class JIRAServerCache {
 					}
 				}
 				if (includeSpecialValues) {
-                    versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions", true));
+                    versions.add(new JIRAVersionBean(CacheConstants.RELEASED_VERSION_ID, "Released versions", true));
 				}
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
 					if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
@@ -339,9 +334,9 @@ public class JIRAServerCache {
 			if (!retrieved.isEmpty()) {
 				fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
 				if (includeSpecialValues) {
-					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any", false));
-					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version", false));
-                    fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions", true));
+					fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.ANY_ID, "Any", false));
+					fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.NO_VERSION_ID, "No version", false));
+                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.UNRELEASED_VERSION_ID, "Unreleased versions", true));
 				}
 
                 for (JIRAVersionBean jiraQueryFragment : retrieved) {
@@ -351,7 +346,7 @@ public class JIRAServerCache {
                 }
 
 				if (includeSpecialValues) {
-                    fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions", false));
+                    fixForVersions.add(new JIRAFixForVersionBean(CacheConstants.RELEASED_VERSION_ID, "Released versions", false));
 				}
 
                 for (JIRAVersionBean jiraQueryFragment : retrieved) {
@@ -381,8 +376,8 @@ public class JIRAServerCache {
 
 					components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
 					if (includeSpecialValues) {
-						components.add(new JIRAComponentBean(ANY_ID, "Any"));
-						components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
+						components.add(new JIRAComponentBean(CacheConstants.ANY_ID, "Any"));
+						components.add(new JIRAComponentBean(CacheConstants.UNKNOWN_COMPONENT_ID, "Unknown"));
 					}
 					components.addAll(retrieved);
 
@@ -407,3 +402,4 @@ public class JIRAServerCache {
 		return errorMessage;
 	}
 }
+
