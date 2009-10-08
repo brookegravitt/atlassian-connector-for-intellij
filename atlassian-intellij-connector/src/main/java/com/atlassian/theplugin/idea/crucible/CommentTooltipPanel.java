@@ -1101,7 +1101,8 @@ public abstract class CommentTooltipPanel extends JPanel {
         @Override
         public void commentReadStateChanged(ReviewAdapter r, Comment cmt) {
             for (CommentPanel panel : commentPanelList) {
-                if (panel.comment != null && panel.comment.getPermId().equals(cmt.getPermId())) {
+                if (isTheSameComment(panel.comment, cmt)) {
+//                if (panel.comment != null && panel.comment.getPermId().equals(cmt.getPermId())) {
                     panel.updateReadUnreadButtonState(cmt);
                 }
             }
