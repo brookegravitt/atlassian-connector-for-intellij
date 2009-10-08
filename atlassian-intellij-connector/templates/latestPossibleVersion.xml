@@ -6,12 +6,12 @@
               <html><body>
 
         <p>
-        With pleasure, Atlassian presents the Atlassian Connector for IntelliJ IDEA 2.2
+        This is a SNAPSHOT version. We do testing but cannot guarantee the same stability as major versions has.         
         </p>
 
         </body></html>
         ]]></releaseNotes>
-		<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.1.1+Release+Notes
+		<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v2.2+Release+Notes
 		</releaseNotesUrl>
 	</version>
 </response>
