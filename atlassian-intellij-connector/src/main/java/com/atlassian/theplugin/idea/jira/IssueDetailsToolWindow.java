@@ -389,8 +389,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			for (JiraIssueAdapter i : params.model.getIssues()) {
 				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerData.getUrl())) {
 					params.issue = i;
+                     IdeaHelper.getProjectCfgManager(project)
+                             .removeProjectConfigurationListener(params.issue.getLocalConfigurationListener());
+                     IdeaHelper.getProjectCfgManager(project)
+                             .addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
 					// todo check active issue
 //					ActiveIssueUtils.checkIssueState(project, i);
+
 					break;
 				}
 			}
