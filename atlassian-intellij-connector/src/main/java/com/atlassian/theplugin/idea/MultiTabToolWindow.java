@@ -81,6 +81,7 @@ public abstract class MultiTabToolWindow {
 			}
 		}
 
+        contentPanel.requestFocusInWindow();
 		return itw;
 	}
 
