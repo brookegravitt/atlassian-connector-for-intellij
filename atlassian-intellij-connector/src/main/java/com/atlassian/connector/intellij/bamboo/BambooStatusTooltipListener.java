@@ -19,7 +19,6 @@ package com.atlassian.connector.intellij.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,8 +91,6 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 							prevBuildStatuses.put(getBuildMapKey(currentBuild), currentBuild);
 							break;
 						case UNKNOWN:
-						case BUILDING:
-						case IN_QUEUE:
 							// no action here
 							break;
 						case SUCCESS:

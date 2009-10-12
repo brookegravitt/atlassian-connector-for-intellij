@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 
 public interface BambooServerFacade extends ProductServerFacade {
@@ -39,7 +38,7 @@ public interface BambooServerFacade extends ProductServerFacade {
 	Collection<BambooBuildAdapter> getSubscribedPlansResults(BambooServerData bambooServer,
 			final Collection<SubscribedPlan> plans,
 			boolean isUseFavourities, int timezoneOffset)
-			throws ServerPasswordNotProvidedException;
+			throws ServerPasswordNotProvidedException, RemoteApiException;
 
 	BuildDetails getBuildDetails(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
 			throws ServerPasswordNotProvidedException, RemoteApiException;

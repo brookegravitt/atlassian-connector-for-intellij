@@ -15,15 +15,14 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.PlanState;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Timer;
@@ -34,15 +33,15 @@ import java.util.TimerTask;
  */
 public class BuildTreeModel extends DefaultTreeModel {
 
-	private BuildListModel buildListModel;
+	private final BuildListModel buildListModel;
 
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
-	private BuildNodeManipulator generalNodeManipulator;
-	private BuildNodeManipulator stateNodeManipulator;
-	private BuildNodeManipulator serverNodeManipulator;
-	private BuildNodeManipulator dateNodeManipulator;
-	private BuildNodeManipulator projectNodeManipulator;
+	private final BuildNodeManipulator generalNodeManipulator;
+	private final BuildNodeManipulator stateNodeManipulator;
+	private final BuildNodeManipulator serverNodeManipulator;
+	private final BuildNodeManipulator dateNodeManipulator;
+	private final BuildNodeManipulator projectNodeManipulator;
 	private Timer timer = new Timer("animate building nodes");
 
 	public BuildTreeModel(final BuildListModel buildListModel) {
@@ -162,13 +161,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 		return -1;
 	}
 
-//	public void update(final Collection<BambooBuildAdapter> buildStatuses) {
-//		buildListModel.setBuilds(buildStatuses);
-//		update();
-//	}
-
 	public void update() {
-
 		timer.cancel();
 		timer = new Timer("animate building nodes");
 
@@ -180,6 +173,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 		// start timer to refresh 'building' nodes in the background (to animate them)
 		timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
@@ -205,7 +199,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	private void collectBuildingNodes(final DefaultMutableTreeNode node, Collection<BuildTreeNode> nodes) {
 		if (node instanceof BuildTreeNode) {
 			BuildTreeNode buildNode = (BuildTreeNode) node;
-			if (buildNode.getBuild().getStatus() == BuildStatus.BUILDING) {
+			if (buildNode.getBuild().getBuild().getPlanState() == PlanState.BUILDING) {
 				nodes.add((BuildTreeNode) node);
 			}
 		}

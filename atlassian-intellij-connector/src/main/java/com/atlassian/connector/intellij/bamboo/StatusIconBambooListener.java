@@ -17,7 +17,6 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,13 +55,8 @@ public class StatusIconBambooListener implements BambooStatusListener {
 							status = BuildStatus.FAILURE;
 							break;
 						case UNKNOWN:
-//							if (status != BUILD_FAILED && status != BuildStatus.BUILD_SUCCEED) {
-//								status = BuildStatus.UNKNOWN;
-//							}
 							break;
 						case SUCCESS:
-						case BUILDING:
-						case IN_QUEUE:
 							if (status != BuildStatus.FAILURE) {
 								status = BuildStatus.SUCCESS;
 							}
