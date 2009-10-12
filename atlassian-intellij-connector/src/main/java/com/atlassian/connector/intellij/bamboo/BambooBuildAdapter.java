@@ -20,12 +20,12 @@ import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.PlanState;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.Icon;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -173,6 +173,17 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 	public Icon getIcon() {
 		if (build.getEnabled()) {
 
+			if (build.getPlanState() == PlanState.BUILDING) {
+				// we need below trick (return the same icon twice)
+				// because for single tree node refresh the renderer is called twice
+				// the trick can be moved upper in case the method is used not only for build tree
+				iconBuildingIndex += ++iconTrickIndex % 2;
+				iconBuildingIndex %= BambooBuildIcons.ICON_IS_BUILDING.length;
+				// return next icon from the array
+				return BambooBuildIcons.ICON_IS_BUILDING[iconBuildingIndex];
+			} else if (build.getPlanState() == PlanState.IN_QUEUE) { 
+				return BambooBuildIcons.ICON_IS_IN_QUEUE;
+			}
 			switch (getStatus()) {
 				case FAILURE:
 					return BambooBuildIcons.ICON_RED;
@@ -180,16 +191,6 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 					return BambooBuildIcons.ICON_GREEN;
 				case UNKNOWN:
 					return BambooBuildIcons.ICON_GREY;
-				case BUILDING:
-					// we need below trick (return the same icon twice)
-					// because for single tree node refresh the renderer is called twice
-					// the trick can be moved upper in case the method is used not only for build tree
-					iconBuildingIndex += ++iconTrickIndex % 2;
-					iconBuildingIndex %= BambooBuildIcons.ICON_IS_BUILDING.length;
-					// return next icon from the array
-					return BambooBuildIcons.ICON_IS_BUILDING[iconBuildingIndex];
-				case IN_QUEUE:
-					return BambooBuildIcons.ICON_IS_IN_QUEUE;
 				default:
 					break;
 			}

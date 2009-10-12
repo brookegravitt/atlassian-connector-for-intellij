@@ -32,7 +32,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -62,7 +61,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
-				throws ServerPasswordNotProvidedException, RemoteApiLoginException {
+				throws ServerPasswordNotProvidedException, RemoteApiException {
 			return convertToBambooBuildAdapters(bambooServer, facade.getSubscribedPlansResults(
 					bambooServer.toHttpConnectionCfg(), plans, isUseFavourities, timezoneOffset));
 		}
@@ -145,7 +144,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	public Collection<BambooBuildAdapter> getSubscribedPlansResults(BambooServerData bambooServer,
 			Collection<SubscribedPlan> plans, boolean isUseFavourities, int timezoneOffset)
-			throws ServerPasswordNotProvidedException {
+			throws ServerPasswordNotProvidedException, RemoteApiException {
 
 		SubscribedPlansProvider provider = (bambooServer.isBamboo2M9())
 				? newSubscribedPlansProvider : oldSubscribedPlansProvider;
@@ -198,6 +197,6 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
     private interface SubscribedPlansProvider {
 		ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
-				throws ServerPasswordNotProvidedException, RemoteApiLoginException;
+				throws ServerPasswordNotProvidedException, RemoteApiException;
 	}
 }
