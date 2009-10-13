@@ -15,10 +15,13 @@ public class OpenBuildActionNew extends AbstractBuildListAction {
 
 	@Override
 	public void update(final AnActionEvent event) {
-		super.update(event);
 		final BambooBuildAdapter build = getBuild(event);
-		if (build == null || !isBamboo2(event, build.getServer()) || !build.areActionsAllowed()) {
-			event.getPresentation().setEnabled(false);
-		}
+
+        event.getPresentation().setEnabled(
+                        build != null
+                        && isBamboo2(event, build.getServer())
+                        && build.getPlanKey() != null
+                        && build.isValid()
+                        && build.areActionsAllowed(true));
 	}
 }

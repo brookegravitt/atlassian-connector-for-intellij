@@ -15,34 +15,9 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -76,6 +51,25 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Wojciech Seliga
@@ -246,7 +240,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 	public void openBuild(final BambooBuildAdapter buildDetailsInfo) {
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
-				&& buildDetailsInfo.areActionsAllowed()) {
+				&& buildDetailsInfo.areActionsAllowed(true)) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
 		}
 	}
