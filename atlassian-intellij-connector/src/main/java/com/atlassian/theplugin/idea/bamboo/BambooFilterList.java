@@ -15,19 +15,20 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.intellij.ui.ListSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -99,6 +100,12 @@ public class BambooFilterList extends JList {
 			case SERVER:
 				final Collection<BambooServerData> bambooServers = projectCfgManager.getAllEnabledBambooServerss();
 
+                Set<Object> toRemove = new HashSet<Object>();
+
+                for (int i = 0; i < listModel.size(); ++i) {
+                    toRemove.add(listModel.get(i));
+                }
+
 				for (BambooServerData bambooServer : bambooServers) {
 					final BambooServerFilter serverFilter = new BambooServerFilter(bambooServer);
 					final BamboServerFilterWrapper obj = new BamboServerFilterWrapper(serverFilter,
@@ -106,10 +113,9 @@ public class BambooFilterList extends JList {
 					if (!listModel.contains(obj)) {
 						listModel.addElement(obj);
 					} else {
-						// as BambooServerCfg objects are mutable and could be just changed in user settings, we need to up
-						// update them basing on ServerId - the only immutable link.
-						// I don't like this code, but I have no time now to fight with restoration of user selection
-						// if I was to reset totally the model of this list
+
+                        toRemove.remove(obj);
+
 						final int i = listModel.indexOf(obj);
 						if (i != -1) {
 							final Object o = listModel.get(i);
@@ -120,6 +126,11 @@ public class BambooFilterList extends JList {
 						}
 					}
 				}
+                for (Object o : toRemove) {
+                    if (!o.equals(allFilterWrapper)) {
+                        listModel.removeElement(o);
+                    }
+                }
 
 				break;
 			case STATE:
@@ -376,5 +387,4 @@ public class BambooFilterList extends JList {
 
 		return new BambooCompositeOrFilter(filters);
 	}
-
 }
