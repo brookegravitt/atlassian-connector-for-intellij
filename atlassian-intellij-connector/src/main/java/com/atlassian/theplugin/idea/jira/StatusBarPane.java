@@ -68,7 +68,12 @@ public class StatusBarPane extends JPanel implements StatusBar {
             public void hyperlinkUpdate(final HyperlinkEvent e) {
                 if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
                     if (errors.size() == 1) {
-                        DialogWithDetails.showExceptionDialog(StatusBarPane.this, errors.get(0).getMessage(), errors.get(0));
+                        Throwable throwable = errors.get(0);
+                        if (throwable != null) {
+                            DialogWithDetails.showExceptionDialog(StatusBarPane.this, throwable.getMessage(), throwable);
+                        } else {
+                            DialogWithDetails.showExceptionDialog(StatusBarPane.this, "Unknown error", "Unknown error");
+                        }
                     } else if (errors != null && errors.size() > 0) {
                         List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects =
                                 new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
