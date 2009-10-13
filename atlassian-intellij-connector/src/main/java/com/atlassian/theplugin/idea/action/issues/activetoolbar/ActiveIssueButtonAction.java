@@ -14,6 +14,7 @@ import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.actionSystem.impl.ActionButtonWithText;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.EmptyIcon;
+import com.intellij.util.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,7 +93,11 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         event.getPresentation().setDescription(tooltip);
 
         if (issue != null) {
-            event.getPresentation().setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
+            Icon icon = CachedIconLoader.getIcon(issue.getTypeIconUrl());
+            // PL-1862 - a Throwable (!) is thrown if icon has bad size (how's that for meaningful error handling :))
+            if (ImageLoader.isGoodSize(icon)) {
+                event.getPresentation().setIcon(icon);
+            }
         } else {
             event.getPresentation().setIcon(null);
         }
