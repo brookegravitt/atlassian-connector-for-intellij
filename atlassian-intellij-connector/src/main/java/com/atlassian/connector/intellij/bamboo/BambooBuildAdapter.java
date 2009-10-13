@@ -222,8 +222,8 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
     // PL-1857 - some actions should be allowed for disabled builds (e.g. open, view in browser)
 	public boolean areActionsAllowed(boolean allowDisabledBuilds) {
 		final AdjustedBuildStatus buildStatus = getAdjustedStatus();
-		return buildStatus != AdjustedBuildStatus.UNKNOWN &&
-                (buildStatus != AdjustedBuildStatus.DISABLED || allowDisabledBuilds);
+		return buildStatus != AdjustedBuildStatus.UNKNOWN
+                && (buildStatus != AdjustedBuildStatus.DISABLED || allowDisabledBuilds);
 	}
 
 	@Nullable
