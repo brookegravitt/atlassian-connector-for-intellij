@@ -598,7 +598,7 @@
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
 				text="Stop Work"
-				icon="/actions/ico_inactiveissue.png">
+				icon="/icons/ico_inactiveissue.png">
 		</action>
 
         <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssue"
