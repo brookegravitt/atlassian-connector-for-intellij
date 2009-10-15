@@ -78,7 +78,7 @@ public final class CrucibleHelper {
 	 *
 	 * @param project	project
 	 * @param review	 review data
-	 * @param reviewItem review item
+	 * @param reviewItem review item                                                                                         aaa
 	 */
 	public static void showVirtualFileWithComments(final Project project,
 			final ReviewAdapter review,
@@ -140,7 +140,8 @@ public final class CrucibleHelper {
 			return;
 		}
 
-		final PsiFile psiFile = CodeNavigationUtil
+
+        final PsiFile psiFile = CodeNavigationUtil
 				.guessCorrespondingPsiFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl());
 		if (psiFile != null) {
 			final VirtualFile vfl = psiFile.getVirtualFile();
@@ -196,10 +197,24 @@ public final class CrucibleHelper {
 					contentRevision = change.getAfterRevision();
 				}
                 // PL-1619
-                if (contentRevision == null || contentRevision.getFile().getVirtualFile() == null) {
+                if (contentRevision == null) {
                     continue;
                 }
-				String fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, contentRevision.getFile().getVirtualFile());
+
+                String fileUrl = null;
+                VirtualFile file = contentRevision.getFile().getVirtualFile();
+                if (file == null) {
+                    file = contentRevision.getFile().getVirtualFileParent();
+                    if (file == null) {
+                        continue;
+                    }
+                    fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, file);
+                    if (fileUrl != null) {
+                        fileUrl = fileUrl + "/" + contentRevision.getFile().getName();
+                    }
+                } else {
+                    fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, file);
+                }
 
 				try {
 					URL url = new URL(fileUrl);
@@ -210,16 +225,17 @@ public final class CrucibleHelper {
 					fileUrl = StringUtils.difference(rootUrl, fileUrl);
 				}
 
-				// @todo implement it handling of binary files
-				if (change.getBeforeRevision() != null) {
-					uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent().getBytes(),
-							change.getAfterRevision().getContent().getBytes(),
-                            change.getBeforeRevision().getRevisionNumber().asString()));
-				} else {
-					uploadItems.add(new UploadItem(fileUrl, change.getAfterRevision().getContent().getBytes(),
-							change.getAfterRevision().getContent().getBytes(),
-							change.getAfterRevision().getRevisionNumber().toString()));
-				}
+                ContentRevision revOld = change.getBeforeRevision();
+                ContentRevision revNew = change.getAfterRevision();
+
+                byte[] byteOld = revOld != null && revOld.getContent() != null
+                        ? revOld.getContent().getBytes() : null;
+                byte[] byteNew = revNew != null && revNew.getContent() != null
+                        ? revNew.getContent().getBytes() : null;
+
+                // @todo implement it handling of binary files
+                uploadItems.add(new UploadItem(fileUrl, byteOld, byteNew));
+
 			} catch (VcsException e) {
 				throw new RuntimeException(e);
 			}
