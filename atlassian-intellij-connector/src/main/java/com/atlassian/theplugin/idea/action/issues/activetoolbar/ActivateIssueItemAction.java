@@ -45,7 +45,7 @@ public class ActivateIssueItemAction extends AnAction {
 		String summary = "";
 		JiraIssueAdapter issue = null;
 
-		if (cache != null){
+		if (cache != null) {
 			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
 			if (issue != null) {
