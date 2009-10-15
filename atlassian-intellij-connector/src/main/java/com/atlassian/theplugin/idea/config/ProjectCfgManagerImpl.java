@@ -19,7 +19,17 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -324,7 +334,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 		for (ServerCfg serverCfg : tmp) {
 			if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg instanceof JiraServerCfg) {
-				ret.add(getServerData(serverCfg));
+                JiraServerCfg jiraServerCfg = (JiraServerCfg) serverCfg;
+				ret.add(getServerData(jiraServerCfg));
 			}
 		}
 		return ret;
