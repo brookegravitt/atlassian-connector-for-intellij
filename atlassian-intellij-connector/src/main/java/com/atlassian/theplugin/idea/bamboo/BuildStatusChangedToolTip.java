@@ -90,7 +90,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		}
 		content.setCaretPosition(0);
 		IdeaVersionFacade.getInstance()
-				.fireNofification(projectComponent, new JScrollPane(content), content.getText(), "/icons/bamboo-blue-16.png",
+				.fireNotification(projectComponent, new JScrollPane(content), content.getText(), "/icons/bamboo-blue-16.png",
 						status, content.getBackground());
 	}
 }

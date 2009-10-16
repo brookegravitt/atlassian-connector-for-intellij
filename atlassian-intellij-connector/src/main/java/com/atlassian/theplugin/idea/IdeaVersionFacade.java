@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -36,18 +37,36 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class IdeaVersionFacade {
 
 	private static final int IDEA_8_0 = 8000;
-	private boolean isIdea8;
 	private static final int IDEA_8_0_1 = 9164;
 	private static final int IDEA_8_1_3 = 9886;
+    private static final int IDEA_9_EAP = 10000;
+
+    private boolean isIdea8;
+    private boolean isIdea9;
+
+    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
+    private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
 	private IdeaVersionFacade() {
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
-		int v = Integer.parseInt(ver);
-		isIdea8 = v > IDEA_8_0;
+        Matcher m = IDEA_9_REGEX.matcher(ver);
+        if (m.matches()) {
+            isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
+        } else {
+            try {
+		        int v = Integer.parseInt(ver);
+                isIdea8 = v > IDEA_8_0;
+                isIdea9 = v > IDEA_9_EAP;
+            } catch (NumberFormatException e) {
+                LoggerImpl.getInstance().error(e);
+            }
+        }
 	}
 
 	private static IdeaVersionFacade instance;
@@ -62,7 +81,7 @@ public final class IdeaVersionFacade {
 	public PsiClass findClass(String name, Project project) {
 		PsiClass cls = null;
 		try {
-			if (isIdea8) {
+			if (isIdea8 || isIdea9) {
 				Class javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
 				Method getInstance = javaPsiFacadeClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
@@ -90,9 +109,9 @@ public final class IdeaVersionFacade {
 	public PsiFile[] getFiles(String filePath, Project project) {
 		PsiFile[] psiFiles = null;
 		try {
-			if (isIdea8) {
-				Class filenameIndexClass = Class.forName("com.intellij.psi.search.FilenameIndex");
-				Method getFilesByName = filenameIndexClass.getMethod("getFilesByName", Project.class,
+			if (isIdea8 || isIdea9) {
+				Class fileNameIndexClass = Class.forName("com.intellij.psi.search.FilenameIndex");
+				Method getFilesByName = fileNameIndexClass.getMethod("getFilesByName", Project.class,
 						String.class, GlobalSearchScope.class);
 				Class projectScopeClass = Class.forName("com.intellij.psi.search.ProjectScope");
 				Method getProjectScope = projectScopeClass.getMethod("getProjectScope", Project.class);
@@ -131,11 +150,14 @@ public final class IdeaVersionFacade {
 			} else {
 				changeList = new ArrayList<Change>(changes);
 			}
-			String ver = ApplicationInfo.getInstance().getBuildNumber();
-			int v = Integer.parseInt(ver);
+			int v = 0;
+            if (!isIdea9) {
+                String ver = ApplicationInfo.getInstance().getBuildNumber();
+                v = Integer.parseInt(ver);
+            }
 			Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 			Constructor[] constructors = browserClass.getConstructors();
-			if (v >= IDEA_8_1_3) {
+			if (isIdea9 || v >= IDEA_8_1_3) {
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
 						changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
 			} else if (v > IDEA_8_0_1) {
@@ -158,7 +180,7 @@ public final class IdeaVersionFacade {
 	}
 
 	public void addActionToDiffGroup(@NotNull AnAction action) {
-		if (isIdea8) {
+		if (isIdea8 || isIdea9) {
 			DefaultActionGroup diffToolbar =
 					(DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
 			if (diffToolbar != null) {
@@ -173,7 +195,7 @@ public final class IdeaVersionFacade {
 			Method getInstance = hintManagerClass.getMethod("getInstance");
 			Object inst = getInstance.invoke(null);
 			Class mgrClass;
-			if (isIdea8) {
+			if (isIdea8 || isIdea9) {
 				Class hintManagerImplClass = Class.forName("com.intellij.codeInsight.hint.HintManagerImpl");
 				mgrClass = hintManagerImplClass;
 				inst = hintManagerImplClass.cast(inst);
@@ -208,7 +230,7 @@ public final class IdeaVersionFacade {
 
 	public void runTests(RunnerAndConfigurationSettings settings, DataContext dataContext, boolean debug) {
 		try {
-			if (isIdea8) {
+			if (isIdea8 || isIdea9) {
 				Class executorClass = Class.forName("com.intellij.execution.Executor");
 				Class defaultDebugExecutorClass = Class.forName("com.intellij.execution.executors.DefaultDebugExecutor");
 				Class defaultRunExecutorClass = Class.forName("com.intellij.execution.executors.DefaultRunExecutor");
@@ -286,7 +308,8 @@ public final class IdeaVersionFacade {
 		try {
 			Class binaryContentClass = Class.forName("com.intellij.openapi.diff.BinaryContent");
 			Constructor constructor = binaryContentClass
-					.getConstructor(new Class[]{byte[].class, isIdea8 ? Charset.class : String.class, FileType.class});
+					.getConstructor(new Class[]{byte[].class,
+                            isIdea8 || isIdea9 ? Charset.class : String.class, FileType.class});
 			return (BinaryContent) constructor.newInstance(virtualFile.contentsToByteArray(), null, fileType);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -317,7 +340,7 @@ public final class IdeaVersionFacade {
 			if (setItems == null) {
 				return;
 			}
-			if (isIdea8) {
+			if (isIdea8 || isIdea9) {
 				Class enumClass = Class.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase");
 				Method valueOf = enumClass.getMethod("valueOf", String.class);
 				setItems.invoke(browser, list, flag, valueOf.invoke(null, "COMMITTED"));
@@ -335,14 +358,14 @@ public final class IdeaVersionFacade {
 		}
 	}
 
-	public enum OperationStatus {
+    public enum OperationStatus {
 		INFO, WARNING, ERROR
 	}
 
-	public void fireNofification(final Project project, final JComponent content, String message,
+	public void fireNotification(final Project project, final JComponent content, String message,
                                  String iconName, OperationStatus status, final Color color) {
 /*
-		if (isIdea8) {
+		if (isIdea8 || isIdea9) {
 			ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
 			if (toolWindowManager != null) {
 				try {

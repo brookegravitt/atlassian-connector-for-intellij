@@ -161,9 +161,13 @@ public class JIRAIssueTreeBuilder {
 //		});
 
 		issueModel.addFrozenModelListener(new FrozenModelListener() {
-			public void modelFrozen(FrozenModel aModel, boolean frozen) {
+			public void modelFrozen(FrozenModel aModel, final boolean frozen) {
 				if (lastTree != null) {
-					lastTree.setEnabled(!frozen);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            lastTree.setEnabled(!frozen);
+                        }
+                    });
 				}
 			}
 		});

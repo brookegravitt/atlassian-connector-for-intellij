@@ -157,7 +157,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
-					IdeaVersionFacade.getInstance().fireNofification(
+					IdeaVersionFacade.getInstance().fireNotification(
 							project,
 							new JScrollPane(content),
 							content.getText(),

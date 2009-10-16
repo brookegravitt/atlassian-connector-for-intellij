@@ -188,13 +188,17 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         currentIssueListModel.addModelListener(new LocalJiraIssueListModelListener());
 
         currentIssueListModel.addFrozenModelListener(new FrozenModelListener() {
-            public void modelFrozen(FrozenModel model, boolean frozen) {
-                if (getStatusBarPane() != null) {
-                    getStatusBarPane().setEnabled(!frozen);
-                }
-                if (getSearchField() != null) {
-                    getSearchField().setEnabled(!frozen);
-                }
+            public void modelFrozen(FrozenModel model, final boolean frozen) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        if (getStatusBarPane() != null) {
+                            getStatusBarPane().setEnabled(!frozen);
+                        }
+                        if (getSearchField() != null) {
+                            getSearchField().setEnabled(!frozen);
+                        }
+                    }
+                });
             }
         });
 
