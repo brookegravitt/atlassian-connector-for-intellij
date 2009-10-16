@@ -16,6 +16,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -55,8 +56,12 @@ public class JIRAFilterTree extends AbstractTree {
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
 
-			public void modelFrozen(FrozenModel model, boolean frozen) {
-				JIRAFilterTree.this.setEnabled(!frozen);
+			public void modelFrozen(FrozenModel model, final boolean frozen) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JIRAFilterTree.this.setEnabled(!frozen);
+                    }
+                });
 			}
 		});
 	}

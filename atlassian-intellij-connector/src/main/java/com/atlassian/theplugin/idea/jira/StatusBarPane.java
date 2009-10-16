@@ -132,14 +132,18 @@ public class StatusBarPane extends JPanel implements StatusBar {
     }
 
 
-    public void setInfoMessage(String message, boolean rightAlign) {
+    public void setInfoMessage(final String message, boolean rightAlign) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
 //		textPanel.set setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);
-        textPanel.setText(" " + message);
-        textPanel.setBackground(defaultColor);
-        setBackground(defaultColor);
-        dismissLabel.setVisible(false);
-        dismissLabel.setBackground(defaultColor);
-        additionalPanel.setBackground(defaultColor);
+                textPanel.setText(" " + message);
+                textPanel.setBackground(defaultColor);
+                setBackground(defaultColor);
+                dismissLabel.setVisible(false);
+                dismissLabel.setBackground(defaultColor);
+                additionalPanel.setBackground(defaultColor);
+            }
+        });
         errors.clear();
     }
 

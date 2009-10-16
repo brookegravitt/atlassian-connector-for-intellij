@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.fisheye;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.TextAnnotationGutterProvider;
+import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.colors.EditorFontType;
 
 import java.util.List;
@@ -32,4 +33,8 @@ public class FisheyeAnnotationProvider implements TextAnnotationGutterProvider {
 
 	public void gutterClosed() {
 	}
+
+    public ColorKey getColor(int i, Editor editor) {
+        return null;
+    }
 }
