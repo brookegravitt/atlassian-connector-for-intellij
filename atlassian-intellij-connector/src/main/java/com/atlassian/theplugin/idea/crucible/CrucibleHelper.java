@@ -140,7 +140,6 @@ public final class CrucibleHelper {
 			return;
 		}
 
-
         final PsiFile psiFile = CodeNavigationUtil
 				.guessCorrespondingPsiFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl());
 		if (psiFile != null) {
@@ -153,7 +152,25 @@ public final class CrucibleHelper {
 				});
 				return;
 			}
-		}
+		} else if (reviewItem.getRepositoryType() == RepositoryType.UPLOAD) {
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                public void run() {
+                    try {
+                        fetchAndOpenAddedorDeletedFileWithDiffs(project, modal, review, reviewItem, line, col, action);
+                    } catch (final VcsException e) {
+                        ApplicationManager.getApplication().invokeLater(new Runnable() {
+                            public void run() {
+                                Messages.showErrorDialog(project, "Unable to retrieve the file "
+                                        + reviewItem.getFileDescriptor().getAbsoluteUrl() + ": " + e.getMessage(),
+                                        PluginUtil.PRODUCT_NAME);
+                            }
+                        });
+                    }
+                }
+            });
+            return;
+        }
+
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				Messages.showErrorDialog(project,
@@ -164,7 +181,7 @@ public final class CrucibleHelper {
 		});
 	}
 
-	public static Editor getEditorForCrucibleFile(Project project, ReviewAdapter review, CrucibleFileInfo file) {
+    public static Editor getEditorForCrucibleFile(Project project, ReviewAdapter review, CrucibleFileInfo file) {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
             if (!project.equals(editor.getProject())) {
@@ -313,6 +330,64 @@ public final class CrucibleHelper {
 				.queue();
 	}
 
+    private static void fetchAndOpenAddedorDeletedFileWithDiffs(final Project project, final boolean modal,
+                                                        @NotNull final ReviewAdapter review,
+                                                        @NotNull final CrucibleFileInfo reviewItem,
+                                                        final int line, final int col,
+                                                        @Nullable final OpenDiffAction action) throws VcsException {
+
+        final String fromRevision = reviewItem.getOldFileDescriptor().getRevision();
+        final String toRevision = reviewItem.getFileDescriptor().getRevision();
+
+        boolean contentUrlAvailable = false;
+        try {
+            contentUrlAvailable = IntelliJCrucibleServerFacade.getInstance().checkContentUrlAvailable(
+                    review.getServerData());
+        } catch (RemoteApiException e) {
+            // unable to get version
+        } catch (ServerPasswordNotProvidedException e) {
+            // unable to get version
+        }
+
+        String sourceName = contentUrlAvailable ? "Crucible" : "VCS";
+        String niceFileMessage;
+        switch (reviewItem.getCommitType()) {
+            case Added:
+                niceFileMessage = " " + reviewItem.getFileDescriptor().getName()
+                        + " (rev: " + toRevision + ") from " + sourceName;
+                break;
+            case Deleted:
+                niceFileMessage = " " + reviewItem.getFileDescriptor().getName()
+                        + " (rev: " + fromRevision + ") from " + sourceName;
+                break;
+            case Modified:
+            case Moved:
+            case Copied:
+            case Unknown:
+            default:
+                niceFileMessage = "s " + reviewItem.getFileDescriptor().getName() + " (rev: ";
+                if (!StringUtils.isEmpty(fromRevision)) {
+                    niceFileMessage += fromRevision;
+                    if (!StringUtils.isEmpty(toRevision)) {
+                        niceFileMessage += ", ";
+                    }
+                }
+                if (!StringUtils.isEmpty(toRevision)) {
+                    niceFileMessage += " " + toRevision;
+                }
+                niceFileMessage += ") from " + sourceName;
+                break;
+        }
+
+        if (contentUrlAvailable) {
+            review.addContentProvider(new CrucibleWebContentProviderForAddedAndDeletedFiles(reviewItem, project));
+        } else {
+            throw new VcsException("This Crucible version does not support retrieving uploaded files");
+        }
+
+        new FetchingTwoFilesTask(project, modal, niceFileMessage, review, reviewItem, line, col, action).queue();
+    }
+
 	public static void selectVersionedComment(final Project project, final ReviewAdapter review,
 			final CrucibleFileInfo file, final Comment comment) {
 		// select comment
@@ -341,7 +416,7 @@ public final class CrucibleHelper {
 		});
 	}
 
-	private static class FetchingTwoFilesTask extends Task.Backgroundable {
+    private static class FetchingTwoFilesTask extends Task.Backgroundable {
 		private OpenFileDescriptor displayDescriptor;
 		private VirtualFile referenceVirtualFile;
 
