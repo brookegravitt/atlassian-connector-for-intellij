@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -832,6 +833,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
             final ServerData server = selectedItem.getServer();
 
+            LoggerImpl.getInstance().info("CrucibleReviewCreateForm.runCreateReviewTask() - starting review creation task");
+
             Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", runUntilSuccessful) {
 
                 public boolean isCancelled = false;
@@ -841,12 +844,17 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
                     boolean submissionSuccess = false;
                     do {
+                        LoggerImpl.getInstance().info("runCreateReviewTask.run() - retrying review creation");
+
                         indicator.setText("Attempting to create review... ");
                         ModalityState modalityState = ModalityState
                                 .stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
 
                         ReviewAdapter newlyCreated = null;
                         try {
+
+                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before createReview()");
+
                             final ReviewAdapter draftReview = createReview(server, new ReviewProvider(server));
                             if (draftReview == null) {
                                 EventQueue.invokeLater(new Runnable() {
@@ -867,6 +875,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 }
                             }
 
+                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before addReviewers()");
+
                             if (!users.isEmpty()) {
                                 crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
                             }
@@ -876,6 +886,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                     ReviewAdapter newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
                                     if (newReview.getModerator().getUsername().equals(server.getUsername())) {
                                         if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
+                                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before approveReview()");
                                             newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
                                         } else {
                                             Messages.showErrorDialog(project,
@@ -885,6 +896,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                         }
                                     } else {
                                         if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
+                                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before submitReview()");
                                             newlyCreated = crucibleServerFacade.submitReview(server, draftReview.getPermId());
                                         } else {
                                             Messages.showErrorDialog(project,
@@ -901,12 +913,15 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 newlyCreated = draftReview;
                             }
 
+                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before getReview()");
+
                             final ReviewAdapter newRevewFinal = newlyCreated != null
                                     ? crucibleServerFacade.getReview(server, newlyCreated.getPermId()) : null;
 
                             ApplicationManager.getApplication().invokeLater(new Runnable() {
                                 public void run() {
                                     final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
+                                    LoggerImpl.getInstance().info("runCreateReviewTask.run() - before opeining created review");
                                     if (panel != null && newRevewFinal != null) {
                                         panel.refresh(UpdateReason.REFRESH);
                                         panel.openReview(newRevewFinal, true);
@@ -915,6 +930,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                             }, modalityState);
                         } catch (final Throwable e) {
                             if (!runUntilSuccessful) {
+                                LoggerImpl.getInstance().info("runCreateReviewTask.run() - review creation error - " + e.getMessage());
                                 ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                                     public void run() {
                                         String message = "Error creating review: " + server.getUrl();
@@ -927,11 +943,14 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 }, modalityState);
                             } else {
                                 if (isUnknownChangeSetException(e)) {
+                                    LoggerImpl.getInstance().info("runCreateReviewTask.run() " +
+                                            "- unknown changeset exception - fisheye does not know this review yet");
                                     try {
                                         Date now = new Date();
                                         if (reviewCreationTimeout > 0
                                                 && now.getTime() - startDate.getTime() >
                                                 reviewCreationTimeout * MILLISECONDS_IN_MINUTE) {
+                                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - review creation timed out");
                                             SwingUtilities.invokeLater(new Runnable() {
                                                 public void run() {
                                                     Messages.showErrorDialog(project,
@@ -944,6 +963,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                             });
                                             break;
                                         }
+                                        LoggerImpl.getInstance().info("runCreateReviewTask.run() - sleeping for 10 seconds");
                                         indicator.setText("Waiting for Crucible to update to newest change set...");
                                         for (int i = 0; i < 10; ++i) {
                                             if (indicator.isCanceled()) {
@@ -954,8 +974,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                         }
                                     } catch (InterruptedException e1) {
                                         // eeeem, now what?
+                                        LoggerImpl.getInstance().info("runCreateReviewTask.run() - sleep interrupted");
                                     }
                                 } else {
+                                    LoggerImpl.getInstance().info(
+                                            "runCreateReviewTask.run() - error creating review: " + e.getMessage());
                                     ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                                         public void run() {
                                             DialogWithDetails.showExceptionDialog(project,
@@ -977,6 +1000,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                 }
             };
             ProgressManager.getInstance().run(changesTask);
+        } else {
+            LoggerImpl.getInstance().info("CrucibleReviewCreateForm.runCreateReviewTask() - sselectedItem == null");
         }
     }
 

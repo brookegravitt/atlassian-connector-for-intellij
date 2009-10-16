@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
@@ -78,6 +79,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
 			if (cbCreateReview.isSelected()) {
+                LoggerImpl.getInstance().info("PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
 				form =
 						new CrucibleCreatePostCommitReviewDelayedForm(checkinProjectPanel.getProject(),
 								IntelliJCrucibleServerFacade.getInstance(), projectCfgManager, cruciblePluginConfig,
@@ -95,6 +97,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		@Override
 		public void checkinSuccessful() {
 			if (form != null) {
+                LoggerImpl.getInstance().info("PostCommitReviewCheckinHandlerFactory.checkinSuccessful() - starting review creation");
 				form.startReviewCreation();
 			}
 		}

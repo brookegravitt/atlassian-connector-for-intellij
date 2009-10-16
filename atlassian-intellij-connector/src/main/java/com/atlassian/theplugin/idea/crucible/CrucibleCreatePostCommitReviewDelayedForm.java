@@ -107,10 +107,13 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 			final Task.Backgroundable task = new ChangesRefreshTask();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
+                    LoggerImpl.getInstance().info("CrucibleCreatePostCommitReviewDelayedForm.startReviewCreation() - starting ChangesRefreshTask");
 					ProgressManager.getInstance().run(task);
 				}
 			});
-		}
+		} else {
+            LoggerImpl.getInstance().info("CrucibleCreatePostCommitReviewDelayedForm.startReviewCreation() - doCreateReview == false");
+        }
 	}
 
 	private class ChangesRefreshTask extends Task.Backgroundable {
@@ -128,6 +131,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 			ProjectLevelVcsManager mgr = ProjectLevelVcsManager.getInstance(project);
 			AbstractVcs abstractVcs = mgr.getVcsFor(baseDir);
 			if (abstractVcs != null) {
+                LoggerImpl.getInstance().info("ChangesRefreshTask.run() - getting committed changes provider");
 				@SuppressWarnings("unchecked")
 				final CachingCommittedChangesProvider<CommittedChangeList, ChangeBrowserSettings> committedChangesProvider
 						= abstractVcs.getCachingCommittedChangesProvider();
@@ -138,16 +142,20 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 				RepositoryLocation repositoryLocation = committedChangesProvider
 						.getLocationFor(VcsUtil.getFilePath(baseDir.getPath()));
 				try {
+                    LoggerImpl.getInstance().info("ChangesRefreshTask.run() - committedChangesProvider.getCommittedChanges()");
 					list = committedChangesProvider.getCommittedChanges(
 							changeBrowserSettings, repositoryLocation, REVISIONS_NUMBER);
 				} catch (VcsException e) {
 					LoggerImpl.getInstance().error(e);
 				}
-			}
+			} else {
+                LoggerImpl.getInstance().info("ChangesRefreshTask.run() - vcs is null");
+            }
 		}
 
 		@Override
 		public void onSuccess() {
+            LoggerImpl.getInstance().info("ChangesRefreshTask.onSuccess() - runCreateReviewTask()");
 			runCreateReviewTask(true);
 		}
 	}
