@@ -79,7 +79,8 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
 			if (cbCreateReview.isSelected()) {
-                LoggerImpl.getInstance().info("PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
+                LoggerImpl.getInstance().info(
+                        "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
 				form =
 						new CrucibleCreatePostCommitReviewDelayedForm(checkinProjectPanel.getProject(),
 								IntelliJCrucibleServerFacade.getInstance(), projectCfgManager, cruciblePluginConfig,
@@ -97,7 +98,8 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		@Override
 		public void checkinSuccessful() {
 			if (form != null) {
-                LoggerImpl.getInstance().info("PostCommitReviewCheckinHandlerFactory.checkinSuccessful() - starting review creation");
+                LoggerImpl.getInstance().info(
+                        "PostCommitReviewCheckinHandlerFactory.checkinSuccessful() - starting review creation");
 				form.startReviewCreation();
 			}
 		}
