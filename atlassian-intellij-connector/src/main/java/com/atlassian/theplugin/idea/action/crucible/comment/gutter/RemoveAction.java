@@ -1,0 +1,38 @@
+package com.atlassian.theplugin.idea.action.crucible.comment.gutter;
+
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+
+public class RemoveAction extends AbstractGutterCommentAction {
+	public void actionPerformed(final AnActionEvent anActionEvent) {
+		final Project project = anActionEvent.getData(DataKeys.PROJECT);
+		if (RemoveCommentConfirmation.userAgreed(project)) {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Removing File Comment", false) {
+
+				public void run(final ProgressIndicator indicator) {
+					try {
+						review.removeVersionedComment(comment, file);
+					} catch (RemoteApiException e) {
+						IdeaHelper.handleRemoteApiException(project, e);
+					} catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						Messages.showErrorDialog(project, valueNotYetInitialized.getMessage(), "Error");
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(task);
+		}
+	}
+}
