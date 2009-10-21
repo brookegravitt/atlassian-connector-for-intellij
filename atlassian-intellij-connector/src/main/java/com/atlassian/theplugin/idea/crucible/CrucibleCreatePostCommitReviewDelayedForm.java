@@ -40,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleCreatePostCommitReviewForm {
@@ -132,18 +133,22 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 
 
             final ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
-            CommittedChangesCache.getInstance(project).getProjectChangesAsync(changeBrowserSettings, REVISIONS_NUMBER, false, new Consumer() {
-                public void consume(List committedChangeList) {
-                    list = committedChangeList;
-                    runCreateReviewTask(true);
-                }
+            CommittedChangesCache.getInstance(project).getProjectChangesAsync(
+                    changeBrowserSettings, REVISIONS_NUMBER, false,
+                    new Consumer() {
+                        public void consume(List committedChangeList) {
+                            list = committedChangeList;
+                            if (list != null) {
+                                Collections.reverse(list);
+                            }
+                            runCreateReviewTask(true);
+                        }
 
-                public void consume(Object o) {
-                    consume((List) o);
-                }
-            }
-
-                    , new Consumer() {
+                        public void consume(Object o) {
+                            consume((List) o);
+                        }
+                    },
+                    new Consumer() {
                         public void consume(List list) {
                             AbstractVcsHelper helper = AbstractVcsHelper.getInstance(project);
                             if (helper != null) {

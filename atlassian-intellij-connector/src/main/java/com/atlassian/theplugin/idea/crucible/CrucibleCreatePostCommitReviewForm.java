@@ -149,7 +149,9 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 		@Override
 		public void onSuccess() {
 			commitedChangesBrowser.setEmptyText("No recent commits");
-			IdeaVersionFacade.getInstance().setCommitedChangesList(commitedChangesBrowser, list, false);
+            if (list != null) {
+			    IdeaVersionFacade.getInstance().setCommitedChangesList(commitedChangesBrowser, list, false);
+            }
 		}
 	}
 }
