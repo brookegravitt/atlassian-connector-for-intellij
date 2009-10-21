@@ -78,7 +78,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
     }
 
     private ChangeList[] getChanges() {
-        if (list.size() > 0) {
+        if (list != null && list.size() > 0) {
             for (CommittedChangeList committedChangeList : list) {
                 if (isMyCommittedChangeList(committedChangeList)) {
                     ChangeList[] chlist = new ChangeList[1];
