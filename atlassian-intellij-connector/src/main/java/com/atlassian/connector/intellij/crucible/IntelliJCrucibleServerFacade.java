@@ -361,13 +361,14 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 	public List<User> getAllowedReviewers(ServerData server, String projectKey) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 
+        // this by the way will populate the cache so that subsequent getUser() have a chance to work
+        final List<User> allUsers = facade.getUsers(server.toHttpConnectionCfg());
+
 		final CrucibleProject project = getProject(server, projectKey);
 		if (project == null) {
-			return null;
+			return allUsers;
 		}
 		final Collection<String> allowedReviewersStr = project.getAllowedReviewers();
-		// this by the way will populate the cache so that subsequent getUser() have a chance to work
-		final List<User> allUsers = facade.getUsers(server.toHttpConnectionCfg());
 		if (allowedReviewersStr != null) {
 
 			List<User> allowedReviewers = new ArrayList<User>();
