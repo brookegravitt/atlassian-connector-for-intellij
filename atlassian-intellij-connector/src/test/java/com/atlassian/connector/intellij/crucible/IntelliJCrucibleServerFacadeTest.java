@@ -46,7 +46,7 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 			}
 		});
 
-		assertNull(facade.getAllowedReviewers(SERVER, "PRJ"));
+		assertNotNull(facade.getAllowedReviewers(SERVER, "PRJ"));
 		TestUtil.assertHasOnlyElements(facade.getAllowedReviewers(SERVER, P1.getKey()), U1, U2);
 		TestUtil.assertHasOnlyElements(facade.getAllowedReviewers(SERVER, P2.getKey()), U1);
 	}
