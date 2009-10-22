@@ -32,7 +32,8 @@ import java.util.TreeSet;
 public class ServerNodeManipulator extends NodeManipulator {
     private final ProjectCfgManagerImpl cfgManager;
 
-    public ServerNodeManipulator(ProjectCfgManagerImpl cfgManager, CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
+    public ServerNodeManipulator(ProjectCfgManagerImpl cfgManager,
+                                 CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
 		super(reviewListModel, root);
         this.cfgManager = cfgManager;
     }
