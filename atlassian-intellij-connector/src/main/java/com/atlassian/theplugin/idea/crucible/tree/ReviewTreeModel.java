@@ -43,14 +43,15 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator authorNodeManipulator;
 	private NodeManipulator projectNodeManipulator;
 
-	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull ProjectCfgManagerImpl projectCfgManager) {
+	public ReviewTreeModel(CrucibleReviewListModel reviewListModel,
+                           @NotNull ProjectCfgManagerImpl projectCfgManager) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
+		serverNodeManipulator = new ServerNodeManipulator(projectCfgManager, reviewListModel, getRoot());
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 	}
