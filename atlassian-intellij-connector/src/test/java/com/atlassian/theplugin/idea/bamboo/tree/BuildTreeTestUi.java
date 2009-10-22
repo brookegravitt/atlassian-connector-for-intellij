@@ -33,7 +33,7 @@ public final class BuildTreeTestUi {
 		BuildListModelImpl buildListModel = new BuildListModelImpl(null, null);
 		final JScrollPane jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		final BuildTreeModel treeModel = new BuildTreeModel(buildListModel);
+		final BuildTreeModel treeModel = new BuildTreeModel(null, buildListModel);
 		final BuildTree tree = new BuildTree(BuildGroupBy.SERVER, treeModel, jScrollPane);
 //		jScrollPane.addComponentListener(new ComponentAdapter() {
 //			@Override

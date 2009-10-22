@@ -19,7 +19,9 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
@@ -127,6 +129,12 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
+        projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
+            @Override
+            public void crucibleServersChanged(ProjectConfiguration newConfiguration) {
+                reviewTree.groupBy(groupBy);
+            }
+        });
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter(),
 				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
