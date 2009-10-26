@@ -576,7 +576,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			return getServers().size();// + 1;
+			return getServers().size(); // + 1;
 		}
 
 	}
@@ -648,7 +648,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			return getServers().size();// + 1;
+			return getServers().size(); // + 1;
 		}
 
 	}
