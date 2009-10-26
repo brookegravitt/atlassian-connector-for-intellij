@@ -536,7 +536,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 					return server;
 				}
 			}
-			return CRUCIBLE_SERVER_NONE;
+//			return CRUCIBLE_SERVER_NONE;
+            return null;
 		}
 
 		public void setSelectedItem(final Object anItem) {
@@ -560,10 +561,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getElementAt(final int index) {
-			if (index == 0) {
-				return CRUCIBLE_SERVER_NONE;
-			}
-			int i = 1;
+//			if (index == 0) {
+//				return CRUCIBLE_SERVER_NONE;
+//			}
+//			int i = 1;
+            int i = 0;
 			for (CrucibleServerCfgWrapper server : getServers()) {
 				if (i == index) {
 					return server;
@@ -574,7 +576,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			return getServers().size() + 1;
+			return getServers().size();// + 1;
 		}
 
 	}
@@ -605,7 +607,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 					return server;
 				}
 			}
-			return FISHEYE_SERVER_NONE;
+//			return FISHEYE_SERVER_NONE;
+            return null;
 		}
 
 		public void setSelectedItem(final Object anItem) {
@@ -630,10 +633,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getElementAt(final int index) {
-			if (index == 0) {
-				return FISHEYE_SERVER_NONE;
-			}
-			int i = 1;
+//			if (index == 0) {
+//				return FISHEYE_SERVER_NONE;
+//			}
+//            int i = 1;
+            int i = 0;
 			for (FishEyeServerWrapper server : getServers()) {
 				if (i == index) {
 					return server;
@@ -644,7 +648,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			return getServers().size() + 1;
+			return getServers().size();// + 1;
 		}
 
 	}
@@ -674,7 +678,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 					return server;
 				}
 			}
-			return JIRA_SERVER_NONE;
+            return null;
+//			return JIRA_SERVER_NONE;
 		}
 
 		public void setSelectedItem(final Object anItem) {
@@ -696,10 +701,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getElementAt(final int index) {
-			if (index == 0) {
-				return JIRA_SERVER_NONE;
-			}
-			int i = 1;
+//			if (index == 0) {
+//				return JIRA_SERVER_NONE;
+//			}
+//			int i = 1;
+            int i = 0;
 			for (JiraServerCfgWrapper server : getServers()) {
 				if (i == index) {
 					return server;
@@ -710,7 +716,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			return getServers().size() + 1;
+			return getServers().size();// + 1;
 		}
 
 	}
