@@ -72,6 +72,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.wm.WindowManager;
@@ -808,10 +809,15 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     public void startWorkingOnIssueAndActivate(@NotNull final JiraIssueAdapter issue, final ActiveJiraIssue newActiveIssue,
-                                               final StatusBarPane statusBarPane) {
+                                               final StatusBarPane statusBarPane, ChangeList newDefaultList) {
 
-        final boolean isOk = createChangeListAction(issue);
+        boolean isOk = true;
 
+        if (newDefaultList == null) {
+            isOk = createChangeListAction(issue);
+        }
+
+        
         if (isOk) {
             ProgressManager.getInstance().run(new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 

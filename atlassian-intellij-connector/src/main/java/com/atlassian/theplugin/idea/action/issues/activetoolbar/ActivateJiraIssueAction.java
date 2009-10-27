@@ -39,7 +39,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 					ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
 							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
                     Project project = IdeaHelper.getCurrentProject(event);
-					ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData());
+					ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData(), null);
 				}
 			} else {
 				DeactivateJiraIssuePopupAction.runDeactivateTask(event);
