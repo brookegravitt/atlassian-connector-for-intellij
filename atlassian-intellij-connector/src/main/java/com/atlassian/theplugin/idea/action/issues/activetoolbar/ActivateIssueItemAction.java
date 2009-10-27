@@ -77,7 +77,7 @@ public class ActivateIssueItemAction extends AnAction {
 			JiraServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
 			if (jiraServer != null) {
 				activeIssue.resetTimeSpent();
-				ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event), event, activeIssue, jiraServer);
+				ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event), event, activeIssue, jiraServer, null);
 			}
 		}
 	}
