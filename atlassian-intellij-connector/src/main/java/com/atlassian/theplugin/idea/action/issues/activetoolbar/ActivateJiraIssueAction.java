@@ -16,9 +16,11 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import org.joda.time.DateTime;
 
@@ -36,8 +38,8 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				if (selectedIssue.getJiraServerData() != null) {
 					ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
 							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
-
-					ActiveIssueUtils.activateIssue(event, newActiveIssue, selectedIssue.getJiraServerData());
+                    Project project = IdeaHelper.getCurrentProject(event);
+					ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData());
 				}
 			} else {
 				DeactivateJiraIssuePopupAction.runDeactivateTask(event);
