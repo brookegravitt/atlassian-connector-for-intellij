@@ -32,6 +32,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.PluginTaskManager;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
@@ -330,6 +331,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			issuesToolWindowPanel.init();
 			checkDefaultServerValues();
 		}
+
+        PluginTaskManager.getInstance(project).addChangeListListener();
 	}
 
 	private void registerCrucibleNotifier() {
@@ -484,6 +487,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
 				changesToolBar.remove(action);
 			}
+
+            PluginTaskManager.getInstance(project).removeChangeListListener();
 
 			created = false;
 		}
