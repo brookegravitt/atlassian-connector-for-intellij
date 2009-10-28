@@ -35,7 +35,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.*;
+import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.ChangeListAdapter;
+import com.intellij.openapi.vcs.changes.ChangeListListener;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,8 +71,8 @@ public final class PluginTaskManager {
 
 
 
-    private PluginTaskManager(final Project Project) {
-        project = Project;
+    private PluginTaskManager(final Project project) {
+        this.project = project;
 
         if (isValidIdeaVersion()) {
             classLoader = getTaskManagerDescriptor().getPluginClassLoader();
@@ -79,7 +83,7 @@ public final class PluginTaskManager {
             }
 
             taskManagerObj = getTaskManager();
-            myListener = new LocalChangeListAdapter();
+            myListener = new LocalChangeListAdapter(project);
         }
 
     }
@@ -321,7 +325,8 @@ public final class PluginTaskManager {
                 Class taskClass = classLoader.loadClass(TASK_CLASS);
 
                 if (taskManagerObj != null) {
-                    Method activateLocalTask = taskManagerClass.getMethod("activateTask", taskClass, Boolean.TYPE, Boolean.TYPE);
+                    Method activateLocalTask = taskManagerClass.getMethod("activateTask", taskClass,
+                            Boolean.TYPE, Boolean.TYPE);
                     activateLocalTask.invoke(taskManagerObj, task, clearContext, createChangeset);
                 }
             } catch (InvocationTargetException e) {
@@ -393,7 +398,8 @@ public final class PluginTaskManager {
                             setPassword.invoke(newRepository, jiraServer.getPassword());
                             jiraRepos.add(newRepository);
 
-                            Method setRepositories = taskManagerClass.getMethod("setRepositories", List.class, taskRepositoryTypeClass);
+                            Method setRepositories = taskManagerClass.getMethod("setRepositories", List.class,
+                                    taskRepositoryTypeClass);
                             setRepositories.invoke(taskManagerObj, jiraRepos, repoType);
                             return newRepository;
                         }
@@ -420,7 +426,7 @@ public final class PluginTaskManager {
 
 
    
-    private String getActiveTaskUrl(final Project project) {
+    private String getActiveTaskUrl() {
         try {
             if (classLoader != null) {
                 Class localTaskClass = classLoader.loadClass(LOCAL_TASK_CLASS);
@@ -472,9 +478,14 @@ public final class PluginTaskManager {
     }
 
     private class LocalChangeListAdapter extends ChangeListAdapter {
-           
+        private final Project project;
+
+        private LocalChangeListAdapter(final Project project) {
+            this.project = project;
+        }
+
         public void defaultListChanged(final ChangeList oldDefaultList, final ChangeList newDefaultList) {
-            final String activeTaskUrl = getActiveTaskUrl(project);
+            final String activeTaskUrl = getActiveTaskUrl();
             if (activeTaskUrl != null) {
                 final JiraServerData server = findJiraPluginJiraServer(activeTaskUrl);
                 final String issueId = getActiveTaskId();
@@ -488,7 +499,8 @@ public final class PluginTaskManager {
                         if (server != null && builder != null
                                 && builder.getModel().findIssue(issueId) == null) {
                             try {
-                                JiraIssueAdapter issueAdapter = IntelliJJiraServerFacade.getInstance().getIssue(server, issueId);
+                                JiraIssueAdapter issueAdapter = IntelliJJiraServerFacade.getInstance().getIssue(server,
+                                        issueId);
                                 if (issueAdapter != null) {
                                     List list = new ArrayList();
                                     list.add(issueAdapter);
@@ -512,8 +524,9 @@ public final class PluginTaskManager {
                         
                         if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
                                 || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
-                                && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey())))
+                                && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey()))) {
                             ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
+                        }
                     }
                 }, ModalityState.defaultModalityState());
             }
@@ -563,8 +576,6 @@ public final class PluginTaskManager {
 
         return null;
     }
-
-    ;
 
     @Nullable
     private JiraServerData findJiraPluginJiraServer(String issueUrl) {
