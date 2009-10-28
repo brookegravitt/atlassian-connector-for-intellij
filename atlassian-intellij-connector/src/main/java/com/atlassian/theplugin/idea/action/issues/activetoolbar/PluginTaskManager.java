@@ -477,7 +477,7 @@ public final class PluginTaskManager {
         }
     }
 
-    private class LocalChangeListAdapter extends ChangeListAdapter {
+    private final class LocalChangeListAdapter extends ChangeListAdapter {
         private final Project project;
 
         private LocalChangeListAdapter(final Project project) {
