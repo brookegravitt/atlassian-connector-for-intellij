@@ -153,6 +153,7 @@ public class AddAction extends AbstractCommentAction {
         newComment.setToLineInfo(comment.isToLineInfo());
         newComment.setToStartLine(comment.getToStartLine());
         newComment.setToEndLine(comment.getToEndLine());
+        newComment.setLineRanges(comment.getLineRanges());
         newComment.setCreateDate(new Date());
         newComment.setReviewItemId(review.getPermId());
         newComment.setAuthor(new User(review.getServerData().getUsername()));

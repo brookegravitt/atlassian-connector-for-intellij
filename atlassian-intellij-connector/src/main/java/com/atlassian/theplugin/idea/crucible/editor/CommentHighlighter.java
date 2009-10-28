@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.commons.misc.IntRanges;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
@@ -255,18 +256,35 @@ public final class CommentHighlighter {
 		for (VersionedComment comment : fileInfo.getVersionedComments()) {
 			int start = 0;
 			int stop = 0;
+            Map<String, IntRanges> ranges = comment.getLineRanges();
 			switch (fileInfo.getCommitType()) {
 				case Deleted:
-					if (comment.isFromLineInfo()) {
-						start = comment.getFromStartLine();
-						stop = comment.getFromEndLine();
-					}
+                    if (ranges != null) {
+                        IntRanges lines = ranges.get(fileInfo.getOldFileDescriptor().getRevision());
+                        if (lines != null) {
+                            start = lines.getTotalMin();
+                            stop = lines.getTotalMax();
+                        }
+                    } else {
+                        if (comment.isFromLineInfo()) {
+                            start = comment.getFromStartLine();
+                            stop = comment.getFromEndLine();
+                        }
+                    }
 					break;
 				default:
-					if (comment.isToLineInfo()) {
-						start = comment.getToStartLine();
-						stop = comment.getToEndLine();
-					}
+                    if (ranges != null) {
+                        IntRanges lines = ranges.get(fileInfo.getFileDescriptor().getRevision());
+                        if (lines != null) {
+                            start = lines.getTotalMin();
+                            stop = lines.getTotalMax();
+                        }
+                    } else {
+                        if (comment.isToLineInfo()) {
+                            start = comment.getToStartLine();
+                            stop = comment.getToEndLine();
+                        }
+                    }
 					break;
 			}
 			if (start > 0) {

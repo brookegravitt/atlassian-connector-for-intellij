@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.commons.misc.IntRanges;
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class FileTreeModelBuilder {
 
@@ -187,7 +189,9 @@ public final class FileTreeModelBuilder {
 		}
 
 		for (VersionedComment c : comments) {
-			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() == 0) {
+            Map<String,IntRanges> ranges = c.getLineRanges();
+            if ((ranges == null || ranges.size() == 0)
+                    || (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() == 0)) {
 				if (!c.isReply()) {
 					list.add(c);
 				}
@@ -204,7 +208,9 @@ public final class FileTreeModelBuilder {
 		}
 
 		for (VersionedComment c : thisFileComments) {
-			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0) {
+            Map<String, IntRanges> ranges = c.getLineRanges();
+            if ((ranges != null && ranges.size() > 0)
+                    || (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0)) {
 				if (!c.isReply()) {
 					list.add(c);
 				}

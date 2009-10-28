@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.commons.misc.IntRanges;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -66,7 +67,9 @@ public class CrucibleLineCommentsNode extends CrucibleContainerNode {
 			return null;
 		}
 		for (VersionedComment c : thisFileComments) {
-			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0) {
+            Map<String, IntRanges> ranges = c.getLineRanges();
+            if ((ranges != null && ranges.size() > 0)
+                    || (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0)) {
 				if (!c.isReply()) {
 					list.add(c);
 				}
