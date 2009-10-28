@@ -21,7 +21,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.util.Collection;
 
 public final class BuildTreeTestUi {
@@ -33,7 +33,7 @@ public final class BuildTreeTestUi {
 		BuildListModelImpl buildListModel = new BuildListModelImpl(null, null);
 		final JScrollPane jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		final BuildTreeModel treeModel = new BuildTreeModel(null, buildListModel);
+		final BuildTreeModel treeModel = new BuildTreeModel(buildListModel);
 		final BuildTree tree = new BuildTree(BuildGroupBy.SERVER, treeModel, jScrollPane);
 //		jScrollPane.addComponentListener(new ComponentAdapter() {
 //			@Override

@@ -42,6 +42,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.changes.ChangeList;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -51,316 +52,333 @@ import java.util.List;
  * User: pmaruszak
  */
 public final class ActiveIssueUtils {
-	private ActiveIssueUtils() {
+    private ActiveIssueUtils() {
 
-	}
-
-	public static String getLabelText(ActiveJiraIssue issue) {
-		if (issue != null && issue.getIssueKey() != null) {
-			return "Active issue: " + issue.getIssueKey();
-		}
-
-		return "No active issue";
-	}
-
-	public static ActiveJiraIssue getActiveJiraIssue(final AnActionEvent event) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-
-		if (conf != null) {
-			return conf.getActiveJiraIssuee();
-		}
-		return null;
-	}
-
-	public static ActiveJiraIssue getActiveJiraIssue(final Project project) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-
-		if (conf != null) {
-			return conf.getActiveJiraIssuee();
-		}
-		return null;
-	}
-
-
-	public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue,
-                                          final JiraIssueAdapter jiraIssue) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-		final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
-
-		if (conf != null) {
-			conf.setActiveJiraIssuee((ActiveJiraIssueBean) issue);
-
-			if (jiraIssue != null && issueCache != null) {
-				issueCache.addIssue(jiraIssue);
-			}
-		}
-	}
-
-	public static JiraIssueAdapter getSelectedJiraIssue(final AnActionEvent event) {
-		return event.getData(Constants.ISSUE_KEY);
-	}
-
-    public static StatusBarPane getStatusBarPane(final AnActionEvent event) {
-        return event.getData(Constants.STATUS_BAR_PANE_KEY);
     }
 
-//	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
-//		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-//		if (panel != null) {
-//			return CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), serverId);
-//		}
-//		return null;
-//	}
+    public static String getLabelText(ActiveJiraIssue issue) {
+        if (issue != null && issue.getIssueKey() != null) {
+            return "Active issue: " + issue.getIssueKey();
+        }
 
-	//invokeLater necessary
+        return "No active issue";
+    }
 
-	public static JiraIssueAdapter getJIRAIssue(final AnActionEvent event) throws JIRAException {
-		return getJIRAIssue(IdeaHelper.getCurrentProject(event));
-	}
+    public static ActiveJiraIssue getActiveJiraIssue(final AnActionEvent event) {
+        final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
-	//invokeLater necessary
-	public static JiraIssueAdapter getJIRAIssue(final Project project) throws JIRAException {
-		JiraServerData jiraServer = getJiraServer(project);
-		if (jiraServer != null) {
-			final ActiveJiraIssue issue = getActiveJiraIssue(project);
-			return getJIRAIssue(jiraServer, issue);
-		}
-		return null;
-	}
+        if (conf != null) {
+            return conf.getActiveJiraIssuee();
+        }
+        return null;
+    }
 
-	public static JiraIssueAdapter getJIRAIssue(final JiraServerData jiraServer, final ActiveJiraIssue activeIssue)
-			throws JIRAException {
-		if (jiraServer != null && activeIssue != null) {
+    public static ActiveJiraIssue getActiveJiraIssue(final Project project) {
+        final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
-			JiraServerFacade facade = IntelliJJiraServerFacade.getInstance();
-
-			try {
-				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
-			} catch (JIRAException e) {
-				PluginUtil.getLogger().error(e.getMessage());
-				throw e;
-			}
-		}
-		return null;
-	}
+        if (conf != null) {
+            return conf.getActiveJiraIssuee();
+        }
+        return null;
+    }
 
 
-	public static JiraServerData getJiraServer(final AnActionEvent event) {
-		return getJiraServer(IdeaHelper.getCurrentProject(event));
+    public static void deactivateLocalTask(final Project project) {
+           PluginTaskManager.getInstance(project).deactivateToDefaultTask();
+    }
+    
+    public static void activateLocalTask(final Project project, final ActiveJiraIssue issue) {
+        PluginTaskManager.getInstance(project).activateLocalTask(issue);        
+    }
 
-	}
+    public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue,
+                                          final JiraIssueAdapter jiraIssue) {
+        final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+        final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 
-	public static JiraServerData getJiraServer(final Project project) {
-		final ActiveJiraIssue issue = getActiveJiraIssue(project);
-		return getJiraServer(project, issue);
-	}
+        if (conf != null) {
+            conf.setActiveJiraIssuee((ActiveJiraIssueBean) issue);
 
-	public static JiraServerData getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
-		JiraServerData jiraServer = null;
+            if (jiraIssue != null && issueCache != null) {
+                issueCache.addIssue(jiraIssue);
+            }
+        }
+    }
 
-		if (panel != null && activeIssue != null) {
-			jiraServer = panel.getProjectCfgManager().getJiraServerr(activeIssue.getServerId());
-		}
-		return jiraServer;
-	}
+    public static JiraIssueAdapter getSelectedJiraIssue(final AnActionEvent event) {
+        return event.getData(Constants.ISSUE_KEY);
+    }
 
-	public static void activateIssue(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-			final JiraServerData jiraServerCfg) {
+    public static StatusBarPane getStatusBarPane(final AnActionEvent event) {
+        if (event != null) {
+            return event.getData(Constants.STATUS_BAR_PANE_KEY);
+        }
 
-		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
-		boolean isAlreadyActive = activeIssue != null;
-		boolean isDeactivated = true;
-		if (isAlreadyActive) {
+        return null;
+    }
 
-			isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-					activeIssue.getIssueKey()
-							+ " is active. Would you like to deactivate it first and proceed?",
-					"Deactivating current issue",
-					Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-		}
-		if (isDeactivated) {
-			ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
-				public void success() {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
-						}
-					});
-				}
+    //invokeLater necessary
 
-				public void failure(Throwable problem) {
-                    
-				}
-			});
-		}
-	}
+    public static JiraIssueAdapter getJIRAIssue(final AnActionEvent event) throws JIRAException {
+        return getJIRAIssue(IdeaHelper.getCurrentProject(event));
+    }
 
-	/**
-	 * Bloking method. Refills cache if necessary.
-	 *
-	 * @param issue issue
-	 * @return boolean
-	 */
-	private static boolean isInProgress(final JiraIssueAdapter issue) {
-		List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
+    //invokeLater necessary
+    public static JiraIssueAdapter getJIRAIssue(final Project project) throws JIRAException {
+        JiraServerData jiraServer = getJiraServer(project);
+        if (jiraServer != null) {
+            final ActiveJiraIssue issue = getActiveJiraIssue(project);
+            return getJIRAIssue(jiraServer, issue);
+        }
+        return null;
+    }
 
-		if (actions == null) {
+    public static JiraIssueAdapter getJIRAIssue(final JiraServerData jiraServer, final ActiveJiraIssue activeIssue)
+            throws JIRAException {
+        if (jiraServer != null && activeIssue != null) {
 
-			JiraServerData jiraServer = issue.getJiraServerData();
+            JiraServerFacade facade = IntelliJJiraServerFacade.getInstance();
 
-			if (jiraServer != null) {
-				try {
-					actions = IntelliJJiraServerFacade.getInstance().getAvailableActions(jiraServer, issue);
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
-				}
+            try {
+                return facade.getIssue(jiraServer, activeIssue.getIssueKey());
+            } catch (JIRAException e) {
+                PluginUtil.getLogger().error(e.getMessage());
+                throw e;
+            }
+        }
+        return null;
+    }
 
-				JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
-			}
-		}
 
-		if (actions != null) {
-			for (JIRAAction a : actions) {
-				if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-					return true;
-				}
-			}
+    public static JiraServerData getJiraServer(final AnActionEvent event) {
+        return getJiraServer(IdeaHelper.getCurrentProject(event));
 
-			return false;
-		}
+    }
 
-		return true;
-	}
+    public static JiraServerData getJiraServer(final Project project) {
+        final ActiveJiraIssue issue = getActiveJiraIssue(project);
+        return getJiraServer(project, issue);
+    }
 
-	/**
-	 * Should be called from the UI thread
-	 *
-	 * @param project project
-	 * @param issue   issue
-	 */
-	public static void checkIssueState(final Project project, final JiraIssueAdapter issue) {
-		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
-		if (issue != null && activeIssue != null) {
+    public static JiraServerData getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+        JiraServerData jiraServer = null;
 
-			if (issue.getJiraServerData() != null && issue.getKey().equals(activeIssue.getIssueKey())
-					&& issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
+        if (panel != null && activeIssue != null) {
+            jiraServer = panel.getProjectCfgManager().getJiraServerr(activeIssue.getServerId());
+        }
+        return jiraServer;
+    }
 
-				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
-					public void run(final ProgressIndicator indicator) {
+    public static void activateIssue(final Project project, final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
+                                     final JiraServerData jiraServerCfg, final ChangeList newDefaultList) {
 
-						if (!issue.getJiraServerData().getUsername().equals(issue.getAssigneeId())) {
+        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+        boolean isAlreadyActive = activeIssue != null;
+        boolean isDeactivated = true;
+        if (isAlreadyActive) {
 
-							SwingUtilities.invokeLater(new Runnable() {
-								public void run() {
-									int isOk = Messages.showYesNoDialog(project,
-											"Issue " + issue.getKey() + " has changed assignee (assigned to:"
-													+ issue.getAssignee()
-													+ ", status: " + issue.getStatus() + ").\nDo you want to deactivate?",
-											"Issue " + issue.getKey(), Messages.getQuestionIcon());
 
-									if (isOk == DialogWrapper.OK_EXIT_CODE) {
-										deactivate(project, new DeactivateIssueResultHandler() {
-											public void success() {
-												final JiraWorkspaceConfiguration conf = IdeaHelper
-														.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-												if (conf != null) {
-													conf.setActiveJiraIssuee(null);
-												}
-											}
+            isDeactivated = Messages.showYesNoDialog(project,
+                    activeIssue.getIssueKey()
+                            + " is active. Would you like to deactivate it first and proceed?",
+                    "Deactivating current issue",
+                    Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+        }
+        if (isDeactivated) {
 
-											public void failure(Throwable problem) {
-											}
-										});
-									}
-								}
-							});
-						}
-					}
-				});
-			}
-		}
-	}
+            PluginTaskManager.getInstance(project).removeChangeListListener();
 
-	/**
-	 * this has to be run from the dispatch thread - see PL-1544
-	 *
-	 * @param event		  event
-	 * @param newActiveIssue issue
-	 * @param jiraServerCfg  server
-	 */
-	private static void activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-			final JiraServerData jiraServerCfg) {
-		final Project project = IdeaHelper.getCurrentProject(event);
+            ActiveIssueUtils.deactivate(project, new DeactivateIssueResultHandler() {
+                public void success() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
 
-		if (project == null) {
-			return;
-		}
+                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList);
+                            ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
+                        }
+                    });
+                }
 
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+                public void failure(Throwable problem) {
+                    PluginTaskManager.getInstance(project).addChangeListListener();
+
+                }
+            });
+        }
+    }
+
+    /**
+     * Bloking method. Refills cache if necessary.
+     *
+     * @param issue issue
+     * @return boolean
+     */
+    private static boolean isInProgress(final JiraIssueAdapter issue) {
+        List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
+
+        if (actions == null) {
+
+            JiraServerData jiraServer = issue.getJiraServerData();
+
+            if (jiraServer != null) {
+                try {
+                    actions = IntelliJJiraServerFacade.getInstance().getAvailableActions(jiraServer, issue);
+                } catch (JIRAException e) {
+                    PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
+                }
+
+                JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
+            }
+        }
+
+        if (actions != null) {
+            for (JIRAAction a : actions) {
+                if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Should be called from the UI thread
+     *
+     * @param project project
+     * @param issue   issue
+     */
+    public static void checkIssueState(final Project project, final JiraIssueAdapter issue) {
+        ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
+        if (issue != null && activeIssue != null) {
+
+            if (issue.getJiraServerData() != null && issue.getKey().equals(activeIssue.getIssueKey())
+                    && issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
+
+                ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
+                    public void run(final ProgressIndicator indicator) {
+
+                        if (!issue.getJiraServerData().getUsername().equals(issue.getAssigneeId())) {
+
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    int isOk = Messages.showYesNoDialog(project,
+                                            "Issue " + issue.getKey() + " has changed assignee (assigned to:"
+                                                    + issue.getAssignee()
+                                                    + ", status: " + issue.getStatus() + ").\nDo you want to deactivate?",
+                                            "Issue " + issue.getKey(), Messages.getQuestionIcon());
+
+                                    if (isOk == DialogWrapper.OK_EXIT_CODE) {
+                                        deactivate(project, new DeactivateIssueResultHandler() {
+                                            public void success() {
+                                                final JiraWorkspaceConfiguration conf = IdeaHelper
+                                                        .getProjectComponent(project, JiraWorkspaceConfiguration.class);
+                                                if (conf != null) {
+                                                    conf.setActiveJiraIssuee(null);
+                                                }
+                                            }
+
+                                            public void failure(Throwable problem) {
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * this has to be run from the dispatch thread - see PL-1544
+     *
+     * @param event          event
+     * @param newActiveIssue issue
+     * @param jiraServerCfg  server
+     * @param newDefaultList
+     */
+    private static void activate(final Project project, final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
+                                 final JiraServerData jiraServerCfg, ChangeList newDefaultList) {
+
+        if (project == null) {
+            return;
+        }
+
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
         final IssueDetailsToolWindow detailsPanel = IdeaHelper.getIssueDetailsToolWindow(project);
 
-		ProgressManager.getInstance().run(
-                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event));
-	}
+        ProgressManager.getInstance().run(
+                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event, newDefaultList));
+    }
 
-	public static boolean deactivate(final AnActionEvent event, final DeactivateIssueResultHandler resultHandler) {
-		return deactivate(IdeaHelper.getCurrentProject(event), resultHandler);
-	}
+    public static boolean deactivate(final AnActionEvent event, final DeactivateIssueResultHandler resultHandler) {
+        return deactivate(IdeaHelper.getCurrentProject(event), resultHandler);
+    }
 
-	public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-		if (conf != null) {
-			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
-			if (activeIssue != null) {
-				final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
-				try {
-					final JiraIssueAdapter jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
-					if (panel != null && jiraIssue != null) {
-						boolean isOk;
-						final JiraServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
+    public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
+        final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+        deactivateLocalTask(project);
 
-						isOk = panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
-								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-								true, resultHandler);
+        if (conf != null) {
+            ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
+            if (activeIssue != null) {
+                final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+                try {
+                    final JiraIssueAdapter jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
+                    if (panel != null && jiraIssue != null) {
+                        boolean isOk;
+                        final JiraServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
 
-						return isOk;
-					}
-				} catch (JIRAException e) {
-					if (panel != null) {
-						panel.setStatusErrorMessage(
+                        isOk = panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
+                                StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
+                                true, resultHandler);
+
+                        return isOk;
+                    }
+                } catch (JIRAException e) {
+                    if (panel != null) {
+                        panel.setStatusErrorMessage(
                                 "Issue stopped locally. Error stopping remotely work on issue: " + e.getMessage(), e);
-					}
-				}
-			}
+                    }
+                }
+            }
 
 
             //always allow to activate issue even if remote de-activation fails
             if (resultHandler != null) {
-				resultHandler.success();
-			}
-		}
-		return true;
-	}
+                resultHandler.success();
+            }
+        }
+        return true;
+    }
 
     private static class RefreshingIssueTask extends Task.Backgroundable {
         private JiraIssueAdapter jiraIssue;
         private boolean isOk;
+        private final Project project;
         private final JiraServerData jiraServerCfg;
         private final ActiveJiraIssue newActiveIssue;
         private final IssueListToolWindowPanel panel;
         private final IssueDetailsToolWindow detailsPanel;
         private final AnActionEvent event;
+        private final ChangeList newDefaultList;
 
         public RefreshingIssueTask(Project project, JiraServerData jiraServerCfg,
                                    ActiveJiraIssue newActiveIssue, IssueListToolWindowPanel panel,
-                                   IssueDetailsToolWindow detailsPanel, AnActionEvent event) {
+                                   IssueDetailsToolWindow detailsPanel, AnActionEvent event, ChangeList newDefaultList) {
             super(project, "Refreshing Issue Information", false);
+            this.project = project;
             this.jiraServerCfg = jiraServerCfg;
             this.newActiveIssue = newActiveIssue;
             this.panel = panel;
             this.detailsPanel = detailsPanel;
             this.event = event;
+            this.newDefaultList = newDefaultList;
             jiraIssue = null;
             isOk = false;
         }
@@ -401,17 +419,22 @@ public final class ActiveIssueUtils {
             if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
                 if (!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
                         && !"-1".equals(jiraIssue.getAssigneeId())) {
-                    isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+                    isOk = Messages.showYesNoDialog(project,
                             "Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
                                     + ".\nDo you want to overwrite assignee and start progress?",
                             "Issue " + jiraIssue.getKey(), Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
                 }
                 if (isOk) {
                     //assign to me and start working
+                    try {
                     panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
-                            ActiveIssueUtils.getStatusBarPane(event));
+                            ActiveIssueUtils.getStatusBarPane(event), newDefaultList);
+                    } catch (Exception e) {
+                          DialogWithDetails.showExceptionDialog(project, "Cannot start work on issue " + jiraIssue.getId(), e);
+                    }
                 }
             }
+            PluginTaskManager.getInstance(project).addChangeListListener();
         }
     }
 }

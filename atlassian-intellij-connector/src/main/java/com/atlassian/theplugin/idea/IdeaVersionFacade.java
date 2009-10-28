@@ -421,4 +421,8 @@ public final class IdeaVersionFacade {
         });
 //		}
 	}
+
+    public boolean isIdea9() {
+        return isIdea9;
+    }
 }

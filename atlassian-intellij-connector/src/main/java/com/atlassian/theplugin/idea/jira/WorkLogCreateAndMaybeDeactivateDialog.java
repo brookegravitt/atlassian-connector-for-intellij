@@ -437,7 +437,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
         if (deactivateActiveIssue) {
             enable = enable || !chkLogWork.isSelected();
-            enable = enable && actionCombo.getItemCount() > 0;
+            //enable = enable && actionCombo.getItemCount() > 0;
         }
 		setOKActionEnabled(enable);
 	}

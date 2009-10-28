@@ -16,11 +16,13 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
 import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
 import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
@@ -32,10 +34,9 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.PluginTaskManager;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
@@ -54,7 +55,6 @@ import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -74,12 +74,9 @@ import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.util.Collection;
@@ -330,6 +327,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			issuesToolWindowPanel.init();
 			checkDefaultServerValues();
 		}
+
+        PluginTaskManager.getInstance(project).addChangeListListener();
 	}
 
 	private void registerCrucibleNotifier() {
@@ -484,6 +483,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
 				changesToolBar.remove(action);
 			}
+
+            PluginTaskManager.getInstance(project).removeChangeListListener();
 
 			created = false;
 		}

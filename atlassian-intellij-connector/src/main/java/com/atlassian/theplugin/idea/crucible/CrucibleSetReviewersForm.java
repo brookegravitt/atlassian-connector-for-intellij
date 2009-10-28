@@ -147,7 +147,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 	private void updateServerRelatedData(ServerData server, List<User> users, List<Reviewer> reviewers) {
 		actualReviewers = reviewers;
-		if (users != null && !users.isEmpty()) {
+		if (!users.isEmpty()) {
 			for (User user : users) {
 				if (!user.getUsername().equals(server.getUsername())
 						&& !user.getUsername().equals(reviewData.getAuthor().getUsername())
