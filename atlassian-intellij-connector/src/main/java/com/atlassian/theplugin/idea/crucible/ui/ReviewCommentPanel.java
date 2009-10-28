@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.crucible.ui;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.commons.misc.IntRanges;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.ui.IconPaths;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 public class ReviewCommentPanel extends JPanel {
 	private Rectangle moreBounds;
@@ -241,34 +243,50 @@ public class ReviewCommentPanel extends JPanel {
 		}
 		if (comment instanceof VersionedComment) {
 			VersionedComment vc = (VersionedComment) comment;
-			if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
-				int startLine = vc.getToStartLine();
-				int endLine = vc.getToEndLine();
-				if (endLine == 0) {
-					endLine = startLine;
-				}
-				String txt2 = "";
-				txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
-				return txt2;
-			} else {
-				if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
-					int startLine = vc.getFromStartLine();
-					int endLine = vc.getFromEndLine();
-					if (endLine == 0) {
-						endLine = startLine;
-					}
-					String txt2 = "";
-					txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
-					return txt2;
-				}
-			}
+            Map<String, IntRanges> ranges = vc.getLineRanges();
+            if (ranges != null && ranges.size() > 0) {
+                String txt = createLineRangesText(ranges);
+                if (txt != null) {
+                    return txt;
+                }
+            } else {
+                if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
+                    return createLineRangesText(vc.getToStartLine(), vc.getToEndLine());
+                } else {
+                    if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
+                        return createLineRangesText(vc.getFromStartLine(), vc.getFromEndLine());
+                    }
+                }
+            }
 			return "General File";
 		}
 		return "General Comment";
 	}
 
+    private static String createLineRangesText(Map<String, IntRanges> ranges) {
+        Iterator<String> iterator = ranges.keySet().iterator();
+        String revision = null;
+        while(iterator.hasNext()) {
+            revision = iterator.next();
+        }
+        if (revision != null) {
+            IntRanges intRanges = ranges.get(revision);
+            return createLineRangesText(intRanges.getTotalMin(), intRanges.getTotalMax());
+        }
+        return null;
+    }
 
-	public static String getRankingString(ReviewAdapter review, Comment comment) {
+    private static String createLineRangesText(int startLine, int endLine) {
+        if (endLine == 0) {
+            endLine = startLine;
+        }
+        String txt2 = "";
+        txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
+        return txt2;
+    }
+
+
+    public static String getRankingString(ReviewAdapter review, Comment comment) {
 		StringBuilder sb = new StringBuilder();
 
 		if (comment.isDefectRaised() && !comment.getCustomFields().isEmpty()) {
