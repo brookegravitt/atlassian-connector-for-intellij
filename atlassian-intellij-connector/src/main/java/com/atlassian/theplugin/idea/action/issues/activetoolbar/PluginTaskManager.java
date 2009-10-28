@@ -35,18 +35,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.openapi.vcs.changes.ChangeListAdapter;
-import com.intellij.openapi.vcs.changes.ChangeListListener;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.vcs.changes.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -478,41 +472,7 @@ public final class PluginTaskManager {
     }
 
     private class LocalChangeListAdapter extends ChangeListAdapter {
-        public LocalChangeListAdapter() {
-            super();    
-        }
-
-        @Override
-        public void changeListAdded(ChangeList changeList) {
-            super.changeListAdded(changeList);
-        }
-
-        @Override
-        public void changeListRemoved(ChangeList changeList) {
-            super.changeListRemoved(changeList);
-        }
-
-        @Override
-        public void changeListChanged(ChangeList changeList) {
-            super.changeListChanged(changeList);
-        }
-
-        @Override
-        public void changeListRenamed(ChangeList changeList, String s) {
-            super.changeListRenamed(changeList, s);
-        }
-
-        @Override
-        public void changeListCommentChanged(ChangeList changeList, String s) {
-            super.changeListCommentChanged(changeList, s);
-        }
-
-        @Override
-        public void changesMoved(Collection<Change> changes, ChangeList changeList, ChangeList changeList1) {
-            super.changesMoved(changes, changeList, changeList1);
-        }
-
-        @Override
+           
         public void defaultListChanged(final ChangeList oldDefaultList, final ChangeList newDefaultList) {
             final String activeTaskUrl = getActiveTaskUrl(project);
             if (activeTaskUrl != null) {
@@ -549,7 +509,7 @@ public final class PluginTaskManager {
                             Messages.showInfoMessage("Cannot activate issue " + activeTaskUrl,
                                     PluginUtil.PRODUCT_NAME);
                         }
-                        ;
+                        
                         if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
                                 || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
                                 && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey())))
@@ -559,21 +519,6 @@ public final class PluginTaskManager {
             }
 
 
-        }
-
-        @Override
-        public void unchangedFileStatusChanged() {
-            super.unchangedFileStatusChanged();
-        }
-
-        @Override
-        public void changeListUpdateDone() {
-            super.changeListUpdateDone();
-        }
-
-        @Override
-        public void changesRemoved(Collection<Change> changes, ChangeList changeList) {
-            super.changesRemoved(changes, changeList);    //To change body of overridden methods use File | Settings | File Templates.
         }
     }
 
