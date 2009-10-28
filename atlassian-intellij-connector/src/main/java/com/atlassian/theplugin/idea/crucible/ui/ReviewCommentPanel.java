@@ -266,7 +266,7 @@ public class ReviewCommentPanel extends JPanel {
     private static String createLineRangesText(Map<String, IntRanges> ranges) {
         Iterator<String> iterator = ranges.keySet().iterator();
         String revision = null;
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             revision = iterator.next();
         }
         if (revision != null) {

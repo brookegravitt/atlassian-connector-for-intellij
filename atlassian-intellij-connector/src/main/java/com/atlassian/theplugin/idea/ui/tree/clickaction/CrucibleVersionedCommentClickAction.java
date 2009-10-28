@@ -64,7 +64,7 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 	}
 
     private static int getCommentStartLine(CrucibleFileInfo file, VersionedComment comment) {
-        Map<String,IntRanges> ranges = comment.getLineRanges();
+        Map<String, IntRanges> ranges = comment.getLineRanges();
         if (ranges != null) {
             IntRanges range = ranges.get(file.getFileDescriptor().getRevision());
             if (range != null) {
