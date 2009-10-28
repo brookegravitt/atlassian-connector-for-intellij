@@ -12,8 +12,6 @@ import com.intellij.ui.content.ContentManagerListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,18 +81,7 @@ public abstract class MultiTabToolWindow {
 			}
 		}
 
-        // PL-1835 - this is absolutely sick. But it seems to be the only way to set the focus
-        // on the toolwindow while it opens. *DO NOT* attempt to lower the delay
-        // below .5 second - it will not work then
-        final ContentPanel contentPanelFinal = contentPanel;
-        Timer t = new Timer(500, new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                contentPanelFinal.requestFocusInWindow();
-            }
-        });
-        t.setRepeats(false);
-        t.start();
-
+        contentPanel.requestFocusInWindow();
 		return itw;
 	}
 

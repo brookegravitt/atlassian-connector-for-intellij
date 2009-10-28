@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 /**
  * @author Jacek Jaroczynski
@@ -24,8 +23,8 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 public class CrucibleReviewServerTreeNode extends CrucibleReviewGroupTreeNode {
 	private ServerData crucibleServer;
 
-	public CrucibleReviewServerTreeNode(ProjectCfgManagerImpl cfgManager, ServerData server) {
-		super(determineName(cfgManager, server), null, null);
+	public CrucibleReviewServerTreeNode(ServerData server) {
+		super(server.getName(), null, null);
 
 		this.crucibleServer = server;
 	}
@@ -33,16 +32,4 @@ public class CrucibleReviewServerTreeNode extends CrucibleReviewGroupTreeNode {
 	public ServerData getCrucibleServer() {
 		return crucibleServer;
 	}
-
-    private static String determineName(ProjectCfgManagerImpl projectCfgManager, ServerData server) {
-        if (server != null && projectCfgManager != null && projectCfgManager.getServerr(server.getServerId()) != null) {
-            ServerData s = projectCfgManager.getServerr(server.getServerId());
-            if (s != null) {
-                return s.getName();
-            }
-            return "";
-        }
-        return server != null ? server.getName() : "";
-    }
-
 }

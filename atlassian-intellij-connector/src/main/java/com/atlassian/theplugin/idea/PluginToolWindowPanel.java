@@ -89,9 +89,9 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		return statusBarPane;
 	}
 
-	public void setStatusBarPane(StatusBarIssuesPane statusBarPane) {
-		this.statusBarPane = statusBarPane;
-	}
+//	public void setStatusBarPane(StatusBarIssuesPane statusBarPane) {
+//		this.statusBarPane = statusBarPane;
+//	}
 
 	public JComponent createLeftContent() {
 		JPanel leftPanel = new JPanel(new BorderLayout());

@@ -19,7 +19,17 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
-import com.atlassian.theplugin.idea.crucible.tree.node.*;
+import com.atlassian.theplugin.idea.crucible.tree.node.AuthorNodeManipulator;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewAuthorTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewProjectTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewServerTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewStateTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.node.GeneralNodeManipulator;
+import com.atlassian.theplugin.idea.crucible.tree.node.NodeManipulator;
+import com.atlassian.theplugin.idea.crucible.tree.node.ProjectNodeManipulator;
+import com.atlassian.theplugin.idea.crucible.tree.node.ServerNodeManipulator;
+import com.atlassian.theplugin.idea.crucible.tree.node.StateNodeManipulator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -43,15 +53,14 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator authorNodeManipulator;
 	private NodeManipulator projectNodeManipulator;
 
-	public ReviewTreeModel(CrucibleReviewListModel reviewListModel,
-                           @NotNull ProjectCfgManagerImpl projectCfgManager) {
+	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull ProjectCfgManagerImpl projectCfgManager) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManipulator = new ServerNodeManipulator(projectCfgManager, reviewListModel, getRoot());
+		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 	}

@@ -136,24 +136,6 @@ public class StatusBarPane extends JPanel implements StatusBar {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 //		textPanel.set setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);
-
-                // --- warning - hack ---
-                //
-                // PL-1871 - hack workaround for shitty JEditorPane taken from
-                // https://skyking.microscopy.wisc.edu/svn/java/trunk/components/visbio/src/loci/visbio/help/HelpWindow.java
-
-                // HACK - JEditorPane.setPage(URL) throws a RuntimeException
-                // ("Must insert new content into body element-")
-                // when editor pane is successively updated too rapidly.
-                // This 50ms delay seems sufficient to prevent the exception.
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException exc) {
-                    // ignore
-                }
-
-                // --- end of hack ---
-
                 textPanel.setText(" " + message);
                 textPanel.setBackground(defaultColor);
                 setBackground(defaultColor);
