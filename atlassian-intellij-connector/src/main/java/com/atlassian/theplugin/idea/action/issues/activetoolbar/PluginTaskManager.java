@@ -55,10 +55,10 @@ import java.util.Map;
  */
 public final class PluginTaskManager {
     private static final String TASK_MANAGER_IMPL_CLASS = "com.intellij.tasks.impl.TaskManagerImpl";
-    private static final String JIRA_REPOSITORY_CLASS = "com.intellij.tasks.JiraRepository";
+    private static final String JIRA_REPOSITORY_CLASS = "com.intellij.tasks.jira.JiraRepository";
     private static final String LOCAL_TASK_IMPL_CLASS = "com.intellij.tasks.impl.LocalTaskImpl";
-    private static final String TASK_REPOSITORY_TYPE_CLASS = "com.intellij.tasks.impl.TaskRepositoryType";
-    private static final String TASK_REPOSITORY_CLASS = "com.intellij.tasks.impl.TaskRepository";
+    private static final String TASK_REPOSITORY_TYPE_CLASS = "com.intellij.tasks.TaskRepositoryType";
+    private static final String TASK_REPOSITORY_CLASS = "com.intellij.tasks.TaskRepository";
     private static final String TASK_CLASS = "com.intellij.tasks.Task";
     private static final String LOCAL_TASK_CLASS = "com.intellij.tasks.LocalTask";
 
@@ -112,7 +112,38 @@ public final class PluginTaskManager {
         ChangeListManager.getInstance(project).removeChangeListListener(myListener);
     }
 
+    //todo fix this to shitch to task that is linked to Default changeset
+     public void deactivateToDefaultTask() {
+         if (!isValidIdeaVersion()) {
+             return;
+         }
 
+         Object defaultTaskObj = getDefaultTask();
+         if (defaultTaskObj != null) {
+             activateTask(defaultTaskObj, false, false);
+         }
+     }
+
+     public void activateLocalTask(ActiveJiraIssue issue) {
+        if (!isValidIdeaVersion()) {
+            return;
+        }
+        Object foundTask = null;
+
+        PluginTaskManager taskManager = PluginTaskManager.getInstance(project);
+        foundTask = taskManager.findLocalTaskById(issue.getIssueKey());
+
+        if (foundTask != null) {
+            if (!taskManager.getActiveTaskId().equals(issue.getIssueKey())) {
+                PluginTaskManager.getInstance(project).activateTask(foundTask, false, false);
+            }
+        } else {
+
+            ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());
+            foundTask = PluginTaskManager.getInstance(project).createLocalTask(issue.getIssueKey(), server);
+            PluginTaskManager.getInstance(project).activateTask(foundTask, true, true);
+        }
+    }
     private Object getChangeListTask(LocalChangeList changeList) {
         Object[] localTasks = getLocalTasks();
         if (localTasks != null) {
@@ -341,18 +372,6 @@ public final class PluginTaskManager {
         }
     }
 
-    //todo fix this to shitch to task that is linked to Default changeset
-    public void deactivateToDefaultTask() {
-        if (!isValidIdeaVersion()) {
-            return;
-        }
-
-        Object defaultTaskObj = getDefaultTask();
-        if (defaultTaskObj != null) {
-            activateTask(defaultTaskObj, false, false);
-        }
-    }
-
     //get or creates
     private Object getJiraRepository(final ServerData jiraServer) {
 
@@ -454,27 +473,6 @@ public final class PluginTaskManager {
         }
 
         return null;
-    }
-
-    public void activateLocalTask(ActiveJiraIssue issue) {
-        if (!isValidIdeaVersion()) {
-            return;
-        }
-        Object foundTask = null;
-
-        PluginTaskManager taskManager = PluginTaskManager.getInstance(project);
-        foundTask = taskManager.findLocalTaskById(issue.getIssueKey());
-
-        if (foundTask != null) {
-            if (!taskManager.getActiveTaskId().equals(issue.getIssueKey())) {
-                PluginTaskManager.getInstance(project).activateTask(foundTask, false, false);
-            }
-        } else {
-
-            ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());
-            foundTask = PluginTaskManager.getInstance(project).createLocalTask(issue.getIssueKey(), server);
-            PluginTaskManager.getInstance(project).activateTask(foundTask, true, true);
-        }
     }
 
     private final class LocalChangeListAdapter extends ChangeListAdapter {
@@ -589,6 +587,7 @@ public final class PluginTaskManager {
     }
 
     private boolean isValidIdeaVersion() {
+        System.out.print("IsIdea9 " + IdeaVersionFacade.getInstance().isIdea9());        
         return IdeaVersionFacade.getInstance().isIdea9();
     }
 }
