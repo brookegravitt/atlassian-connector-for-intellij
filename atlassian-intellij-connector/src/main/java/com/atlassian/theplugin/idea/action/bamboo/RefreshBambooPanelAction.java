@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -26,8 +27,12 @@ public class RefreshBambooPanelAction extends AnAction {
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
 		final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(e);
+        AnAction g = ActionManager.getInstance().getAction("task.action");
+
+
 		if (panel != null) {
 			panel.refresh();
+            
 		}
 	}
 }

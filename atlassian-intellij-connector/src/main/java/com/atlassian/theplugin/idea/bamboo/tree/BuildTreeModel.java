@@ -19,6 +19,7 @@ import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.PlanState;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -45,14 +46,14 @@ public class BuildTreeModel extends DefaultTreeModel {
 	private final BuildNodeManipulator projectNodeManipulator;
 	private Timer timer = new Timer("animate building nodes");
 
-	public BuildTreeModel(final BuildListModel buildListModel) {
+	public BuildTreeModel(ProjectCfgManagerImpl projectCfgManager, final BuildListModel buildListModel) {
 		super(new DefaultMutableTreeNode());
 
 		this.buildListModel = buildListModel;
 
 		generalNodeManipulator = new GeneralBuildNodeManipulator(buildListModel, getRoot());
 		stateNodeManipulator = new StateBuildNodeManipulator(buildListModel, getRoot());
-		serverNodeManipulator = new ServerBuildNodeManipulator(buildListModel, getRoot());
+		serverNodeManipulator = new ServerBuildNodeManipulator(projectCfgManager, buildListModel, getRoot());
 		dateNodeManipulator = new DateBuildNodeManipulator(buildListModel, getRoot());
 		projectNodeManipulator = new ProjectBuildNodeManipulator(buildListModel, getRoot());
 
