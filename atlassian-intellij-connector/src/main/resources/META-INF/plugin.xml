@@ -13,7 +13,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License. 
-
+                                                                                                                     
 -->
 
 <!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
@@ -55,6 +55,7 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.2.1: Bugfix release</li>
 			<li>2.2: A lot of incrementally added awesomeness</li>
 			<li>2.1.1: Bugfix release</li>
 		    <li>2.1.0: Many significant improvements. Issue workflow actions, activation; improved handling of reviews</li>
