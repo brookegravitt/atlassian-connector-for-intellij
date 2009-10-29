@@ -16,9 +16,11 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -31,12 +33,14 @@ import java.util.TreeSet;
  * @author Jacek Jaroczynski
  */
 public class ServerBuildNodeManipulator extends BuildNodeManipulator {
+    private final ProjectCfgManagerImpl projectCfgManager;
 
 
-	public ServerBuildNodeManipulator(final BuildListModel buildModel,
-			final DefaultMutableTreeNode root) {
+    public ServerBuildNodeManipulator(ProjectCfgManagerImpl projectCfgManager, final BuildListModel buildModel,
+                                      final DefaultMutableTreeNode root) {
 		super(buildModel, root);
-	}
+        this.projectCfgManager = projectCfgManager;
+    }
 
 	@Override
 	public int getChildCount(Object parent) {
@@ -60,9 +64,9 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			ServerData bambooServer = getDistinctServers().get(index);
+			BambooServerData bambooServer = getDistinctServers().get(index);
 
-			BuildServerTreeNode serverNode = new BuildServerTreeNode(bambooServer);
+			BuildServerTreeNode serverNode = new BuildServerTreeNode(projectCfgManager, bambooServer);
 			p.add(serverNode);
 
 			return serverNode;
@@ -84,14 +88,14 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<ServerData> getDistinctServers() {
-		Set<ServerData> servers = new TreeSet<ServerData>(COMPARATOR);
+	private List<BambooServerData> getDistinctServers() {
+		Set<BambooServerData> servers = new TreeSet<BambooServerData>(COMPARATOR);
 
 		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			servers.add(build.getServer());
 		}
 
-		return new ArrayList<ServerData>(servers);
+		return new ArrayList<BambooServerData>(servers);
 	}
 
 	private static final Comparator<ServerData> COMPARATOR = new Comparator<ServerData>() {

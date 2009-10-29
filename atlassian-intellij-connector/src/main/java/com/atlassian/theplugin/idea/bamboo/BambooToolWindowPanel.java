@@ -111,6 +111,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			@Override
 			public void bambooServersChanged(final ProjectConfiguration newConfiguration) {
 				filterList.update();
+                buildTree.groupBy(groupBy);
 			}
 		});
 
@@ -152,7 +153,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		});
 
 		searchBuildModel = new SearchBuildListModel(bambooModel);
-		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel), getRightScrollPane());
+		buildTree = new BuildTree(groupBy, new BuildTreeModel(projectCfgManager, searchBuildModel), getRightScrollPane());
 		leftToolBar = createLeftToolBar();
 		rightToolBar = createRightToolBar();
 		buildHistoryPanel = new BuildHistoryPanel(project);

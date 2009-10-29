@@ -93,7 +93,6 @@
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
     </servers>
-    <default-fisheye-server>f9eb736a-4d98-44e2-aa41-476185f26d84</default-fisheye-server>
     <default-jira-server>d5b71692-3679-474f-bc0a-28165fd8f69b</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>

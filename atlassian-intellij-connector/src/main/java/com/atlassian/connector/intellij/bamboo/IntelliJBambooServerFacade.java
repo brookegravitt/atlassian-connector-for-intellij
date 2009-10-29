@@ -32,6 +32,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -74,6 +75,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 	public static synchronized IntelliJBambooServerFacade getInstance(Logger logger) {
 		if (instance == null) {
 			instance = new IntelliJBambooServerFacade(logger);
+            
 		}
 
 		return instance;
