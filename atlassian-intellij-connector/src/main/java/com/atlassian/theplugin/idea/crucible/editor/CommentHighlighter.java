@@ -73,6 +73,9 @@ public final class CommentHighlighter {
 	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	public static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
 
+    private static final String FILE_DIRTY_KEY_NAME = "CRUCIBLE_FILE_DIRTY_KEY";
+    public static final Key<Boolean> FILE_DIRTY_KEY = Key.create(FILE_DIRTY_KEY_NAME);
+
 	public static final String VERSIONED_COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	public static final Key<VersionedComment> VERSIONED_COMMENT_DATA_KEY = Key.create(VERSIONED_COMMENT_DATA_KEY_NAME);
 
@@ -83,9 +86,10 @@ public final class CommentHighlighter {
 
 	private static final String FILE_REVISION = "REVIEW_FILE_REVISION";
 	public static final Key<String> REVIEW_FILE_REVISION = Key.create(FILE_REVISION);
+    private static final int ONE_GOD_DAMN_SECOND_DELAY = 1000;
 
 
-	private CommentHighlighter() {
+    private CommentHighlighter() {
 	}
 
 	public static void highlightCommentsInEditor(@NotNull final Project project,
@@ -95,7 +99,7 @@ public final class CommentHighlighter {
 			@Nullable final OpenFileDescriptor displayFile) {
 		if (editor != null) {
 			Document doc = editor.getDocument();
-			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
+			final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
 			if (virtualFile != null) {
 				if (doc.getUserData(CRUCIBLE_DATA_KEY) == null
 						|| doc.getUserData(CRUCIBLE_DATA_KEY)) {
@@ -105,6 +109,7 @@ public final class CommentHighlighter {
 					virtualFile.putUserData(REVIEW_DATA_KEY, review);
 					virtualFile.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
 					virtualFile.putUserData(COMMENT_DATA_KEY, true);
+                    virtualFile.putUserData(FILE_DIRTY_KEY, false);
 					DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
 					if (documentListener == null) {
 						documentListener = new DocumentListener() {
@@ -112,14 +117,29 @@ public final class CommentHighlighter {
 							}
 
 							public void documentChanged(final DocumentEvent event) {
-								ApplicationManager.getApplication().invokeLater(new Runnable() {
-									public void run() {
-                                        Document doc = editor.getDocument();
-			                            VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
-                                        virtualFile.refresh(true, true);
-                                        applyHighlighters(project, editor, review, reviewItem);
-									}
-								});
+                                Timer t = new Timer();
+                                t.schedule(new TimerTask() {
+                                    public void run() {
+                                        ApplicationManager.getApplication().invokeLater(new Runnable() {
+                                            public void run() {
+                                                Document doc = editor.getDocument();
+                                                final VirtualFile vf = FileDocumentManager.getInstance().getFile(doc);
+                                                vf.refresh(true, true);
+                                                boolean wasDirty = vf.getUserData(FILE_DIRTY_KEY);
+
+                                                //
+                                                // stupid, stupid, stupid IDEA - only reports dirty files after
+                                                // a delay - I hate you ChangeListManager, you suck arse
+                                                //
+                                                boolean isDirty = VcsIdeaHelper.isFileDirty(project, vf);
+                                                if (wasDirty != isDirty) {
+                                                    vf.putUserData(FILE_DIRTY_KEY, isDirty);
+                                                    applyHighlighters(project, editor, review, reviewItem);
+                                                }
+                                            }
+                                        });
+                                    }
+                                }, ONE_GOD_DAMN_SECOND_DELAY);
 							}
 						};
 						doc.addDocumentListener(documentListener);
@@ -176,7 +196,8 @@ public final class CommentHighlighter {
 								throw new RuntimeException(valueNotYetInitialized);
 							}
 						} else {
-							removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+							removeHighlightersAndContextData(
+                                    editor.getDocument(), editor.getDocument().getMarkupModel(project), virtualFile);
 						}
 					}
 				} else {
@@ -229,7 +250,8 @@ public final class CommentHighlighter {
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
 				if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
-					removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+					removeHighlightersAndContextData(
+                            editor.getDocument(), editor.getDocument().getMarkupModel(project), virtualFile);
 				}
 			}
 		}
@@ -339,11 +361,17 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlightersAndContextData(@NotNull final MarkupModel markupModel,
-			@NotNull VirtualFile virtualFile) {
+	private static void removeHighlightersAndContextData(Document document, @NotNull final MarkupModel markupModel,
+                                                         @NotNull VirtualFile virtualFile) {
 		removeHighlighters(markupModel);
 		virtualFile.putUserData(REVIEW_DATA_KEY, null);
 		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
 		virtualFile.putUserData(COMMENT_DATA_KEY, null);
+
+        DocumentListener listener = virtualFile.getUserData(LISTENER_KEY);
+        if (listener != null) {
+            virtualFile.putUserData(LISTENER_KEY, null);
+            document.removeDocumentListener(listener);
+        }
 	}
 }

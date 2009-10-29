@@ -587,7 +587,7 @@ public final class PluginTaskManager {
     }
 
     private boolean isValidIdeaVersion() {
-        System.out.print("IsIdea9 " + IdeaVersionFacade.getInstance().isIdea9());        
+//        System.out.print("IsIdea9 " + IdeaVersionFacade.getInstance().isIdea9());
         return IdeaVersionFacade.getInstance().isIdea9();
     }
 }

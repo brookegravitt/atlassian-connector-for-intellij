@@ -191,7 +191,7 @@ public final class FileTreeModelBuilder {
 		for (VersionedComment c : comments) {
             Map<String, IntRanges> ranges = c.getLineRanges();
             if ((ranges == null || ranges.size() == 0)
-                    || (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() == 0)) {
+                    && (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() == 0)) {
 				if (!c.isReply()) {
 					list.add(c);
 				}
