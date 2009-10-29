@@ -31,11 +31,12 @@ import java.util.Collection;
 import java.util.Date;
 
 public class BambooBuildAdapter extends ConfigurationListenerAdapter {
+	@NotNull
 	private final BambooBuild build;
 	public static final SimpleDateFormat BAMBOO_BUILD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final BambooServerData serverData;
 
-	public BambooBuildAdapter(BambooBuild build, BambooServerData serverData) {
+	public BambooBuildAdapter(@NotNull BambooBuild build, BambooServerData serverData) {
 		this.build = build;
 		this.serverData = serverData;
 	}
@@ -77,7 +78,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 	}
 
 	public String getPlanKey() {
-		return build.getPlanKey() == null ? "" : build.getPlanKey();
+		return build.getPlanKey();
 	}
 
 	public boolean isEnabled() {
@@ -139,6 +140,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 		return build.getReason() == null ? "" : build.getReason();
 	}
 
+	@NotNull
 	public BambooBuild getBuild() {
 		return build;
 	}
@@ -150,7 +152,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 	@Override
 	public void serverDataChanged(final ServerData newServerData) {
 		// todo PL-1536 set new server for build (but build is immutable for some reason)
-
+		// wseliga: BambooBuildInfo is immutable for a very good reason! Don't change it!
 	}
 
 
