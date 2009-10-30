@@ -25,11 +25,7 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
-import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
-import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
-import com.atlassian.theplugin.idea.jira.StatusBarPane;
+import com.atlassian.theplugin.idea.jira.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -187,7 +183,7 @@ public final class ActiveIssueUtils {
         }
         if (isDeactivated) {
 
-            PluginTaskManager.getInstance(project).removeChangeListListener();
+
 
             ActiveIssueUtils.deactivate(project, new DeactivateIssueResultHandler() {
                 public void success() {
@@ -195,7 +191,7 @@ public final class ActiveIssueUtils {
                         public void run() {
 
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList);
-                            ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
+                            ActiveIssueUtils.activateLocalTask(project, newActiveIssue);  
                         }
                     });
                 }
@@ -322,7 +318,8 @@ public final class ActiveIssueUtils {
 
     public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
         final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-        deactivateLocalTask(project);
+
+        PluginTaskManager.getInstance(project).removeChangeListListener();
 
         if (conf != null) {
             ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
