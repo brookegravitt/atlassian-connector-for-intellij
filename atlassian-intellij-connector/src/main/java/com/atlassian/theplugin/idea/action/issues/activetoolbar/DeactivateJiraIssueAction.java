@@ -69,6 +69,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                 //success is invoked only if actions are selected (ie. stop progress action)
                 if (isOk && conf != null) {
                     conf.setActiveJiraIssuee(null);
+                    PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
                 }
 			}
 		});
