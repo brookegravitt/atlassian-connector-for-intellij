@@ -124,8 +124,11 @@ public final class PluginTaskManager {
         }
     }
 
+    private boolean isHandlerRegisterd() {
+        return true;
+    }
     public void activateLocalTask(ActiveJiraIssue issue) {
-        if (!isValidIdeaVersion()) {
+        if (!isValidIdeaVersion() || !isHandlerRegisterd()) {
             return;
         }
         Object foundTask = null;
@@ -135,7 +138,7 @@ public final class PluginTaskManager {
 
         if (foundTask != null) {
             if (!taskManager.getActiveTaskId().equals(issue.getIssueKey())) {
-                PluginTaskManager.getInstance(project).activateTask(foundTask, false, false);
+                PluginTaskManager.getInstance(project).activateTask(foundTask, false, true);
             }
         } else {
 
