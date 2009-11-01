@@ -112,6 +112,7 @@ public class RunIssueActionAction extends AnAction {
 					try {
 						facade.progressWorkflowAction(server, issue, action);
 						performPostActionActivity(server);
+                        resultHandler.success();
 					} catch (JIRAException e) {
 						showError("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
 								+ e.getMessage(), e);
