@@ -37,7 +37,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.*;
+import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.ChangeListAdapter;
+import com.intellij.openapi.vcs.changes.ChangeListListener;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -546,7 +550,8 @@ public final class PluginTaskManager {
             //removeChangeListListener();
             
             //switched to default task so deactivate issue
-            if (((LocalChangeList) newDefaultList).getId().equals(getDefaultChangeList(project).getId())) {
+            if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList(project)) != null 
+                     && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList(project)))) {
                 ApplicationManager.getApplication().invokeLater(new Runnable() {
                     public void run() {
 
