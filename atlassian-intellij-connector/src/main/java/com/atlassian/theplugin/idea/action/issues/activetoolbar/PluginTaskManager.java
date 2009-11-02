@@ -641,10 +641,11 @@ public final class PluginTaskManager {
                     }
                 }, ModalityState.defaultModalityState());
             } else {
-                SwingUtilities.invokeLater(new Runnable(){
+                SwingUtilities.invokeLater(new Runnable() {
 
                     public void run() {
-                        Messages.showInfoMessage(project, "Cannot activate an issue " + getActiveTaskId() + "\n No server attached to issue", PluginUtil.PRODUCT_NAME);
+                        Messages.showInfoMessage(project, "Cannot activate an issue " + getActiveTaskId()
+                                + "\n No server attached to issue", PluginUtil.PRODUCT_NAME);
                     }
                 });
 
