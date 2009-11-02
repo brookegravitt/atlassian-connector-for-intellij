@@ -101,7 +101,6 @@ public final class PluginTaskManager {
         if (!isValidIdeaVersion()) {
             return;
         }
-
         ChangeListManager.getInstance(project).addChangeListListener(myListener);
     }
 
@@ -124,7 +123,6 @@ public final class PluginTaskManager {
         }
 
         addChangeListListener();
-
     }
 
     private boolean isHandlerRegisterd() {
@@ -493,7 +491,6 @@ public final class PluginTaskManager {
                             return newRepository;
                         }
                     }
-
                 }
 
             } catch (ClassNotFoundException
@@ -616,11 +613,15 @@ public final class PluginTaskManager {
                                     }
                                 }
 
-                            } catch (JIRAException e) {
-                                DialogWithDetails.showExceptionDialog(project,
+                            } catch (final JIRAException e) {
+                                SwingUtilities.invokeLater(new Runnable(){
+                                    public void run() {
+                                        DialogWithDetails.showExceptionDialog(project,
                                         "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
-                            }
+                                    }
+                                });
 
+                            }
 
                             if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
                                     || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
@@ -628,16 +629,23 @@ public final class PluginTaskManager {
                                 ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
                             }
                         } else {
-                            Messages.showInfoMessage("Cannot activate issue " + finalActiveTaskUrl,
-                                    PluginUtil.PRODUCT_NAME);
+                            addChangeListListener();
+                            SwingUtilities.invokeLater(new Runnable() {
+
+                                public void run() {
+                                    Messages.showInfoMessage(project, "Cannot activate issue " + finalActiveTaskUrl,
+                                        PluginUtil.PRODUCT_NAME);
+                                }
+                            });
+
                         }
 
 
                     }
                 }, ModalityState.defaultModalityState());
             } else {
+                addChangeListListener();
                 SwingUtilities.invokeLater(new Runnable() {
-
                     public void run() {
                         Messages.showInfoMessage(project, "Cannot activate an issue " + getActiveTaskId() + "."
                                 + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
