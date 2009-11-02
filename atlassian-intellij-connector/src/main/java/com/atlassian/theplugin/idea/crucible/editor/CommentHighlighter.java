@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea.crucible.editor;
 
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.commons.misc.IntRanges;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigationAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -36,7 +36,11 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -46,7 +50,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public final class CommentHighlighter {
 	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(0xf2, 0xd0, 0x55);
@@ -112,37 +121,10 @@ public final class CommentHighlighter {
                     virtualFile.putUserData(FILE_DIRTY_KEY, false);
 					DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
 					if (documentListener == null) {
-						documentListener = new DocumentListener() {
-							public void beforeDocumentChange(final DocumentEvent event) {
-							}
-
-							public void documentChanged(final DocumentEvent event) {
-                                Timer t = new Timer();
-                                t.schedule(new TimerTask() {
-                                    public void run() {
-                                        ApplicationManager.getApplication().invokeLater(new Runnable() {
-                                            public void run() {
-                                                Document doc = editor.getDocument();
-                                                final VirtualFile vf = FileDocumentManager.getInstance().getFile(doc);
-                                                vf.refresh(true, true);
-                                                boolean wasDirty = vf.getUserData(FILE_DIRTY_KEY);
-
-                                                //
-                                                // stupid, stupid, stupid IDEA - only reports dirty files after
-                                                // a delay - I hate you ChangeListManager, you suck arse
-                                                //
-                                                boolean isDirty = VcsIdeaHelper.isFileDirty(project, vf);
-                                                if (wasDirty != isDirty) {
-                                                    vf.putUserData(FILE_DIRTY_KEY, isDirty);
-                                                    applyHighlighters(project, editor, review, reviewItem);
-                                                }
-                                            }
-                                        });
-                                    }
-                                }, ONE_GOD_DAMN_SECOND_DELAY);
-							}
-						};
+						documentListener = new MyDocumentListener(project, review, reviewItem, virtualFile, editor);
 						doc.addDocumentListener(documentListener);
+                        documentListeners.add((MyDocumentListener) documentListener);
+
 						virtualFile.putUserData(LISTENER_KEY, documentListener);
 					}
 					if (displayFile != null) {
@@ -367,11 +349,79 @@ public final class CommentHighlighter {
 		virtualFile.putUserData(REVIEW_DATA_KEY, null);
 		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
 		virtualFile.putUserData(COMMENT_DATA_KEY, null);
-
-        DocumentListener listener = virtualFile.getUserData(LISTENER_KEY);
-        if (listener != null) {
-            virtualFile.putUserData(LISTENER_KEY, null);
-            document.removeDocumentListener(listener);
-        }
 	}
+
+    private static List<MyDocumentListener> documentListeners = new LinkedList<MyDocumentListener>();
+
+    public static void removeAllDocumentListeners(Project project) {
+        boolean found;
+        do {
+            found = false;
+            for (MyDocumentListener listener : documentListeners) {
+                if (listener.getProject().equals(project)) {
+                    listener.die();
+                    documentListeners.remove(listener);
+                    found = true;
+                    break;
+                }
+            }
+        } while(found);
+    }
+
+    private static class MyDocumentListener implements DocumentListener {
+        private final Document document;
+        private final Project project;
+        private final ReviewAdapter review;
+        private final CrucibleFileInfo reviewItem;
+        private final VirtualFile virtualFile;
+        private final Editor editor;
+
+        private MyDocumentListener(Project project, ReviewAdapter review, CrucibleFileInfo reviewItem,
+                                   VirtualFile virtualFile, Editor editor) {
+            this.project = project;
+            this.review = review;
+            this.reviewItem = reviewItem;
+            this.virtualFile = virtualFile;
+            this.editor = editor;
+            this.document = editor.getDocument();
+        }
+
+        public Project getProject() {
+            return project;
+        }
+
+        public void die() {
+            document.removeDocumentListener(this);
+            virtualFile.putUserData(LISTENER_KEY, null);
+            removeHighlightersAndContextData(document, document.getMarkupModel(project), virtualFile);
+        }
+
+        public void beforeDocumentChange(final DocumentEvent event) {
+        }
+
+        public void documentChanged(final DocumentEvent event) {
+            //
+            // stupid, stupid, stupid IDEA - only reports dirty files after
+            // a delay - I hate you ChangeListManager, you suck arse
+            //
+            Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                public void run() {
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                        public void run() {
+                            Document doc = editor.getDocument();
+                            final VirtualFile vf = FileDocumentManager.getInstance().getFile(doc);
+                            vf.refresh(true, true);
+                            boolean wasDirty = vf.getUserData(FILE_DIRTY_KEY);
+                            boolean isDirty = VcsIdeaHelper.isFileDirty(project, vf);
+                            if (wasDirty != isDirty) {
+                                vf.putUserData(FILE_DIRTY_KEY, isDirty);
+                                applyHighlighters(project, editor, review, reviewItem);
+                            }
+                        }
+                    });
+                }
+            }, ONE_GOD_DAMN_SECOND_DELAY);
+        }
+    }
 }

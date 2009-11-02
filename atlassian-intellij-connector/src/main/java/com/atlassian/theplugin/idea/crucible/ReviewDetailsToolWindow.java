@@ -109,6 +109,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 	public void closeToolWindow(AnActionEvent event) {
 		super.closeToolWindow(TOOL_WINDOW_TITLE, event);
 		CommentHighlighter.removeCommentsInEditors(project);
+        CommentHighlighter.removeAllDocumentListeners(project);
 		ChangeViewer.removeHighlightersInEditors(project);
 		this.contentParams.reviewAdapter.clearContentCache();
 	}
