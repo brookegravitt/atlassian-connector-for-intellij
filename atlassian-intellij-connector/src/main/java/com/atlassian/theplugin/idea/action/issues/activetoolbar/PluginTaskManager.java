@@ -27,7 +27,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
@@ -70,7 +69,6 @@ public final class PluginTaskManager {
     private ClassLoader classLoader;
     private Class taskManagerClass;
     private Object taskManagerObj;
-    private Map<String, String> taskBlackList = new HashMap<String, String>();
 
 
     private PluginTaskManager(final Project project) {
@@ -147,7 +145,7 @@ public final class PluginTaskManager {
         if (!isValidIdeaVersion() || !isHandlerRegisterd()) {
             return;
         }
-        Object foundTask = null;
+        Object foundTask;
 
         ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());        
         foundTask = findLocalTaskByUrl(getActiveIssueUrl(issue.getIssueKey()));
@@ -238,9 +236,8 @@ public final class PluginTaskManager {
 
                     Object taskManager = getManager.invoke(null, project);
                     Method getLocalTasks = taskManagerClass.getMethod("getLocalTasks");
-                    Object[] localTasksObj = (Object[]) getLocalTasks.invoke(taskManager);
 
-                    return localTasksObj;
+                    return (Object[]) getLocalTasks.invoke(taskManager);
                 } catch (NoSuchMethodException e) {
                     PluginUtil.getLogger().error("Cannot get local tasks ", e);
                 } catch (InvocationTargetException e) {
@@ -262,8 +259,7 @@ public final class PluginTaskManager {
         if (descriptor != null) {
             try {
                 Method getManager = taskManagerClass.getMethod("getManager", Project.class);
-                Object taskManager = getManager.invoke(null, project);
-                return taskManager;
+                return getManager.invoke(null, project);
             } catch (InvocationTargetException e) {
                 PluginUtil.getLogger().error("Cannot load class TaskManager", e);
             } catch (NoSuchMethodException e) {
@@ -324,8 +320,7 @@ public final class PluginTaskManager {
                 if (jiraRepository != null) {
                     Class jiraRepositoryClass = classLoader.loadClass(JIRA_REPOSITORY_CLASS);
                     Method findTask = jiraRepositoryClass.getMethod("findTask", String.class);
-                    Object task = findTask.invoke(jiraRepository, taskId);
-                    return task;
+                    return findTask.invoke(jiraRepository, taskId);
                 }
             } catch (InvocationTargetException e) {
                 PluginUtil.getLogger().error("Cannot create local task", e);
@@ -651,19 +646,6 @@ public final class PluginTaskManager {
 
             }
         }
-    }
-
-
-    private JiraIssueAdapter findActiveJiraIssue(String issueUrl) {
-        RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
-        if (cache != null) {
-            for (JiraIssueAdapter issue : cache.getLoadedRecenltyOpenIssues()) {
-                if (issueUrl.equals(issue.getIssueUrl())) {
-                    return issue;
-                }
-            }
-        }
-        return null;
     }
 
     private String getActiveTaskId() {
