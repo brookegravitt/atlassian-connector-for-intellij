@@ -168,7 +168,8 @@ public final class PluginTaskManager {
     @Nullable
     private String getLocalChangeListId(ChangeList localList) {
         try {
-            Class localChangeListClass = project.getClass().getClassLoader().loadClass("com.intellij.openapi.vcs.changes.LocalChangeList");
+            Class localChangeListClass =
+                    project.getClass().getClassLoader().loadClass("com.intellij.openapi.vcs.changes.LocalChangeList");
             Method getIdMethod = localChangeListClass.getMethod("getId");
             Object idObj = getIdMethod.invoke(localList);
             if (idObj != null) {
@@ -191,7 +192,7 @@ public final class PluginTaskManager {
     private Object getDefaultTask() {
         ChangeListManager manager = ChangeListManager.getInstance(project);
         if (manager != null) {
-            ChangeList defaultChangeList = getDefaultChangeList(project);
+            ChangeList defaultChangeList = getDefaultChangeList();
             return getChangeListTask(defaultChangeList);
         }
 
@@ -201,7 +202,7 @@ public final class PluginTaskManager {
 
     //assume that RO change list is default
     @Nullable
-    private LocalChangeList getDefaultChangeList(Project project) {
+    private LocalChangeList getDefaultChangeList() {
         ChangeListManager manager = ChangeListManager.getInstance(project);
         for (LocalChangeList l : manager.getChangeLists()) {
             if (l.isReadOnly()) {
@@ -550,8 +551,8 @@ public final class PluginTaskManager {
             //removeChangeListListener();
             
             //switched to default task so deactivate issue
-            if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList(project)) != null 
-                     && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList(project)))) {
+            if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList()) != null
+                     && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList()))) {
                 ApplicationManager.getApplication().invokeLater(new Runnable() {
                     public void run() {
 
