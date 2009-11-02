@@ -78,10 +78,6 @@ public final class ActiveIssueUtils {
         return null;
     }
 
-
-    public static void deactivateLocalTask(final Project project) {
-           PluginTaskManager.getInstance(project).deactivateToDefaultTask();
-    }
     
     public static void activateLocalTask(final Project project, final ActiveJiraIssue issue) {
         PluginTaskManager.getInstance(project).activateLocalTask(issue);        
