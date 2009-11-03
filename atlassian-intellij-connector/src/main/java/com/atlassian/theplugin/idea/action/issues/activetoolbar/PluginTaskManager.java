@@ -135,26 +135,27 @@ public final class PluginTaskManager {
 
     @Nullable
     private String getActiveIssueUrl(String issueKey) {
-         JIRAIssueListModelBuilder builder = IdeaHelper.getJIRAIssueListModelBuilder(project);
-        if (builder != null  && builder.getModel().findIssue(issueKey) != null) {
-             JiraIssueAdapter issueAdapter = builder.getModel().findIssue(issueKey);
+        JIRAIssueListModelBuilder builder = IdeaHelper.getJIRAIssueListModelBuilder(project);
+        if (builder != null && builder.getModel().findIssue(issueKey) != null) {
+            JiraIssueAdapter issueAdapter = builder.getModel().findIssue(issueKey);
             return issueAdapter.getIssueUrl();
         }
 
         return null;
     }
+
     public void activateLocalTask(ActiveJiraIssue issue) {
         if (!isValidIdeaVersion() || !isHandlerRegisterd()) {
             return;
         }
         Object foundTask;
 
-        ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());        
+        ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());
         foundTask = findLocalTaskByUrl(getActiveIssueUrl(issue.getIssueKey()));
         if (foundTask != null) {
             foundTask = findLocalTaskById(issue.getIssueKey());
         }
-        
+
         //ADD or GET JiraRepository
         Object jiraRepository = getJiraRepository(server);
         if (foundTask != null) {
@@ -562,10 +563,10 @@ public final class PluginTaskManager {
                     IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
             //removeChangeListListener();
-            
+
             //switched to default task so deactivate issue
             if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList()) != null
-                     && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList()))) {
+                    && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList()))) {
                 ApplicationManager.getApplication().invokeLater(new Runnable() {
                     public void run() {
 
@@ -585,12 +586,12 @@ public final class PluginTaskManager {
                             }
                         });
                     }
-                },  ModalityState.defaultModalityState());
+                }, ModalityState.defaultModalityState());
 
                 return;
 
             }
-            
+
             if (activeTaskUrl == null) {
                 activeTaskUrl = getActiveIssueUrl(activeTaskId);
             }
@@ -604,49 +605,8 @@ public final class PluginTaskManager {
                 issue.setIssueKey(issueId);
                 issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
 
-                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                    public void run() {
-                        JIRAIssueListModelBuilder builder = IdeaHelper.getJIRAIssueListModelBuilder(project);
-                        if (server != null && builder != null) {
-                            try {
-                                if (builder.getModel().findIssue(issueId) == null) {
-                                    JiraIssueAdapter issueAdapter = IntelliJJiraServerFacade.getInstance().getIssue(server,
-                                            issueId);
-                                    if (issueAdapter != null) {
-                                        List list = new ArrayList();
-                                        list.add(issueAdapter);
-                                        builder.getModel().addIssues(list);
-                                    }
-                                }
-
-                            } catch (final JIRAException e) {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        DialogWithDetails.showExceptionDialog(project,
-                                        "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
-                                    }
-                                });
-
-                            }
-
-                            if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
-                                    || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
-                                    && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey()))) {
-                                ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
-                            }
-                        } else {
-                            addChangeListListener();
-                            SwingUtilities.invokeLater(new Runnable() {
-
-                                public void run() {
-                                    Messages.showInfoMessage(project, "Cannot activate issue " + finalActiveTaskUrl,
-                                        PluginUtil.PRODUCT_NAME);
-                                }
-                            });
-
-                        }
-                    }
-                }, ModalityState.defaultModalityState());
+                ApplicationManager.getApplication().invokeLater(
+                        new LocalRunnable(issueId, server, issue, finalActiveTaskUrl, newDefaultList), ModalityState.defaultModalityState());
             } else {
                 addChangeListListener();
                 SwingUtilities.invokeLater(new Runnable() {
@@ -655,6 +615,67 @@ public final class PluginTaskManager {
                                 + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
                     }
                 });
+            }
+        }
+
+
+        final class LocalRunnable implements Runnable {
+            private final String issueId;
+            private final JiraServerData server;
+            private final ActiveJiraIssueBean issue;
+            private final String finalActiveTaskUrl;
+            private final ChangeList newDefaultList;
+
+            public LocalRunnable(String issueId, JiraServerData server, ActiveJiraIssueBean issue,
+                                 String finalActiveTaskUrl, ChangeList newDefaultList) {
+                this.issueId = issueId;
+                this.server = server;
+                this.issue = issue;
+                this.finalActiveTaskUrl = finalActiveTaskUrl;
+                this.newDefaultList = newDefaultList;
+            }
+
+
+            public void run() {
+                JIRAIssueListModelBuilder builder = IdeaHelper.getJIRAIssueListModelBuilder(project);
+                if (server != null && builder != null) {
+                    try {
+                        if (builder.getModel().findIssue(issueId) == null) {
+                            JiraIssueAdapter issueAdapter = IntelliJJiraServerFacade.getInstance().getIssue(server,
+                                    issueId);
+                            if (issueAdapter != null) {
+                                List list = new ArrayList();
+                                list.add(issueAdapter);
+                                builder.getModel().addIssues(list);
+                            }
+                        }
+
+                    } catch (final JIRAException e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                DialogWithDetails.showExceptionDialog(project,
+                                        "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
+                            }
+                        });
+
+                    }
+
+                    if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
+                            || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
+                            && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey()))) {
+                        ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
+                    }
+                } else {
+                    addChangeListListener();
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        public void run() {
+                            Messages.showInfoMessage(project, "Cannot activate issue " + finalActiveTaskUrl,
+                                    PluginUtil.PRODUCT_NAME);
+                        }
+                    });
+
+                }
             }
         }
     }
