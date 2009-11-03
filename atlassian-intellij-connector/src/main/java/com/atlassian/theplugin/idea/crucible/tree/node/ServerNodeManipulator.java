@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible.tree.node;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -29,10 +30,12 @@ import java.util.TreeSet;
  * @author Jacek Jaroczynski
  */
 public class ServerNodeManipulator extends NodeManipulator {
+    private final ProjectCfgManagerImpl cfgManager;
 
-	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
+    public ServerNodeManipulator(ProjectCfgManagerImpl cfgManager, CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
 		super(reviewListModel, root);
-	}
+        this.cfgManager = cfgManager;
+    }
 
 	@Override
 	public int getChildCount(Object parent) {
@@ -58,7 +61,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 			ServerData server = getDistinctServers().get(index);
 
-			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(server);
+			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(cfgManager, server);
 			p.add(serverNode);
 
 			return serverNode;

@@ -16,14 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
-import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
-import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
-import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
-import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
-import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
+import com.atlassian.connector.intellij.bamboo.*;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
@@ -328,7 +321,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			checkDefaultServerValues();
 		}
 
+
         PluginTaskManager.getInstance(project).addChangeListListener();
+
 	}
 
 	private void registerCrucibleNotifier() {
