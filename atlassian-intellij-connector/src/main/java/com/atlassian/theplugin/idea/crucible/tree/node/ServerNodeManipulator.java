@@ -23,8 +23,8 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Jacek Jaroczynski
@@ -85,13 +85,14 @@ public class ServerNodeManipulator extends NodeManipulator {
 	}
 
 	private List<ServerData> getDistinctServers() {
-		Set<ServerData> servers = new TreeSet<ServerData>();
+		Map<String, ServerData> servers = new TreeMap<String, ServerData>();
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(review.getServerData());
+
+			servers.put(cfgManager.getServerr(review.getServerData().getServerId()).getName(), review.getServerData());
 		}
 
-		return new ArrayList<ServerData>(servers);
+		return new ArrayList<ServerData>(servers.values());
 	}
 
 //	private static final Comparator<ServerCfg> COMPARATOR = new Comparator<ServerCfg>() {
