@@ -606,7 +606,8 @@ public final class PluginTaskManager {
                 issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
 
                 ApplicationManager.getApplication().invokeLater(
-                        new LocalRunnable(issueId, server, issue, finalActiveTaskUrl, newDefaultList), ModalityState.defaultModalityState());
+                        new LocalRunnable(issueId, server, issue, finalActiveTaskUrl, newDefaultList),
+                        ModalityState.defaultModalityState());
             } else {
                 addChangeListListener();
                 SwingUtilities.invokeLater(new Runnable() {
