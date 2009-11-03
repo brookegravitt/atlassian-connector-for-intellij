@@ -7,6 +7,9 @@
         <p>
         Latest stable version of Atlassian Connector for IntelliJ IDEA is 2.2.1
         </p>
+        <p>
+        We have released this version of the IntelliJ Connector before IDEA 9.0 has been released. Therefore we have managed to perform only a limited number of tests on this IDEA version, as "early access preview" builds are not stable enough for intensive testing.
+        </p>
   </body></html>
 
         ]]></releaseNotes>
