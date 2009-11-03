@@ -36,7 +36,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.*;
+import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.ChangeListAdapter;
+import com.intellij.openapi.vcs.changes.ChangeListListener;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -616,7 +620,7 @@ public final class PluginTaskManager {
                                 }
 
                             } catch (final JIRAException e) {
-                                SwingUtilities.invokeLater(new Runnable(){
+                                SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
                                         DialogWithDetails.showExceptionDialog(project,
                                         "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
@@ -641,8 +645,6 @@ public final class PluginTaskManager {
                             });
 
                         }
-
-
                     }
                 }, ModalityState.defaultModalityState());
             } else {
@@ -653,7 +655,6 @@ public final class PluginTaskManager {
                                 + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
                     }
                 });
-
             }
         }
     }
