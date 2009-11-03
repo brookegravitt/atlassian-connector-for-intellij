@@ -19,6 +19,8 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -28,38 +30,20 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
-import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.UpdateContext;
-import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleCustomFilterTreeNode;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.*;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -77,12 +61,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -127,6 +106,12 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
+        projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
+            @Override
+            public void crucibleServersChanged(ProjectConfiguration newConfiguration) {
+                reviewTree.groupBy(groupBy);
+            }
+        });
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter(),
 				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
