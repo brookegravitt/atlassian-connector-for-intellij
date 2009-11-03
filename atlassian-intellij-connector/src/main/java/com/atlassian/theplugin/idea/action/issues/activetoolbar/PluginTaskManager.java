@@ -569,12 +569,14 @@ public final class PluginTaskManager {
                             public void success() {
                                 if (conf != null) {
                                     conf.setActiveJiraIssuee(null);
+                                    addChangeListListener();
                                 }
                             }
 
                             public void failure(Throwable problem) {
                                 if (conf != null) {
                                     conf.setActiveJiraIssuee(null);
+                                    addChangeListListener();
                                 }
                             }
                         });
