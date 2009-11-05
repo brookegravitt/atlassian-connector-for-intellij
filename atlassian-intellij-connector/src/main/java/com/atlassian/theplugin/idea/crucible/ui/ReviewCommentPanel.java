@@ -15,9 +15,12 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.commons.misc.IntRanges;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.ui.IconPaths;
 import com.atlassian.theplugin.util.ui.IconProvider;
@@ -27,14 +30,17 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 public class ReviewCommentPanel extends JPanel {
 	private Rectangle moreBounds;
@@ -264,15 +270,33 @@ public class ReviewCommentPanel extends JPanel {
 	}
 
     private static String createLineRangesText(Map<String, IntRanges> ranges) {
-        Iterator<String> iterator = ranges.keySet().iterator();
-        String revision = null;
-        while (iterator.hasNext()) {
-            revision = iterator.next();
+//        Iterator<String> iterator = ranges.keySet().iterator();
+//        String revision = null;
+        if (!ranges.isEmpty()) {
+            boolean first = true;
+            StringBuilder sb = new StringBuilder();
+            for (String revision : ranges.keySet()) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                int min = ranges.get(revision).getTotalMin();
+                int max = ranges.get(revision).getTotalMax();
+                sb.append("Revision ").append(revision)
+                        .append(min != max ? " Lines " : " Line ")
+                        .append(createLineRangesText(min, max));
+            }
+            return sb.toString();
         }
-        if (revision != null) {
-            IntRanges intRanges = ranges.get(revision);
-            return createLineRangesText(intRanges.getTotalMin(), intRanges.getTotalMax());
-        }
+//        while (iterator.hasNext()) {
+//            revision = iterator.next();
+//        }
+//        if (revision != null) {
+//            IntRanges intRanges = ranges.get(revision);
+//            return createLineRangesText(intRanges.getTotalMin(), intRanges.getTotalMax());
+//        }
+//        return null;
         return null;
     }
 
@@ -281,7 +305,7 @@ public class ReviewCommentPanel extends JPanel {
             endLine = startLine;
         }
         String txt2 = "";
-        txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
+        txt2 += endLine != startLine ? startLine + "-" + endLine : endLine;
         return txt2;
     }
 
