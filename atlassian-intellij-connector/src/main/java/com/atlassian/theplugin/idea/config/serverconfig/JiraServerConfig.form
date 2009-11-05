@@ -53,6 +53,7 @@
                   <forms top="0" left="40" bottom="0" right="0" defaultalign-horz="false" defaultalign-vert="false"/>
                 </constraints>
                 <properties>
+                  <background swing-color="Panel.background"/>
                   <editable value="false"/>
                   <font size="10"/>
                   <rows value="2"/>
