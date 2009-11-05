@@ -89,9 +89,7 @@ public final class PluginTaskManager {
             taskManagerObj = getTaskManager();
             myListener = new LocalChangeListAdapter(project);
         }
-
     }
-
 
     public static PluginTaskManager getInstance(final Project project) {
         if (!managers.containsKey(project)) {
@@ -723,7 +721,6 @@ public final class PluginTaskManager {
     }
 
     private boolean isValidIdeaVersion() {
-        return IdeaVersionFacade.getInstance().isIdea9();
+        return IdeaVersionFacade.getInstance().isIdea9() && !IdeaVersionFacade.getInstance().isCommunityEdition();
     }
-
 }

@@ -49,15 +49,17 @@ public final class IdeaVersionFacade {
 
     private boolean isIdea8;
     private boolean isIdea9;
+    private boolean communityEdition = false;
 
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
-	private IdeaVersionFacade() {
+    private IdeaVersionFacade() {
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
         Matcher m = IDEA_9_REGEX.matcher(ver);
         if (m.matches()) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
+            communityEdition = m.group(3) != null;
         } else {
             try {
 		        int v = Integer.parseInt(ver);
@@ -424,5 +426,9 @@ public final class IdeaVersionFacade {
 
     public boolean isIdea9() {
         return isIdea9;
+    }
+
+    public boolean isCommunityEdition() {
+        return communityEdition;
     }
 }
