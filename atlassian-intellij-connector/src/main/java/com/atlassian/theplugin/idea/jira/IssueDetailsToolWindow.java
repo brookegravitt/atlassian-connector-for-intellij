@@ -521,7 +521,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				if (haveSubTasks) {
 					Splitter split = new Splitter(false, SPLIT_RATIO);
-					split.setFirstComponent(new JScrollPane(details));
+                    JScrollPane scrollPane = new JScrollPane(details);
+                    scrollPane.setBackground(Color.WHITE);
+                    split.setFirstComponent(scrollPane);
 					split.setHonorComponentsMinimumSize(true);
 					JComponent subtasks = createSubtasksPanel();
 					split.setSecondComponent(subtasks);
@@ -529,7 +531,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				} else {
 					panel.setOpaque(true);
 					panel.setBackground(Color.WHITE);
-					panel.add(new JScrollPane(details), BorderLayout.CENTER);
+                    JScrollPane scrollPane = new JScrollPane(details);
+                    scrollPane.setBackground(Color.WHITE);
+                    panel.add(scrollPane, BorderLayout.CENTER);
 				}
 
 				return panel;
@@ -545,7 +549,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbc.weighty = 1.0;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 
-				panel.setOpaque(false);
+				panel.setOpaque(true);
+                panel.setBackground(Color.WHITE);
+                
 				final java.util.List<String> keys = params.issue.getSubTaskKeys();
 				if (keys.size() > 0) {
 					final JList list = new JList() {
@@ -647,8 +653,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				JPanel panel = new ScrollablePanel();
 
 				panel.setLayout(new GridBagLayout());
-				panel.setOpaque(false);
-
+                panel.setOpaque(true);
+                panel.setBackground(Color.WHITE);
+                
 				GridBagConstraints gbc1 = new GridBagConstraints();
 				GridBagConstraints gbc2 = new GridBagConstraints();
 				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
