@@ -130,7 +130,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             groupBy = jiraWorkspaceConfiguration.getView().getGroupBy();
             groupSubtasksUnderParent = jiraWorkspaceConfiguration.getView().isCollapseSubtasksUnderParent();
         } else {
-            groupBy = JiraIssueGroupBy.TYPE;
+            groupBy = JiraIssueGroupBy.getDefaultGroupBy();
             groupSubtasksUnderParent = false;
         }
         jiraFilterListModel = getJIRAFilterListModel();

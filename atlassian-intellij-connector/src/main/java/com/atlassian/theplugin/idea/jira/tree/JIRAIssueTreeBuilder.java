@@ -372,6 +372,9 @@ public class JIRAIssueTreeBuilder {
 	private DefaultMutableTreeNode getPlace(JiraIssueAdapter issue, DefaultMutableTreeNode root) {
 		String name;
 		String iconUrl = null;
+        if (groupBy == null) {
+            groupBy = JiraIssueGroupBy.getDefaultGroupBy();
+        }
 		switch (groupBy) {
 			case PRIORITY:
 				name = issue.getPriority();
