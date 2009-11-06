@@ -174,15 +174,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         });
 
-        addIssuesTreeListeners();
-        addSearchBoxListener();
         freezeSynchronizator.setIssueModel(currentIssueListModel);
         freezeSynchronizator.setServerModel(jiraServerModel);
         freezeSynchronizator.setFilterModel(jiraFilterListModel);
 
         init(0);
 
-
+        addIssuesTreeListeners();
+        addSearchBoxListener();
         addJiraFilterTreeListeners();
 
         jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {

@@ -46,7 +46,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		this.statusBarPane = new StatusBarIssuesPane("");
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
-		splitPane.setSecondComponent(createRightContent());
 		splitPane.setHonorComponentsMinimumSize(false);
 
 		addComponentListener(new ComponentAdapter() {
@@ -66,6 +65,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 	public void init(int margin) {
 		splitPane.setFirstComponent(createLeftContent());
+        splitPane.setSecondComponent(createRightContent());
 		leftUpperScrollPane.setViewportView(getLeftTree());
 		leftUpperScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, margin, 0, 0));
 		rightScrollPane.setViewportView(getRightTree());
