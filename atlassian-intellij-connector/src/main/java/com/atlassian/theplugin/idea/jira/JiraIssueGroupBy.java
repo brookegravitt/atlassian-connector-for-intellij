@@ -18,4 +18,8 @@ public enum JiraIssueGroupBy {
 	public String toString() {
 		return name;
 	}
+
+    public static JiraIssueGroupBy getDefaultGroupBy() {
+        return TYPE;
+    }
 }

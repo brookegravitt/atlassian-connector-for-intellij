@@ -79,8 +79,14 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 	}
 
 	private void updateSelection(IssueListToolWindowPanel panel, JComboBox combo) {
-		if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
-			combo.setSelectedItem(panel.getGroupBy());
-		}
+        if (panel != null) {
+            JiraIssueGroupBy groupBy = panel.getGroupBy();
+            if (groupBy == null) {
+                groupBy = JiraIssueGroupBy.getDefaultGroupBy();
+            }
+            if (!groupBy.equals(combo.getSelectedItem())) {
+                combo.setSelectedItem(groupBy);
+            }
+        }
 	}
 }
