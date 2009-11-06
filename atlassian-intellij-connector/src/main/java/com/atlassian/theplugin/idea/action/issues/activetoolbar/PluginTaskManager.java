@@ -36,16 +36,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.openapi.vcs.changes.ChangeListAdapter;
-import com.intellij.openapi.vcs.changes.ChangeListListener;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.vcs.changes.*;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +68,15 @@ public final class PluginTaskManager {
     private ClassLoader classLoader;
     private Class taskManagerClass;
     private Object taskManagerObj;
+    private static final String CANNOT_GET_ACTIVE_LOCAL_TASK_ISSUE_URL = "Cannot get active local task issue url";
+    private static final String CANNOT_GET_JIRA_REPOSITORY = "Cannot get JIRA repository";
+    private static final String CANNOT_ACTIVATE_LOCAL_TASK = "Cannot activate local task";
+    private static final String CANNOT_GET_LOCAL_TASK_ASSOCIATED_CHANGE_LIST = "Cannot get local task associated change list";
+    private static final String CANNOT_GET_LOCAL_TASK_SUMMARY = "Cannot get local task summary";
+    private static final String CANNOT_GET_LOCAL_TASK_ID = "Cannot get local task id";
+    private static final String CANNOT_CREATE_LOCAL_TASK = "Cannot create local task";
+    private static final String CANNOT_LOAD_CLASS_TASK_MANAGER = "Cannot load class TaskManager";
+    private static final String CANNOT_GET_LOCAL_TASKS = "Cannot get local tasks";    
 
 
     private PluginTaskManager(final Project project) {
@@ -127,9 +131,6 @@ public final class PluginTaskManager {
         addChangeListListener();
     }
 
-    private boolean isHandlerRegisterd() {
-        return true;
-    }
 
     @Nullable
     private String getActiveIssueUrl(String issueKey) {
@@ -143,7 +144,7 @@ public final class PluginTaskManager {
     }
 
     public void activateLocalTask(ActiveJiraIssue issue) {
-        if (!isValidIdeaVersion() || !isHandlerRegisterd()) {
+        if (!isValidIdeaVersion()) {
             return;
         }
         Object foundTask;
@@ -190,14 +191,8 @@ public final class PluginTaskManager {
             if (idObj != null) {
                 return idObj.toString();
             }
-        } catch (ClassNotFoundException e) {
-            PluginUtil.getLogger().error("Cannot get local tasks ", e);
-        } catch (NoSuchMethodException e) {
-            PluginUtil.getLogger().error("Cannot get local tasks ", e);
-        } catch (InvocationTargetException e) {
-            PluginUtil.getLogger().error("Cannot get local tasks ", e);
-        } catch (IllegalAccessException e) {
-            PluginUtil.getLogger().error("Cannot get local tasks ", e);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error(PluginTaskManager.CANNOT_GET_LOCAL_TASKS, e);
         }
 
         return null;
@@ -239,12 +234,8 @@ public final class PluginTaskManager {
                     Method getLocalTasks = taskManagerClass.getMethod("getLocalTasks");
 
                     return (Object[]) getLocalTasks.invoke(taskManager);
-                } catch (NoSuchMethodException e) {
-                    PluginUtil.getLogger().error("Cannot get local tasks ", e);
-                } catch (InvocationTargetException e) {
-                    PluginUtil.getLogger().error("Cannot get local tasks ", e);
-                } catch (IllegalAccessException e) {
-                    PluginUtil.getLogger().error("Cannot get local tasks ", e);
+                } catch (Exception e) {
+                    PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASKS, e);
                 }
             }
         }
@@ -261,12 +252,8 @@ public final class PluginTaskManager {
             try {
                 Method getManager = taskManagerClass.getMethod("getManager", Project.class);
                 return getManager.invoke(null, project);
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot load class TaskManager", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot load class TaskManager", e);
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot load class TaskManager", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_LOAD_CLASS_TASK_MANAGER, e);
             }
         }
 
@@ -323,14 +310,8 @@ public final class PluginTaskManager {
                     Method findTask = jiraRepositoryClass.getMethod("findTask", String.class);
                     return findTask.invoke(jiraRepository, taskId);
                 }
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot create local task", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot create local task", e);
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot create local task", e);
-            } catch (ClassNotFoundException e) {
-                PluginUtil.getLogger().error("Cannot create local task", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_CREATE_LOCAL_TASK, e);
             }
 
         }
@@ -346,14 +327,8 @@ public final class PluginTaskManager {
 
                 Object localTaskObj = getTaskId.invoke(task);
                 return localTaskObj.toString();
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot get local task id", e);
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot get local task id", e);
-            } catch (ClassNotFoundException e) {
-                PluginUtil.getLogger().error("Cannot get local task id", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot get local task id", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_ID, e);
             }
         }
 
@@ -369,14 +344,8 @@ public final class PluginTaskManager {
 
                 Object localTaskObj = getUrlMethod.invoke(task);
                 return localTaskObj.toString();
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot get local task summary", e);
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot get local task summary", e);
-            } catch (ClassNotFoundException e) {
-                PluginUtil.getLogger().error("Cannot get local task summary", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot get local task summary", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_SUMMARY, e);
             }
         }
 
@@ -398,16 +367,8 @@ public final class PluginTaskManager {
                     return id.get(changeSetList.get(0)).toString();
                 }
                 return null;
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot get local task associated change list", e);
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot get local task associated change list", e);
-            } catch (ClassNotFoundException e) {
-                PluginUtil.getLogger().error("Cannot get local task associated change list", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot get local task associated change list", e);
-            } catch (NoSuchFieldException e) {
-                PluginUtil.getLogger().error("Cannot get local task associated change list", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_ASSOCIATED_CHANGE_LIST, e);
             }
         }
 
@@ -425,14 +386,8 @@ public final class PluginTaskManager {
                             Boolean.TYPE, Boolean.TYPE);
                     activateLocalTask.invoke(taskManagerObj, task, clearContext, createChangeset);
                 }
-            } catch (InvocationTargetException e) {
-                PluginUtil.getLogger().error("Cannot activate local task", e);
-            } catch (NoSuchMethodException e) {
-                PluginUtil.getLogger().error("Cannot activate local task", e);
-            } catch (IllegalAccessException e) {
-                PluginUtil.getLogger().error("Cannot activate local task", e);
-            } catch (ClassNotFoundException e) {
-                PluginUtil.getLogger().error("Cannot activate local task", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_ACTIVATE_LOCAL_TASK, e);
             }
         }
     }
@@ -496,20 +451,8 @@ public final class PluginTaskManager {
                     }
                 }
 
-            } catch (ClassNotFoundException
-                    e) {
-                PluginUtil.getLogger().error("Cannot get JIRA repository", e);
-            } catch (NoSuchMethodException
-                    e) {
-                PluginUtil.getLogger().error("Cannot get JIRA repository", e);
-            } catch (InvocationTargetException
-                    e) {
-                PluginUtil.getLogger().error("Cannot get JIRA repository", e);
-            } catch (IllegalAccessException
-                    e) {
-                PluginUtil.getLogger().error("Cannot get JIRA repository", e);
-            } catch (InstantiationException e) {
-                PluginUtil.getLogger().error("Cannot get JIRA repository", e);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_GET_JIRA_REPOSITORY, e);
             }
         }
         return null;
@@ -533,14 +476,8 @@ public final class PluginTaskManager {
                 }
             }
 
-        } catch (InvocationTargetException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (NoSuchMethodException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (IllegalAccessException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (ClassNotFoundException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error(CANNOT_GET_ACTIVE_LOCAL_TASK_ISSUE_URL, e);
         }
 
         return null;
@@ -696,14 +633,8 @@ public final class PluginTaskManager {
                 }
             }
 
-        } catch (InvocationTargetException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (NoSuchMethodException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (IllegalAccessException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
-        } catch (ClassNotFoundException e) {
-            PluginUtil.getLogger().error("Cannot get active local task issue url", e);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error(CANNOT_GET_ACTIVE_LOCAL_TASK_ISSUE_URL, e);
         }
 
         return null;
