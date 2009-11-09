@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PaZu.api;
 
 namespace PaZu.models
@@ -29,6 +30,36 @@ namespace PaZu.models
                 List<JiraIssue> issues = facade.getSavedFilterIssues(server, filter, model.Issues.Count, 25);
                 model.addIssues(issues);
             }
+        }
+
+        public void rebuildModelWithRecentlyViewedIssues(JiraIssueListModel model)
+        {
+            lock (this)
+            {
+                ICollection<RecentlyViewedIssue> issues = RecentlyViewedIssuesModel.Instance.Issues;
+                ICollection<JiraServer> servers = JiraServerModel.Instance.getAllServers();
+
+                List<JiraIssue> list = new List<JiraIssue>(issues.Count);
+                foreach (RecentlyViewedIssue issue in issues)
+                {
+                    JiraServer server = findServer(issue.ServerGuid, servers);
+                    if (server != null)
+                        list.Add(facade.getIssue(server, issue.IssueKey));
+                }
+
+                model.clear(false);
+                model.addIssues(list);
+            }
+        }
+
+        private static JiraServer findServer(Guid guid, IEnumerable<JiraServer> servers)
+        {
+            foreach (JiraServer server in servers)
+            {
+                if (server.GUID.Equals(guid))
+                    return server;
+            }
+            return null;
         }
     }
 }

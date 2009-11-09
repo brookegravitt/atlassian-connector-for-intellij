@@ -114,6 +114,8 @@
     <Compile Include="models\JiraIssueListModelListener.cs" />
     <Compile Include="models\JiraServerCache.cs" />
     <Compile Include="models\JiraServerModel.cs" />
+    <Compile Include="models\RecentlyViewedIssue.cs" />
+    <Compile Include="models\RecentlyViewedIssuesModel.cs" />
     <Compile Include="PaZuWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -143,6 +145,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ui\issues\IssueNode.cs" />
+    <Compile Include="ui\RecentlyOpenIssuesTreeNode.cs" />
     <Compile Include="ui\TreeNodeWithServer.cs" />
     <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
     <Compile Include="ui\JiraServerTreeNode.cs" />

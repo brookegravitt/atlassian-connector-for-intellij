@@ -5,14 +5,13 @@ namespace PaZu.ui
 {
     class JiraSavedFilterTreeNode : TreeNodeWithServer
     {
-        private JiraServer server;
-        private JiraSavedFilter filter;
+        private readonly JiraServer server;
 
         public JiraSavedFilterTreeNode(JiraServer server, JiraSavedFilter filter)
             : base(filter.Name)
         {
             this.server = server;
-            this.filter = filter;
+            Filter = filter;
         }
 
         public override JiraServer Server
@@ -21,9 +20,6 @@ namespace PaZu.ui
             set { throw new NotImplementedException(); }
         }
 
-        public JiraSavedFilter Filter
-        {
-            get { return filter; }
-        }
+        public JiraSavedFilter Filter { get; private set; }
     }
 }
