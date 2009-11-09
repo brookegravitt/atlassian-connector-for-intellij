@@ -50,6 +50,7 @@
             this.buttonProjectProperties = new System.Windows.Forms.ToolStripButton();
             this.buttonAbout = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.buttonSearch = new System.Windows.Forms.ToolStripButton();
             this.mainContainer.ContentPanel.SuspendLayout();
             this.mainContainer.LeftToolStripPanel.SuspendLayout();
             this.mainContainer.SuspendLayout();
@@ -245,10 +246,11 @@
             this.buttonOpen,
             this.buttonViewInBrowser,
             this.buttonEditInBrowser,
+            this.buttonSearch,
             this.buttonRefresh});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(102, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(156, 25);
             this.toolStrip2.TabIndex = 0;
             // 
             // buttonOpen
@@ -335,6 +337,16 @@
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
+            // buttonSearch
+            // 
+            this.buttonSearch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonSearch.Image = global::PaZu.Properties.Resources.search_jira;
+            this.buttonSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(23, 22);
+            this.buttonSearch.Text = "Search Issue";
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
             // PaZuWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -407,5 +419,6 @@
         private System.Windows.Forms.ToolStripButton buttonViewInBrowser;
         private System.Windows.Forms.ToolStripButton buttonEditInBrowser;
         private System.Windows.Forms.ToolStripButton buttonRefresh;
+        private System.Windows.Forms.ToolStripButton buttonSearch;
     }
 }

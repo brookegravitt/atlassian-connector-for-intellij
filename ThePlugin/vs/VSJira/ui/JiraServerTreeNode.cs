@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using PaZu.api;
 
 namespace PaZu.ui
 {
-    public class JiraServerTreeNode : TreeNode
+    public class JiraServerTreeNode : TreeNodeWithServer
     {
         private JiraServer server;
 
@@ -16,7 +13,7 @@ namespace PaZu.ui
             this.server = server;
         }
 
-        public JiraServer Server
+        public override JiraServer Server
         {
             get { return server; }
             set { server = value; Text = server.Name; }

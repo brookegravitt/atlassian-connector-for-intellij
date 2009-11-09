@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using PaZu.api;
 
 namespace PaZu.ui
 {
-    class JiraSavedFilterTreeNode : TreeNode
+    class JiraSavedFilterTreeNode : TreeNodeWithServer
     {
         private JiraServer server;
         private JiraSavedFilter filter;
@@ -18,9 +15,10 @@ namespace PaZu.ui
             this.filter = filter;
         }
 
-        public JiraServer Server
+        public override JiraServer Server
         {
             get { return server; }
+            set { throw new NotImplementedException(); }
         }
 
         public JiraSavedFilter Filter
