@@ -202,6 +202,13 @@ namespace PaZu.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap search_jira {
+            get {
+                object obj = ResourceManager.GetObject("search_jira", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to &lt;style type=&quot;text/css&quot;&gt;
         ///.summary, .description 

@@ -15,6 +15,8 @@ namespace PaZu.dialogs
             picture.Image = Properties.Resources.atlassian_538x235;
             browser.DocumentText = Properties.Resources.about_html;
             browser.ScrollBarsEnabled = false;
+
+            StartPosition = FormStartPosition.CenterParent;
         }
 
         private void buttonClose_Click(object sender, EventArgs e)

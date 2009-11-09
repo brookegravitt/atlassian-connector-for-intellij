@@ -11,9 +11,9 @@ namespace PaZu.dialogs
     public partial class ProjectConfiguration : Form
     {
         private readonly TreeNode jiraRoot = new TreeNode("JIRA Servers");
-        private readonly TreeNode bambooRoot = new TreeNode("Bamboo Servers");
-        private readonly TreeNode crucibleRoot = new TreeNode("Crucible Servers");
-        private readonly TreeNode fisheyeRoot = new TreeNode("Fisheye Servers");
+//        private readonly TreeNode bambooRoot = new TreeNode("Bamboo Servers");
+//        private readonly TreeNode crucibleRoot = new TreeNode("Crucible Servers");
+//        private readonly TreeNode fisheyeRoot = new TreeNode("Fisheye Servers");
 
         private readonly JiraServerModel jiraServerModel;
         private readonly JiraServerFacade facade;
@@ -30,14 +30,16 @@ namespace PaZu.dialogs
             ICollection<JiraServer> jiraServers = jiraServerModel.getAllServers();
 
             serverTree.Nodes.Add(jiraRoot);
-            serverTree.Nodes.Add(bambooRoot);
-            serverTree.Nodes.Add(crucibleRoot);
-            serverTree.Nodes.Add(fisheyeRoot);
+//            serverTree.Nodes.Add(bambooRoot);
+//            serverTree.Nodes.Add(crucibleRoot);
+//            serverTree.Nodes.Add(fisheyeRoot);
 
             foreach (JiraServer server in jiraServers)
             {
                 jiraRoot.Nodes.Add(new JiraServerTreeNode(server));
             }
+
+            StartPosition = FormStartPosition.CenterParent;
 
             serverTree.ExpandAll();
         }

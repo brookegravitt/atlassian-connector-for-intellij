@@ -165,6 +165,7 @@ namespace PaZu
             buttonOpen.Enabled = issueSelected;
             buttonRefresh.Enabled = filtersTree.SelectedNode != null &&
                                     filtersTree.SelectedNode is JiraSavedFilterTreeNode;
+            buttonSearch.Enabled = filtersTree.SelectedNode != null;
         }
 
         private delegate void IssueAction(JiraIssue issue);
@@ -373,7 +374,7 @@ namespace PaZu
         private void buttonProjectProperties_Click(object sender, EventArgs e)
         {
             ProjectConfiguration dialog = new ProjectConfiguration(JiraServerModel.Instance, facade);
-            dialog.ShowDialog();
+            dialog.ShowDialog(this);
             if (dialog.SomethingChanged)
             {
                 // todo: only do this for changed servers - add server model listeners
@@ -383,7 +384,7 @@ namespace PaZu
 
         private void buttonAbout_Click(object sender, EventArgs e)
         {
-            new About().ShowDialog();
+            new About().ShowDialog(this);
         }
 
         private void buttonRefreshAll_Click(object sender, EventArgs e)
@@ -468,6 +469,14 @@ namespace PaZu
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
             reloadIssues();
+        }
+
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            TreeNodeWithServer node = filtersTree.SelectedNode as TreeNodeWithServer;
+            if (node == null) return;
+            SearchIssue dlg = new SearchIssue(node.Server, model, status);
+            dlg.ShowDialog(this);
         }
     }
 }

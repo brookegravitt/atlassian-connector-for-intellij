@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -83,6 +83,12 @@
     <Compile Include="dialogs\NewIssueComment.Designer.cs">
       <DependentUpon>NewIssueComment.cs</DependentUpon>
     </Compile>
+    <Compile Include="dialogs\SearchIssue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\SearchIssue.Designer.cs">
+      <DependentUpon>SearchIssue.cs</DependentUpon>
+    </Compile>
     <Compile Include="dialogs\TestJiraConnection.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,6 +143,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ui\issues\IssueNode.cs" />
+    <Compile Include="ui\TreeNodeWithServer.cs" />
     <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
     <Compile Include="ui\JiraServerTreeNode.cs" />
     <Compile Include="ui\StatusLabel.cs">
@@ -163,6 +170,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="dialogs\NewIssueComment.resx">
       <DependentUpon>NewIssueComment.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\SearchIssue.resx">
+      <DependentUpon>SearchIssue.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="dialogs\TestJiraConnection.resx">
@@ -254,6 +265,7 @@
     <Content Include="icons\refresh.png" />
     <None Include="icons\unknown.png" />
     <None Include="icons\view_in_browser.png" />
+    <Content Include="icons\search-jira.png" />
     <Content Include="pazunet.AddIn" />
     <None Include="Resources\comments_css.txt" />
     <None Include="Resources\toggler_javascript.txt" />

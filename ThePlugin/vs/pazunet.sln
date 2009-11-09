@@ -32,9 +32,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		serverUrl_e0126b17-47ee-4e53-9143-ac00f943d87a = https://studio.atlassian.com
-		serverName_e0126b17-47ee-4e53-9143-ac00f943d87a = stack
-		serverGuid_1 = e0126b17-47ee-4e53-9143-ac00f943d87a
 		serverCount = 1
+		serverGuid_1 = e0126b17-47ee-4e53-9143-ac00f943d87a
+		serverName_e0126b17-47ee-4e53-9143-ac00f943d87a = StAC
+		serverUrl_e0126b17-47ee-4e53-9143-ac00f943d87a = https://studio.atlassian.com
 	EndGlobalSection
 EndGlobal
