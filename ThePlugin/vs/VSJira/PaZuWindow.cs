@@ -165,7 +165,7 @@ namespace PaZu
             buttonOpen.Enabled = issueSelected;
             buttonRefresh.Enabled = filtersTree.SelectedNode != null &&
                                     filtersTree.SelectedNode is JiraSavedFilterTreeNode;
-            buttonSearch.Enabled = filtersTree.SelectedNode != null;
+            buttonSearch.Enabled = filtersTree.SelectedNode != null && filtersTree.SelectedNode is TreeNodeWithServer;
         }
 
         private delegate void IssueAction(JiraIssue issue);
@@ -306,7 +306,11 @@ namespace PaZu
                                                                            jiraServer.Name);
                                                          }));
                         }
-                        Invoke(new MethodInvoker(() => filtersTree.ExpandAll()));
+                        Invoke(new MethodInvoker(delegate
+                                                     {
+                                                         filtersTree.Nodes.Add(new RecentlyOpenIssuesTreeNode());
+                                                         filtersTree.ExpandAll();
+                                                     }));
                     }
                     catch (Exception e)
                     {
@@ -401,7 +405,7 @@ namespace PaZu
         private void filtersTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             updateIssueListButtons();
-            if (filtersTree.SelectedNode is JiraSavedFilterTreeNode)
+            if (filtersTree.SelectedNode is JiraSavedFilterTreeNode || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode)
             {
                 reloadIssues();
             }
@@ -413,22 +417,50 @@ namespace PaZu
 
         private void reloadIssues()
         {
-            JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
+            JiraSavedFilterTreeNode savedFilterNode = filtersTree.SelectedNode as JiraSavedFilterTreeNode;
+            RecentlyOpenIssuesTreeNode recentIssuesNode = filtersTree.SelectedNode as RecentlyOpenIssuesTreeNode;
             status.setInfo("Loading issues...");
             getMoreIssues.Visible = false;
-            Thread issueLoadThread = 
-                new Thread(new ThreadStart(delegate
-                                               {
-                                                   try
-                                                   {
-                                                       builder.rebuildModelWithSavedFilter(model, node.Server, node.Filter);
-                                                   }
-                                                   catch (Exception ex)
-                                                   {
-                                                       status.setError(RETRIEVING_ISSUES_FAILED, ex);
-                                                   }
-                                               }));
-            issueLoadThread.Start();
+
+            Thread issueLoadThread = null;
+            
+            if (savedFilterNode != null)
+                issueLoadThread = reloadIssuesWithSavedFilter(savedFilterNode);
+            else if (recentIssuesNode != null)
+                issueLoadThread = reloadIssuesWithRecentlyViewedIssues();
+
+            if (issueLoadThread != null) 
+                issueLoadThread.Start();
+        }
+
+        private Thread reloadIssuesWithRecentlyViewedIssues()
+        {
+            return new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    builder.rebuildModelWithRecentlyViewedIssues(model);
+                }
+                catch (Exception ex)
+                {
+                    status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                }
+            }));
+        }
+
+        private Thread reloadIssuesWithSavedFilter(JiraSavedFilterTreeNode savedFilterNode)
+        {
+            return new Thread(new ThreadStart(delegate
+                                  {
+                                      try
+                                      {
+                                          builder.rebuildModelWithSavedFilter(model, savedFilterNode.Server, savedFilterNode.Filter);
+                                      }
+                                      catch (Exception ex)
+                                      {
+                                          status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                                      }
+                                  }));
         }
 
         private void getMoreIssues_Click(object sender, EventArgs e)

@@ -18,6 +18,12 @@ namespace PaZu.api
 
         private readonly List<Comment> comments = new List<Comment>();
 
+        private readonly List<string> versions = new List<string>();
+
+        private readonly List<string> fixVersions = new List<string>();
+
+        private readonly List<string> components = new List<string>();
+
         public JiraIssue(JiraServer server, XPathNavigator nav)
         {
             Server = server;
@@ -80,8 +86,20 @@ namespace PaZu.api
                         TimeSpent = nav.Value;
                         TimeSpentInSeconds = getAttributeSafely(nav, "seconds", UNKNOWN);
                         break;
+                    case "version":
+                        versions.Add(nav.Value);
+                        break;
+                    case "fixVersion":
+                        fixVersions.Add(nav.Value);
+                        break;
+                    case "component":
+                        components.Add(nav.Value);
+                        break;
                     case "comments":
                         createComments(nav);
+                        break;
+                    case "environment":
+                        Environment = nav.Value;
                         break;
                     default:
                         break;
@@ -152,6 +170,8 @@ namespace PaZu.api
 
         public string ProjectKey { get; private set; }
 
+        public string Environment { get; private set; }
+
         public string OriginalEstimate { get; private set; }
 
         public int OriginalEstimateInSeconds { get; private set; }
@@ -165,6 +185,12 @@ namespace PaZu.api
         public int TimeSpentInSeconds { get; set; }
 
         public List<Comment> Comments { get { return comments; } }
+
+        public List<string> Versions { get { return versions; } }
+
+        public List<string> FixVersions { get { return fixVersions; } }
+
+        public List<string> Components { get { return components; } }
 
         private static string getAttributeSafely(XPathNavigator nav, string name, string defaultValue)
         {

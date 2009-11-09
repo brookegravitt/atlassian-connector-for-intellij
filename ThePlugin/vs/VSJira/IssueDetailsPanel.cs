@@ -42,6 +42,7 @@ namespace PaZu
             status = new StatusLabel(statusStrip, jiraStatus);
 
             this.issue = issue;
+
             this.tabWindow = tabWindow;
             this.myTab = myTab;
         }
@@ -177,11 +178,14 @@ namespace PaZu
             sb.Append("<html>\n<head>\n").Append(Properties.Resources.summary_and_description_css)
                 .Append("\n</head>\n<body>\n<table class=\"summary\">\n")
                 .Append("<tr><td><b>Type</b></td><td>")
-                .Append("<img alt=\"\" src=\"").Append(issue.IssueTypeIconUrl).Append("\"/>").Append(issue.IssueType).Append("</td></tr>\n")
+                .Append("<img alt=\"\" src=\"").Append(issue.IssueTypeIconUrl).Append("\"/>").Append(issue.IssueType).
+                Append("</td></tr>\n")
                 .Append("<tr><td><b>Status</b></td><td>")
-                .Append("<img alt=\"\" src=\"").Append(issue.StatusIconUrl).Append("\"/>").Append(issue.Status).Append("</td></tr>\n")
+                .Append("<img alt=\"\" src=\"").Append(issue.StatusIconUrl).Append("\"/>").Append(issue.Status).Append(
+                "</td></tr>\n")
                 .Append("<tr><td><b>Priority</b></td><td>")
-                .Append("<img alt=\"\" src=\"").Append(issue.PriorityIconUrl).Append("\"/>").Append(issue.Priority).Append("</td></tr>\n")
+                .Append("<img alt=\"\" src=\"").Append(issue.PriorityIconUrl).Append("\"/>").Append(issue.Priority).
+                Append("</td></tr>\n")
                 .Append("<tr><td><b>Assignee</b></td><td>")
                 .Append(issue.Assignee).Append("</td></tr>\n")
                 .Append("<tr><td><b>Reporter</b></td><td>")
@@ -191,14 +195,66 @@ namespace PaZu
                 .Append("<tr><td><b>Created</b></td><td>")
                 .Append(issue.CreationDate).Append("</td></tr>\n")
                 .Append("<tr><td><b>Updated</b></td><td>")
-                .Append(issue.UpdateDate).Append("</td></tr>\n")
-                .Append("<tr><td><b>Affects Version</b></td><td>")
-                .Append("TODO").Append("</td></tr>\n")
-                .Append("<tr><td><b>Fix Version</b></td><td>")
-                .Append("TODO").Append("</td></tr>\n")
-                .Append("<tr><td><b>Component</b></td><td>")
-                .Append("TODO").Append("</td></tr>\n")
-                .Append("<tr><td><b>Original Estimate</b></td><td>")
+                .Append(issue.UpdateDate).Append("</td></tr>\n");
+
+            if (issue.Versions.Count > 1)
+                sb.Append("<tr><td><b>Affects Versions</b></td><td>");
+            else
+                sb.Append("<tr><td><b>Affects Version</b></td><td>");
+
+            if (issue.Versions.Count == 0)
+                sb.Append("None").Append("</td></tr>\n");
+            else
+            {
+                int i = 0;
+                foreach (string v in issue.Versions)
+                {
+                    sb.Append(v);
+                    if (++i < issue.Versions.Count)
+                        sb.Append(", ");
+                }
+                sb.Append("</td></tr>\n");
+            }
+
+            if (issue.FixVersions.Count > 1)
+                sb.Append("<tr><td><b>Fix Versions</b></td><td>");
+            else
+                sb.Append("<tr><td><b>Fix Version</b></td><td>");
+            
+            if (issue.FixVersions.Count == 0)
+                sb.Append("None").Append("</td></tr>\n");
+            else
+            {
+                int i = 0;
+                foreach (string v in issue.FixVersions)
+                {
+                    sb.Append(v);
+                    if (++i < issue.FixVersions.Count)
+                        sb.Append(", ");
+                }
+                sb.Append("</td></tr>\n");
+            }
+
+            if (issue.Components.Count > 1)
+                sb.Append("<tr><td><b>Components</b></td><td>");
+            else
+                sb.Append("<tr><td><b>Component</b></td><td>");
+            
+            if (issue.Components.Count == 0)
+                sb.Append("None").Append("</td></tr>\n");
+            else
+            {
+                int i = 0;
+                foreach (string c in issue.Components)
+                {
+                    sb.Append(c);
+                    if (++i < issue.Components.Count)
+                        sb.Append(", ");
+                }
+                sb.Append("</td></tr>\n");
+            }
+
+            sb.Append("<tr><td><b>Original Estimate</b></td><td>")
                 .Append(issue.OriginalEstimate ?? "None").Append("</td></tr>\n")
                 .Append("<tr><td><b>Remaining Estimate</b></td><td>")
                 .Append(issue.RemainingEstimate ?? "None").Append("</td></tr>\n")

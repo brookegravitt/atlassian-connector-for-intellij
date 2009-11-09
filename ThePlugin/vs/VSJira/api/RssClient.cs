@@ -77,7 +77,6 @@ namespace PaZu.api
                 Debug.WriteLine(e.Message);
                 throw;
             }
-
         }
 
         private static Stream getRssQueryResultStream(StringBuilder url)

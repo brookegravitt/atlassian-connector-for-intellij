@@ -36,6 +36,7 @@ namespace PaZu
             {
                 TabPage issueTab = new TabPage {Name = key, Text = issue.Key};
                 IssueDetailsPanel issuePanel = new IssueDetailsPanel(model, Solution, issue, issueTabs, issueTab);
+                RecentlyViewedIssuesModel.Instance.add(issue);
                 issueTab.Controls.Add(issuePanel);
                 issuePanel.Dock = DockStyle.Fill;
                 issueTabs.TabPages.Add(issueTab);
