@@ -29,8 +29,7 @@
         private void InitializeComponent()
         {
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.listBoxProjects = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -54,6 +53,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
+            this.listViewIssueTypes = new System.Windows.Forms.ListView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -70,28 +70,22 @@
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
-            // listBox1
+            // listBoxProjects
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 34);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(208, 173);
-            this.listBox1.TabIndex = 0;
-            // 
-            // listBox2
-            // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(12, 247);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(208, 173);
-            this.listBox2.TabIndex = 1;
+            this.listBoxProjects.FormattingEnabled = true;
+            this.listBoxProjects.Location = new System.Drawing.Point(12, 34);
+            this.listBoxProjects.Name = "listBoxProjects";
+            this.listBoxProjects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBoxProjects.Size = new System.Drawing.Size(208, 173);
+            this.listBoxProjects.TabIndex = 0;
+            this.listBoxProjects.SelectedValueChanged += new System.EventHandler(this.listBoxProjects_SelectedValueChanged);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.listViewIssueTypes);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.listBox2);
-            this.groupBox1.Controls.Add(this.listBox1);
+            this.groupBox1.Controls.Add(this.listBoxProjects);
             this.groupBox1.Location = new System.Drawing.Point(7, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(236, 444);
@@ -102,7 +96,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 226);
+            this.label2.Location = new System.Drawing.Point(9, 224);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 4;
@@ -307,6 +301,17 @@
             this.buttonClear.Text = "Clear Filter";
             this.buttonClear.UseVisualStyleBackColor = true;
             // 
+            // listViewIssueTypes
+            // 
+            this.listViewIssueTypes.FullRowSelect = true;
+            this.listViewIssueTypes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewIssueTypes.Location = new System.Drawing.Point(12, 242);
+            this.listViewIssueTypes.Name = "listViewIssueTypes";
+            this.listViewIssueTypes.Size = new System.Drawing.Size(208, 178);
+            this.listViewIssueTypes.TabIndex = 5;
+            this.listViewIssueTypes.UseCompatibleStateImageBehavior = false;
+            this.listViewIssueTypes.View = System.Windows.Forms.View.Details;
+            // 
             // EditCustomFilter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -337,8 +342,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonClose;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.ListBox listBoxProjects;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -362,5 +366,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonClear;
+        private System.Windows.Forms.ListView listViewIssueTypes;
     }
 }

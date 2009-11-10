@@ -1,4 +1,6 @@
-﻿namespace PaZu.api
+﻿using System;
+
+namespace PaZu.api
 {
     public class JiraNamedEntity
     {
@@ -12,5 +14,10 @@
         public int Id { get; private set; }
         public string Name { get; private set; }
         public string IconUrl { get; private set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -68,6 +68,12 @@ namespace PaZu.api.soap
             return createEntityList(service.getIssueTypes(token));
         }
 
+
+        public List<JiraNamedEntity> getIssueTypes(JiraProject project)
+        {
+            return createEntityList(service.getIssueTypesForProject(token, project.Id.ToString()));
+        }
+
         public List<JiraNamedEntity> getPriorities()
         {
             return createEntityList(service.getPriorities(token));

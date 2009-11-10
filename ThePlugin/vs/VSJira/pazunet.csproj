@@ -114,6 +114,7 @@
       <DependentUpon>IssueDetailsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="models\CredentialsVault.cs" />
+    <Compile Include="models\CustomFilter.cs" />
     <Compile Include="models\ImageCache.cs" />
     <Compile Include="models\JiraIssueListModelBuilder.cs" />
     <Compile Include="models\JiraIssueListModel.cs" />
@@ -155,6 +156,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ui\issues\IssueNode.cs" />
+    <Compile Include="ui\IssueTypeListViewItem.cs" />
     <Compile Include="ui\RecentlyOpenIssuesTreeNode.cs" />
     <Compile Include="ui\TreeNodeWithServer.cs" />
     <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
