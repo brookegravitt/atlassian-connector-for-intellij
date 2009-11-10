@@ -4,18 +4,21 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using PaZu.api;
 using PaZu.dialogs;
+using PaZu.models;
 
 namespace PaZu.ui.issues
 {
     public sealed class FilterContextMenu : ContextMenuStrip
     {
         private readonly JiraServer server;
+        private readonly CustomFilter filter;
 
         private readonly ToolStripMenuItem[] items;
 
-        public FilterContextMenu(JiraServer server)
+        public FilterContextMenu(JiraServer server, CustomFilter filter)
         {
             this.server = server;
+            this.filter = filter;
 
             items = new[]
                 {
@@ -42,7 +45,7 @@ namespace PaZu.ui.issues
 
         private void editFilter(object sender, EventArgs e)
         {
-            EditCustomFilter ecf = new EditCustomFilter(server);
+            EditCustomFilter ecf = new EditCustomFilter(server, filter);
             ecf.ShowDialog();
         }
     }

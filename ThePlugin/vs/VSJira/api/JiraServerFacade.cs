@@ -43,6 +43,11 @@ namespace PaZu.api
             return getSoapSession(server).getIssueTypes();
         }
 
+        public List<JiraNamedEntity> getIssueTypes(JiraServer server, JiraProject project)
+        {
+            return getSoapSession(server).getIssueTypes(project);
+        }
+
         public List<JiraSavedFilter> getSavedFilters(JiraServer server)
         {
             return getSoapSession(server).getSavedFilters();

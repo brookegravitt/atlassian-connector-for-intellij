@@ -1,18 +1,21 @@
 ﻿using System;
 using PaZu.api;
+using PaZu.models;
 
 namespace PaZu.ui
 {
     class CustomFilterTreeNode : TreeNodeWithServer
     {
         private readonly JiraServer server;
+        private readonly CustomFilter filter;
 
-        public CustomFilterTreeNode(JiraServer server) : base("Custom Filter")
+        public CustomFilterTreeNode(JiraServer server, CustomFilter filter) : base("Custom Filter")
         {
             this.server = server;
+            this.filter = filter;
 
             // todo: this will be the tooltip
-            Tag = server.Name;
+            Tag = server.Name + filter;
         }
 
         public override JiraServer Server

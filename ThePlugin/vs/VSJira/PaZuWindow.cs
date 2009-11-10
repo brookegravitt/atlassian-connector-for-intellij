@@ -331,13 +331,15 @@ namespace PaZu
             {
                 return;
             }
-            CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server)
+            foreach (CustomFilter filter in CustomFilter.getAll(server))
+            {
+                CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server, filter)
                                               {
-                                                  ContextMenuStrip = new FilterContextMenu(server),
+                                                  ContextMenuStrip = new FilterContextMenu(server, filter),
                                                   ToolTipText = server.Name
                                               };
-
-            node.Nodes.Add(cfNode);
+                node.Nodes.Add(cfNode);
+            }
         }
 
         public void modelChanged()
