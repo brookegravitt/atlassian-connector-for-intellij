@@ -77,6 +77,12 @@
     <Compile Include="api\JiraProject.cs" />
     <Compile Include="api\JiraSavedFilter.cs" />
     <Compile Include="api\JiraServer.cs" />
+    <Compile Include="dialogs\EditCustomFilter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\EditCustomFilter.Designer.cs">
+      <DependentUpon>EditCustomFilter.cs</DependentUpon>
+    </Compile>
     <Compile Include="dialogs\NewIssueComment.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -140,6 +146,10 @@
     </Compile>
     <Compile Include="api\RssClient.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="ui\CustomFilterTreeNode.cs" />
+    <Compile Include="ui\issues\FilterContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ui\issues\FlatIssueTreeModel.cs" />
     <Compile Include="ui\issues\IssueContextMenu.cs">
       <SubType>Component</SubType>
@@ -170,6 +180,10 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\EditCustomFilter.resx">
+      <DependentUpon>EditCustomFilter.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="dialogs\NewIssueComment.resx">
       <DependentUpon>NewIssueComment.cs</DependentUpon>

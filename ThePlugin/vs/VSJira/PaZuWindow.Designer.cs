@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.mainContainer = new System.Windows.Forms.ToolStripContainer();
             this.productTabs = new System.Windows.Forms.TabControl();
             this.tabJira = new System.Windows.Forms.TabPage();
@@ -45,12 +46,13 @@
             this.buttonOpen = new System.Windows.Forms.ToolStripButton();
             this.buttonViewInBrowser = new System.Windows.Forms.ToolStripButton();
             this.buttonEditInBrowser = new System.Windows.Forms.ToolStripButton();
+            this.buttonSearch = new System.Windows.Forms.ToolStripButton();
             this.buttonRefresh = new System.Windows.Forms.ToolStripButton();
             this.globalToolBar = new System.Windows.Forms.ToolStrip();
             this.buttonProjectProperties = new System.Windows.Forms.ToolStripButton();
             this.buttonAbout = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.buttonSearch = new System.Windows.Forms.ToolStripButton();
+            this.filtersTreeToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.mainContainer.ContentPanel.SuspendLayout();
             this.mainContainer.LeftToolStripPanel.SuspendLayout();
             this.mainContainer.SuspendLayout();
@@ -201,6 +203,7 @@
             this.filtersTree.Size = new System.Drawing.Size(180, 190);
             this.filtersTree.TabIndex = 0;
             this.filtersTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.filtersTree_AfterSelect);
+            this.filtersTree.MouseMove += new System.Windows.Forms.MouseEventHandler(this.filtersTree_MouseMove);
             // 
             // toolStrip1
             // 
@@ -250,7 +253,7 @@
             this.buttonRefresh});
             this.toolStrip2.Location = new System.Drawing.Point(3, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(156, 25);
+            this.toolStrip2.Size = new System.Drawing.Size(125, 25);
             this.toolStrip2.TabIndex = 0;
             // 
             // buttonOpen
@@ -282,6 +285,16 @@
             this.buttonEditInBrowser.Size = new System.Drawing.Size(23, 22);
             this.buttonEditInBrowser.Text = "Edit in Browser";
             this.buttonEditInBrowser.Click += new System.EventHandler(this.buttonEditInBrowser_Click);
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonSearch.Image = global::PaZu.Properties.Resources.search_jira;
+            this.buttonSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(23, 22);
+            this.buttonSearch.Text = "Search Issue";
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // buttonRefresh
             // 
@@ -337,15 +350,9 @@
             this.toolStripContainer1.TabIndex = 0;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
-            // buttonSearch
+            // filtersTreeToolTip
             // 
-            this.buttonSearch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonSearch.Image = global::PaZu.Properties.Resources.search_jira;
-            this.buttonSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(23, 22);
-            this.buttonSearch.Text = "Search Issue";
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            this.filtersTreeToolTip.ToolTipTitle = "Custom Filter Summary";
             // 
             // PaZuWindow
             // 
@@ -420,5 +427,6 @@
         private System.Windows.Forms.ToolStripButton buttonEditInBrowser;
         private System.Windows.Forms.ToolStripButton buttonRefresh;
         private System.Windows.Forms.ToolStripButton buttonSearch;
+        private System.Windows.Forms.ToolTip filtersTreeToolTip;
     }
 }

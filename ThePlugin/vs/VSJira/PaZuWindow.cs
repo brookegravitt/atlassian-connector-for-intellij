@@ -37,6 +37,9 @@ namespace PaZu
             model.addListener(this);
 
             builder = new JiraIssueListModelBuilder(facade);
+
+            filtersTreeToolTip.SetToolTip(filtersTree, "");
+            filtersTreeToolTip.Active = true;
         }
 
         private readonly TreeColumn colKeyAndSummary = new TreeColumn();
@@ -304,6 +307,7 @@ namespace PaZu
                                                              fillSavedFiltersForServer(jiraServer, filters);
                                                              status.setInfo("Loaded saved filters for server " +
                                                                            jiraServer.Name);
+                                                             addCustomFilterNodes(jiraServer);
                                                          }));
                         }
                         Invoke(new MethodInvoker(delegate
@@ -318,6 +322,22 @@ namespace PaZu
                     }
                 }));
             metadataThread.Start();
+        }
+
+        private void addCustomFilterNodes(JiraServer server)
+        {
+            JiraServerTreeNode node = findNode(server);
+            if (node == null)
+            {
+                return;
+            }
+            CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server)
+                                              {
+                                                  ContextMenuStrip = new FilterContextMenu(server),
+                                                  ToolTipText = server.Name
+                                              };
+
+            node.Nodes.Add(cfNode);
         }
 
         public void modelChanged()
@@ -509,6 +529,38 @@ namespace PaZu
             if (node == null) return;
             SearchIssue dlg = new SearchIssue(node.Server, model, status);
             dlg.ShowDialog(this);
+        }
+
+        //
+        // from http://support.microsoft.com/kb/322634
+        //
+        private void filtersTree_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Get the node at the current mouse pointer location.
+            TreeNode theNode = filtersTree.GetNodeAt(e.X, e.Y);
+
+            // Set a ToolTip only if the mouse pointer is actually paused on a node.
+            if ((theNode != null))
+            {
+                // Verify that the tag property is not "null".
+                if (theNode.Tag != null)
+                {
+                    // Change the ToolTip only if the pointer moved to a new node.
+                    if (theNode.Tag.ToString() != filtersTreeToolTip.GetToolTip(filtersTree))
+                    {
+                        filtersTreeToolTip.SetToolTip(filtersTree, theNode.Tag.ToString());
+                    }
+                }
+                else
+                {
+                    filtersTreeToolTip.SetToolTip(filtersTree, "");
+                }
+            }
+            else     // Pointer is not over a node so clear the ToolTip.
+            {
+                filtersTreeToolTip.SetToolTip(filtersTree, "");
+            }
+
         }
     }
 }
