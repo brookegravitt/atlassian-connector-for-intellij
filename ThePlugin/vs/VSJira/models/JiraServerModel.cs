@@ -42,7 +42,6 @@ namespace PaZu.models
 
         public void load(Globals globals)
         {
-
             if (globals.get_VariableExists(SERVER_COUNT))
             {
                 try
@@ -65,8 +64,7 @@ namespace PaZu.models
                 {
                     Debug.WriteLine(e);
                 }
-            }
-            
+            }            
         }
 
         public void save(Globals globals)
