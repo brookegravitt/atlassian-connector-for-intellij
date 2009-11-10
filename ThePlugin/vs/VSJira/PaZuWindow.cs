@@ -326,7 +326,7 @@ namespace PaZu
                 {
                     ICollection<JiraIssue> issues = model.Issues;
 
-                    if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode)) return;
+                    if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode)) return;
 
                     status.setInfo("Loaded " + issues.Count + " issues");
 

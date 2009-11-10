@@ -11,7 +11,7 @@ namespace PaZu.models
         private readonly List<RecentlyViewedIssue> issues = new List<RecentlyViewedIssue>();
 
         private static readonly RecentlyViewedIssuesModel INSTANCE = new RecentlyViewedIssuesModel();
-        private const string RECENTLY_VIEWED_COUNT = "recentlyViewedIssuesCount";
+        private const string RECENTLY_VIEWED_COUNT = "recentlyViewedIssuesCount_";
         private const string RECENTLY_VIEWED_ISSUE_KEY = "recentlyViewedIssueKey_";
         private const string RECENTLY_VIEWED_ISSUE_SERVER_GUID = "recentlyViewedIssueServerGuid_";
 
@@ -53,17 +53,19 @@ namespace PaZu.models
 
         public ICollection<RecentlyViewedIssue> Issues { get { return issues; } }
 
-        public void load(Globals globals)
+        public void load(Globals globals, string solutionName)
         {
             lock (this)
             {
                 issues.Clear();
 
-                if (globals.get_VariableExists(RECENTLY_VIEWED_COUNT))
+                solutionName = getFileNamePartAndReplaceDots(solutionName);
+
+                if (globals.get_VariableExists(RECENTLY_VIEWED_COUNT + solutionName))
                 {
                     try
                     {
-                        int count = int.Parse(globals[RECENTLY_VIEWED_COUNT].ToString());
+                        int count = int.Parse(globals[RECENTLY_VIEWED_COUNT + solutionName].ToString());
                         if (count > MAX_ITEMS)
                         {
                             count = MAX_ITEMS;
@@ -71,9 +73,9 @@ namespace PaZu.models
 
                         for (int i = 1; i <= count; ++i)
                         {
-                            string guidStr = globals[RECENTLY_VIEWED_ISSUE_SERVER_GUID + i].ToString();
+                            string guidStr = globals[RECENTLY_VIEWED_ISSUE_SERVER_GUID + solutionName + "_" + i].ToString();
                             Guid guid = new Guid(guidStr);
-                            string key = globals[RECENTLY_VIEWED_ISSUE_KEY + i].ToString();
+                            string key = globals[RECENTLY_VIEWED_ISSUE_KEY + solutionName + "_" + i].ToString();
 
                             RecentlyViewedIssue issue = new RecentlyViewedIssue(guid, key);
                             issues.Add(issue);
@@ -88,25 +90,27 @@ namespace PaZu.models
             }
         }
 
-        public void save(Globals globals)
+        public void save(Globals globals, string solutionName)
         {
             lock (this)
             {
                 if (!changedSinceLoading)
                     return;
 
+                solutionName = getFileNamePartAndReplaceDots(solutionName);
+
                 try
                 {
-                    globals[RECENTLY_VIEWED_COUNT] = issues.Count.ToString();
-                    globals.set_VariablePersists(RECENTLY_VIEWED_COUNT, true);
+                    globals[RECENTLY_VIEWED_COUNT + solutionName] = issues.Count.ToString();
+                    globals.set_VariablePersists(RECENTLY_VIEWED_COUNT + solutionName, true);
 
                     int i = 1;
                     foreach (RecentlyViewedIssue issue in issues)
                     {
-                        string var = RECENTLY_VIEWED_ISSUE_SERVER_GUID + i;
+                        string var = RECENTLY_VIEWED_ISSUE_SERVER_GUID + solutionName + "_" + i;
                         globals[var] = issue.ServerGuid.ToString();
                         globals.set_VariablePersists(var, true);
-                        var = RECENTLY_VIEWED_ISSUE_KEY + i;
+                        var = RECENTLY_VIEWED_ISSUE_KEY + solutionName + "_" + i;
                         globals[var] = issue.IssueKey;
                         globals.set_VariablePersists(var, true);
                         ++i;
@@ -117,6 +121,16 @@ namespace PaZu.models
                     Debug.WriteLine(e);
                 }
             }
+        }
+
+        private static string getFileNamePartAndReplaceDots(string solutionName)
+        {
+            if (solutionName.Contains("\\") && !solutionName.EndsWith("\\"))
+            {
+                solutionName = solutionName.Substring(solutionName.LastIndexOf("\\") + 1);
+            }
+            solutionName = solutionName.Replace(".", "_dot_");
+            return solutionName;
         }
     }
 }
