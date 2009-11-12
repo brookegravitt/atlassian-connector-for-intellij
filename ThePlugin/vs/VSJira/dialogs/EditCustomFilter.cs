@@ -12,11 +12,11 @@ namespace PaZu.dialogs
     public partial class EditCustomFilter : Form
     {
         private readonly JiraServer server;
-        private readonly CustomFilter filter;
+        private readonly JiraCustomFilter filter;
 
         public bool Changed { get; private set; }
 
-        public EditCustomFilter(JiraServer server, CustomFilter filter)
+        public EditCustomFilter(JiraServer server, JiraCustomFilter filter)
         {
             this.server = server;
             this.filter = filter;
@@ -228,9 +228,9 @@ namespace PaZu.dialogs
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            clearFilterValues();
+//            clearFilterValues();
             clearSelections();
-            Changed = true;
+//            Changed = true;
         }
 
         private void buttonOk_Click(object sender, EventArgs e)

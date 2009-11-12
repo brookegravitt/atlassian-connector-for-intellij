@@ -167,7 +167,9 @@ namespace PaZu
             buttonEditInBrowser.Enabled = issueSelected;
             buttonOpen.Enabled = issueSelected;
             buttonRefresh.Enabled = filtersTree.SelectedNode != null &&
-                                    filtersTree.SelectedNode is JiraSavedFilterTreeNode;
+                                    (filtersTree.SelectedNode is JiraSavedFilterTreeNode 
+                                    || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode 
+                                    || filtersTree.SelectedNode is CustomFilterTreeNode);
             buttonSearch.Enabled = filtersTree.SelectedNode != null && filtersTree.SelectedNode is TreeNodeWithServer;
         }
 
@@ -331,11 +333,11 @@ namespace PaZu
             {
                 return;
             }
-            foreach (CustomFilter filter in CustomFilter.getAll(server))
+            foreach (JiraCustomFilter filter in JiraCustomFilter.getAll(server))
             {
                 CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server, filter)
                                               {
-                                                  ContextMenuStrip = new FilterContextMenu(server, filter),
+                                                  ContextMenuStrip = new FilterContextMenu(server, filter, reloadIssues),
                                                   ToolTipText = server.Name
                                               };
                 node.Nodes.Add(cfNode);
@@ -348,7 +350,9 @@ namespace PaZu
                 {
                     ICollection<JiraIssue> issues = model.Issues;
 
-                    if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode)) return;
+                    if (!(filtersTree.SelectedNode is JiraSavedFilterTreeNode 
+                        || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode
+                        || filtersTree.SelectedNode is CustomFilterTreeNode)) return;
 
                     status.setInfo("Loaded " + issues.Count + " issues");
 
@@ -360,10 +364,18 @@ namespace PaZu
 //                    ITreeModel treeModel = new FlatIssueTreeModel(model);
 //                    issuesTree.Model = treeModel;
 
-                    getMoreIssues.Visible = true;
+                    getMoreIssues.Visible = 
+                        !(filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode) 
+                        && model.Issues.Count > 0 
+                        && probablyHaveMoreIssues();
 
                     updateIssueListButtons();
                 }));
+        }
+
+        private bool probablyHaveMoreIssues()
+        {
+            return model.Issues.Count % GlobalSettings.JiraIssuesBatch == 0;
         }
 
         public void issueChanged(JiraIssue issue)
@@ -427,7 +439,9 @@ namespace PaZu
         private void filtersTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             updateIssueListButtons();
-            if (filtersTree.SelectedNode is JiraSavedFilterTreeNode || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode)
+            if (filtersTree.SelectedNode is JiraSavedFilterTreeNode 
+                || filtersTree.SelectedNode is RecentlyOpenIssuesTreeNode 
+                || filtersTree.SelectedNode is CustomFilterTreeNode)
             {
                 reloadIssues();
             }
@@ -441,18 +455,31 @@ namespace PaZu
         {
             JiraSavedFilterTreeNode savedFilterNode = filtersTree.SelectedNode as JiraSavedFilterTreeNode;
             RecentlyOpenIssuesTreeNode recentIssuesNode = filtersTree.SelectedNode as RecentlyOpenIssuesTreeNode;
-            status.setInfo("Loading issues...");
-            getMoreIssues.Visible = false;
+            CustomFilterTreeNode customFilterNode = filtersTree.SelectedNode as CustomFilterTreeNode;
 
             Thread issueLoadThread = null;
-            
+
             if (savedFilterNode != null)
                 issueLoadThread = reloadIssuesWithSavedFilter(savedFilterNode);
+            else if (customFilterNode != null && !customFilterNode.Filter.Empty)
+                issueLoadThread = reloadIssuesWithCustomFilter(customFilterNode);
             else if (recentIssuesNode != null)
                 issueLoadThread = reloadIssuesWithRecentlyViewedIssues();
 
-            if (issueLoadThread != null) 
-                issueLoadThread.Start();
+            loadIssuesInThread(issueLoadThread);
+        }
+
+        private void loadIssuesInThread(Thread issueLoadThread)
+        {
+            if (issueLoadThread == null)
+            {
+                model.clear(true);
+                return;
+            }
+
+            status.setInfo("Loading issues...");
+            getMoreIssues.Visible = false;
+            issueLoadThread.Start();
         }
 
         private Thread reloadIssuesWithRecentlyViewedIssues()
@@ -473,36 +500,76 @@ namespace PaZu
         private Thread reloadIssuesWithSavedFilter(JiraSavedFilterTreeNode savedFilterNode)
         {
             return new Thread(new ThreadStart(delegate
-                                  {
-                                      try
-                                      {
-                                          builder.rebuildModelWithSavedFilter(model, savedFilterNode.Server, savedFilterNode.Filter);
-                                      }
-                                      catch (Exception ex)
-                                      {
-                                          status.setError(RETRIEVING_ISSUES_FAILED, ex);
-                                      }
-                                  }));
+                {
+                  try
+                  {
+                      builder.rebuildModelWithSavedFilter(model, savedFilterNode.Server, savedFilterNode.Filter);
+                  }
+                  catch (Exception ex)
+                  {
+                      status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                  }
+                }));
+        }
+
+        private Thread updateIssuesWithSavedFilter(JiraSavedFilterTreeNode node)
+        {
+            return new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    builder.updateModelWithSavedFilter(model, node.Server, node.Filter);
+                }
+                catch (Exception ex)
+                {
+                    status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                }
+            }));
+        }
+
+        private Thread reloadIssuesWithCustomFilter(CustomFilterTreeNode node)
+        {
+            return new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    builder.rebuildModelWithCustomFilter(model, node.Server, node. Filter);
+                }
+                catch (Exception ex)
+                {
+                    status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                }
+            }));
+        }
+
+        private Thread updateIssuesWithCustomFilter(CustomFilterTreeNode node)
+        {
+            return new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    builder.updateModelWithCustomFilter(model, node.Server, node.Filter);
+                }
+                catch (Exception ex)
+                {
+                    status.setError(RETRIEVING_ISSUES_FAILED, ex);
+                }
+            }));
         }
 
         private void getMoreIssues_Click(object sender, EventArgs e)
         {
-            JiraSavedFilterTreeNode node = (JiraSavedFilterTreeNode)filtersTree.SelectedNode;
-            status.setInfo("Loading issues...");
-            getMoreIssues.Visible = false;
-            Thread issueLoadThread =
-                new Thread(new ThreadStart(delegate
-                       {
-                           try
-                           {
-                               builder.updateModelWithSavedFilter(model, node.Server, node.Filter);
-                           }
-                           catch (Exception ex)
-                           {
-                               status.setError(RETRIEVING_ISSUES_FAILED, ex);
-                           }
-                       }));
-            issueLoadThread.Start();
+            JiraSavedFilterTreeNode savedFilterNode = filtersTree.SelectedNode as JiraSavedFilterTreeNode;
+            CustomFilterTreeNode customFilterNode = filtersTree.SelectedNode as CustomFilterTreeNode;
+
+            Thread issueLoadThread = null;
+
+            if (savedFilterNode != null)
+                issueLoadThread = updateIssuesWithSavedFilter(savedFilterNode);
+            else if (customFilterNode != null && !customFilterNode.Filter.Empty)
+                issueLoadThread = updateIssuesWithCustomFilter(customFilterNode);
+
+            loadIssuesInThread(issueLoadThread);
         }
 
         private void buttonOpen_Click(object sender, EventArgs e)
@@ -562,7 +629,12 @@ namespace PaZu
             {
                 filtersTreeToolTip.SetToolTip(filtersTree, "");
             }
+        }
 
+        private void buttonGlobalProperties_Click(object sender, EventArgs e)
+        {
+            GlobalSettings globals = new GlobalSettings();
+            globals.ShowDialog();
         }
     }
 }

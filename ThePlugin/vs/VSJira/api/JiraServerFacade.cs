@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PaZu.api.soap;
+using PaZu.models;
 
 namespace PaZu.api
 {
@@ -56,7 +57,13 @@ namespace PaZu.api
         public List<JiraIssue> getSavedFilterIssues(JiraServer server, JiraSavedFilter filter, int start, int count)
         {
             RssClient rss = new RssClient(server);
-            return rss.getSavedFilterIssues(filter.Id, "issuekey", "ASC", start, count);
+            return rss.getSavedFilterIssues(filter.Id, "priority", "DESC", start, count);
+        }
+        
+        public List<JiraIssue> getCustomFilterIssues(JiraServer server, JiraCustomFilter filter, int start, int count)
+        {
+            RssClient rss = new RssClient(server);
+            return rss.getCustomFilterIssues(filter.getFilterQueryString(), "priority", "DESC", start, count);
         }
 
         public JiraIssue getIssue(JiraServer server, string key)

@@ -83,6 +83,12 @@
     <Compile Include="dialogs\EditCustomFilter.Designer.cs">
       <DependentUpon>EditCustomFilter.cs</DependentUpon>
     </Compile>
+    <Compile Include="dialogs\GlobalSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\GlobalSettings.Designer.cs">
+      <DependentUpon>GlobalSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="dialogs\NewIssueComment.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,7 +120,7 @@
       <DependentUpon>IssueDetailsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="models\CredentialsVault.cs" />
-    <Compile Include="models\CustomFilter.cs" />
+    <Compile Include="models\JiraCustomFilter.cs" />
     <Compile Include="models\ImageCache.cs" />
     <Compile Include="models\JiraIssueListModelBuilder.cs" />
     <Compile Include="models\JiraIssueListModel.cs" />
@@ -186,6 +192,9 @@
     <EmbeddedResource Include="dialogs\EditCustomFilter.resx">
       <DependentUpon>EditCustomFilter.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\GlobalSettings.resx">
+      <DependentUpon>GlobalSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="dialogs\NewIssueComment.resx">
       <DependentUpon>NewIssueComment.cs</DependentUpon>
@@ -273,6 +282,7 @@
     <None Include="icons\collapse_all.png" />
     <None Include="icons\expand_all.png" />
     <None Include="icons\edit_in_browser.png" />
+    <Content Include="icons\global_properties.png" />
     <Content Include="icons\ide_plugin_16.bmp" />
     <Content Include="icons\ide_plugin_16.ico" />
     <Content Include="icons\ide_plugin_300.png" />
