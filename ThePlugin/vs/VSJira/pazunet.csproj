@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -283,13 +283,18 @@
     <None Include="icons\collapse_all.png" />
     <None Include="icons\expand_all.png" />
     <None Include="icons\edit_in_browser.png" />
+    <None Include="icons\find-jira.png" />
     <Content Include="icons\global_properties.png" />
+    <None Include="icons\ico_jira_saved_filter.png" />
+    <None Include="icons\ico_jira_recent_issues.png" />
+    <None Include="icons\ico_jira_custom_filter.png" />
     <Content Include="icons\ide_plugin_16.bmp" />
     <Content Include="icons\ide_plugin_16.ico" />
     <Content Include="icons\ide_plugin_300.png" />
     <Content Include="icons\ide_plugin_32.ico" />
     <None Include="icons\new_comment.png" />
     <None Include="icons\open_in_ide.png" />
+    <None Include="icons\jira-blue-16.png" />
     <Content Include="icons\pazu.bmp" />
     <Content Include="icons\projectsettings.png" />
     <Content Include="icons\refresh.png" />

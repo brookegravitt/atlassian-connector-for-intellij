@@ -58,6 +58,8 @@ namespace PaZu
         private const int UPDATED_WIDTH = 300;
         private const int PRIORITY_WIDTH = 24;
 
+        private ImageList filterTreeImages = new ImageList();
+
         private void initIssuesTree()
         {
             issuesTree = new TreeViewAdv();
@@ -153,6 +155,20 @@ namespace PaZu
             jiraSplitter.Panel2.SizeChanged += issuesTree_SizeChanged;
 
             updateIssueListButtons();
+
+            initImageList();
+        }
+
+        private void initImageList()
+        {
+            filterTreeImages.Images.Clear();
+
+            filterTreeImages.Images.Add(Properties.Resources.jira_blue_16);
+            filterTreeImages.Images.Add(Properties.Resources.ico_jira_saved_filter);
+            filterTreeImages.Images.Add(Properties.Resources.ico_jira_custom_filter);
+            filterTreeImages.Images.Add(Properties.Resources.ico_jira_recent_issues);
+
+            filtersTree.ImageList = filterTreeImages;
         }
 
         void issuesTree_SelectionChanged(object sender, EventArgs e)
@@ -260,7 +276,7 @@ namespace PaZu
 
             foreach (JiraServer server in servers)
             {
-                filtersTree.Nodes.Add(new JiraServerTreeNode(server));
+                filtersTree.Nodes.Add(new JiraServerTreeNode(server, 0));
             }
 
             Thread metadataThread = new Thread(new ThreadStart(delegate
@@ -314,7 +330,7 @@ namespace PaZu
                         }
                         Invoke(new MethodInvoker(delegate
                                                      {
-                                                         filtersTree.Nodes.Add(new RecentlyOpenIssuesTreeNode());
+                                                         filtersTree.Nodes.Add(new RecentlyOpenIssuesTreeNode(3));
                                                          filtersTree.ExpandAll();
                                                      }));
                     }
@@ -335,7 +351,7 @@ namespace PaZu
             }
             foreach (JiraCustomFilter filter in JiraCustomFilter.getAll(server))
             {
-                CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server, filter)
+                CustomFilterTreeNode cfNode = new CustomFilterTreeNode(server, filter, 2)
                                               {
                                                   ContextMenuStrip = new FilterContextMenu(server, filter, reloadIssues),
                                                   ToolTipText = server.Name
@@ -391,7 +407,7 @@ namespace PaZu
             }
             foreach (JiraSavedFilter filter in filters)
             {
-                node.Nodes.Add(new JiraSavedFilterTreeNode(server, filter));
+                node.Nodes.Add(new JiraSavedFilterTreeNode(server, filter, 1));
             }
             node.ExpandAll();
         }
