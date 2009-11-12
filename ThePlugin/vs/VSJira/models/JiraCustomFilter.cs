@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using EnvDTE;
 using PaZu.api;
+using PaZu.util;
 
 namespace PaZu.models
 {
@@ -18,6 +19,8 @@ namespace PaZu.models
         public List<JiraNamedEntity> FixForVersions { get; private set; }
         public List<JiraNamedEntity> AffectsVersions { get; private set; }
         public List<JiraNamedEntity> Components { get; private set; }
+
+        private static Dictionary<Guid, JiraCustomFilter> filters = new Dictionary<Guid, JiraCustomFilter>();
 
         public bool Empty 
         { 
@@ -40,12 +43,16 @@ namespace PaZu.models
 
         public static List<JiraCustomFilter> getAll(JiraServer server)
         {
-            List<JiraCustomFilter> list = new List<JiraCustomFilter>(1) { new JiraCustomFilter(server) };
+            List<JiraCustomFilter> list = new List<JiraCustomFilter>(1);
+            if (!filters.ContainsKey(server.GUID))
+                filters[server.GUID] = new JiraCustomFilter(server);
+            list.Add(filters[server.GUID]);
             return list;
         }
 
         public static void clear()
         {
+            filters.Clear();
         }
 
         public string getBrowserQueryString()
@@ -133,6 +140,31 @@ namespace PaZu.models
 
         public static void load(Globals globals, string solutionName)
         {
+//            string key = ParameterSerializer.getKeyFromSolutionName(solutionName);
+//            if (ParameterSerializer.loadParameter(globals, "jiraCustomFilterCount", null) != null)
+        }
+
+        public static void save(Globals globals, string solutionName)
+        {
+            string key = ParameterSerializer.getKeyFromSolutionName(solutionName);
+            ParameterSerializer.storeParameter(globals, key + "_jiraCustomFilterCount", filters.Count);
+            int i = 0;
+            foreach (var filter in filters)
+            {
+                ParameterSerializer.storeParameter(globals, key + "_jiraCustormFilterGuid_" + i, filter.Key.ToString());
+                JiraCustomFilter f = filter.Value;
+
+                ParameterSerializer.storeParameter(globals, key + "jiraCustomFilterProjectCount_" + filter.Key, f.Projects.Count);
+                int k = 0;
+                foreach (JiraProject project in f.Projects)
+                {
+                    ParameterSerializer.storeParameter(globals, key + "jiraCustomFilterProjectId_" + k, project.Id);
+                    ParameterSerializer.storeParameter(globals, key + "jiraCustomFilterProjectKey_" + k, project.Key);
+                    ++k;
+                }
+
+                ++i;
+            }
         }
     }
 }

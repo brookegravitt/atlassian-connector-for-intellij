@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using EnvDTE;
 using PaZu.api;
+using PaZu.util;
 
 namespace PaZu.models
 {
@@ -23,7 +24,7 @@ namespace PaZu.models
 
         public void add(JiraIssue issue)
         {
-            lock(this)
+            lock (this)
             {
                 if (moveToFrontIfContains(issue))
                 {
@@ -59,7 +60,7 @@ namespace PaZu.models
             {
                 issues.Clear();
 
-                solutionName = getFileNamePartAndReplaceDots(solutionName);
+                solutionName = ParameterSerializer.getKeyFromSolutionName(solutionName);
 
                 if (globals.get_VariableExists(RECENTLY_VIEWED_COUNT + solutionName))
                 {
@@ -97,7 +98,7 @@ namespace PaZu.models
                 if (!changedSinceLoading)
                     return;
 
-                solutionName = getFileNamePartAndReplaceDots(solutionName);
+                solutionName = ParameterSerializer.getKeyFromSolutionName(solutionName);
 
                 try
                 {
@@ -121,16 +122,6 @@ namespace PaZu.models
                     Debug.WriteLine(e);
                 }
             }
-        }
-
-        private static string getFileNamePartAndReplaceDots(string solutionName)
-        {
-            if (solutionName.Contains("\\") && !solutionName.EndsWith("\\"))
-            {
-                solutionName = solutionName.Substring(solutionName.LastIndexOf("\\") + 1);
-            }
-            solutionName = solutionName.Replace(".", "_dot_");
-            return solutionName;
         }
     }
 }
