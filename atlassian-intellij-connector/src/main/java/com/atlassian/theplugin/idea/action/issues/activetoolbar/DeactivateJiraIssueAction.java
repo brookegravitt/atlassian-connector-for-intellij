@@ -29,73 +29,83 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
-	public void actionPerformed(final AnActionEvent event) {
-		runDeactivateTask(event);
-	}
+    public void actionPerformed(final AnActionEvent event) {
+        runDeactivateTask(event);
+    }
 
-	public static void runDeactivateTask(final AnActionEvent event) {
+    public static void runDeactivateTask(final AnActionEvent event) {
 
-		final JiraWorkspaceConfiguration conf =
-				IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
-		final Project currentProject = IdeaHelper.getCurrentProject(event);
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				ActiveIssueUtils.deactivate(event, new ActiveIssueResultHandler() {
-					public void success() {
-						if (conf != null) {
-							conf.setActiveJiraIssuee(null);
-                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-						}
-					}
-					public void failure(final Throwable problem) {
-                        if (conf != null) {
-							conf.setActiveJiraIssuee(null);
-                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-						}
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								if (currentProject != null && !currentProject.isDisposed()) {
-									DialogWithDetails.showExceptionDialog(
-											currentProject,
-                                            "Issue Deactivated Locally but Failed to Deactivate Issue remotely.", problem);
-								}
-							}
-						});
-					}
-                    public void failure(String problem) {
-                        if (conf != null) {
-							conf.setActiveJiraIssuee(null);
-                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-						}
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								if (currentProject != null && !currentProject.isDisposed()) {
-                                    Messages.showErrorDialog(currentProject,
-                                            "Issue Deactivated Locally but Failed to Deactivate Issue remotely.",
-                                            "Issue deactivation");
-								}
-							}
-						});
-                    }
-                });
-
+        SwingUtilities.invokeLater(new LocalRunnable(event));
 
 //                //success is invoked only if actions are selected (ie. stop progress action)
 //                if (isOk && conf != null) {
 //                    conf.setActiveJiraIssuee(null);
 //                    PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
 //                }
-			}
-		});
-	}
+    }
 
-	public void onUpdate(final AnActionEvent event) {
-	}
+    private static class LocalRunnable implements Runnable {
+        final private Project project;
+        final JiraWorkspaceConfiguration conf;
+        final private AnActionEvent event;
 
-	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		event.getPresentation().setEnabled(enabled);
-	}
+        public LocalRunnable(AnActionEvent event) {
+
+            this.event = event;
+            conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+            project = IdeaHelper.getCurrentProject(event);
+        }
+
+
+        public void run() {
+            ActiveIssueUtils.deactivate(event, new ActiveIssueResultHandler() {
+                public void success() {
+                    if (conf != null) {
+                        conf.setActiveJiraIssuee(null);
+                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
+                    }
+                }
+
+                public void failure(final Throwable problem) {
+                    if (conf != null) {
+                        conf.setActiveJiraIssuee(null);
+                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
+                    }
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (project != null && !project.isDisposed()) {
+                                DialogWithDetails.showExceptionDialog(
+                                        project,
+                                        "Issue Deactivated Locally but Failed to Deactivate Issue remotely.", problem);
+                            }
+                        }
+                    });
+                }
+
+                public void failure(String problem) {
+                    if (conf != null) {
+                        conf.setActiveJiraIssuee(null);
+                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
+                    }
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (project != null && !project.isDisposed()) {
+                                Messages.showErrorDialog(project,
+                                        "Issue Deactivated Locally but Failed to Deactivate Issue remotely.",
+                                        "Issue deactivation");
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    public void onUpdate(final AnActionEvent event) {
+    }
+
+    public void onUpdate(final AnActionEvent event, final boolean enabled) {
+        event.getPresentation().setEnabled(enabled);
+    }
 }
