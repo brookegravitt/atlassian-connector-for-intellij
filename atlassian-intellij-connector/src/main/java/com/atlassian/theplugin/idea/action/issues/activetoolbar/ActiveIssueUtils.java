@@ -190,7 +190,9 @@ public final class ActiveIssueUtils {
 
                                 public void success() {
                                     ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
-                                    PluginTaskManager.getInstance(project).addChangeListListener();                                    
+
+                                    PluginTaskManager.getInstance(project).addChangeListListener();
+                                    
                                 }
 
                                 public void failure(Throwable problem) {
