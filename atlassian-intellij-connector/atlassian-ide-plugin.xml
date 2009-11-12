@@ -18,6 +18,9 @@
           <plan key="INT-CS" />
           <plan key="INT-CLO" />
           <plan key="INT-DPL" />
+          <plan key="INT-FAIL2" />
+          <plan key="INT-FAIL3" />
+          <plan key="INT-FAIL" />
           <plan key="INT-TST" />
         </plans>
       </bamboo>
@@ -41,14 +44,14 @@
       </crucible>
       <crucible>
         <server-id>d5f90b60-7c6a-4d85-aa78-1ed7dff209ef</server-id>
-        <name>Lech</name>
+        <name>lech2</name>
         <url>http://lech:8020/crucible-2.0</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <jira>
         <server-id>104d2e64-b203-40bb-99c2-db629055de17</server-id>
-        <name>Loft</name>
-        <url>https://loft.spartez.com/jira-demo</url>
+        <name>Jira Atlassian</name>
+        <url>http://jira.atlassian.com</url>
         <dontUseBasicAuth>false</dontUseBasicAuth>
       </jira>
       <fisheye>
@@ -65,7 +68,6 @@
         <isBamboo2M9>true</isBamboo2M9>
         <plans>
           <plan key="BAM-MAIN" />
-          <plan key="BAM-NIGHTSTB" />
         </plans>
       </bamboo>
       <jira>
@@ -92,7 +94,19 @@
         <url>https://lech/crucible-2.0</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
+      <jira>
+        <server-id>38bf481a-53cb-4181-9b30-ad01cdc50583</server-id>
+        <name>Lech</name>
+        <url>http://lech:33315</url>
+        <dontUseBasicAuth>true</dontUseBasicAuth>
+      </jira>
+      <jira>
+        <server-id>50261bbe-771c-474f-bcd0-c995ffe79418</server-id>
+        <name>Extranet</name>
+        <url>https://extranet.atlassian.com/crucible</url>
+        <dontUseBasicAuth>true</dontUseBasicAuth>
+      </jira>
     </servers>
-    <default-jira-server>d5b71692-3679-474f-bc0a-28165fd8f69b</default-jira-server>
+    <fisheye-project-path>ACC/trunk</fisheye-project-path>
   </project-configuration>
 </atlassian-ide-plugin>

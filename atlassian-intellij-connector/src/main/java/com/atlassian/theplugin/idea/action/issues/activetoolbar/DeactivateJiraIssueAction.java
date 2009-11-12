@@ -17,10 +17,11 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
+import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 
@@ -42,16 +43,18 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				boolean isOk = ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+				ActiveIssueUtils.deactivate(event, new ActiveIssueResultHandler() {
 					public void success() {
 						if (conf != null) {
 							conf.setActiveJiraIssuee(null);
+                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
 						}
 					}
 
 					public void failure(final Throwable problem) {
                         if (conf != null) {
 							conf.setActiveJiraIssuee(null);
+                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
 						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -63,14 +66,32 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 							}
 						});
 					}
-				});
+
+                    public void failure(String problem) {
+                        if (conf != null) {
+							conf.setActiveJiraIssuee(null);
+                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
+						}
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								if (currentProject != null && !currentProject.isDisposed()) {
+                                    Messages.showErrorDialog(currentProject,
+                                            "Issue Deactivated Locally but Failed to Deactivate Issue remotely.",
+                                            "Issue deactivation");
+
+								}
+							}
+						});
+
+                    }
+                });
 
 
-                //success is invoked only if actions are selected (ie. stop progress action)
-                if (isOk && conf != null) {
-                    conf.setActiveJiraIssuee(null);
-                    PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-                }
+//                //success is invoked only if actions are selected (ie. stop progress action)
+//                if (isOk && conf != null) {
+//                    conf.setActiveJiraIssuee(null);
+//                    PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
+//                }
 			}
 		});
 	}

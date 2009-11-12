@@ -680,8 +680,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public boolean logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,
-                                            final boolean deactivateIssue, DeactivateIssueResultHandler resultHandler) {
+    public void logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,
+                                            final boolean deactivateIssue, ActiveIssueResultHandler resultHandler) {
         if (issue != null) {
             final WorkLogCreateAndMaybeDeactivateDialog dialog =
                     new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog,
@@ -691,19 +691,23 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 Task.Backgroundable logWork =
                         new LogWorkWorkerTask(issue, dialog, jiraServer, deactivateIssue, resultHandler);
                 ProgressManager.getInstance().run(logWork);
+                return;
             }
-            return dialog.isOK();
         }
-        return false;
+        if (resultHandler != null) {
+            resultHandler.failure("User cancelled deactivating an issue");
+        }
     }
 
     /**
      * Blocking method. Must be called in the background thread.
      *
      * @param issue issue to work on
+     * @param newActiveIssue
      * @return modified issue or the same issue if no modification performed
      */
-    private JiraIssueAdapter assignIssueAndPutInProgress(@NotNull final JiraIssueAdapter issue, StatusBarPane statusBarPane) {
+    private JiraIssueAdapter assignIssueAndPutInProgress(@NotNull final JiraIssueAdapter issue, StatusBarPane statusBarPane,
+                                                         ActiveIssueResultHandler handler, ActiveJiraIssue newActiveIssue) {
         JiraIssueAdapter updatedIssue = issue;
         final JiraServerData jiraServerData = issue.getJiraServerData();
 
@@ -711,12 +715,16 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
             try {
                 jiraServerFacade.setAssignee(jiraServerData, issue, jiraServerData.getUsername());
+                //no exception == assignee set properly
+                updatedIssue.setAssignee(jiraServerData.getUsername());
+                
             } catch (JIRAException e) {
                 final String msg = "Error starting progress on issue. Assigning failed: ";
                 setStatusErrorMessage(msg + e.getMessage(), e);
                 PluginUtil.getLogger().warn(msg + e.getMessage(), e);
-                return updatedIssue;
+
             }
+            return updatedIssue;
         }
 
         setStatusInfoMessage("Retrieving available actions for issue");
@@ -773,7 +781,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     public void startWorkingOnIssueAndActivate(@NotNull final JiraIssueAdapter issue, final ActiveJiraIssue newActiveIssue,
-                                               final StatusBarPane statusBarPane, ChangeList newDefaultList) {
+                                               final StatusBarPane statusBarPane, ChangeList newDefaultList,
+                                               final ActiveIssueResultHandler handler) {
 
         boolean isOk = true;
 
@@ -789,13 +798,23 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
-                    updatedIssue = assignIssueAndPutInProgress(issue, statusBarPane);
+                    updatedIssue = assignIssueAndPutInProgress(issue, statusBarPane, handler, newActiveIssue);
+                    jiraIssueListModelBuilder.updateIssue(updatedIssue);
+
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        public void run() {
+                            ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, updatedIssue);
+                        }
+                    });
+
+
+
+                    //no matter what cannot start in progress or change assignee consider it as success
+                    //==activate issue in IDE
+                    handler.success();
                 }
 
-                public void onSuccess() {
-                    jiraIssueListModelBuilder.updateIssue(updatedIssue);
-                    ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, updatedIssue);
-                }
             });
         } else {
             ActiveIssueUtils.setActiveJiraIssue(project, null, issue);
@@ -1274,12 +1293,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         private final WorkLogCreateAndMaybeDeactivateDialog dialog;
         private final JiraServerData jiraServerData;
         private final boolean deactivateIssue;
-        private DeactivateIssueResultHandler resultHandler;
+        private ActiveIssueResultHandler resultHandler;
         private boolean commitSuccess;
 
         public LogWorkWorkerTask(JiraIssueAdapter issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
                                  JiraServerData jiraServer, boolean deactivateIssue,
-                                 DeactivateIssueResultHandler resultHandler) {
+                                 ActiveIssueResultHandler resultHandler) {
 
             super(IssueListToolWindowPanel.this.getProject(),
                     deactivateIssue ? "Stopping Work" : "Logging Work", false);
@@ -1312,7 +1331,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                 // I should use a temporary variable to make the code more readable,
                                 // but the code is now indented funny in a weird way, so I am leaving
                                 // it as is so that the future generations have some fun looking at it too :P
-                                if (!runWorkflowAction(new DeactivateIssueResultHandler() {
+                                runWorkflowAction(new ActiveIssueResultHandler() {
                                     public void success() {
                                         if (resultHandler != null) {
                                             resultHandler.success();
@@ -1324,12 +1343,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                             resultHandler.failure(problem);
                                         }
                                     }
-                                })) {
-                                    // workflow action not selected, need to call result handler manually
-                                    if (resultHandler != null) {
-                                        resultHandler.success();
+
+                                    public void failure(String problem) {
+                                        if (resultHandler != null) {
+                                            resultHandler.failure(problem);
+                                        }
                                     }
-                                }
+                                });
+
 
                                 // 4.
                                 setStatusInfoMessage("Deactivated issue " + issue.getKey());
@@ -1409,7 +1430,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
 
-        private boolean runWorkflowAction(final DeactivateIssueResultHandler handler) {
+        private void runWorkflowAction(final ActiveIssueResultHandler handler) {
             JIRAAction selectedAction = dialog.getSelectedAction();
             if (selectedAction != null) {
                 setStatusInfoMessage("Running action [" + selectedAction.getName()
@@ -1421,9 +1442,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         riaa.runIssueAction(project, handler);
                     }
                 });
-                return true;
+                return;
             }
-            return false;
+            if (handler != null) {
+                handler.success();
+            }
         }
 
         private void logWork() throws JIRAException {

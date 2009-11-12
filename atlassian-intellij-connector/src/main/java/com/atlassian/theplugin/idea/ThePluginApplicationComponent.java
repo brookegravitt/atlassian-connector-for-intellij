@@ -46,11 +46,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
@@ -97,7 +94,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
             startHttpServer(configuration.getGeneralConfigurationData().getHttpServerPort());
         }
 
-        addActionToDiffToolbar();
+        addActionToDiffToolbar();        
     }
 
     private void addActionToDiffToolbar() {

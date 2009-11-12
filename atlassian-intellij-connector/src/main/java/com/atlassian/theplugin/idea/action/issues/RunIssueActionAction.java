@@ -10,7 +10,7 @@ import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
+import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueActionProvider;
 import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
 import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
@@ -49,15 +49,15 @@ public class RunIssueActionAction extends AnAction {
 		runIssueAction(IdeaHelper.getCurrentProject(event), null);
 	}
 
-	public void runIssueAction(Project project, DeactivateIssueResultHandler resultHandler) {
+	public void runIssueAction(Project project, ActiveIssueResultHandler resultHandler) {
 		ProgressManager.getInstance().run(new IssueActionRunnable(project, resultHandler));
 	}
 
 	private class IssueActionRunnable extends Task.Modal {
 		private Project project;
-        private DeactivateIssueResultHandler resultHandler;
+        private ActiveIssueResultHandler resultHandler;
 
-        IssueActionRunnable(Project project, DeactivateIssueResultHandler resultHandler) {
+        IssueActionRunnable(Project project, ActiveIssueResultHandler resultHandler) {
 			super(project, "Running Issue Action", true);
 			this.project = project;
             this.resultHandler = resultHandler;
@@ -171,13 +171,13 @@ public class RunIssueActionAction extends AnAction {
 		private JiraIssueAdapter detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
 		private JiraServerData server;
-        private DeactivateIssueResultHandler resultHandler;
+        private ActiveIssueResultHandler resultHandler;
 
         public LocalDisplayActionDialogRunnable(final Project project,
                                                 final JiraIssueAdapter detailedIssue,
                                                 final List<JIRAActionField> preFilleddfields,
                                                 final JiraServerData server,
-                                                DeactivateIssueResultHandler resultHandler) {
+                                                ActiveIssueResultHandler resultHandler) {
 			this.project = project;
 			this.detailedIssue = detailedIssue;
 			this.preFilleddfields = preFilleddfields;
@@ -233,11 +233,14 @@ public class RunIssueActionAction extends AnAction {
 						});
 			} else {
 				showInfo("Running workflow action [" + action.getName() + "] cancelled");
+                if (resultHandler != null) {
+                    resultHandler.failure("Running workflow action [" + action.getName() + "] cancelled");
+                }
 			}
 		}
     }
 
-    private void notifyResultHandler(DeactivateIssueResultHandler resultHandler, JIRAException e) {
+    private void notifyResultHandler(ActiveIssueResultHandler resultHandler, JIRAException e) {
         if (resultHandler != null) {
             resultHandler.failure(e);
         }

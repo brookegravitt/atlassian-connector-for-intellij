@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -38,16 +39,27 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 				if (activeIssue != null && panel != null) {
 					boolean isOk = false;
 					try {
-						isOk = panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
+						panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
 								getActiveJiraServerData(event),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-								false, null);
+								false, new ActiveIssueResultHandler() {
+
+                                    public void success() {
+                                        activeIssue.resetTimeSpent();
+                                    }
+
+                                    public void failure(Throwable problem) {
+                                    }
+
+                                    public void failure(String problem) {                                        
+                                    }
+                                });
 					} catch (JIRAException e) {
 						panel.setStatusErrorMessage("Error logging work: " + e.getMessage(), e);
 					}
 
 					if (isOk) {
-						activeIssue.resetTimeSpent();
+
 					}
 				}
 			}
