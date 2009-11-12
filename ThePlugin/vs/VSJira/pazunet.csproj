@@ -169,6 +169,7 @@
     <Compile Include="ui\JiraServerTreeNode.cs" />
     <Compile Include="ui\StatusLabel.cs">
     </Compile>
+    <Compile Include="util\ParameterSerializer.cs" />
     <Compile Include="Web References\JIRA\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
