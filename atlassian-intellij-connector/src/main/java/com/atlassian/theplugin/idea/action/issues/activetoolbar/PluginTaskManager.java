@@ -113,10 +113,10 @@ public final class PluginTaskManager {
     private static DefaultActionGroup getTaskActionGroup() {
         DefaultActionGroup mainToolBar = (DefaultActionGroup) (ActionManagerImpl.getInstance().getAction("MainToolBar"));
         if (mainToolBar != null) {
-            for (AnAction action : mainToolBar.getChildActionsOrStubs()) {
+            for (AnAction action : getGroupActionsOrStubs(mainToolBar)) {
                 if (action instanceof DefaultActionGroup) {
                     DefaultActionGroup group = (DefaultActionGroup) action;
-                    for (AnAction groupAction : group.getChildActionsOrStubs()) {
+                    for (AnAction groupAction : getGroupActionsOrStubs(group)) {
                         if (groupAction.getClass().getName().equals("com.intellij.tasks.actions.SwitchTaskCombo")) {
                             return group;
                         }
@@ -128,6 +128,24 @@ public final class PluginTaskManager {
         return null;
     }
 
+
+
+    private static AnAction[] getGroupActionsOrStubs(DefaultActionGroup group) {
+        AnAction[] actions = new AnAction[0];
+        ClassLoader classLoader = DefaultActionGroup.class.getClassLoader();
+
+        if (classLoader != null) {
+            actions = new AnAction[group.getChildrenCount()];
+            try {
+                Method getChildActionsOrStubsMethod = DefaultActionGroup.class.getMethod("getChildActionsOrStubs");
+                actions = (AnAction[]) getChildActionsOrStubsMethod.invoke(group);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error("Cannot get AnAction[] for group " + group.getTemplatePresentation().getText());
+            }
+        }
+
+        return actions;
+    }
     private static void removePluginTaskCombo() {
         DefaultActionGroup pluginTaskActions = (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.ActiveToolbar");
         DefaultActionGroup mainToolBar = (DefaultActionGroup) (ActionManagerImpl.getInstance().getAction("MainToolBar"));
