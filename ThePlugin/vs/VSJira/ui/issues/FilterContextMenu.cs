@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 using PaZu.api;
@@ -34,13 +33,18 @@ namespace PaZu.ui.issues
         void filterContextMenuOpened(object sender, EventArgs e)
         {
             Items.Clear();
-            Items.AddRange(items);
+
+            Items.Add(items[0]);
+            if (!filter.Empty)
+            {
+                Items.Add(items[1]);
+            }
         }
 
         private void browseFilter(object sender, EventArgs e)
         {
             string url = server.Url;
-            Process.Start(url);
+            Process.Start(url + filter.getQuery());
         }
 
         private void editFilter(object sender, EventArgs e)

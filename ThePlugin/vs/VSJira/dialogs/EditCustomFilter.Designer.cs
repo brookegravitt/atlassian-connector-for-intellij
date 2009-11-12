@@ -31,12 +31,13 @@
             this.buttonClose = new System.Windows.Forms.Button();
             this.listBoxProjects = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listViewIssueTypes = new System.Windows.Forms.ListView();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listBox5 = new System.Windows.Forms.ListBox();
-            this.listBox4 = new System.Windows.Forms.ListBox();
-            this.listBox3 = new System.Windows.Forms.ListBox();
+            this.listBoxFixForVersions = new System.Windows.Forms.ListBox();
+            this.listBoxAffectsVersions = new System.Windows.Forms.ListBox();
+            this.listBoxComponents = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -53,7 +54,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
-            this.listViewIssueTypes = new System.Windows.Forms.ListView();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -78,7 +78,6 @@
             this.listBoxProjects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.listBoxProjects.Size = new System.Drawing.Size(208, 173);
             this.listBoxProjects.TabIndex = 0;
-            this.listBoxProjects.SelectedValueChanged += new System.EventHandler(this.listBoxProjects_SelectedValueChanged);
             // 
             // groupBox1
             // 
@@ -92,6 +91,18 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Project / Issue";
+            // 
+            // listViewIssueTypes
+            // 
+            this.listViewIssueTypes.FullRowSelect = true;
+            this.listViewIssueTypes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listViewIssueTypes.HideSelection = false;
+            this.listViewIssueTypes.Location = new System.Drawing.Point(12, 242);
+            this.listViewIssueTypes.Name = "listViewIssueTypes";
+            this.listViewIssueTypes.Size = new System.Drawing.Size(208, 178);
+            this.listViewIssueTypes.TabIndex = 5;
+            this.listViewIssueTypes.UseCompatibleStateImageBehavior = false;
+            this.listViewIssueTypes.View = System.Windows.Forms.View.Details;
             // 
             // label2
             // 
@@ -113,9 +124,9 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.listBox5);
-            this.groupBox2.Controls.Add(this.listBox4);
-            this.groupBox2.Controls.Add(this.listBox3);
+            this.groupBox2.Controls.Add(this.listBoxFixForVersions);
+            this.groupBox2.Controls.Add(this.listBoxAffectsVersions);
+            this.groupBox2.Controls.Add(this.listBoxComponents);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
@@ -126,29 +137,32 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Components / Versions";
             // 
-            // listBox5
+            // listBoxFixForVersions
             // 
-            this.listBox5.FormattingEnabled = true;
-            this.listBox5.Location = new System.Drawing.Point(99, 299);
-            this.listBox5.Name = "listBox5";
-            this.listBox5.Size = new System.Drawing.Size(236, 121);
-            this.listBox5.TabIndex = 2;
+            this.listBoxFixForVersions.FormattingEnabled = true;
+            this.listBoxFixForVersions.Location = new System.Drawing.Point(99, 34);
+            this.listBoxFixForVersions.Name = "listBoxFixForVersions";
+            this.listBoxFixForVersions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBoxFixForVersions.Size = new System.Drawing.Size(236, 121);
+            this.listBoxFixForVersions.TabIndex = 3;
             // 
-            // listBox4
+            // listBoxAffectsVersions
             // 
-            this.listBox4.FormattingEnabled = true;
-            this.listBox4.Location = new System.Drawing.Point(99, 166);
-            this.listBox4.Name = "listBox4";
-            this.listBox4.Size = new System.Drawing.Size(236, 121);
-            this.listBox4.TabIndex = 1;
+            this.listBoxAffectsVersions.FormattingEnabled = true;
+            this.listBoxAffectsVersions.Location = new System.Drawing.Point(99, 299);
+            this.listBoxAffectsVersions.Name = "listBoxAffectsVersions";
+            this.listBoxAffectsVersions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBoxAffectsVersions.Size = new System.Drawing.Size(236, 121);
+            this.listBoxAffectsVersions.TabIndex = 2;
             // 
-            // listBox3
+            // listBoxComponents
             // 
-            this.listBox3.FormattingEnabled = true;
-            this.listBox3.Location = new System.Drawing.Point(99, 34);
-            this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(236, 121);
-            this.listBox3.TabIndex = 0;
+            this.listBoxComponents.FormattingEnabled = true;
+            this.listBoxComponents.Location = new System.Drawing.Point(99, 166);
+            this.listBoxComponents.Name = "listBoxComponents";
+            this.listBoxComponents.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listBoxComponents.Size = new System.Drawing.Size(236, 121);
+            this.listBoxComponents.TabIndex = 1;
             // 
             // label5
             // 
@@ -198,6 +212,7 @@
             // 
             // listBox8
             // 
+            this.listBox8.Enabled = false;
             this.listBox8.FormattingEnabled = true;
             this.listBox8.Location = new System.Drawing.Point(84, 325);
             this.listBox8.Name = "listBox8";
@@ -206,14 +221,16 @@
             // 
             // listBox7
             // 
+            this.listBox7.Enabled = false;
             this.listBox7.FormattingEnabled = true;
-            this.listBox7.Location = new System.Drawing.Point(84, 221);
+            this.listBox7.Location = new System.Drawing.Point(84, 219);
             this.listBox7.Name = "listBox7";
             this.listBox7.Size = new System.Drawing.Size(173, 95);
             this.listBox7.TabIndex = 3;
             // 
             // listBox6
             // 
+            this.listBox6.Enabled = false;
             this.listBox6.FormattingEnabled = true;
             this.listBox6.Location = new System.Drawing.Point(84, 112);
             this.listBox6.Name = "listBox6";
@@ -222,6 +239,7 @@
             // 
             // comboBox2
             // 
+            this.comboBox2.Enabled = false;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Location = new System.Drawing.Point(84, 61);
             this.comboBox2.Name = "comboBox2";
@@ -230,6 +248,7 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.Enabled = false;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(84, 34);
             this.comboBox1.Name = "comboBox1";
@@ -290,6 +309,7 @@
             this.buttonOk.TabIndex = 3;
             this.buttonOk.Text = "OK";
             this.buttonOk.UseVisualStyleBackColor = true;
+            this.buttonOk.Click += new System.EventHandler(this.buttonOk_Click);
             // 
             // buttonClear
             // 
@@ -300,17 +320,7 @@
             this.buttonClear.TabIndex = 4;
             this.buttonClear.Text = "Clear Filter";
             this.buttonClear.UseVisualStyleBackColor = true;
-            // 
-            // listViewIssueTypes
-            // 
-            this.listViewIssueTypes.FullRowSelect = true;
-            this.listViewIssueTypes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listViewIssueTypes.Location = new System.Drawing.Point(12, 242);
-            this.listViewIssueTypes.Name = "listViewIssueTypes";
-            this.listViewIssueTypes.Size = new System.Drawing.Size(208, 178);
-            this.listViewIssueTypes.TabIndex = 5;
-            this.listViewIssueTypes.UseCompatibleStateImageBehavior = false;
-            this.listViewIssueTypes.View = System.Windows.Forms.View.Details;
+            this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
             // 
             // EditCustomFilter
             // 
@@ -347,9 +357,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ListBox listBox5;
-        private System.Windows.Forms.ListBox listBox4;
-        private System.Windows.Forms.ListBox listBox3;
+        private System.Windows.Forms.ListBox listBoxAffectsVersions;
+        private System.Windows.Forms.ListBox listBoxComponents;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
@@ -367,5 +376,6 @@
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.ListView listViewIssueTypes;
+        private System.Windows.Forms.ListBox listBoxFixForVersions;
     }
 }

@@ -65,34 +65,52 @@ namespace PaZu.api.soap
 
         public List<JiraNamedEntity> getIssueTypes()
         {
-            return createEntityList(service.getIssueTypes(token));
+            return createEntityListFromConstants(service.getIssueTypes(token));
         }
-
 
         public List<JiraNamedEntity> getIssueTypes(JiraProject project)
         {
-            return createEntityList(service.getIssueTypesForProject(token, project.Id.ToString()));
+            return createEntityListFromConstants(service.getIssueTypesForProject(token, project.Id.ToString()));
         }
 
         public List<JiraNamedEntity> getPriorities()
         {
-            return createEntityList(service.getPriorities(token));
+            return createEntityListFromConstants(service.getPriorities(token));
         }
 
         public List<JiraNamedEntity> getStatuses()
         {
-            return createEntityList(service.getStatuses(token));
+            return createEntityListFromConstants(service.getStatuses(token));
         }
 
-        private static List<JiraNamedEntity> createEntityList(IEnumerable<AbstractRemoteConstant> vals)
+        public List<JiraNamedEntity> getComponents(JiraProject project)
+        {
+            return createEntityList(service.getComponents(token, project.Key));
+        }
+
+        public List<JiraNamedEntity> getVersions(JiraProject project)
+        {
+            return createEntityList(service.getVersions(token, project.Key));
+        }
+
+        private static List<JiraNamedEntity> createEntityList(IEnumerable<AbstractNamedRemoteEntity> entities)
+        {
+            List<JiraNamedEntity> list = new List<JiraNamedEntity>();
+            foreach (AbstractNamedRemoteEntity val in entities)
+            {
+                list.Add(new JiraNamedEntity(int.Parse(val.id), val.name, null));
+            }
+            return list;
+        }
+
+        private static List<JiraNamedEntity> createEntityListFromConstants(IEnumerable<AbstractRemoteConstant> vals)
         {
             List<JiraNamedEntity> list = new List<JiraNamedEntity>();
             foreach (AbstractRemoteConstant val in vals)
             {
                 list.Add(new JiraNamedEntity(int.Parse(val.id), val.name, val.icon));
             }
-            return list;
-            
+            return list;            
         }
 
         public List<JiraNamedEntity> getActionsForIssue(JiraIssue issue)

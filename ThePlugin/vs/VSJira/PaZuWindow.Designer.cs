@@ -222,7 +222,7 @@
             this.buttonRefreshAll.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonRefreshAll.Name = "buttonRefreshAll";
             this.buttonRefreshAll.Size = new System.Drawing.Size(23, 22);
-            this.buttonRefreshAll.Text = "toolStripButton1";
+            this.buttonRefreshAll.Text = "Refresh All";
             this.buttonRefreshAll.Click += new System.EventHandler(this.buttonRefreshAll_Click);
             // 
             // issueTreeContainer
