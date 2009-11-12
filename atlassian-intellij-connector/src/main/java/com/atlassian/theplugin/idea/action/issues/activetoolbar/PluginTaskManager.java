@@ -128,8 +128,6 @@ public final class PluginTaskManager {
         return null;
     }
 
-
-
     private static AnAction[] getGroupActionsOrStubs(DefaultActionGroup group) {
         AnAction[] actions = new AnAction[0];
         ClassLoader classLoader = DefaultActionGroup.class.getClassLoader();
@@ -147,7 +145,8 @@ public final class PluginTaskManager {
         return actions;
     }
     private static void removePluginTaskCombo() {
-        DefaultActionGroup pluginTaskActions = (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.ActiveToolbar");
+        DefaultActionGroup pluginTaskActions =
+                (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.ActiveToolbar");
         DefaultActionGroup mainToolBar = (DefaultActionGroup) (ActionManagerImpl.getInstance().getAction("MainToolBar"));
 
         if (mainToolBar != null && pluginTaskActions != null) {
@@ -162,7 +161,8 @@ public final class PluginTaskManager {
 
          DefaultActionGroup tasksGroup = getTaskActionGroup();
          if (tasksGroup != null && !actionsRegistered) {
-             DefaultActionGroup pluginTaskActions = (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
+             DefaultActionGroup pluginTaskActions =
+                     (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
              if (pluginTaskActions != null) {
                  tasksGroup.add(pluginTaskActions);
                  actionsRegistered = true;

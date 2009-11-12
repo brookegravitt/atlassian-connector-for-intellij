@@ -50,7 +50,6 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                             PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
 						}
 					}
-
 					public void failure(final Throwable problem) {
                         if (conf != null) {
 							conf.setActiveJiraIssuee(null);
@@ -66,7 +65,6 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 							}
 						});
 					}
-
                     public void failure(String problem) {
                         if (conf != null) {
 							conf.setActiveJiraIssuee(null);
@@ -78,11 +76,9 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                                     Messages.showErrorDialog(currentProject,
                                             "Issue Deactivated Locally but Failed to Deactivate Issue remotely.",
                                             "Issue deactivation");
-
 								}
 							}
 						});
-
                     }
                 });
 

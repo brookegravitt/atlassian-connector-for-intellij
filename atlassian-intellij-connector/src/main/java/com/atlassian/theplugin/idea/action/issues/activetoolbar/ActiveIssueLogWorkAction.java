@@ -57,10 +57,6 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 					} catch (JIRAException e) {
 						panel.setStatusErrorMessage("Error logging work: " + e.getMessage(), e);
 					}
-
-					if (isOk) {
-
-					}
 				}
 			}
 		});
