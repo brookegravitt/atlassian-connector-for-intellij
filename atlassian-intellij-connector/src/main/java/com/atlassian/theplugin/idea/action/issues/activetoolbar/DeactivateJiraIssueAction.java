@@ -46,9 +46,9 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
     }
 
     private static class LocalRunnable implements Runnable {
-        final private Project project;
-        final JiraWorkspaceConfiguration conf;
-        final private AnActionEvent event;
+        private final Project project;
+        private final JiraWorkspaceConfiguration conf;
+        private final AnActionEvent event;
 
         public LocalRunnable(AnActionEvent event) {
 
