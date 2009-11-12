@@ -6,7 +6,7 @@ using PaZu.api;
 
 namespace PaZu.models
 {
-    public class CustomFilter
+    public class JiraCustomFilter
     {
         private readonly JiraServer server;
 
@@ -27,7 +27,7 @@ namespace PaZu.models
             }
         }
 
-        private CustomFilter(JiraServer server)
+        private JiraCustomFilter(JiraServer server)
         {
             this.server = server;
 
@@ -38,9 +38,9 @@ namespace PaZu.models
             Components = new List<JiraNamedEntity>();
         }
 
-        public static List<CustomFilter> getAll(JiraServer server)
+        public static List<JiraCustomFilter> getAll(JiraServer server)
         {
-            List<CustomFilter> list = new List<CustomFilter>(1) { new CustomFilter(server) };
+            List<JiraCustomFilter> list = new List<JiraCustomFilter>(1) { new JiraCustomFilter(server) };
             return list;
         }
 
@@ -48,23 +48,41 @@ namespace PaZu.models
         {
         }
 
-        public string getQuery()
+        public string getBrowserQueryString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(ISSUE_NAVIGATOR);
+            sb.Append(ISSUE_NAVIGATOR).Append("&");
 
-            foreach (JiraProject project in Projects)
-                sb.Append("&pid=").Append(project.Id);
-            foreach (JiraNamedEntity issueType in IssueTypes)
-                sb.Append("&type=").Append(issueType.Id);
-            foreach (JiraNamedEntity version in AffectsVersions)
-                sb.Append("&version=").Append(version.Id);
-            foreach (JiraNamedEntity version in FixForVersions)
-                sb.Append("&fixfor=").Append(version.Id);
-            foreach (JiraNamedEntity comp in Components)
-                sb.Append("&component=").Append(comp.Id);
+            sb.Append(getQueryParameters());
 
             sb.Append(BROWSER_QUERY_SUFFIX);
+
+            return sb.ToString();
+        }
+
+        public string getFilterQueryString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(getQueryParameters());
+
+            return sb.ToString();
+        }
+
+        private string getQueryParameters()
+        {
+            StringBuilder sb = new StringBuilder();
+            int first = 0;
+            foreach (JiraProject project in Projects)
+                sb.Append(first++ == 0 ? "" : "&").Append("pid=").Append(project.Id);
+            foreach (JiraNamedEntity issueType in IssueTypes)
+                sb.Append(first++ == 0 ? "" : "&").Append("type=").Append(issueType.Id);
+            foreach (JiraNamedEntity version in AffectsVersions)
+                sb.Append(first++ == 0 ? "" : "&").Append("version=").Append(version.Id);
+            foreach (JiraNamedEntity version in FixForVersions)
+                sb.Append(first++ == 0 ? "" : "&").Append("fixfor=").Append(version.Id);
+            foreach (JiraNamedEntity comp in Components)
+                sb.Append(first++ == 0 ? "" : "&").Append("component=").Append(comp.Id);
 
             return sb.ToString();
         }
@@ -74,7 +92,7 @@ namespace PaZu.models
             StringBuilder sb = new StringBuilder();
 
             if (Empty)
-                return "Filter not defined";
+                return "Filter not defined\n\nRight-click to define the filter";
 
             sb.Append("Server URL: ").Append(server.Url);
 
@@ -108,6 +126,8 @@ namespace PaZu.models
                 foreach (JiraNamedEntity comp in Components)
                     sb.Append(comp.Name).Append(" ");
             }
+            sb.Append("\n\nRight-click to edit filter definition");
+
             return sb.ToString();
         }
 

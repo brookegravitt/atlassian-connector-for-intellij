@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PaZu.api;
+using PaZu.dialogs;
 
 namespace PaZu.models
 {
@@ -17,7 +18,7 @@ namespace PaZu.models
         {
             lock (this)
             {
-                List<JiraIssue> issues = facade.getSavedFilterIssues(server, filter, 0, 25);
+                List<JiraIssue> issues = facade.getSavedFilterIssues(server, filter, 0, GlobalSettings.JiraIssuesBatch);
                 model.clear(false);
                 model.addIssues(issues);
             }
@@ -27,7 +28,26 @@ namespace PaZu.models
         {
             lock (this)
             {
-                List<JiraIssue> issues = facade.getSavedFilterIssues(server, filter, model.Issues.Count, 25);
+                List<JiraIssue> issues = facade.getSavedFilterIssues(server, filter, model.Issues.Count, GlobalSettings.JiraIssuesBatch);
+                model.addIssues(issues);
+            }
+        }
+
+        public void rebuildModelWithCustomFilter(JiraIssueListModel model, JiraServer server, JiraCustomFilter filter)
+        {
+            lock (this)
+            {
+                List<JiraIssue> issues = facade.getCustomFilterIssues(server, filter, 0, GlobalSettings.JiraIssuesBatch);
+                model.clear(false);
+                model.addIssues(issues);
+            }
+        }
+
+        public void updateModelWithCustomFilter(JiraIssueListModel model, JiraServer server, JiraCustomFilter filter)
+        {
+            lock (this)
+            {
+                List<JiraIssue> issues = facade.getCustomFilterIssues(server, filter, model.Issues.Count, GlobalSettings.JiraIssuesBatch);
                 model.addIssues(issues);
             }
         }

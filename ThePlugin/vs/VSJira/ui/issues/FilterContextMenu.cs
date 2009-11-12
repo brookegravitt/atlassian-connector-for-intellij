@@ -10,14 +10,18 @@ namespace PaZu.ui.issues
     public sealed class FilterContextMenu : ContextMenuStrip
     {
         private readonly JiraServer server;
-        private readonly CustomFilter filter;
+        private readonly JiraCustomFilter filter;
+        private readonly RunOnEditDialogOk runOnEditDialogOk;
 
         private readonly ToolStripMenuItem[] items;
 
-        public FilterContextMenu(JiraServer server, CustomFilter filter)
+        public delegate void RunOnEditDialogOk();
+
+        public FilterContextMenu(JiraServer server, JiraCustomFilter filter, RunOnEditDialogOk runOnEditDialogOk)
         {
             this.server = server;
             this.filter = filter;
+            this.runOnEditDialogOk = runOnEditDialogOk;
 
             items = new[]
                 {
@@ -44,13 +48,22 @@ namespace PaZu.ui.issues
         private void browseFilter(object sender, EventArgs e)
         {
             string url = server.Url;
-            Process.Start(url + filter.getQuery());
+            try
+            {
+                Process.Start(url + filter.getBrowserQueryString());
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         private void editFilter(object sender, EventArgs e)
         {
             EditCustomFilter ecf = new EditCustomFilter(server, filter);
             ecf.ShowDialog();
+            if (ecf.Changed && runOnEditDialogOk != null)
+                runOnEditDialogOk();
         }
     }
 }

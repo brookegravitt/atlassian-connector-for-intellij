@@ -7,15 +7,16 @@ namespace PaZu.ui
     class CustomFilterTreeNode : TreeNodeWithServer
     {
         private readonly JiraServer server;
-        private readonly CustomFilter filter;
 
-        public CustomFilterTreeNode(JiraServer server, CustomFilter filter) : base("Custom Filter")
+        public CustomFilterTreeNode(JiraServer server, JiraCustomFilter filter) : base("Custom Filter")
         {
             this.server = server;
-            this.filter = filter;
+            Filter = filter;
 
             Tag = filter;
         }
+
+        public JiraCustomFilter Filter { get; private set; }
 
         public override JiraServer Server
         {

@@ -29,16 +29,32 @@ namespace PaZu.api
             this.password = password;
         }
 
-        public List<JiraIssue> getSavedFilterIssues(
-            int filterId,
-            string sortBy,
-            string sortOrder,
-            int start,
-            int max)
+        public List<JiraIssue> getSavedFilterIssues(int filterId, string sortBy, string sortOrder, int start, int max)
         {
             StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/");
             url.Append(filterId).Append("/SearchRequest-").Append(filterId).Append(".xml");
             url.Append("?sorter/field=" + sortBy);
+            url.Append("&sorter/order=" + sortOrder);
+            url.Append("&pager/start=" + start);
+            url.Append("&tempMax=" + max);
+
+            url.Append(appendAuthentication(false));
+
+            try
+            {
+                return createIssueList(getRssQueryResultStream(url));
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        public List<JiraIssue> getCustomFilterIssues(string queryString, string sortBy, string sortOrder, int start, int max)
+        {
+            StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?" + queryString);
+            url.Append("&sorter/field=" + sortBy);
             url.Append("&sorter/order=" + sortOrder);
             url.Append("&pager/start=" + start);
             url.Append("&tempMax=" + max);
