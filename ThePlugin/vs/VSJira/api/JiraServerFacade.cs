@@ -94,5 +94,15 @@ namespace PaZu.api
         {
             getSoapSession(issue.Server).runIssueActionWithoutParams(issue, action.Id);
         }
+
+        public List<JiraNamedEntity> getComponents(JiraServer server, JiraProject project)
+        {
+            return getSoapSession(server).getComponents(project);
+        }
+
+        public List<JiraNamedEntity> getVersions(JiraServer server, JiraProject project)
+        {
+            return getSoapSession(server).getVersions(project);
+        }
     }
 }

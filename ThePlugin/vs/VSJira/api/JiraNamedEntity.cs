@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PaZu.api
+﻿namespace PaZu.api
 {
     public class JiraNamedEntity
     {

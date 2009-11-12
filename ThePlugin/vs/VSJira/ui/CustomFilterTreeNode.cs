@@ -14,8 +14,7 @@ namespace PaZu.ui
             this.server = server;
             this.filter = filter;
 
-            // todo: this will be the tooltip
-            Tag = server.Name + filter;
+            Tag = filter;
         }
 
         public override JiraServer Server
