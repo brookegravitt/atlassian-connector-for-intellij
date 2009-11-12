@@ -698,6 +698,21 @@
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
 
+
+        <!-- we use it only for IDEA 9 and above -->
+        <group id="ThePlugin.TasksToolbar">
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
+            <separator/>
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
+
+        </group>
+
 		<action id="ThePlugin.CommittedChanges.Refresh"
 				text="Refresh Committed Changes"
 				class="com.atlassian.theplugin.idea.action.crucible.RefreshCommittedChanges"

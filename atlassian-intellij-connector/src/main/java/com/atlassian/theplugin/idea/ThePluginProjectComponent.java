@@ -198,7 +198,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 
 		if (!created) {
-
+            PluginTaskManager.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
 
 			ChangeListManager.getInstance(project).registerCommitExecutor(
@@ -323,6 +323,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 
         PluginTaskManager.getInstance(project).addChangeListListener();
+
 
 	}
 

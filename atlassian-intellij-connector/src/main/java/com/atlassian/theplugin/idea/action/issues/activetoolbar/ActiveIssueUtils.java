@@ -78,9 +78,9 @@ public final class ActiveIssueUtils {
         return null;
     }
 
-    
+
     public static void activateLocalTask(final Project project, final ActiveJiraIssue issue) {
-        PluginTaskManager.getInstance(project).activateLocalTask(issue);        
+        PluginTaskManager.getInstance(project).activateLocalTask(issue);
     }
 
     public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue,
@@ -166,7 +166,7 @@ public final class ActiveIssueUtils {
                                      final JiraServerData jiraServerCfg, final ChangeList newDefaultList) {
 
         final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
-        boolean isAlreadyActive = activeIssue != null;
+        boolean isAlreadyActive = activeIssue != null && newActiveIssue != activeIssue;
         boolean isDeactivated = true;
         if (isAlreadyActive) {
 
@@ -180,14 +180,27 @@ public final class ActiveIssueUtils {
         if (isDeactivated) {
 
 
-
-            ActiveIssueUtils.deactivate(project, new DeactivateIssueResultHandler() {
+            ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
 
-                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList);
-                            ActiveIssueUtils.activateLocalTask(project, newActiveIssue);  
+                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList, new ActiveIssueResultHandler() {
+
+                                public void success() {
+                                    ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
+                                    PluginTaskManager.getInstance(project).addChangeListListener();                                    
+                                }
+
+                                public void failure(Throwable problem) {
+                                    PluginTaskManager.getInstance(project).addChangeListListener();
+                                }
+
+                                public void failure(String problem) {
+                                    PluginTaskManager.getInstance(project).addChangeListListener();
+                                }
+                            });
+
                         }
                     });
                 }
@@ -195,6 +208,10 @@ public final class ActiveIssueUtils {
                 public void failure(Throwable problem) {
                     PluginTaskManager.getInstance(project).addChangeListListener();
 
+                }
+
+                public void failure(String problem) {
+                    PluginTaskManager.getInstance(project).addChangeListListener();
                 }
             });
         }
@@ -242,7 +259,7 @@ public final class ActiveIssueUtils {
      *
      * @param project project
      * @param issue   issue
-     */
+     */                                                               
     public static void checkIssueState(final Project project, final JiraIssueAdapter issue) {
         ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
         if (issue != null && activeIssue != null) {
@@ -264,16 +281,22 @@ public final class ActiveIssueUtils {
                                             "Issue " + issue.getKey(), Messages.getQuestionIcon());
 
                                     if (isOk == DialogWrapper.OK_EXIT_CODE) {
-                                        deactivate(project, new DeactivateIssueResultHandler() {
+                                        deactivate(project, new ActiveIssueResultHandler() {
                                             public void success() {
                                                 final JiraWorkspaceConfiguration conf = IdeaHelper
                                                         .getProjectComponent(project, JiraWorkspaceConfiguration.class);
                                                 if (conf != null) {
                                                     conf.setActiveJiraIssuee(null);
                                                 }
+                                                PluginTaskManager.getInstance(project).addChangeListListener();
                                             }
 
                                             public void failure(Throwable problem) {
+                                                PluginTaskManager.getInstance(project).addChangeListListener();
+                                            }
+
+                                            public void failure(String problem) {
+                                                PluginTaskManager.getInstance(project).addChangeListListener();
                                             }
                                         });
                                     }
@@ -293,9 +316,10 @@ public final class ActiveIssueUtils {
      * @param newActiveIssue issue
      * @param jiraServerCfg  server
      * @param newDefaultList
+     * @param activeIssueResultHandler
      */
     private static void activate(final Project project, final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-                                 final JiraServerData jiraServerCfg, ChangeList newDefaultList) {
+                                 final JiraServerData jiraServerCfg, ChangeList newDefaultList, ActiveIssueResultHandler activeIssueResultHandler) {
 
         if (project == null) {
             return;
@@ -305,16 +329,16 @@ public final class ActiveIssueUtils {
         final IssueDetailsToolWindow detailsPanel = IdeaHelper.getIssueDetailsToolWindow(project);
 
         ProgressManager.getInstance().run(
-                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event, newDefaultList));
+                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event, newDefaultList, activeIssueResultHandler));
     }
 
-    public static boolean deactivate(final AnActionEvent event, final DeactivateIssueResultHandler resultHandler) {
-        return deactivate(IdeaHelper.getCurrentProject(event), resultHandler);
+    public static void deactivate(final AnActionEvent event, final ActiveIssueResultHandler resultHandler) {
+        deactivate(IdeaHelper.getCurrentProject(event), resultHandler);
     }
 
-    public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
+    public static void deactivate(final Project project, final ActiveIssueResultHandler resultHandler) {
         final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-
+        boolean isOk = true;
         PluginTaskManager.getInstance(project).removeChangeListListener();
 
         if (conf != null) {
@@ -324,30 +348,33 @@ public final class ActiveIssueUtils {
                 try {
                     final JiraIssueAdapter jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
                     if (panel != null && jiraIssue != null) {
-                        boolean isOk;
+
                         final JiraServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
 
-                        isOk = panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
+                        panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
                                 StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
                                 true, resultHandler);
+                        return;
 
-                        return isOk;
                     }
                 } catch (JIRAException e) {
                     if (panel != null) {
                         panel.setStatusErrorMessage(
                                 "Issue stopped locally. Error stopping remotely work on issue: " + e.getMessage(), e);
+                        resultHandler.failure(e);
                     }
                 }
             }
-
-
-            //always allow to activate issue even if remote de-activation fails
             if (resultHandler != null) {
                 resultHandler.success();
+                return;
             }
         }
-        return true;
+
+        //always allow to activate issue even if remote de-activation fails
+        if (resultHandler != null) {
+            resultHandler.failure("JIRA Workspace is empty");
+        }
     }
 
     private static class RefreshingIssueTask extends Task.Backgroundable {
@@ -360,10 +387,12 @@ public final class ActiveIssueUtils {
         private final IssueDetailsToolWindow detailsPanel;
         private final AnActionEvent event;
         private final ChangeList newDefaultList;
+        private final ActiveIssueResultHandler activeIssueResultHandler;
 
         public RefreshingIssueTask(Project project, JiraServerData jiraServerCfg,
                                    ActiveJiraIssue newActiveIssue, IssueListToolWindowPanel panel,
-                                   IssueDetailsToolWindow detailsPanel, AnActionEvent event, ChangeList newDefaultList) {
+                                   IssueDetailsToolWindow detailsPanel, AnActionEvent event, ChangeList newDefaultList,
+                                   ActiveIssueResultHandler activeIssueResultHandler) {
             super(project, "Refreshing Issue Information", false);
             this.project = project;
             this.jiraServerCfg = jiraServerCfg;
@@ -372,9 +401,11 @@ public final class ActiveIssueUtils {
             this.detailsPanel = detailsPanel;
             this.event = event;
             this.newDefaultList = newDefaultList;
+            this.activeIssueResultHandler = activeIssueResultHandler;
             jiraIssue = null;
             isOk = false;
         }
+
 
         public void run(@NotNull final ProgressIndicator indicator) {
             try {
@@ -400,6 +431,7 @@ public final class ActiveIssueUtils {
                         public void run() {
                             DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
                                     "Error starting work on issue:", e);
+                            //activeIssueResultHandler.failure(e);
                         }
                     });
 
@@ -416,18 +448,22 @@ public final class ActiveIssueUtils {
                             "Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
                                     + ".\nDo you want to overwrite assignee and start progress?",
                             "Issue " + jiraIssue.getKey(), Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+
                 }
                 if (isOk) {
                     //assign to me and start working
                     try {
-                    panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
-                            ActiveIssueUtils.getStatusBarPane(event), newDefaultList);
+                        panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
+                                ActiveIssueUtils.getStatusBarPane(event), newDefaultList, activeIssueResultHandler);
+                        //activeIssueResultHandler.success();
+
                     } catch (Exception e) {
-                          DialogWithDetails.showExceptionDialog(project, "Cannot start work on issue " + jiraIssue.getId(), e);
+                        DialogWithDetails.showExceptionDialog(project, "Cannot start work on issue " + jiraIssue.getId(), e);
+                        activeIssueResultHandler.failure(e);
+
                     }
                 }
             }
-            PluginTaskManager.getInstance(project).addChangeListListener();
         }
     }
 }
