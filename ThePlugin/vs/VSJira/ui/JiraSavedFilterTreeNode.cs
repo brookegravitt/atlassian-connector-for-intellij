@@ -7,8 +7,8 @@ namespace PaZu.ui
     {
         private readonly JiraServer server;
 
-        public JiraSavedFilterTreeNode(JiraServer server, JiraSavedFilter filter)
-            : base(filter.Name)
+        public JiraSavedFilterTreeNode(JiraServer server, JiraSavedFilter filter, int imageIdx)
+            : base(filter.Name, imageIdx)
         {
             this.server = server;
             Filter = filter;

@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using PaZu.api;
+﻿using PaZu.api;
 
 namespace PaZu.ui
 {
@@ -7,8 +6,8 @@ namespace PaZu.ui
     {
         private JiraServer server;
 
-        public JiraServerTreeNode(JiraServer server)
-            : base(server.Name)
+        public JiraServerTreeNode(JiraServer server, int imageIdx)
+            : base(server.Name, imageIdx)
         {
             this.server = server;
         }

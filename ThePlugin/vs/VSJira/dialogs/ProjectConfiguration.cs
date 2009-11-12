@@ -36,7 +36,7 @@ namespace PaZu.dialogs
 
             foreach (JiraServer server in jiraServers)
             {
-                jiraRoot.Nodes.Add(new JiraServerTreeNode(server));
+                jiraRoot.Nodes.Add(new JiraServerTreeNode(server, 0));
             }
 
             StartPosition = FormStartPosition.CenterParent;
@@ -79,7 +79,7 @@ namespace PaZu.dialogs
             DialogResult result = dialog.ShowDialog();
             if (result != DialogResult.OK) return;
             jiraServerModel.addServer(dialog.Server);
-            JiraServerTreeNode newNode = new JiraServerTreeNode(dialog.Server);
+            JiraServerTreeNode newNode = new JiraServerTreeNode(dialog.Server, 0);
             jiraRoot.Nodes.Add(newNode);
             serverTree.ExpandAll();
             serverTree.SelectedNode = newNode;

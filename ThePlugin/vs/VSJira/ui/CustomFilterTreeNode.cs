@@ -8,7 +8,7 @@ namespace PaZu.ui
     {
         private readonly JiraServer server;
 
-        public CustomFilterTreeNode(JiraServer server, JiraCustomFilter filter) : base("Custom Filter")
+        public CustomFilterTreeNode(JiraServer server, JiraCustomFilter filter, int imageIdx) : base("Custom Filter", imageIdx)
         {
             this.server = server;
             Filter = filter;
