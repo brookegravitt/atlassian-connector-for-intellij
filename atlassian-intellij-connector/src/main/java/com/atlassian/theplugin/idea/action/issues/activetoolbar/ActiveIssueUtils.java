@@ -185,7 +185,8 @@ public final class ActiveIssueUtils {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
 
-                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList, new ActiveIssueResultHandler() {
+                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
+                                    new ActiveIssueResultHandler() {
 
                                 public void success() {
                                     ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
@@ -319,7 +320,8 @@ public final class ActiveIssueUtils {
      * @param activeIssueResultHandler
      */
     private static void activate(final Project project, final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-                                 final JiraServerData jiraServerCfg, ChangeList newDefaultList, ActiveIssueResultHandler activeIssueResultHandler) {
+                                 final JiraServerData jiraServerCfg, ChangeList newDefaultList,
+                                 ActiveIssueResultHandler activeIssueResultHandler) {
 
         if (project == null) {
             return;
@@ -329,7 +331,8 @@ public final class ActiveIssueUtils {
         final IssueDetailsToolWindow detailsPanel = IdeaHelper.getIssueDetailsToolWindow(project);
 
         ProgressManager.getInstance().run(
-                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event, newDefaultList, activeIssueResultHandler));
+                new RefreshingIssueTask(project, jiraServerCfg, newActiveIssue, panel, detailsPanel, event,
+                        newDefaultList, activeIssueResultHandler));
     }
 
     public static void deactivate(final AnActionEvent event, final ActiveIssueResultHandler resultHandler) {
