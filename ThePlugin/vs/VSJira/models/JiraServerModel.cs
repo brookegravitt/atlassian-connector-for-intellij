@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EnvDTE;
 using System.Diagnostics;
 using PaZu.api;
+using PaZu.util;
 
 namespace PaZu.models
 {
@@ -42,17 +43,17 @@ namespace PaZu.models
 
         public void load(Globals globals)
         {
-            if (globals.get_VariableExists(SERVER_COUNT))
+            int count = ParameterSerializer.loadParameter(globals, SERVER_COUNT, -1);
+            if (count != -1)
             {
                 try
                 {
-                    int count = int.Parse(globals[SERVER_COUNT].ToString());
                     for (int i = 1; i <= count; ++i)
                     {
-                        string guidStr = globals[SERVER_GUID + i].ToString();
+                        string guidStr = ParameterSerializer.loadParameter(globals, SERVER_GUID + i, null);
                         Guid guid = new Guid(guidStr);
-                        string sName = globals[SERVER_NAME + guidStr].ToString();
-                        string url = globals[SERVER_URL + guidStr].ToString();
+                        string sName = ParameterSerializer.loadParameter(globals, SERVER_NAME + guidStr, null);
+                        string url = ParameterSerializer.loadParameter(globals, SERVER_URL + guidStr, null);
                         JiraServer server = new JiraServer(guid, sName, url, null, null);
                         server.UserName = CredentialsVault.Instance.getUserName(server);
                         server.Password = CredentialsVault.Instance.getPassword(server);
@@ -76,21 +77,17 @@ namespace PaZu.models
 
             try
             {
-                globals[SERVER_COUNT] = serverMap.Values.Count.ToString();
-                globals.set_VariablePersists(SERVER_COUNT, true);
+                ParameterSerializer.storeParameter(globals, SERVER_COUNT, serverMap.Values.Count);
 
                 int i = 1;
                 foreach (JiraServer s in getAllServers())
                 {
                     string var = SERVER_GUID + i;
-                    globals[var] = s.GUID.ToString();
-                    globals.set_VariablePersists(var, true);
+                    ParameterSerializer.storeParameter(globals, var, s.GUID.ToString());
                     var = SERVER_NAME + s.GUID;
-                    globals[var] = s.Name;
-                    globals.set_VariablePersists(var, true);
+                    ParameterSerializer.storeParameter(globals, var, s.Name);
                     var = SERVER_URL + s.GUID;
-                    globals[var] = s.Url;
-                    globals.set_VariablePersists(var, true);
+                    ParameterSerializer.storeParameter(globals, var, s.Url);
                     CredentialsVault.Instance.saveCredentials(s);
                     ++i;
                 }
@@ -118,11 +115,7 @@ namespace PaZu.models
         {
             lock (serverMap)
             {
-                if (serverMap.ContainsKey(guid))
-                {
-                    return serverMap[guid];
-                }
-                return null;
+                return serverMap.ContainsKey(guid) ? serverMap[guid] : null;
             }
         }
 
