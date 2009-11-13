@@ -234,7 +234,7 @@ public class RunIssueActionAction extends AnAction {
 			} else {
 				showInfo("Running workflow action [" + action.getName() + "] cancelled");
                 if (resultHandler != null) {
-                    resultHandler.failure("Running workflow action [" + action.getName() + "] cancelled");
+                    resultHandler.cancel("Running workflow action [" + action.getName() + "] cancelled");
                 }
 			}
 		}

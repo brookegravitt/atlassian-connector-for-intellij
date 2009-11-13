@@ -199,10 +199,10 @@ public final class ActiveIssueUtils {
                                     PluginTaskManager.getInstance(project).addChangeListListener();
                                 }
 
-                                public void failure(String problem) {
+                                public void cancel(String problem) {
                                     PluginTaskManager.getInstance(project).addChangeListListener();
                                 }
-                            });
+                                    });
 
                         }
                     });
@@ -213,7 +213,7 @@ public final class ActiveIssueUtils {
 
                 }
 
-                public void failure(String problem) {
+                public void cancel(String problem) {
                     PluginTaskManager.getInstance(project).addChangeListListener();
                 }
             });
@@ -298,7 +298,7 @@ public final class ActiveIssueUtils {
                                                 PluginTaskManager.getInstance(project).addChangeListListener();
                                             }
 
-                                            public void failure(String problem) {
+                                            public void cancel(String problem) {
                                                 PluginTaskManager.getInstance(project).addChangeListListener();
                                             }
                                         });
@@ -378,7 +378,7 @@ public final class ActiveIssueUtils {
 
         //always allow to activate issue even if remote de-activation fails
         if (resultHandler != null) {
-            resultHandler.failure("JIRA Workspace is empty");
+            resultHandler.cancel("JIRA Workspace is empty");
         }
     }
 
@@ -436,7 +436,7 @@ public final class ActiveIssueUtils {
                         public void run() {
                             DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
                                     "Error starting work on issue:", e);
-                            //activeIssueResultHandler.failure(e);
+                            //activeIssueResultHandler.cancel(e);
                         }
                     });
 

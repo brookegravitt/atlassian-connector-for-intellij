@@ -21,7 +21,6 @@ import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 
@@ -83,20 +82,8 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                     });
                 }
 
-                public void failure(String problem) {
-                    if (conf != null) {
-                        conf.setActiveJiraIssuee(null);
-                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-                    }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (project != null && !project.isDisposed()) {
-                                Messages.showErrorDialog(project,
-                                        "Issue Deactivated Locally but Failed to Deactivate Issue remotely.",
-                                        "Issue deactivation");
-                            }
-                        }
-                    });
+                public void cancel(String problem) {
+                    //deactivation cancelled
                 }
             });
         }

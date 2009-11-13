@@ -701,6 +701,7 @@
 
         <!-- we use it only for IDEA 9 and above -->
         <group id="ThePlugin.TasksToolbar">
+            <reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
             <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
