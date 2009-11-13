@@ -636,7 +636,7 @@ public final class PluginTaskManager {
                             siltentDeactivate();
                         }
 
-                        public void failure(String problem) {
+                        public void cancel(String problem) {
                             siltentDeactivate();
                         }
                     });

@@ -51,7 +51,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
                                     public void failure(Throwable problem) {
                                     }
 
-                                    public void failure(String problem) {                                        
+                                    public void cancel(String problem) {
                                     }
                                 });
 					} catch (JIRAException e) {

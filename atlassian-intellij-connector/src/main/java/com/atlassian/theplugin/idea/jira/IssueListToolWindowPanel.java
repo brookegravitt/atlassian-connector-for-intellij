@@ -695,7 +695,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
         if (resultHandler != null) {
-            resultHandler.failure("User cancelled deactivating an issue");
+            resultHandler.cancel("User cancelled deactivating an issue");
         }
     }
 
@@ -1344,9 +1344,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                         }
                                     }
 
-                                    public void failure(String problem) {
+                                    public void cancel(String problem) {
                                         if (resultHandler != null) {
-                                            resultHandler.failure(problem);
+                                            resultHandler.cancel(problem);
                                         }
                                     }
                                 });

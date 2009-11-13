@@ -8,5 +8,5 @@ package com.atlassian.theplugin.idea.jira;
 public interface ActiveIssueResultHandler {
     void success();
     void failure(Throwable problem);
-    void failure(String problem);
+    void cancel(String problem);
 }
