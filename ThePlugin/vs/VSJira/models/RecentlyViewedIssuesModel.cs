@@ -62,22 +62,19 @@ namespace PaZu.models
 
                 solutionName = ParameterSerializer.getKeyFromSolutionName(solutionName);
 
-                if (globals.get_VariableExists(RECENTLY_VIEWED_COUNT + solutionName))
+                int count = ParameterSerializer.loadParameter(globals, RECENTLY_VIEWED_COUNT + solutionName, -1);
+                if (count != -1)
                 {
                     try
                     {
-                        int count = int.Parse(globals[RECENTLY_VIEWED_COUNT + solutionName].ToString());
                         if (count > MAX_ITEMS)
-                        {
                             count = MAX_ITEMS;
-                        }
 
                         for (int i = 1; i <= count; ++i)
                         {
-                            string guidStr = globals[RECENTLY_VIEWED_ISSUE_SERVER_GUID + solutionName + "_" + i].ToString();
+                            string guidStr = ParameterSerializer.loadParameter(globals, RECENTLY_VIEWED_ISSUE_SERVER_GUID + solutionName + "_" + i, null);
                             Guid guid = new Guid(guidStr);
-                            string key = globals[RECENTLY_VIEWED_ISSUE_KEY + solutionName + "_" + i].ToString();
-
+                            string key = ParameterSerializer.loadParameter(globals, RECENTLY_VIEWED_ISSUE_KEY + solutionName + "_" + i, null);
                             RecentlyViewedIssue issue = new RecentlyViewedIssue(guid, key);
                             issues.Add(issue);
                         }
@@ -102,18 +99,15 @@ namespace PaZu.models
 
                 try
                 {
-                    globals[RECENTLY_VIEWED_COUNT + solutionName] = issues.Count.ToString();
-                    globals.set_VariablePersists(RECENTLY_VIEWED_COUNT + solutionName, true);
+                    ParameterSerializer.storeParameter(globals, RECENTLY_VIEWED_COUNT + solutionName, issues.Count);
 
                     int i = 1;
                     foreach (RecentlyViewedIssue issue in issues)
                     {
                         string var = RECENTLY_VIEWED_ISSUE_SERVER_GUID + solutionName + "_" + i;
-                        globals[var] = issue.ServerGuid.ToString();
-                        globals.set_VariablePersists(var, true);
+                        ParameterSerializer.storeParameter(globals, var, issue.ServerGuid.ToString());
                         var = RECENTLY_VIEWED_ISSUE_KEY + solutionName + "_" + i;
-                        globals[var] = issue.IssueKey;
-                        globals.set_VariablePersists(var, true);
+                        ParameterSerializer.storeParameter(globals, var, issue.IssueKey);
                         ++i;
                     }
                 }
