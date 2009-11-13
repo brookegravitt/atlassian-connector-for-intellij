@@ -24,12 +24,19 @@ namespace PaZu.util
         public static void storeParameter(Globals globals, string name, string value)
         {
             globals[name] = value;
-            globals.set_VariablePersists(value, true);
+            globals.set_VariablePersists(name, true);
         }
 
         public static string loadParameter(Globals globals, string name, string defaultValue)
         {
             return !globals.get_VariableExists(name) ? defaultValue : globals[name].ToString();
         }
+
+        public static int loadParameter(Globals globals, string name, int defaultValue)
+        {
+            string val = globals.get_VariableExists(name) ? globals[name].ToString() : defaultValue.ToString();
+            return int.Parse(val);
+        }
+
     }
 }
