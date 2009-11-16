@@ -27,7 +27,7 @@ namespace Atlassian.JiraEditorLinks.EventSinks
 
         public int GetTipText(IVsTextMarker pMarker, string[] pbstrText)
         {
-            pbstrText[0] = "Right-click to navigate to PL-1357";
+            pbstrText[0] = "Double click to navigate to PL-1357,\n right click for more options";
             return VSConstants.S_OK;
         }
 
@@ -89,21 +89,29 @@ namespace Atlassian.JiraEditorLinks.EventSinks
             switch (iItem)
             {
                 case 0:
-                    try
-                    {
-                        Process.Start("https://studio.atlassian.com/browse/PL-1357");
-                    }
-                    catch (Exception)
-                    {
-                    }
+                    launchBrowser();
                     return VSConstants.S_OK;
 
 //                case 1:
 //                    CloneDetectiveManager.ShowCloneIntersections();
 //                    return VSConstants.S_OK;
 
+                case (int) MarkerCommandValues.mcvBodyDoubleClickCommand:
+                    launchBrowser();
+                    return VSConstants.S_OK;
                 default:
                     return VSConstants.S_FALSE;
+            }
+        }
+
+        private void launchBrowser()
+        {
+            try
+            {
+                Process.Start("https://studio.atlassian.com/browse/PL-1357");
+            }
+            catch (Exception)
+            {
             }
         }
 
