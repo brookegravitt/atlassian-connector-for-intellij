@@ -297,6 +297,7 @@
     <None Include="icons\open_in_ide.png" />
     <None Include="icons\jira-blue-16.png" />
     <Content Include="icons\pazu.bmp" />
+    <Content Include="icons\pazu_32.ico" />
     <Content Include="icons\projectsettings.png" />
     <Content Include="icons\refresh.png" />
     <None Include="icons\unknown.png" />
