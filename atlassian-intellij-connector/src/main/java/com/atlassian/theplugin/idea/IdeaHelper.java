@@ -80,7 +80,7 @@ public final class IdeaHelper {
 
 	@Nullable
 	public static Project getCurrentProject(AnActionEvent e) {
-		return getCurrentProject(e.getDataContext());
+		return e!= null ? getCurrentProject(e.getDataContext()) : null;
 	}
 
 	public static com.intellij.openapi.wm.ToolWindow getToolWindow(Project p) {

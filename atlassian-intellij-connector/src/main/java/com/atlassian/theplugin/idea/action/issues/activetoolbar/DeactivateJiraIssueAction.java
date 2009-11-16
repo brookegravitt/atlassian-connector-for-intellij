@@ -84,6 +84,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
                 public void cancel(String problem) {
                     //deactivation cancelled
+                    PluginTaskManager.getInstance(project).addChangeListListener();
                 }
             });
         }

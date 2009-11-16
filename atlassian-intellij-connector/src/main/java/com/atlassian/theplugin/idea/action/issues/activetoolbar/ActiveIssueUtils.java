@@ -192,14 +192,16 @@ public final class ActiveIssueUtils {
                                     ActiveIssueUtils.activateLocalTask(project, newActiveIssue);
 
                                     PluginTaskManager.getInstance(project).addChangeListListener();
-                                    
+
                                 }
 
                                 public void failure(Throwable problem) {
+                                    ActiveIssueUtils.activateLocalTask(project, ActiveIssueUtils.getActiveJiraIssue(project));
                                     PluginTaskManager.getInstance(project).addChangeListListener();
                                 }
 
                                 public void cancel(String problem) {
+                                    ActiveIssueUtils.activateLocalTask(project, ActiveIssueUtils.getActiveJiraIssue(project));
                                     PluginTaskManager.getInstance(project).addChangeListListener();
                                 }
                                     });
@@ -434,7 +436,7 @@ public final class ActiveIssueUtils {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                            DialogWithDetails.showExceptionDialog(IdeaHelper.getCurrentProject(event),
+                            DialogWithDetails.showExceptionDialog(project != null ? project : IdeaHelper.getCurrentProject(event),
                                     "Error starting work on issue:", e);
                             //activeIssueResultHandler.cancel(e);
                         }

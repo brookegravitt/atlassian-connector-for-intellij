@@ -82,7 +82,7 @@ public final class PluginTaskManager {
     private ChangeListListener myListener;
     private ClassLoader classLoader;
     private Class taskManagerClass;
-    private Object taskManagerObj;    
+    private Object taskManagerObj;
     private boolean alreadyAdded = false;
     private static boolean actionsRegistered = false;
 
@@ -104,9 +104,9 @@ public final class PluginTaskManager {
     }
 
     /**
-     *  Because TasksToolbar DefaultActionGroup has no name. We search for specified class in DefaultActionGroup
-     *  from MainToolbar
-     *  
+     * Because TasksToolbar DefaultActionGroup has no name. We search for specified class in DefaultActionGroup
+     * from MainToolbar
+     *
      * @return DefaultActionGroup
      */
     @Nullable
@@ -144,6 +144,7 @@ public final class PluginTaskManager {
 
         return actions;
     }
+
     private static void removePluginTaskCombo() {
         DefaultActionGroup pluginTaskActions =
                 (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.ActiveToolbar");
@@ -159,18 +160,19 @@ public final class PluginTaskManager {
             return;
         }
 
-         DefaultActionGroup tasksGroup = getTaskActionGroup();
-         if (tasksGroup != null && !actionsRegistered) {
-             DefaultActionGroup pluginTaskActions =
-                     (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
-             if (pluginTaskActions != null) {
-                 tasksGroup.add(pluginTaskActions);
-                 actionsRegistered = true;
-                 removePluginTaskCombo();
-             }
-         }
+        DefaultActionGroup tasksGroup = getTaskActionGroup();
+        if (tasksGroup != null && !actionsRegistered) {
+            DefaultActionGroup pluginTaskActions =
+                    (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
+            if (pluginTaskActions != null) {
+                tasksGroup.add(pluginTaskActions);
+                actionsRegistered = true;
+                removePluginTaskCombo();
+            }
+        }
 
     }
+
     public static PluginTaskManager getInstance(final Project project) {
         if (!managers.containsKey(project)) {
             managers.put(project, new PluginTaskManager(project));
@@ -290,14 +292,21 @@ public final class PluginTaskManager {
     //assume that RO change list is default
     @Nullable
     private LocalChangeList getDefaultChangeList() {
+        String defaultChangeListNameNoVcs = "Default task";
+        String defaultChangeListNameVcs = "Default";
+        LocalChangeList foundList = null;
         ChangeListManager manager = ChangeListManager.getInstance(project);
         for (LocalChangeList l : manager.getChangeLists()) {
-            if ("Default".equals(l.getName())) {
-                return l;
+            if (defaultChangeListNameNoVcs.equals(l.getName())) {
+                foundList = l;
+            }
+
+            if (defaultChangeListNameVcs.equals(l.getName())) {
+                foundList = l;
             }
         }
 
-        return null;
+        return foundList;
     }
 
     private Object[] getLocalTasks() {
@@ -467,7 +476,7 @@ public final class PluginTaskManager {
                             try {
                                 activateLocalTask.invoke(taskManagerObj, task, clearContext, createChangeset);
                             } catch (Exception e) {
-                              PluginUtil.getLogger().error(CANNOT_ACTIVATE_LOCAL_TASK, e); 
+                                PluginUtil.getLogger().error(CANNOT_ACTIVATE_LOCAL_TASK, e);
                             }
                         }
                     });
@@ -584,7 +593,7 @@ public final class PluginTaskManager {
 
             //removeChangeListListener();
 
-            //switched to default task so siltentDeactivate issue
+            //switched to default task so silentDeactivate issue
             if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList()) != null
                     && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList()))) {
                 deactivateTask();
@@ -617,41 +626,46 @@ public final class PluginTaskManager {
                                 + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
                     }
                 });
-                
-                deactivateTask();                
+
+                deactivateTask();
             }
 
         }
 
         private void deactivateTask() {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
+                final JiraWorkspaceConfiguration conf =
+                        IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+
                 public void run() {
 
                     ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                         public void success() {
-                            siltentDeactivate();
+                            if (conf != null) {
+                                conf.setActiveJiraIssuee(null);
+                                addChangeListListener();
+                            }
                         }
 
                         public void failure(Throwable problem) {
-                            siltentDeactivate();
+
+                            if (conf != null) {
+                                PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                                addChangeListListener();
+                            }
                         }
 
                         public void cancel(String problem) {
-                            siltentDeactivate();
+                            if (conf != null) {
+                                PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                                addChangeListListener();
+                            }
                         }
                     });
                 }
             }, ModalityState.defaultModalityState());
         }
 
-        private void siltentDeactivate() {
-            final JiraWorkspaceConfiguration conf =
-                    IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-            if (conf != null) {
-                conf.setActiveJiraIssuee(null);
-                addChangeListListener();
-            }
-        }
 
         final class LocalRunnable implements Runnable {
             private final String issueId;
