@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -9,13 +8,8 @@ namespace Atlassian.JiraEditorLinks.EventSinks
 {
     public sealed class TextMarkerClientEventSink : IVsTextMarkerClient, IVsTextMarkerClientAdvanced, IVsTextMarkerClientEx 
     {
-//        private IVsTextLineMarker marginMarker;
-
         public IVsTextLineMarker MarginMarker { get; set; }
         public IVsTextLineMarker BackgroundMarker { get; set; }
-        //        {
-//            set { marginMarker = value; }
-//        }
 
         #region IVsTextMarkerClient Members
 
@@ -27,7 +21,11 @@ namespace Atlassian.JiraEditorLinks.EventSinks
 
         public int GetTipText(IVsTextMarker pMarker, string[] pbstrText)
         {
-            pbstrText[0] = "Double click to navigate to PL-1357,\n right click for more options";
+            if (MarginMarker != null)
+                pbstrText[0] = "Double click to navigate to PL-1357,\nRight click for more options";
+            else if (BackgroundMarker != null)
+                pbstrText[0] = "Double click to navigate to PL-1357";
+
             return VSConstants.S_OK;
         }
 
@@ -41,7 +39,7 @@ namespace Atlassian.JiraEditorLinks.EventSinks
 
         public int OnMarkerTextChanged(IVsTextMarker pMarker)
         {
-            return VSConstants.S_OK;
+           return VSConstants.S_OK;
         }
 
         public int MarkerInvalidated(IVsTextLines pBuffer, IVsTextMarker pMarker)
@@ -61,23 +59,27 @@ namespace Atlassian.JiraEditorLinks.EventSinks
             // Furthermore it should always be enabled.
             const uint menuItemFlags = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 
-            if (pcmdf != null)
-                pcmdf[0] = menuItemFlags;
-
-            if (pbstrText == null)
-                return VSConstants.S_OK;
+            if (pcmdf == null)
+                return VSConstants.S_FALSE;
 
             switch (iItem)
             {
                 case 0:
-                    pbstrText[0] = "Open Issue in browser";
-//                    pcmdf[0] = menuItemFlags;
-                    return VSConstants.S_OK;
+                    if (pbstrText != null)
+                    {
+                        pbstrText[0] = "Open Issue in the Browser";
+                        pcmdf[0] = menuItemFlags;
+                        return VSConstants.S_OK;
+                    }
+                    return VSConstants.S_FALSE;
 
-//                case 1:
-//                    pbstrText[0] = Res.CommandShowCloneIntersections;
-//                    pcmdf[0] = menuItemFlags;
-//                    return VSConstants.S_OK;
+                case (int)MarkerCommandValues.mcvBodyDoubleClickCommand:
+                    pcmdf[0] = menuItemFlags;
+                    return (MarginMarker != null) ? VSConstants.S_OK : VSConstants.S_FALSE;
+
+                case (int)MarkerCommandValues.mcvGlyphSingleClickCommand:
+                    pcmdf[0] = menuItemFlags;
+                    return (BackgroundMarker != null) ? VSConstants.S_OK : VSConstants.S_FALSE;
 
                 default:
                     return VSConstants.S_FALSE;
@@ -92,19 +94,20 @@ namespace Atlassian.JiraEditorLinks.EventSinks
                     launchBrowser();
                     return VSConstants.S_OK;
 
-//                case 1:
-//                    CloneDetectiveManager.ShowCloneIntersections();
-//                    return VSConstants.S_OK;
-
                 case (int) MarkerCommandValues.mcvBodyDoubleClickCommand:
-                    launchBrowser();
+                    if (MarginMarker != null) launchBrowser();
                     return VSConstants.S_OK;
+
+                case (int) MarkerCommandValues.mcvGlyphSingleClickCommand:
+                    if (BackgroundMarker != null) launchBrowser();
+                    return VSConstants.S_FALSE;
+
                 default:
                     return VSConstants.S_FALSE;
             }
         }
 
-        private void launchBrowser()
+        private static void launchBrowser()
         {
             try
             {

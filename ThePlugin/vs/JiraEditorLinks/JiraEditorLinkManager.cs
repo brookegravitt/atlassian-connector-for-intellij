@@ -43,10 +43,14 @@ namespace Atlassian.JiraEditorLinks
                 int len;
                 textLines.GetLengthOfLine(i, out len);
                 textLines.GetLineText(i, 0, i, len, out text);
+                string cmt = "//";
                 string issueKey = "PL-1357";
-                if (text == null || !text.Contains(issueKey)) continue;
+                if (text == null || !text.Contains(cmt) || !text.Contains(issueKey)) continue;
 
+                int cmtIdx = text.IndexOf(cmt);
                 int idx = text.IndexOf(issueKey);
+
+                if (idx < cmtIdx) continue;
 
                 addMarker(textLines, i, idx, idx + issueKey.Length);
             }
