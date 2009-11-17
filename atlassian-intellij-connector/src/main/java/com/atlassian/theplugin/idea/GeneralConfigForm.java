@@ -172,10 +172,10 @@ public class GeneralConfigForm {
 
     public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
         this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
-        if (isAnonymousFeedbackEnabled == null || !isAnonymousFeedbackEnabled) {
-            reportAnonymousUsageStatisticsCheckBox.setSelected(false);
-        } else {
+        if (isAnonymousFeedbackEnabled == null || isAnonymousFeedbackEnabled) {
             reportAnonymousUsageStatisticsCheckBox.setSelected(true);
+        } else {
+            reportAnonymousUsageStatisticsCheckBox.setSelected(false);
         }
     }
 

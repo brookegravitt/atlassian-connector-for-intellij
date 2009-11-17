@@ -634,7 +634,7 @@ public final class PluginTaskManager {
 
         private void deactivateTask() {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
-                final JiraWorkspaceConfiguration conf =
+                private final JiraWorkspaceConfiguration conf =
                         IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
                 public void run() {

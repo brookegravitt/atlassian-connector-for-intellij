@@ -436,7 +436,8 @@ public final class ActiveIssueUtils {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                            DialogWithDetails.showExceptionDialog(project != null ? project : IdeaHelper.getCurrentProject(event),
+                            DialogWithDetails.showExceptionDialog(
+                                    project != null ? project : IdeaHelper.getCurrentProject(event),
                                     "Error starting work on issue:", e);
                             //activeIssueResultHandler.cancel(e);
                         }

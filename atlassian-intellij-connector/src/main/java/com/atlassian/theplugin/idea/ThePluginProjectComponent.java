@@ -16,7 +16,14 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.intellij.bamboo.*;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
+import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
+import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
+import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
+import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
@@ -46,6 +53,7 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
+import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
 import com.intellij.ide.BrowserUtil;
@@ -387,8 +395,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					UsageStatsDialog dlg = new UsageStatsDialog();
 					dlg.show();
 					int answer = dlg.getExitCode();
-					pluginConfiguration.getGeneralConfigurationData().setAnonymousEnhancedFeedbackEnabled(
-							answer == DialogWrapper.OK_EXIT_CODE);
+                    boolean feedbackEnabled = answer == DialogWrapper.OK_EXIT_CODE;
+                    pluginConfiguration.getGeneralConfigurationData().setAnonymousEnhancedFeedbackEnabled(feedbackEnabled);
+                    InfoServer.reportOptInOptOut(pluginConfiguration.getGeneralConfigurationData().getUid(), feedbackEnabled);
 				}
 			}
 		}, ModalityState.defaultModalityState());
