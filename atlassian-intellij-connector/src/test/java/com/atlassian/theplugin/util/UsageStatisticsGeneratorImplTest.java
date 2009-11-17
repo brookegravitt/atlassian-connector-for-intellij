@@ -54,7 +54,7 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 				+ "&bambooServers=2&crucibleServers=1&jiraServers=0",
 				generator.getStatisticsUrlSuffix());
 		final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(false, 234, null, servers);
-		assertEquals("uid=234", generator2.getStatisticsUrlSuffix());
+		assertEquals("uid=0", generator2.getStatisticsUrlSuffix());
 	}
 
 	public void testGetStatisticsUrlSuffixExtended() {
