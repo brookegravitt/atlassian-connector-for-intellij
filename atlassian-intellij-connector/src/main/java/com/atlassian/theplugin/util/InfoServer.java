@@ -19,6 +19,7 @@ package com.atlassian.theplugin.util;
 import com.atlassian.connector.intellij.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import org.apache.commons.httpclient.HttpClient;
@@ -41,14 +42,15 @@ public final class InfoServer {
 	public static VersionInfo getLatestPluginVersion(final UsageStatisticsGenerator usageStatisticsGenerator,
 			boolean checkUnstableVersions) throws VersionServiceException, IncorrectVersionException {
 
-		String serviceUrl = PluginUtil.STABLE_VERSION_INFO_URL;
-		if (checkUnstableVersions) {
-			serviceUrl = PluginUtil.LATEST_VERSION_INFO_URL;
-		}
+        String serviceUrl = getServiceUrl(checkUnstableVersions);
 		return getLatestPluginVersion(serviceUrl, usageStatisticsGenerator);
 	}
 
-	protected static VersionInfo getLatestPluginVersion(final String serviceUrl,
+    private static String getServiceUrl(boolean checkUnstableVersions) {
+        return checkUnstableVersions ? PluginUtil.LATEST_VERSION_INFO_URL : PluginUtil.STABLE_VERSION_INFO_URL;
+    }
+
+    protected static VersionInfo getLatestPluginVersion(final String serviceUrl,
 			final UsageStatisticsGenerator usageStatisticsGenerator)
 			throws VersionServiceException, IncorrectVersionException {
 
@@ -82,8 +84,28 @@ public final class InfoServer {
 		}
 	}
 
+    public static void reportOptInOptOut(final long uid, final Boolean optIn) {
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                String getMethodUrl = getServiceUrl(false);
+                HttpClient client;
+                try {
+                    client = HttpClientFactory.getClient();
+                    getMethodUrl += "?uid=" + uid + "&userOptedIn=" + (optIn == null || optIn ? 1 : 0);
+                    GetMethod method = new GetMethod(getMethodUrl);
+                    client.executeMethod(method);
+                    method.getResponseBodyAsStream(); // ignore response
+                } catch (HttpProxySettingsException e) {
+                    LoggerImpl.getInstance().error(e);
+                } catch (IOException e) {
+                    LoggerImpl.getInstance().error(e);
+                }
+            }
+        });
+        t.start();
+    }
 
-	public static class VersionInfo {
+    public static class VersionInfo {
 		public enum Type {
 			STABLE,
 			UNSTABLE

@@ -133,7 +133,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		}
 
 		InfoServer.VersionInfo info = InfoServer.getLatestPluginVersion(
-				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : false,
+				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : true,
 						configuration.getUid(), pluginConfiguration.getGeneralConfigurationData(), servers),
 				configuration.isCheckUnstableVersionsEnabled());
 

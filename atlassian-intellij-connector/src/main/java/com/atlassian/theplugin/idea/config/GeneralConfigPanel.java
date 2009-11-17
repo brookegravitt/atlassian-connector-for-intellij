@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
+import com.atlassian.theplugin.util.InfoServer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,6 +71,14 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 	}
 
 	public void saveData() {
+
+        if (localPluginConfigurationCopy.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled()
+                != dialog.getIsAnonymousFeedbackEnabled()) {
+            InfoServer.reportOptInOptOut(
+                    globalPluginConfiguration.getGeneralConfigurationData().getUid(),
+                    dialog.getIsAnonymousFeedbackEnabled());
+        }
+
 		localPluginConfigurationCopy.getGeneralConfigurationData().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData().setHttpServerEnabled(dialog.isHttpServerEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData().setHttpServerPort(dialog.getHttpServerPort());

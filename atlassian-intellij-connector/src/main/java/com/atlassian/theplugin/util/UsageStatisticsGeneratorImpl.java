@@ -38,8 +38,11 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	}
 
 	public String getStatisticsUrlSuffix() {
-		StringBuilder sb = new StringBuilder("uid=" + uid);
+		StringBuilder sb = new StringBuilder();
+
 		if (reportStatistics) {
+            sb.append("uid=").append(uid);
+
 			int[] counts = new int[ServerType.values().length];
 
 			for (ServerData serverCfg : servers) {
@@ -57,7 +60,9 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 					sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
 				}
 			}
-		}
+		} else {
+            return "uid=0";
+        }
 		return sb.toString();
 	}
 }
