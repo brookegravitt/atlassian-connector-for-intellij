@@ -124,13 +124,16 @@ public abstract class CommentTooltipPanel extends JPanel {
                         if (lctp.doneWithThisPanel) {
                             return true;
                         }
+                        // PL-1908 - IDEA 9 apparently changes the way toplevel windows behave
+                        if (isPopupWindowActive(lctp)) {
+                            return true;
+                        }
                         Window topIdeaFrame = lctp.getTopFrame();
                         if (topIdeaFrame != null) {
                             return topIdeaFrame.isActive();
                         }
                         return WindowManager.getInstance().getFrame(proj).isActive();
                     }
-
                 })
 				.setCancelKeyEnabled(true)
 				.createPopup();
@@ -157,6 +160,14 @@ public abstract class CommentTooltipPanel extends JPanel {
             popup.showInBestPositionFor(dataContext);
         }
 	}
+
+    private static boolean isPopupWindowActive(CommentTooltipPanel lctp) {
+        Component component = lctp;
+        while (component  != null && !(component instanceof Window)) {
+            component = component.getParent();
+        }
+        return component != null && ((Window) component).isActive();
+    }
 
     private void setTopFrame(Window topFrame) {
         this.topFrame = topFrame;
