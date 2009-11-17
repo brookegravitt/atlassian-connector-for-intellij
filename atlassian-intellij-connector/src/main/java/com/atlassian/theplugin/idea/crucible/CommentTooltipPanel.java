@@ -109,6 +109,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         if (event == null && project == null) {
             return;
         }
+        final Project proj = project != null ? project : IdeaHelper.getCurrentProject(event);
 		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
 				.setRequestFocus(true)
 				.setCancelOnClickOutside(false)
@@ -123,7 +124,6 @@ public abstract class CommentTooltipPanel extends JPanel {
                         if (lctp.doneWithThisPanel) {
                             return true;
                         }
-                        Project proj = project != null ? project : IdeaHelper.getCurrentProject(event);
                         Window topIdeaFrame = lctp.getTopFrame();
                         if (topIdeaFrame != null) {
                             return topIdeaFrame.isActive();
