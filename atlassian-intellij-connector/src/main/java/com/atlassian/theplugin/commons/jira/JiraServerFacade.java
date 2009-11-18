@@ -81,7 +81,7 @@ public interface JiraServerFacade extends ProductServerFacade {
     void setAssignee(JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException;
 
     JIRAUserBean getUser(JiraServerData jiraServerData, String loginName)
-            throws JIRAException, JiraUserNotFoundException, com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+            throws JIRAException, JiraUserNotFoundException;
 
     List<JIRAComment> getComments(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 

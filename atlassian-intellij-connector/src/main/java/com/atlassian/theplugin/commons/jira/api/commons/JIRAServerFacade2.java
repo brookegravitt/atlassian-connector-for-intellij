@@ -100,7 +100,7 @@ public interface JIRAServerFacade2 extends ProductServerFacade {
 	void setAssignee(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue, String assignee) throws JIRAException;
 
 	JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName)
-            throws JIRAException, JiraUserNotFoundException, com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+            throws JIRAException, JiraUserNotFoundException;
 
 	List<JIRAComment> getComments(HttpConnectionCfg httpConnectionCfg, JIRAIssue issue) throws JIRAException;
 
