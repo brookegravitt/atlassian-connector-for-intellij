@@ -148,7 +148,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 			Collection<SubscribedPlan> plans, boolean isUseFavourities, int timezoneOffset)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 
-		SubscribedPlansProvider provider = (bambooServer.isBamboo2M9())
+		SubscribedPlansProvider provider = (bambooServer.isBamboo24())
 				? newSubscribedPlansProvider : oldSubscribedPlansProvider;
 		try {
 			return provider.getBuilds(bambooServer, plans, isUseFavourities, timezoneOffset);
@@ -184,7 +184,11 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		return facade.isBamboo2M9(bambooServerData.toHttpConnectionCfg());
 	}
 
-	public ServerType getServerType() {
+    public boolean isBamboo24(BambooServerData bambooServerData) {
+        return facade.isBamboo24(bambooServerData.toHttpConnectionCfg());
+    }
+
+    public ServerType getServerType() {
 		return facade.getServerType();
 	}
 

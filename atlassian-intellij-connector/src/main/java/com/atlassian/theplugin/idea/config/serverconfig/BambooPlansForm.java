@@ -132,9 +132,10 @@ public class BambooPlansForm extends JPanel {
     private void refreshServerPlans() {
         serverPlans.remove(bambooServerCfg.getServerId());
         serverPanel.saveData();
-        bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
-        bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(
-                new BambooServerData(bambooServerCfg, defaultCredentials)));
+        BambooServerData serverData = new BambooServerData(bambooServerCfg, defaultCredentials);
+        bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(serverData));
+        bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(serverData));
+        bambooServerCfg.setIsBamboo24(bambooServerFacade.isBamboo24(serverData));
         retrievePlans(bambooServerCfg);
     }
 
