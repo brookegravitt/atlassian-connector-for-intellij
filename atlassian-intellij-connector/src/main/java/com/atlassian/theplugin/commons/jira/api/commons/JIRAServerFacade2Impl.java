@@ -404,7 +404,7 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 	}
 
 	public JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName)
-            throws JIRAException, JiraUserNotFoundException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
+            throws JIRAException, JiraUserNotFoundException {
 		try {
 			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getUser(loginName);
