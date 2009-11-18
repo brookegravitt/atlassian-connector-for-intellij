@@ -18,23 +18,25 @@ package com.atlassian.theplugin.commons.jira.api.commons;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAIssue;
+import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
+import com.atlassian.connector.commons.jira.beans.JIRAComment;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
+import com.atlassian.connector.commons.jira.rss.JIRARssClient;
+import com.atlassian.connector.commons.jira.soap.JIRASession;
+import com.atlassian.connector.commons.jira.soap.JIRASessionImpl;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAttachment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAUserBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRARssClient;
-import com.atlassian.theplugin.commons.jira.api.commons.soap.JIRASession;
-import com.atlassian.theplugin.commons.jira.api.commons.soap.JIRASessionImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
@@ -54,7 +56,7 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 	private static Logger logger;
 
 	private final Map<String, JIRARssClient> rssSessions = new WeakHashMap<String, JIRARssClient>();
-	private final Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();	
+	private final Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
 
 	private String getSoapSessionKey(HttpConnectionCfg httpConnectionCfg) {
 		return httpConnectionCfg.getUsername() + httpConnectionCfg.getUrl() + httpConnectionCfg.getPassword();
@@ -402,7 +404,7 @@ public final class JIRAServerFacade2Impl implements JIRAServerFacade2 {
 	}
 
 	public JIRAUserBean getUser(HttpConnectionCfg httpConnectionCfg, String loginName)
-            throws JIRAException, JiraUserNotFoundException {
+            throws JIRAException, JiraUserNotFoundException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
 		try {
 			JIRASession soap = getSoapSession(httpConnectionCfg);
 			return soap.getUser(loginName);

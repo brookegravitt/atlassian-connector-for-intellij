@@ -2,27 +2,26 @@ package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAIssue;
+import com.atlassian.connector.commons.jira.JIRAIssueBean;
+import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
+import com.atlassian.connector.commons.jira.beans.JIRAComment;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2;
 import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2Impl;
-import com.atlassian.theplugin.commons.jira.api.commons.JiraUserNotFoundException;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAttachment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAUserBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.List;
 
 /**
  * @author pmaruszak
- * @date Sep 28, 2009
  */
 public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private final JIRAServerFacade2 facade;
@@ -172,7 +170,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     }
 
     public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
-            throws JIRAException, JiraUserNotFoundException {
+            throws JIRAException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
         return facade.getUser(jiraServerData.toHttpConnectionCfg(), loginName);
     }
 

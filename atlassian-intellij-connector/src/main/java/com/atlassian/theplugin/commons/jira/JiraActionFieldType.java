@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.commons.jira;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.fields.AffectsVersionsFiller;
 import com.atlassian.theplugin.commons.jira.api.fields.AssigneeFiller;
 import com.atlassian.theplugin.commons.jira.api.fields.ComponentsFiller;

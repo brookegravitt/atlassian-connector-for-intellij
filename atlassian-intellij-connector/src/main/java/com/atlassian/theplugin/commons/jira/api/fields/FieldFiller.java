@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.commons.jira.api.fields;
 
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssue;
+import com.atlassian.connector.commons.jira.JIRAIssue;
 
 import java.util.List;
 

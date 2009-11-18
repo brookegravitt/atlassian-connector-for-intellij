@@ -16,18 +16,18 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;

@@ -17,6 +17,10 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
+import com.atlassian.connector.commons.jira.rss.JIRARssClient;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
@@ -24,10 +28,6 @@ import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRARssClient;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;

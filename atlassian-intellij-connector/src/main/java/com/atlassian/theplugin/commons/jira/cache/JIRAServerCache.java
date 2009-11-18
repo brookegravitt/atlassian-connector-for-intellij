@@ -16,22 +16,22 @@
 
 package com.atlassian.theplugin.commons.jira.cache;
 
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAIssueTypeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.connector.commons.jira.cache.CachedIconLoader;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAIssueTypeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAStatusBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
@@ -130,7 +130,6 @@ public class JIRAServerCache {
 	 * @param includeAny
 	 * @param includeAny
 	 * @return list of issue types or empty collection
-	 * @throws com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException
 	 *
 	 */
 	public List<JIRAConstant> getIssueTypes(JIRAProject project, boolean includeAny) throws JIRAException {

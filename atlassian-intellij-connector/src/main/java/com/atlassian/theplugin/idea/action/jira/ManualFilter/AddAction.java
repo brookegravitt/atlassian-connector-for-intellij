@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;

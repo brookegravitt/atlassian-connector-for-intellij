@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAIssueTypeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAIssueTypeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAStatusBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
 
 import java.util.ArrayList;
 import java.util.List;

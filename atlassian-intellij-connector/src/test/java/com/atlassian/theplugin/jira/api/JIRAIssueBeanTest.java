@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.connector.commons.jira.JIRAIssueBean;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAIssueBean;
 import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;

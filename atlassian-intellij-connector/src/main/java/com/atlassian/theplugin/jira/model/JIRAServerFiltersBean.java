@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
+import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 
 import java.util.ArrayList;
 import java.util.HashSet;

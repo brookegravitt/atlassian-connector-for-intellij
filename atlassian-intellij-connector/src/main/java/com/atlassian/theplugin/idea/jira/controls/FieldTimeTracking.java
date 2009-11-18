@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.JiraTimeWdhmTextFieldListener;
 
