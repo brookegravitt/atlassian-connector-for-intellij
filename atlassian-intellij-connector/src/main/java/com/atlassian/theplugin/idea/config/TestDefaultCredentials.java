@@ -15,12 +15,12 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.commons.jira.JIRAServerFacade2;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade2;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -39,11 +39,7 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak

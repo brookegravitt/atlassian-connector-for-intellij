@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
@@ -46,11 +46,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
