@@ -210,7 +210,6 @@ public final class PluginTaskManager {
         addChangeListListener();
     }
 
-    
 
     @Nullable
     private String getActiveIssueUrl(String issueKey) {
@@ -246,8 +245,6 @@ public final class PluginTaskManager {
             foundTask = PluginTaskManager.getInstance(project).createLocalTask(issue.getIssueKey(), jiraRepository);
             activateTask(foundTask, true, true);
         }
-
-        checkAndSetChangeListComment(issue);
     }
 
     private Object getChangeListTask(ChangeList changeList) {
@@ -593,99 +590,84 @@ public final class PluginTaskManager {
 
 
         public void defaultListChanged(final ChangeList oldDefaultList, final ChangeList newDefaultList) {
-            new Thread(new ChangeActiveTask(newDefaultList)).start();
-        }
+            String activeTaskUrl = getActiveTaskUrl();
+            final String activeTaskId = getActiveTaskId();
 
+            //removeChangeListListener();
 
-        final class ChangeActiveTask implements Runnable {
-            private final ChangeList defaltChangeList;
+            //switched to default task so silentDeactivate issue
+            if (getLocalChangeListId(newDefaultList) != null && getLocalChangeListId(getDefaultChangeList()) != null
+                    && getLocalChangeListId(newDefaultList).equals(getLocalChangeListId(getDefaultChangeList()))) {
+                deactivateTask();
 
-            public ChangeActiveTask(ChangeList newDefaultList) {
+                return;
 
-
-                defaltChangeList = newDefaultList;
             }
 
-            public void run() {
-                String activeTaskUrl = getActiveTaskUrl();
-                final String activeTaskId = getActiveTaskId();
-
-                //removeChangeListListener();
-
-                //switched to default task so silentDeactivate issue
-                if (getLocalChangeListId(defaltChangeList) != null && getLocalChangeListId(getDefaultChangeList()) != null
-                        && getLocalChangeListId(defaltChangeList).equals(getLocalChangeListId(getDefaultChangeList()))) {
-                    deactivateTask();
-
-                    return;
-
-                }
-
-                if (activeTaskUrl == null) {
-                    activeTaskUrl = getActiveIssueUrl(activeTaskId);
-                }
-                final String finalActiveTaskUrl = activeTaskUrl;
+            if (activeTaskUrl == null) {
+                activeTaskUrl = getActiveIssueUrl(activeTaskId);
+            }
+            final String finalActiveTaskUrl = activeTaskUrl;
 
 
-                if (activeTaskUrl != null) {
-                    final JiraServerData server = findJiraPluginJiraServer(activeTaskUrl);
-                    final String issueId = getActiveTaskId();
-                    final ActiveJiraIssueBean issue = new ActiveJiraIssueBean();
-                    issue.setIssueKey(issueId);
-                    issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
+            if (activeTaskUrl != null) {
+                final JiraServerData server = findJiraPluginJiraServer(activeTaskUrl);
+                final String issueId = getActiveTaskId();
+                final ActiveJiraIssueBean issue = new ActiveJiraIssueBean();
+                issue.setIssueKey(issueId);
+                issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
 
-                    ApplicationManager.getApplication().invokeLater(
-                            new LocalRunnable(issueId, server, issue, finalActiveTaskUrl, defaltChangeList),
-                            ModalityState.defaultModalityState());
-                } else {
+                ApplicationManager.getApplication().invokeLater(
+                        new LocalRunnable(issueId, server, issue, finalActiveTaskUrl, newDefaultList),
+                        ModalityState.defaultModalityState());
+            } else {
 
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            Messages.showInfoMessage(project, "Cannot activate an issue " + getActiveTaskId() + "."
-                                    + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        Messages.showInfoMessage(project, "Cannot activate an issue " + getActiveTaskId() + "."
+                                + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
+                    }
+                });
+
+                deactivateTask();
+            }
+
+        }
+
+        private void deactivateTask() {
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                private final JiraWorkspaceConfiguration conf =
+                        IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+
+                public void run() {
+
+                    ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
+                        public void success() {
+                            if (conf != null) {
+                                conf.setActiveJiraIssuee(null);
+                                addChangeListListener();
+                            }
+                        }
+
+                        public void failure(Throwable problem) {
+
+                            if (conf != null) {
+                                PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                                addChangeListListener();
+                            }
+                        }
+
+                        public void cancel(String problem) {
+                            if (conf != null) {
+                                PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                                addChangeListListener();
+                            }
                         }
                     });
-
-                    deactivateTask();
                 }
-
-
-            }
-
-            private void deactivateTask() {
-                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                    private final JiraWorkspaceConfiguration conf =
-                            IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-
-                    public void run() {
-
-                        ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
-                            public void success() {
-                                if (conf != null) {
-                                    conf.setActiveJiraIssuee(null);
-                                    addChangeListListener();
-                                }
-                            }
-
-                            public void failure(Throwable problem) {
-
-                                if (conf != null) {
-                                    PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
-                                    addChangeListListener();
-                                }
-                            }
-
-                            public void cancel(String problem) {
-                                if (conf != null) {
-                                    PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
-                                    addChangeListListener();
-                                }
-                            }
-                        });
-                    }
-                }, ModalityState.defaultModalityState());
-            }
+            }, ModalityState.defaultModalityState());
         }
+
 
         final class LocalRunnable implements Runnable {
             private final String issueId;
@@ -748,10 +730,6 @@ public final class PluginTaskManager {
         }
     }
 
-    private void checkAndSetChangeListComment(final ActiveJiraIssue activeIssue) {
-
-
-    }
     private String getActiveTaskId() {
         try {
             if (classLoader != null) {
