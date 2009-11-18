@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;

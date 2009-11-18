@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -13,8 +13,8 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.actionSystem.impl.ActionButtonWithText;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ImageLoader;
+import com.intellij.util.ui.EmptyIcon;
 
 import javax.swing.*;
 import java.awt.*;

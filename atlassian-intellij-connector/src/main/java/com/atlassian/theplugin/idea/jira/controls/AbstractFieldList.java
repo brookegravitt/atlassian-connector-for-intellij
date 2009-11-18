@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 

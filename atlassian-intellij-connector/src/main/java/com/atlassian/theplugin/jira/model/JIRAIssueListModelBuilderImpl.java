@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.intellij.openapi.project.Project;

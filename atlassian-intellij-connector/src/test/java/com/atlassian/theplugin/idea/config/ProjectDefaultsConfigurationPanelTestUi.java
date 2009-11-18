@@ -15,6 +15,9 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
@@ -31,9 +34,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;

@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.NullCheckinHandler;

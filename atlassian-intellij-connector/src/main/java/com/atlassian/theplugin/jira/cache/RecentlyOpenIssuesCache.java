@@ -16,14 +16,14 @@
 package com.atlassian.theplugin.jira.cache;
 
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
+import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.JiraUserNotFoundException;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAUserBean;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;

@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.jira.api.JIRAActionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAAssigneeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAFixForVersionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAIssueTypeBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAReporterBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAStatusBean;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.JIRAActionBean;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAIssueTypeBean;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
+import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import junit.framework.TestCase;
 
 import java.net.MalformedURLException;

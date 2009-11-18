@@ -1,5 +1,9 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
@@ -13,11 +17,7 @@ import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.commons.beans.JIRASavedFilter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -106,7 +106,7 @@ import java.util.Map;
 public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
     public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
-    public static final String MANUAL_FILTER_MENU_PLACE = "edit JIRa manual filter";
+    public static final String MANUAL_FILTER_MENU_PLACE = "edit JIRA manual filter";
     private ProjectCfgManagerImpl projectCfgManager;
     private final PluginConfiguration pluginConfiguration;
     private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;

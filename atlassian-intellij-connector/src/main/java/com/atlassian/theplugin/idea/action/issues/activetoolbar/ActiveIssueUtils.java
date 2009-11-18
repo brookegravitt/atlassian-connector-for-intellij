@@ -15,17 +15,21 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.rss.JIRAException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.*;
+import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
+import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
