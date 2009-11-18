@@ -11,9 +11,9 @@ import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
 

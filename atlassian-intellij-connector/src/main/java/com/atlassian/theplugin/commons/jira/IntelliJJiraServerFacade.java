@@ -20,8 +20,6 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2;
-import com.atlassian.theplugin.commons.jira.api.commons.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
 import java.util.ArrayList;
