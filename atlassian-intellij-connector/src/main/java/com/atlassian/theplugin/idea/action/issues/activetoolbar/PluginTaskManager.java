@@ -270,9 +270,11 @@ public final class PluginTaskManager {
             Class localChangeListClass =
                     project.getClass().getClassLoader().loadClass("com.intellij.openapi.vcs.changes.LocalChangeList");
             Method getIdMethod = localChangeListClass.getMethod("getId");
-            Object idObj = getIdMethod.invoke(localList);
-            if (idObj != null) {
-                return idObj.toString();
+            if (localList != null && getIdMethod != null) {
+                Object idObj = getIdMethod.invoke(localList);
+                if (idObj != null) {
+                    return idObj.toString();
+                }
             }
         } catch (Exception e) {
             PluginUtil.getLogger().error(PluginTaskManager.CANNOT_GET_LOCAL_TASKS, e);
