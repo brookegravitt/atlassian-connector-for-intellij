@@ -78,7 +78,8 @@ public final class PluginTaskManager {
     private static final String CANNOT_CREATE_LOCAL_TASK = "Cannot create local task";
     private static final String CANNOT_LOAD_CLASS_TASK_MANAGER = "Cannot load class TaskManager";
     private static final String CANNOT_GET_LOCAL_TASKS = "Cannot get local tasks";
-    private static final String CANNOT_GET_ASSOCIATED_LOCAL_TASK_ISSUE_URL = "Cannot get task associated with active change list";
+    private static final String CANNOT_GET_ASSOCIATED_LOCAL_TASK_ISSUE_URL =
+            "Cannot get task associated with active change list";
 
 
     private static Map<Project, PluginTaskManager> managers = new HashMap<Project, PluginTaskManager>();
