@@ -80,7 +80,7 @@ public final class PluginTaskManager {
     private static final String CANNOT_GET_LOCAL_TASKS = "Cannot get local tasks";
     private static final String CANNOT_GET_ASSOCIATED_LOCAL_TASK_ISSUE_URL =
             "Cannot get task associated with active change list";
-
+    private static final String CANNOT_REMOVE_LOCAL_TASK = "Cannot remove local task from IDEA";
 
     private static Map<Project, PluginTaskManager> managers = new HashMap<Project, PluginTaskManager>();
     private final Project project;
@@ -90,6 +90,7 @@ public final class PluginTaskManager {
     private Object taskManagerObj;
     private boolean alreadyAdded = false;
     private static boolean actionsRegistered = false;
+
 
 
     private PluginTaskManager(final Project project) {
@@ -148,6 +149,24 @@ public final class PluginTaskManager {
         }
 
         return actions;
+    }
+
+    public void removeTaskFromIdea(Object localTaskObj) {
+        if (!isValidIdeaVersion()) {
+            return;
+        }
+
+        if (classLoader != null) {
+            try {
+                Class localTaskClass = classLoader.loadClass(LOCAL_TASK_CLASS);
+                Method removeTaskMethod = taskManagerClass.getMethod("removeTask", localTaskClass);
+                removeTaskMethod.invoke(taskManagerObj, localTaskObj);
+
+            } catch (Exception e) {
+                PluginUtil.getLogger().error(CANNOT_REMOVE_LOCAL_TASK, e);
+            }
+        }
+
     }
 
     private static void removePluginTaskCombo() {
@@ -586,31 +605,6 @@ public final class PluginTaskManager {
         return null;
     }
 
-    @Nullable
-    private String getAssociatedTask(final ChangeList changeList) {
-        try {
-            if (classLoader != null) {
-                Class localTaskClass = classLoader.loadClass(LOCAL_TASK_CLASS);
-                Class localChangeList = classLoader.loadClass(LOCAL_CHANGELIST);
-                if (taskManagerObj != null) {
-                    Method getAssociatedTask = taskManagerClass.getMethod("getAssociatedTask", localChangeList);
-                    Object localTaskObj = getAssociatedTask.invoke(taskManagerObj, changeList);
-                    if (localTaskObj != null) {
-                        Method getIssueUrl = localTaskClass.getMethod("getIssueUrl");
-                        Object activeTaskUrl = getIssueUrl.invoke(localTaskObj);
-                        if (activeTaskUrl != null) {
-                            return activeTaskUrl.toString();
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            PluginUtil.getLogger().error(CANNOT_GET_ASSOCIATED_LOCAL_TASK_ISSUE_URL, e);
-        }
-
-        return null;
-    }
 
     private final class LocalChangeListAdapter extends ChangeListAdapter {
         private final Project project;
@@ -619,10 +613,17 @@ public final class PluginTaskManager {
             this.project = project;
         }
 
+        public void changeListRemoved(ChangeList list) {
+            Object localTaskObj = findTaskByChangeList(list);
+            if (localTaskObj != null) {
+                removeTaskFromIdea(localTaskObj);
+            }
+        }
 
         public void defaultListChanged(final ChangeList oldDefaultList, final ChangeList newDefaultList) {
             ApplicationManager.getApplication().invokeLater(new SwitchToTaskRunnable(newDefaultList));
         }
+
     }
 
 
@@ -776,7 +777,7 @@ public final class PluginTaskManager {
                     for (Object localTaskObj : localTasks) {
                         List taskChangeLists = (List) getChangeListsMethod.invoke(localTaskObj);
                         if (taskChangeLists.contains(changeListInfoObject) && localTaskObj != null) {
-                           return localTaskObj;
+                            return localTaskObj;
 
                         }
                     }
