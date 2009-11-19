@@ -12,6 +12,7 @@ import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
+import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +74,8 @@ public class JIRAFilterTree extends AbstractTree {
 			if (selectionPath.getLastPathComponent() instanceof JIRAServerTreeNode) {
 				lastSelectedServer = ((JIRAServerTreeNode) (selectionPath.getLastPathComponent())).getJiraServer();
 			} else if (selectionPath.getLastPathComponent() instanceof JIRASavedFilterTreeNode
-					|| selectionPath.getLastPathComponent() instanceof JIRAManualFilterTreeNode) {
+					|| selectionPath.getLastPathComponent() instanceof JIRAManualFilterTreeNode
+                    || selectionPath.getLastPathComponent() instanceof JiraPresetFilterTreeNode) {
 				lastSelectedServer = ((JIRAServerTreeNode) (
 						(DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getParent()).getJiraServer();
 
@@ -92,7 +94,15 @@ public class JIRAFilterTree extends AbstractTree {
 
         return null;
     }
-    
+
+    public JiraPresetFilter getSelectedPresetFilter() {
+        DefaultMutableTreeNode selectedNode = getSelectedNode();
+        if (selectedNode instanceof JiraPresetFilterTreeNode) {
+            return ((JiraPresetFilterTreeNode) selectedNode).getPresetFilter();
+        }
+        return null;
+    }
+
 	public JiraCustomFilter getSelectedManualFilter() {
 		DefaultMutableTreeNode selectedNode = getSelectedNode();
 		if (selectedNode instanceof JIRAManualFilterTreeNode) {
@@ -153,7 +163,9 @@ public class JIRAFilterTree extends AbstractTree {
 
 	private void setSelectionFilter(final String filterType, final String viewFilterId, final ServerId viewServerId) {
 		boolean filterFound = false;
-		if (JiraFilterConfigurationBean.MANUAL_FILTER.equals(filterType)) {
+        if (JiraFilterConfigurationBean.PRESET_FILTER.equals(filterType)) {
+            filterFound = setSelectionPresetFilter(viewServerId, viewFilterId);
+        } else if (JiraFilterConfigurationBean.MANUAL_FILTER.equals(filterType)) {
             filterFound = setSelectionManualFilter(viewServerId, viewFilterId);
 		} else if (JiraWorkspaceConfiguration.RECENTLY_OPEN_FILTER_ID.equals(filterType)) {
 			filterFound = setSelectionRecentlyOpen();
@@ -170,7 +182,7 @@ public class JIRAFilterTree extends AbstractTree {
 		}
 	}
 
-	public boolean setSelectionSavedFilter(final long savedFilterId, final ServerId serverId) {
+    public boolean setSelectionSavedFilter(final long savedFilterId, final ServerId serverId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
 		if (rootNode == null) {
 			return false;
@@ -195,6 +207,31 @@ public class JIRAFilterTree extends AbstractTree {
 		return false;
 	}
 
+    private boolean setSelectionPresetFilter(ServerId serverId, String filterClass) {
+        DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
+        if (rootNode == null) {
+            return false;
+        }
+        for (int i = 0; i < rootNode.getChildCount(); i++) {
+            if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
+                JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
+                if (node.getJiraServer().getServerId().equals(serverId)) {
+                    for (int j = 0; j < node.getChildCount(); j++) {
+                        if (node.getChildAt(j) instanceof JiraPresetFilterTreeNode) {
+                            JiraPresetFilterTreeNode filterNode = (JiraPresetFilterTreeNode) node.getChildAt(j);
+                            if (filterNode.getPresetFilter().getClass().getCanonicalName().equals(filterClass)) {
+                                setSelectionPath(new TreePath(filterNode.getPath()));
+                                scrollPathToVisible(new TreePath(filterNode.getPath()));
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean setSelectionManualFilter(final ServerId serverId, String filterId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
 		if (rootNode == null) {
@@ -211,9 +248,9 @@ public class JIRAFilterTree extends AbstractTree {
 
 							// single manual filter support
 //							if (manualFilterNode.getManualFilterSet().equals(manualFilter)) {
-							setSelectionPath(new TreePath(manualFilterNode.getPath()));
-							scrollPathToVisible(new TreePath(manualFilterNode.getPath()));
-							return true;
+							    setSelectionPath(new TreePath(manualFilterNode.getPath()));
+							    scrollPathToVisible(new TreePath(manualFilterNode.getPath()));
+							    return true;
                             }
 //							}
 						}
@@ -259,11 +296,16 @@ public class JIRAFilterTree extends AbstractTree {
 
 	private void createFilterNodes(JiraServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
 		if (aListModel != null) {
+            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(jiraServer);
+            for (JiraPresetFilter filter : presetFilterSet) {
+			    node.add(new JiraPresetFilterTreeNode(filter));
+            }
+
 			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
 				node.add(new JIRASavedFilterTreeNode(savedFilter, jiraServer));
 			}
 
-			Set<JiraCustomFilter> manualFilterSet = aListModel.getManualFilter(jiraServer);
+			Set<JiraCustomFilter> manualFilterSet = aListModel.getManualFilters(jiraServer);
 
             for (JiraCustomFilter filter : manualFilterSet) {
 			    node.add(new JIRAManualFilterTreeNode(filter, jiraServer));
@@ -281,6 +323,7 @@ public class JIRAFilterTree extends AbstractTree {
 	}
 
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
+        private JiraPresetFilter prevPresetFilter = null;
 		private JiraCustomFilter prevManualFilter = null;
 		private JIRASavedFilter prevSavedFilter = null;
 		private ServerData prevServer = null;
@@ -288,19 +331,29 @@ public class JIRAFilterTree extends AbstractTree {
 
 		public final void valueChanged(final TreeSelectionEvent event) {
 
+            JiraPresetFilter presetFilter = getSelectedPresetFilter();
 			JiraCustomFilter manualFilter = getSelectedManualFilter();
 			JIRASavedFilter savedFilter = getSelectedSavedFilter();
 			JiraServerData serverCfg = getSelectedServer();
 			boolean recentlyOpenSelected = isRecentlyOpenSelected();
 
 
-			if (manualFilter != null) {
+			if (presetFilter != null) {
+                prevPresetFilter = presetFilter;
+                prevManualFilter = null;
+                prevSavedFilter = null;
+                prevRecentlyOpen = false;
+                prevServer = serverCfg;
+                fireSelectedPresetFilterNode(presetFilter, serverCfg);
+            } else if (manualFilter != null) {
+                prevPresetFilter = null;
 				prevManualFilter = manualFilter;
 				prevSavedFilter = null;
 				prevRecentlyOpen = false;
 				prevServer = serverCfg;
 				fireSelectedManualFilterNode(manualFilter, serverCfg);
 			} else if (savedFilter != null) {
+                prevPresetFilter = null;
 				prevSavedFilter = savedFilter;
 				prevManualFilter = null;
 				prevRecentlyOpen = false;
@@ -322,6 +375,7 @@ public class JIRAFilterTree extends AbstractTree {
 //					setSelectionRecentlyOpen();
 //				}
 
+                prevPresetFilter = null;
                 prevSavedFilter = null;
                 prevManualFilter = null;
                 fireSelectionCleared();
@@ -330,12 +384,14 @@ public class JIRAFilterTree extends AbstractTree {
 				//getSelectionModel().addTreeSelectionListener(localSelectionListener);
 
 			} else if (recentlyOpenSelected) {
+                prevPresetFilter = null;
 				prevSavedFilter = null;
 				prevManualFilter = null;
 				prevRecentlyOpen = true;
 				fireSelectedRecentlyOpenNode();
 			} else {
 				// all nodes unselected
+                prevPresetFilter = null;
 				prevSavedFilter = null;
 				prevManualFilter = null;
 				fireSelectionCleared();
@@ -353,6 +409,12 @@ public class JIRAFilterTree extends AbstractTree {
 				listener.selectedSavedFilterNode(savedFilter, jiraServerData);
 			}
 		}
+
+        private void fireSelectedPresetFilterNode(final JiraPresetFilter presetFilter, final JiraServerData jiraServerData) {
+            for (JiraFilterTreeSelectionListener listener : selectionListeners) {
+                listener.selectedPresetFilterNode(presetFilter, jiraServerData);
+            }
+        }
 
 		private void fireSelectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {

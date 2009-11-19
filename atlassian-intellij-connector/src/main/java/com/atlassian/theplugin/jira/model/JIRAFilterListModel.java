@@ -2,9 +2,12 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.jira.model.presetfilters.AddedRecentlyPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.UpdatedRecentlyPresetFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,13 +75,22 @@ public class JIRAFilterListModel implements FrozenModel {
 		return null;
 	}
 
-	public Set<JiraCustomFilter> getManualFilter(final JiraServerData jiraServerData) {
+	public Set<JiraCustomFilter> getManualFilters(final JiraServerData jiraServerData) {
 		if (serversFilters.containsKey(jiraServerData)) {
 			return serversFilters.get(jiraServerData).getManualFilters();
 		}
 
 		return null;
 	}
+
+    public Collection<JiraPresetFilter> getPresetFilters(JiraServerData jiraServer) {
+        List<JiraPresetFilter> list = new ArrayList<JiraPresetFilter>();
+
+        list.add(new AddedRecentlyPresetFilter(jiraServer));
+        list.add(new UpdatedRecentlyPresetFilter(jiraServer));
+
+        return list;
+    }
 
 	public void fireModelChanged() {
 		for (JIRAFilterListModelListener listener : listeners) {
@@ -163,10 +175,6 @@ public class JIRAFilterListModel implements FrozenModel {
         if (serversFilters.containsKey(jiraServerData)) {
             serversFilters.get(jiraServerData).getManualFilters().remove(filter);
         }
-
-
-
-
     }
 
     public void setManualFilters(JiraServerData jiraServerData, Set<JiraCustomFilter> manualFilters) {

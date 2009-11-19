@@ -16,6 +16,9 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void addIssuesToModel(final JiraCustomFilter manualFilter,
                           final JiraServerData jiraServerData, int size, boolean reload)	throws JIRAException;
 
+    void addIssuesToModel(final JiraPresetFilter presetFilter,
+                          final JiraServerData jiraServerData, int size, boolean reload)	throws JIRAException;
+
 	void addIssuesToModel(final JIRASavedFilter savedFilter,
                           final JiraServerData jiraServerData, int size, boolean reload)	throws JIRAException;
 

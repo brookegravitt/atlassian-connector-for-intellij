@@ -466,7 +466,12 @@ public class JIRAServerModelImplTest extends TestCase {
 			return null;
 		}
 
-		public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
+        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
+                                                String sortOrder, int start, int size) throws JIRAException {
+            return null;
+        }
+
+        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
 				String sortOrder, int start, int size) throws JIRAException {
 			return null;
 		}

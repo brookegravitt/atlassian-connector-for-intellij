@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
     private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_custom_filter.png");
+    private static final Icon JIRA_PRESET_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_preset_filter.png");
     private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_saved_filter.png");
     private static final Icon JIRA_RECENTLY_OPEN_ISSUES_ICON =
             IconLoader.getIcon("/icons/jira/nodes/ico_jira_recent_issues.png");
@@ -36,6 +37,11 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         JComponent c = (JComponent) super.getTreeCellRendererComponent(
                 tree, value, selected, expanded, leaf, row, hasFocus);
         setToolTipText(null);
+
+        if (value instanceof JiraPresetFilterTreeNode && c instanceof JLabel) {
+            ((JLabel) c).setIcon(JIRA_PRESET_FILTER_ICON);
+            return c;
+        }
 
         if (value instanceof JIRAManualFilterTreeNode && c instanceof JLabel) {
             final JIRAManualFilterTreeNode filterTreeNode = (JIRAManualFilterTreeNode) value;
