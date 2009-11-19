@@ -29,6 +29,10 @@ import java.util.List;
  * @date Sep 28, 2009
  */
 public interface JiraServerFacade extends ProductServerFacade {
+
+    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
+                                     String sort, String sortOrder, int start, int size) throws JIRAException;
+
     List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
                                      String sort, String sortOrder, int start, int size) throws JIRAException;
 

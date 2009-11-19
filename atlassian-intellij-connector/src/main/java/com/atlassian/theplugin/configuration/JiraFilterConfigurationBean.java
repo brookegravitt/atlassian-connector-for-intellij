@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class JiraFilterConfigurationBean {
 	public static final String MANUAL_FILTER = "manualFilter";
+    public static final String PRESET_FILTER = "presetFilter";
 	public static final String RECENTLY_OPEN_FILTER = "recenltyOpen";
     public static final String SAVED_FILTER = "savedFilter";
     

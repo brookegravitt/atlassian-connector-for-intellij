@@ -86,7 +86,46 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
+    public void addIssuesToModel(final JiraPresetFilter presetFilter,
+                                 final JiraServerData jiraServerData, int size,
+                                 boolean reload) throws JIRAException {
+
+        List<JiraIssueAdapter> l = null;
+        try {
+            model.setModelFrozen(true);
+            if (jiraServerData == null || model == null || presetFilter == null) {
+                if (model != null) {
+                    model.clear();
+                    model.fireModelChanged();
+                }
+                return;
+            }
+
+            if (reload) {
+                startFrom = 0;
+                model.clear();
+            }
+
+            if (recentlyOpenIssuesCache != null) {
+                recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+            }
+
+            l = facade.getIssues(
+                    jiraServerData, presetFilter.getQueryString(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
+            model.addIssues(l);
+
+            startFrom += l != null ? l.size() : 0;
+//			checkActiveIssue(l);
+        } finally {
+            if (model != null) {
+                model.fireModelChanged();
+                model.fireIssuesLoaded(l != null ? l.size() : 0);
+                model.setModelFrozen(false);
+            }
+        }
+    }
+
+    public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
 		List<JiraIssueAdapter> l = null;

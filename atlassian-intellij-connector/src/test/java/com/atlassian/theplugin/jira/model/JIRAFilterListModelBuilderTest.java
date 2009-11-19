@@ -172,7 +172,12 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return createIssueList(size);
 		}
 
-		public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
+        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
+                                                String sortOrder, int start, int size) throws JIRAException {
+            return createIssueList(size);
+        }
+
+        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);

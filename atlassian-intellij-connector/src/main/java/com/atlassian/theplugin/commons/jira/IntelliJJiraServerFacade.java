@@ -22,8 +22,6 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private final JIRAServerFacade2 facade;
 	private static IntelliJJiraServerFacade instance;
 
-
-
     private IntelliJJiraServerFacade() {
 		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallback()));
 	}
@@ -41,6 +39,13 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 
     private IntelliJJiraServerFacade(JIRAServerFacade2Impl facade) {
         this.facade = facade;
+    }
+
+    public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
+                                            String sort, String sortOrder, int start, int size) throws JIRAException {
+        List<JIRAIssue> list =
+                facade.getIssues(jiraServerData.toHttpConnectionCfg(), queryString, sort, sortOrder, start, size);
+        return getJiraServerAdapterList(jiraServerData, list);
     }
 
     public List<JiraIssueAdapter> getIssues(final JiraServerData jiraServerData, List<JIRAQueryFragment> query,

@@ -54,6 +54,7 @@ import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -874,10 +875,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
     public void refreshIssues(final boolean reload) {
+        JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
         JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
         JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
         JiraServerData jiraServerData = getSelectedServer();
-        if (savedFilter != null) {
+        if (presetFilter != null) {
+            refreshIssues(presetFilter, jiraServerData, reload);
+        } else if (savedFilter != null) {
             refreshIssues(savedFilter, jiraServerData, reload);
         } else if (manualFilter != null) {
             refreshIssues(manualFilter, jiraServerData, reload);
@@ -905,6 +909,27 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         };
         ProgressManager.getInstance().run(task);
     }
+
+    private void refreshIssues(final JiraPresetFilter presetFilter,
+                               final JiraServerData jiraServerData, final boolean reload) {
+        if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
+            return;
+        }
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Retrieving issues", false) {
+            @Override
+            public void run(@NotNull final ProgressIndicator indicator) {
+                try {
+                    getStatusBarPane().setInfoMessage("Loading issues...", false);
+                    jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
+                            pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+                } catch (JIRAException e) {
+                    setStatusErrorMessage(e.getMessage(), e);
+                }
+            }
+        };
+        ProgressManager.getInstance().run(task);
+    }
+
 
     private void refreshIssues(final JIRASavedFilter savedFilter,
                                final JiraServerData jiraServerData, final boolean reload) {
@@ -1299,6 +1324,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
+        }
+
+        public void selectedPresetFilterNode(JiraPresetFilter presetFilter, JiraServerData jiraServerData) {
+            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.PRESET_FILTER);
+            jiraWorkspaceConfiguration.getView().setViewFilterId(presetFilter.getClass().getCanonicalName());
+            refreshIssues(presetFilter, jiraServerData, true);
         }
 
         public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
