@@ -4,6 +4,13 @@ import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.presetfilters.AddedRecentlyPresetFilter;
 import com.atlassian.theplugin.jira.model.presetfilters.UpdatedRecentlyPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.AllPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.OutstandingPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.UnscheduledPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.AssignedToMePresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.ReportedByMePresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.ResolvedRecentlyPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.MostImportantPresetFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -86,8 +93,15 @@ public class JIRAFilterListModel implements FrozenModel {
     public Collection<JiraPresetFilter> getPresetFilters(JiraServerData jiraServer) {
         List<JiraPresetFilter> list = new ArrayList<JiraPresetFilter>();
 
+        list.add(new AllPresetFilter(jiraServer));
+        list.add(new OutstandingPresetFilter(jiraServer));
+        list.add(new UnscheduledPresetFilter(jiraServer));
+        list.add(new AssignedToMePresetFilter(jiraServer));
+        list.add(new ReportedByMePresetFilter(jiraServer));
+        list.add(new ResolvedRecentlyPresetFilter(jiraServer));
         list.add(new AddedRecentlyPresetFilter(jiraServer));
         list.add(new UpdatedRecentlyPresetFilter(jiraServer));
+        list.add(new MostImportantPresetFilter(jiraServer));
 
         return list;
     }
