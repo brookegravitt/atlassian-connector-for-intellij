@@ -29,13 +29,6 @@ public class TaskChangeListAdapter extends ChangeListAdapter {
     public void defaultListChanged(final ChangeList oldDefaultList, final ChangeList newDefaultList) {
         ApplicationManager.getApplication().invokeLater(new SwitchActiveIssueRunnable(project, newDefaultList));
     }
-
-    @Override
-    public void changeListAdded(ChangeList list) {
-        Object task = PluginTaskManager.getInstance(project).findTaskByChangeList(list);
-        if (task != null) {
-
-        }
-    }
+   
 }
 
