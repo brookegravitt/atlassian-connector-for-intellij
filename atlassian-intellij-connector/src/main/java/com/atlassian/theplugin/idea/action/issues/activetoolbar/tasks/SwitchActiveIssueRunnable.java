@@ -46,7 +46,8 @@ import java.util.List;
             //switched to default task so silentDeactivate issue
             if (taskManager.getLocalChangeListId(newDefaultList) != null
                     && taskManager.getLocalChangeListId(taskManager.getDefaultChangeList()) != null
-                    && taskManager.getLocalChangeListId(newDefaultList).equals(taskManager.getLocalChangeListId(taskManager.getDefaultChangeList()))) {
+                    && taskManager.getLocalChangeListId(newDefaultList)
+                    .equals(taskManager.getLocalChangeListId(taskManager.getDefaultChangeList()))) {
                 taskManager.deactivateTask();
                 return;
             }
@@ -70,7 +71,8 @@ import java.util.List;
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Messages.showInfoMessage(project, "Cannot activate an issue " + taskManager.getActiveTask().getId() + "."
+                        Messages.showInfoMessage(project, "Cannot activate an issue "
+                                + taskManager.getActiveTask().getId() + "."
                                 + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
                     }
                 });

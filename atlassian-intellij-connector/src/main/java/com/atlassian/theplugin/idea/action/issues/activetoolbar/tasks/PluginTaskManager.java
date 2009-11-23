@@ -496,19 +496,20 @@ public final class PluginTaskManager {
                     //@todo we should check repository type and username password not to duplicate
                     for (TaskRepositoryType repositoryType : getAllRepositoryTypes()) {
 
-                        if (repositoryType != null && repositoryType.getName() != null && repositoryType.getName().equalsIgnoreCase("JIRA")) {
+                        if (repositoryType != null && repositoryType.getName() != null
+                                && repositoryType.getName().equalsIgnoreCase("JIRA")) {
                             List<TaskRepository> repositories = repositoryType.getRepositories();
 
                             for (TaskRepository jiraRepo : repositories) {
 
                                 String url = jiraRepo.getUrl();
                                 if (url != null && url.equalsIgnoreCase(jiraServer.getUrl())) {
-                                    return (JiraRepository)jiraRepo;
+                                    return (JiraRepository) jiraRepo;
                                 }
                             }
 
                             //create jira repo
-                            JiraRepository jiraRepository = (JiraRepository)repositoryType.createRepository();
+                            JiraRepository jiraRepository = (JiraRepository) repositoryType.createRepository();
                             if (jiraRepository != null) {
                                 jiraRepository.setUrl(jiraServer.getUrl());
                                 jiraRepository.setUsername(jiraServer.getUsername());

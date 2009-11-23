@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class JiraTaskRepositoryTypeImpl extends TaskRepositoryTypeImpl {    
     private static final String JIRA_REPOSITORY_TYPE_CLASS = "com.intellij.tasks.JiraRepositoryType";
-    Object jiraRepositoryTypeObj;
+    private Object jiraRepositoryTypeObj;
     private final ClassLoader classLoader;
-    Class jiraRepositoryTypeClass;
+    private Class jiraRepositoryTypeClass;
 
     public JiraTaskRepositoryTypeImpl(Object repositoryTypeObj, ClassLoader classLoader) {
         super(repositoryTypeObj, classLoader);

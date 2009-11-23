@@ -35,8 +35,8 @@ public class LocalTaskImpl implements LocalTask {
         if (localTaskImplClass != null) {
             try {
                 Method getTaskId = localTaskImplClass.getMethod("getId");
-                Object localTaskObj = getTaskId.invoke(this.localTaskObj);
-                return localTaskObj.toString();
+                Object localObj = getTaskId.invoke(this.localTaskObj);
+                return localObj.toString();
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_ID, e);
             }
