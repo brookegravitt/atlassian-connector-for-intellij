@@ -16,14 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
-import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
-import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
-import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
-import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
-import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
+import com.atlassian.connector.intellij.bamboo.*;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
@@ -34,7 +27,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.PluginTaskManager;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;

@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
 import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
