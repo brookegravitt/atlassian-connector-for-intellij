@@ -259,9 +259,10 @@ public final class PluginTaskManager {
             }
         } else {
             //todo search for issue ID and modify task insead of creating one
-            jiraRepository = new JiraRepository(jiraRepositoryObj, classLoader);
             foundTask = jiraRepository.findTask(issue.getIssueKey());
-            activateTask(foundTask, true, true);
+            if (foundTask != null) {
+                activateTask(foundTask.getLocalTaskObj(), true, true);
+            }
         }
     }
 
@@ -464,7 +465,7 @@ public final class PluginTaskManager {
             Method getAllRepositoryTypes = taskManagerClass.getMethod("getAllRepositoryTypes");
             Object[] repoTypesObj = (Object[]) getAllRepositoryTypes.invoke(taskManagerObj);
             if (repoTypesObj != null) {
-                for (Object r : repoTypes) {
+                for (Object r : repoTypesObj) {
                     repoTypes.add(new JiraTaskRepositoryTypeImpl(r, classLoader));
                 }
             }
