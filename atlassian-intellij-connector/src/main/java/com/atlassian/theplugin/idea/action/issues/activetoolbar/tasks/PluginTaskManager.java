@@ -216,7 +216,8 @@ public final class PluginTaskManager {
             return;
         }
 
-        Object defaultTaskObj = getDefaultTask();
+        LocalTask defaultTask = getDefaultTask();
+        Object defaultTaskObj = defaultTask != null ? defaultTask.getLocalTaskObj() : null;
         if (defaultTaskObj != null) {
             activateTask(defaultTaskObj, false, false);
         }
@@ -249,7 +250,8 @@ public final class PluginTaskManager {
         }
 
         //ADD or GET JiraRepository
-        Object jiraRepositoryObj = getJiraRepository(server);
+        JiraRepository jiraRepository = getJiraRepository(server);
+        Object jiraRepositoryObj = jiraRepository != null ? jiraRepository.getTaskRepositoryObj() : null;
         if (foundTask != null) {
             LocalTask activeTask = getActiveTask();
             if (activeTask != null && !activeTask.getIssueUrl().equals(issue.getIssueKey())) {
@@ -257,7 +259,7 @@ public final class PluginTaskManager {
             }
         } else {
             //todo search for issue ID and modify task insead of creating one
-            JiraRepository jiraRepository = new JiraRepository(jiraRepositoryObj, classLoader);
+            jiraRepository = new JiraRepository(jiraRepositoryObj, classLoader);
             foundTask = jiraRepository.findTask(issue.getIssueKey());
             activateTask(foundTask, true, true);
         }
@@ -296,7 +298,7 @@ public final class PluginTaskManager {
     }
 
     @Nullable
-    private Object getDefaultTask() {
+    private LocalTask getDefaultTask() {
         ChangeListManager manager = ChangeListManager.getInstance(project);
         if (manager != null) {
             ChangeList defaultChangeList = getDefaultChangeList();
