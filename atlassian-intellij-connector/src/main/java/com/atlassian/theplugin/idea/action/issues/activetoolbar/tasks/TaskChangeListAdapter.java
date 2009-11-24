@@ -48,7 +48,7 @@ public class TaskChangeListAdapter extends ChangeListAdapter {
             if (issue != null) {
                 String changeListName = issue.getKey() + " - " + issue.getSummary() + "\n";
                 if (list instanceof LocalChangeList && list.getComment().length() <= 0) {
-                    ((LocalChangeList)list).setComment(changeListName);
+                    ((LocalChangeList) list).setComment(changeListName);
                 }
 
             }
