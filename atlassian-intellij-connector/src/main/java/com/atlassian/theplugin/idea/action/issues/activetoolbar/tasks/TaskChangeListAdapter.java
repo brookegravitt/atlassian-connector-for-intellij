@@ -47,7 +47,7 @@ public class TaskChangeListAdapter extends ChangeListAdapter {
             JiraIssueAdapter issue = builder.getModel().findIssue(activeIssue.getIssueKey());
             if (issue != null) {
                 String changeListName = issue.getKey() + " - " + issue.getSummary() + "\n";
-                if (list instanceof LocalChangeList && list.getComment().isEmpty()) {
+                if (list instanceof LocalChangeList && list.getComment().length() <= 0) {
                     ((LocalChangeList)list).setComment(changeListName);
                 }
 
