@@ -11,7 +11,7 @@ import java.util.List;
  * User: pmaruszak
  */
 public class JiraTaskRepositoryTypeImpl extends TaskRepositoryTypeImpl {    
-    private static final String JIRA_REPOSITORY_TYPE_CLASS = "com.intellij.tasks.jira.JiraRepositoryType";                                                              
+    private static final String JIRA_REPOSITORY_TYPE_CLASS = "com.intellij.tasks.jira.JiraRepositoryType";
     private Object jiraRepositoryTypeObj;
     private final ClassLoader classLoader;
     private Class jiraRepositoryTypeClass;
