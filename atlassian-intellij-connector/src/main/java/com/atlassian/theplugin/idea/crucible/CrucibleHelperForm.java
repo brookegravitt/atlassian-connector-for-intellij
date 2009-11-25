@@ -53,7 +53,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.svn.history.SvnRepositoryContentRevision;
+//import org.jetbrains.idea.svn.history.SvnRepositoryContentRevision;
 
 import static javax.swing.Action.NAME;
 import javax.swing.*;
@@ -67,6 +67,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Date;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 enum AddMode {
 	ADDREVISION,
@@ -465,8 +467,10 @@ public class CrucibleHelperForm extends DialogWrapper {
                                     break;
                                 }
                                 if (contentRevision != null) {
-                                    if (contentRevision instanceof SvnRepositoryContentRevision) {
-                                        String path = ((SvnRepositoryContentRevision) contentRevision).getPath();
+                                    String path = getPathFromRevision(contentRevision);
+                                    if (path != null) {
+//                                    if (contentRevision instanceof SvnRepositoryContentRevision) {
+//                                        String path = ((SvnRepositoryContentRevision) contentRevision).getPath();
                                         String svnRepoPath = svnRepo.getPath();
                                         if (!path.startsWith("/" + svnRepoPath + "/")) {
                                             throw new IllegalArgumentException(
@@ -556,6 +560,23 @@ public class CrucibleHelperForm extends DialogWrapper {
                                     "Cannot add revision to review. Check selected repository.", e);
                         }
                     }, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
+                }
+            }
+
+            /**
+             * This method exists because I am a dumbass for deploying wrong svn4idea jar to maven repo
+             * thus breaking bamboo builds :(
+             *
+             * @param contentRevision - revision to get path of
+             * @return file path
+             */
+            private String getPathFromRevision(ContentRevision contentRevision) {
+                try {
+                    Method method = contentRevision.getClass().getMethod("getPath");
+                    return method.invoke(contentRevision).toString();
+                } catch (Exception e) {
+                    LoggerImpl.getInstance().error(e);
+                    return null;
                 }
             }
         };
