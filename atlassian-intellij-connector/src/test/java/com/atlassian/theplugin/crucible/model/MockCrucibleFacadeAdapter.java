@@ -21,6 +21,7 @@ import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -100,7 +101,13 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return null;
 	}
 
-	public ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
+    public ReviewAdapter addFileVersionsToReview(ServerData server, PermId permId, String repoName,
+                                                 List<PathAndRevision> pathsAndRevisions)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        return null;
+    }
+
+    public ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}

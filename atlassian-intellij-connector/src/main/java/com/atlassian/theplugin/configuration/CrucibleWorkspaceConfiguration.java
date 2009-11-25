@@ -26,8 +26,9 @@ public class CrucibleWorkspaceConfiguration {
 	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
 	//	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
 	private boolean createReviewOnCommit;
+    private boolean addChangesetToReviewOnCommit;
 
-	public CrucibleWorkspaceConfiguration() {
+    public CrucibleWorkspaceConfiguration() {
 	}
 
 	public CrucibleViewConfigurationBean getView() {
@@ -62,12 +63,21 @@ public class CrucibleWorkspaceConfiguration {
 		this.createReviewOnCommit = createReviewOnCommit;
 	}
 
-	public void copyConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
+    public void setAddChangesetToReviewOnCommit(boolean addChangesetToReviewOnCommit) {
+        this.addChangesetToReviewOnCommit = addChangesetToReviewOnCommit;
+    }
+
+    public boolean isAddChangesetToReviewOnCommit() {
+        return addChangesetToReviewOnCommit;
+    }
+
+    public void copyConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
 //		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
 		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
 		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
 		crucibleFilters.setRecenltyOpenFilter(crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
 		createReviewOnCommit = crucibleConfiguration.createReviewOnCommit;
+        addChangesetToReviewOnCommit = crucibleConfiguration.addChangesetToReviewOnCommit;
 
 		final CustomFilterBean manualFilter = crucibleFilters.getManualFilter();
 		// support just for transition perdiod, as State used to be kept as String and now its normal domain object
@@ -81,4 +91,5 @@ public class CrucibleWorkspaceConfiguration {
 		crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
 		view.copyConfiguration(crucibleConfiguration.getView());
 	}
+
 }

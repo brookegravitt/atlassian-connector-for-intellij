@@ -31,10 +31,12 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vcs.actions.VcsContextFactory;
 import com.intellij.openapi.vcs.changes.BinaryContentRevision;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ContentRevision;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
@@ -50,10 +52,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 
 public final class VcsIdeaHelper {
 
@@ -78,6 +82,26 @@ public final class VcsIdeaHelper {
 		return (plm != null && plm.getAllActiveVcss().length > 0);
 	}
 
+    public static boolean isUnderSvnControl(AnActionEvent action) {
+        Project currentProject = IdeaHelper.getCurrentProject(action.getDataContext());
+        if (currentProject == null) {
+            return false;
+        }
+        ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(currentProject);
+
+        if (plm == null) {
+            return false;
+        }
+
+        for (AbstractVcs vcs : plm.getAllActiveVcss()) {
+            if ("Subversion".equals(vcs.getDisplayName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
 	public static String getRepositoryRootUrlForFile(Project project, VirtualFile vFile) {
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 		if (plm == null) {
@@ -556,4 +580,18 @@ public final class VcsIdeaHelper {
 		}
 		return diffProvider.getCurrentRevision(virtualFile);
 	}
+
+    public static boolean isMyCommittedChangeList(CommittedChangeList committedChangeList, 
+                                            Collection<VirtualFile> virtualFiles) {
+        int verifiedChangesCnt = 0;
+        for (VirtualFile virtualFile : virtualFiles) {
+            for (Change change : committedChangeList.getChanges()) {
+                if (change.affectsFile(new File(virtualFile.getPath()))) {
+                    ++verifiedChangesCnt;
+                    break;
+                }
+            }
+        }
+        return verifiedChangesCnt == virtualFiles.size();
+    }
 }

@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -33,4 +34,12 @@ public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
 		new CrucibleHelperForm(project, IntelliJCrucibleServerFacade.getInstance(), changes, IdeaHelper
 				.getProjectCfgManager(event)).show();
 	}
+
+    @Override
+    public void update(AnActionEvent event) {
+        super.update(event);
+        if (event.getPresentation().isEnabled()) {
+            event.getPresentation().setEnabled(VcsIdeaHelper.isUnderSvnControl(event));
+        }
+    }
 }
