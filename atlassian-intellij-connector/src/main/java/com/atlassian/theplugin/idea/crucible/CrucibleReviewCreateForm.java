@@ -81,7 +81,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
     protected CrucibleServerFacade crucibleServerFacade;
     private final ProjectCfgManagerImpl projectCfgManager;
     private int reviewCreationTimeout = -1;
-    private static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
+    public static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
 
     protected void setCustomComponent(JComponent component) {
         customComponentPanel.removeAll();

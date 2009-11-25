@@ -22,13 +22,13 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcsHelper;
-import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesCache;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
@@ -38,7 +38,6 @@ import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +79,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
     private ChangeList[] getChanges() {
         if (list != null && list.size() > 0) {
             for (CommittedChangeList committedChangeList : list) {
-                if (isMyCommittedChangeList(committedChangeList)) {
+                if (VcsIdeaHelper.isMyCommittedChangeList(committedChangeList, virtualFiles)) {
                     ChangeList[] chlist = new ChangeList[1];
                     chlist[0] = committedChangeList;
                     return chlist;
@@ -88,19 +87,6 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
             }
         }
         return null;
-    }
-
-    private boolean isMyCommittedChangeList(CommittedChangeList committedChangeList) {
-        int verifiedChangesCnt = 0;
-        for (VirtualFile virtualFile : virtualFiles) {
-            for (Change change : committedChangeList.getChanges()) {
-                if (change.affectsFile(new File(virtualFile.getPath()))) {
-                    ++verifiedChangesCnt;
-                    break;
-                }
-            }
-        }
-        return verifiedChangesCnt == virtualFiles.size();
     }
 
     public void startReviewCreation() {

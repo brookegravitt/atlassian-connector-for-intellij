@@ -6,6 +6,7 @@ import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -128,7 +129,15 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
                 server);
 	}
 
-	public VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
+    public ReviewAdapter addFileVersionsToReview(ServerData server, PermId permId, String repoName,
+                                                 List<PathAndRevision> pathsAndRevisions)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+
+        return toReviewAdapter(facade.addFileRevisionsToReview(server.toHttpConnectionCfg(),
+                permId, repoName, pathsAndRevisions), server);
+    }
+
+    public VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.addVersionedComment(server.toHttpConnectionCfg(), permId, riId, comment);
 	}

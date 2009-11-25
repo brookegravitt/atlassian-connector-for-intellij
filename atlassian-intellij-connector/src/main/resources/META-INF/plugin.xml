@@ -101,6 +101,7 @@
 	</change-notes>
 
 	<depends>JUnit</depends>
+    <depends>Subversion</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<arealistener implementation="com.atlassian.theplugin.idea.PerProjectPicoInit"/>

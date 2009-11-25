@@ -97,7 +97,7 @@
 			<version>7.0</version>
 			<classifier>jdk15</classifier>
 			<scope>compile</scope>
-		</dependency>
+		</dependency>                                               
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>idea-junit</artifactId>
@@ -105,7 +105,14 @@
 			<classifier>jdk15</classifier>
 			<scope>compile</scope>
 		</dependency>
-              
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>svn4idea</artifactId>
+            <version>7.0</version>
+            <classifier>jdk15</classifier>
+            <scope>compile</scope>
+        </dependency>
+
 		<!--
 						  <dependency>
 							  <groupId>com.intellij.idea</groupId>
@@ -469,6 +476,10 @@
 							<name>idea-junit</name>
 							<exclude>true</exclude>
 						</library>
+                        <library>
+                            <name>svn4idea</name>
+                            <exclude>true</exclude>
+                        </library>
 					</libraries>
 				</configuration>
 			</plugin>

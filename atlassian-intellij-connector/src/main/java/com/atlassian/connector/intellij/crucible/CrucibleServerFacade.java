@@ -17,6 +17,7 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -54,6 +55,11 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
 	ReviewAdapter addRevisionsToReview(ServerData server, PermId permId, String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
+
+
+    ReviewAdapter addFileVersionsToReview(ServerData server, PermId permId, String repoName,
+                                          List<PathAndRevision> pathsAndRevisions)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
