@@ -136,7 +136,6 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		}
 
         private void addChangesetToReview() {
-            checkinProjectPanel.getSelectedChanges();
             final Project project = checkinProjectPanel.getProject();
 
             final ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
