@@ -24,10 +24,10 @@ public class TaskChangeListAdapter extends ChangeListAdapter {
     }
 
     public void changeListRemoved(ChangeList list) {
-        Object localTaskObj = PluginTaskManager.getInstance(project).findTaskByChangeList(list);
-        if (localTaskObj != null) {
+        LocalTask localTask = PluginTaskManager.getInstance(project).findTaskByChangeList(list);
+        if (localTask != null) {
 
-            PluginTaskManager.getInstance(project).removeTaskFromIdea(localTaskObj);
+            PluginTaskManager.getInstance(project).removeTaskFromIdea(localTask);
             PluginTaskManager.getInstance(project).deactivateTask();
 
         }

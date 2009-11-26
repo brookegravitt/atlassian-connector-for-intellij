@@ -149,16 +149,16 @@ public final class PluginTaskManager {
         return actions;
     }
 
-    public void removeTaskFromIdea(Object localTaskObj) {
+    public void removeTaskFromIdea(LocalTask localTask) {
         if (!isValidIdeaVersion()) {
             return;
         }
-
-        if (classLoader != null) {
+        //com.intellij.tasks.LocalTask
+        if (classLoader != null && localTask != null) {
             try {
                 Class localTaskClass = classLoader.loadClass(LOCAL_TASK_CLASS);
                 Method removeTaskMethod = taskManagerClass.getMethod("removeTask", localTaskClass);
-                removeTaskMethod.invoke(taskManagerObj, localTaskObj);
+                removeTaskMethod.invoke(taskManagerObj, localTask.getLocalTaskObj());
 
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_REMOVE_LOCAL_TASK, e);
@@ -218,8 +218,8 @@ public final class PluginTaskManager {
 
         LocalTask defaultTask = getDefaultTask();
         Object defaultTaskObj = defaultTask != null ? defaultTask.getLocalTaskObj() : null;
-        if (defaultTaskObj != null) {
-            activateTask(defaultTaskObj, false, false);
+        if (defaultTask != null) {
+            activateTask(defaultTask, false, false);
         }
 
         addChangeListListener();
@@ -245,23 +245,22 @@ public final class PluginTaskManager {
 
         ServerData server = IdeaHelper.getProjectCfgManager(project).getServerr(issue.getServerId());
         foundTask = findLocalTaskByUrl(getActiveIssueUrl(issue.getIssueKey()));
-        if (foundTask != null) {
+        if (foundTask == null) {
             foundTask = findLocalTaskById(issue.getIssueKey());
         }
 
         //ADD or GET JiraRepository
         JiraRepository jiraRepository = getJiraRepository(server);
-        Object jiraRepositoryObj = jiraRepository != null ? jiraRepository.getTaskRepositoryObj() : null;
         if (foundTask != null) {
             LocalTask activeTask = getActiveTask();
-            if (activeTask != null && !activeTask.getIssueUrl().equals(issue.getIssueKey())) {
+            if (activeTask == null || (activeTask != null && activeTask.getLocalTaskObj() != foundTask.getLocalTaskObj())) {
                 activateTask(foundTask, false, true);
             }
         } else {
             //todo search for issue ID and modify task insead of creating one
             foundTask = jiraRepository.findTask(issue.getIssueKey());
             if (foundTask != null) {
-                activateTask(foundTask.getLocalTaskObj(), true, true);
+                activateTask(foundTask, true, true);
             }
         }
     }
@@ -331,26 +330,23 @@ public final class PluginTaskManager {
     }
 
     private List<LocalTask> getLocalTasks() {
-        for (IdeaPluginDescriptor descriptor : ApplicationManager.getApplication().getPlugins()) {
-            if (descriptor.getPluginId().getIdString().equals(PLUGIN_ID_TASKS)) {
-                try {
 
-                    Method getManager = taskManagerClass.getMethod("getManager", Project.class);
+        try {
 
-                    Object taskManager = getManager.invoke(null, project);
-                    Method getLocalTasks = taskManagerClass.getMethod("getLocalTasks");
-                    List<LocalTask> localTasks = new ArrayList<LocalTask>();
-                    Object[] localTasksObj = (Object[]) getLocalTasks.invoke(taskManager);
-                    if (localTasksObj != null) {
-                        for (Object t : localTasksObj) {
-                            localTasks.add(new LocalTaskImpl(t, classLoader));
-                        }
-                    }
-                    return localTasks;
-                } catch (Exception e) {
-                    PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASKS, e);
+            Method getManager = taskManagerClass.getMethod("getManager", Project.class);
+
+            Object taskManager = getManager.invoke(null, project);
+            Method getLocalTasks = taskManagerClass.getMethod("getLocalTasks");
+            List<LocalTask> localTasks = new ArrayList<LocalTask>();
+            Object[] localTasksObj = (Object[]) getLocalTasks.invoke(taskManager);
+            if (localTasksObj != null) {
+                for (Object t : localTasksObj) {
+                    localTasks.add(new LocalTaskImpl(t, classLoader));
                 }
             }
+            return localTasks;
+        } catch (Exception e) {
+            PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASKS, e);
         }
 
         return null;
@@ -401,7 +397,7 @@ public final class PluginTaskManager {
         List<LocalTask> localTasks = getLocalTasks();
         if (localTasks != null) {
             for (LocalTask task : localTasks) {
-                if (task.getId() != null && task.getId().equals(url)) {
+                if (task.getIssueUrl() != null && task.getIssueUrl().equals(url)) {
                     return task;
                 }
             }
@@ -409,7 +405,7 @@ public final class PluginTaskManager {
         return null;
     }
 
- 
+
     @Nullable
     private String getChangeListId(final LocalTask task) {
         if (classLoader != null) {
@@ -431,7 +427,7 @@ public final class PluginTaskManager {
         return null;
     }
 
-    private void activateTask(final Object task, final boolean clearContext, final boolean createChangeset) {
+    private void activateTask(final LocalTask task, final boolean clearContext, final boolean createChangeset) {
         if (classLoader != null && task != null) {
             try {
 
@@ -444,7 +440,7 @@ public final class PluginTaskManager {
 
                         public void run() {
                             try {
-                                activateLocalTask.invoke(taskManagerObj, task, clearContext, createChangeset);
+                                activateLocalTask.invoke(taskManagerObj, task.getLocalTaskObj(), clearContext, createChangeset);
                             } catch (Exception e) {
                                 PluginUtil.getLogger().error(CANNOT_ACTIVATE_LOCAL_TASK, e);
                             }
@@ -481,7 +477,7 @@ public final class PluginTaskManager {
         try {
             Method setRepositories = null;
             setRepositories = taskManagerClass.getMethod("setRepositories", List.class,
-                                        ((TaskRepositoryType)repositoryType).getTaskRepositoryTypeClass());
+                    ((TaskRepositoryType) repositoryType).getTaskRepositoryTypeClass());
             //public abstract void (java.util.List list, com.intellij.tasks.TaskRepositoryType taskrepositorytype);
             setRepositories.invoke(taskManagerObj, repositories, repositoryType.getRepositoryTypeObj());
         } catch (Exception e) {
@@ -489,6 +485,7 @@ public final class PluginTaskManager {
         }
 
     }
+
     //get or creates
     private JiraRepository getJiraRepository(final ServerData jiraServer) {
 
@@ -543,38 +540,38 @@ public final class PluginTaskManager {
     }
 
     void deactivateTask() {
-              ApplicationManager.getApplication().invokeLater(new Runnable() {
-                  private final JiraWorkspaceConfiguration conf =
-                          IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            private final JiraWorkspaceConfiguration conf =
+                    IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
-                  public void run() {
+            public void run() {
 
-                      ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
-                          public void success() {
-                              if (conf != null) {
-                                  conf.setActiveJiraIssuee(null);
-                                  PluginTaskManager.getInstance(project).addChangeListListener();
-                              }
-                          }
+                ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
+                    public void success() {
+                        if (conf != null) {
+                            conf.setActiveJiraIssuee(null);
+                            PluginTaskManager.getInstance(project).addChangeListListener();
+                        }
+                    }
 
-                          public void failure(Throwable problem) {
+                    public void failure(Throwable problem) {
 
-                              if (conf != null) {
-                                  PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
-                                  PluginTaskManager.getInstance(project).addChangeListListener();
-                              }
-                          }
+                        if (conf != null) {
+                            PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                            PluginTaskManager.getInstance(project).addChangeListListener();
+                        }
+                    }
 
-                          public void cancel(String problem) {
-                              if (conf != null) {
-                                  PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
-                                  PluginTaskManager.getInstance(project).addChangeListListener();
-                              }
-                          }
-                      });
-                  }
-              }, ModalityState.defaultModalityState());
-          }
+                    public void cancel(String problem) {
+                        if (conf != null) {
+                            PluginTaskManager.getInstance(project).activateLocalTask(conf.getActiveJiraIssuee());
+                            PluginTaskManager.getInstance(project).addChangeListListener();
+                        }
+                    }
+                });
+            }
+        }, ModalityState.defaultModalityState());
+    }
 
     LocalTask getActiveTask() {
         try {
