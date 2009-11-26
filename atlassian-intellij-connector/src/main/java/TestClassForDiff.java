@@ -29,4 +29,5 @@ public class TestClassForDiff {
     // comment 6
     // comment 7
 
+    // comment 8
 }
