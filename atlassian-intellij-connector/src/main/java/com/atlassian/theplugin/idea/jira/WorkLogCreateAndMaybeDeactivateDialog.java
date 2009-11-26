@@ -135,10 +135,11 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         gbc.fill = GridBagConstraints.NONE;
 
         cbPerformWorkflowAction = new JCheckBox("Perform Workflow Action");
-        cbPerformWorkflowAction.setSelected(config.isActiveIssueProgressWorkflowAction());
+        cbPerformWorkflowAction.setEnabled(false);
         cbPerformWorkflowAction.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 actionCombo.setEnabled(cbPerformWorkflowAction.isSelected());
+                updateOKAction();
             }
         });
         p.add(cbPerformWorkflowAction, gbc);
@@ -200,17 +201,27 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
     }
 
     private void fillActionCombo(List<JIRAAction> actions) {
-        long lastSelectedAction = config.getSelectedWorkflowAction();
+        if (actions == null || actions.size() == 0) {
+            cbPerformWorkflowAction.setSelected(false);
+            cbPerformWorkflowAction.setEnabled(false);
+            cbPerformWorkflowAction.setText(cbPerformWorkflowAction.getText() + " (no workflow actions available)");
+        } else {
+            cbPerformWorkflowAction.setEnabled(true);
+            cbPerformWorkflowAction.setSelected(config.isActiveIssueProgressWorkflowAction());
+            actionCombo.setEnabled(cbPerformWorkflowAction.isSelected());
 
-        JIRAAction actionToSelect = null;
-        for (JIRAAction action : actions) {
-            if (action.getId() == lastSelectedAction) {
-                actionToSelect = action;
+            long lastSelectedAction = config.getSelectedWorkflowAction();
+
+            JIRAAction actionToSelect = null;
+            for (JIRAAction action : actions) {
+                if (action.getId() == lastSelectedAction) {
+                    actionToSelect = action;
+                }
+                actionCombo.addItem(action);
             }
-            actionCombo.addItem(action);
-        }
-        if (actionToSelect != null) {
-            actionCombo.setSelectedItem(actionToSelect);
+            if (actionToSelect != null) {
+                actionCombo.setSelectedItem(actionToSelect);
+            }
         }
     }
 
@@ -437,7 +448,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
         if (deactivateActiveIssue) {
             enable = enable || !chkLogWork.isSelected();
-            enable = enable && actionCombo.getItemCount() > 0;
+            enable = enable && (!cbPerformWorkflowAction.isSelected() || actionCombo.getItemCount() > 0);
         }
 		setOKActionEnabled(enable);
 	}
