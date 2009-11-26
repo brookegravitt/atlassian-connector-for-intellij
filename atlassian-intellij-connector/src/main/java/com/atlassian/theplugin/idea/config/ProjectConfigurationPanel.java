@@ -44,8 +44,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-public class ProjectConfigurationPanel extends ScrollablePanel 
-{
+public class ProjectConfigurationPanel extends ScrollablePanel {
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
