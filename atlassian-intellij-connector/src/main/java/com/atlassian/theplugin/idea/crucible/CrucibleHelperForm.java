@@ -27,8 +27,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -53,22 +53,20 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-//import org.jetbrains.idea.svn.history.SvnRepositoryContentRevision;
 
 import static javax.swing.Action.NAME;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Date;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 enum AddMode {
 	ADDREVISION,
@@ -458,7 +456,11 @@ public class CrucibleHelperForm extends DialogWrapper {
                             for (ChangeList changeList : changes) {
                                 ContentRevision contentRevision = null;
 
+                                List<String> revList = new ArrayList<String>();
                                 for (Change change : changeList.getChanges()) {
+                                    revList.add(change.getBeforeRevision().getRevisionNumber().asString());
+                                    revList.add(change.getAfterRevision().getRevisionNumber().asString());
+
                                     if (change.getType() == Change.Type.DELETED) {
                                         contentRevision = change.getBeforeRevision();
                                     } else {
@@ -479,8 +481,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                                         }
                                         path = path.substring(svnRepoPath.length() + 2);
 
-                                        pathsAndRevisions.add(
-                                                new PathAndRevision(path, contentRevision.getRevisionNumber().asString()));
+                                        pathsAndRevisions.add(new PathAndRevision(path, revList));
                                     } else {
                                         revisions.add(contentRevision.getRevisionNumber().asString());
                                     }
