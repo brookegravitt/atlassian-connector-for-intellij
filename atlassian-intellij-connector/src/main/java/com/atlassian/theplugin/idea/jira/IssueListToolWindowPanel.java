@@ -1577,9 +1577,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 } else if (srvcfg != null && jiraServerModel != null) {
                     Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
                     try {
-                        for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-                            projectMap.put(new Pair<String, ServerId>(p.getKey(), srvcfg.getServerId()),
-                                    p.getName());
+                        List<JIRAProject> projects = jiraServerModel.getProjects(srvcfg);
+                        if (projects == null) {
+                            setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. ");
+                        } else {
+                            for (JIRAProject p : projects) {
+                                projectMap.put(new Pair<String, ServerId>(p.getKey(), srvcfg.getServerId()), p.getName());
+                            }
                         }
                     } catch (JIRAException e) {
                         setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. "
