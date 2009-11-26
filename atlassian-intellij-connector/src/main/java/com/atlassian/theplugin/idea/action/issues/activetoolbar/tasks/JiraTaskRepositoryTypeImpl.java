@@ -74,6 +74,6 @@ public class JiraTaskRepositoryTypeImpl extends TaskRepositoryTypeImpl {
    }
 
    public Class getTaskRepositoryTypeClass() {
-       return jiraRepositoryTypeClass;
+       return super.getTaskRepositoryTypeClass();
    }
 }

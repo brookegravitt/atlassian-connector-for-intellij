@@ -481,7 +481,8 @@ public final class PluginTaskManager {
         try {
             Method setRepositories = null;
             setRepositories = taskManagerClass.getMethod("setRepositories", List.class,
-                                        repositoryType.getTaskRepositoryTypeClass());
+                                        ((TaskRepositoryType)repositoryType).getTaskRepositoryTypeClass());
+            //public abstract void (java.util.List list, com.intellij.tasks.TaskRepositoryType taskrepositorytype);
             setRepositories.invoke(taskManagerObj, repositories, repositoryType.getRepositoryTypeObj());
         } catch (Exception e) {
             PluginUtil.getLogger().error("Cannot set repositories for repository type JIRA", e);
