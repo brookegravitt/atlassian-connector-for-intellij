@@ -320,6 +320,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			registerCrucibleNotifier();
 			issuesToolWindowPanel.init();
 			checkDefaultServerValues();
+            informAboutIdea9TaskIntegrationAsExperimental();
 		}
 
 
@@ -343,7 +344,24 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		fileEditorListener.projectOpened();
 
 	}
+    private void informAboutIdea9TaskIntegrationAsExperimental() {
+      if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
+              && PluginTaskManager.isValidIdeaVersion()) {
 
+          final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
+                  PluginUtil.PRODUCT_NAME, "Plugin provides experimental support of IntelliJ IDEA Task integration.\n"
+                  + "Please report any inconveniences or suggestions");
+          SwingUtilities.invokeLater(new Runnable() {
+
+              public void run() {
+                  dialog.show();
+                  pluginConfiguration.getGeneralConfigurationData().setInformedAboutIdea9TaskExperimentalSupport(
+                          dialog.isDoNotShowChecked());
+
+              }
+          });
+      }
+    }
     private void checkDefaultServerValues() {
         String text = "";
         if (projectCfgManager.getDefaultJiraServer() == null && projectCfgManager.getAllJiraServerss().size() > 0) {

@@ -29,6 +29,7 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -43,7 +44,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-public class ProjectConfigurationPanel extends JPanel {
+public class ProjectConfigurationPanel extends ScrollablePanel 
+{
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
