@@ -253,12 +253,12 @@ public final class PluginTaskManager {
         JiraRepository jiraRepository = getJiraRepository(server);
         if (foundTask != null) {
             LocalTask activeTask = getActiveTask();
-            if (activeTask == null || (activeTask != null && activeTask.getLocalTaskObj() != foundTask.getLocalTaskObj())) {
+            if (activeTask == null || (activeTask.getLocalTaskObj() != foundTask.getLocalTaskObj())) {
                 activateTask(foundTask, false, true);
             }
         } else {
             //todo search for issue ID and modify task insead of creating one
-            foundTask = jiraRepository.findTask(issue.getIssueKey());
+            foundTask = jiraRepository != null ? jiraRepository.findTask(issue.getIssueKey()) : null;
             if (foundTask != null) {
                 activateTask(foundTask, true, true);
             }
