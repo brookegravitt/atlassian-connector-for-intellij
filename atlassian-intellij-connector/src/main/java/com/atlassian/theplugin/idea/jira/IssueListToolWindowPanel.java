@@ -722,9 +722,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 final String msg = "Error starting progress on issue. Assigning failed: ";
                 setStatusErrorMessage(msg + e.getMessage(), e);
                 PluginUtil.getLogger().warn(msg + e.getMessage(), e);
-
+                return updatedIssue;
             }
-            return updatedIssue;
         }
 
         setStatusInfoMessage("Retrieving available actions for issue");
