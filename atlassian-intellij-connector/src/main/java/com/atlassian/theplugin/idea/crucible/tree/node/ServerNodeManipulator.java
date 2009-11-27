@@ -90,7 +90,11 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
 
-			servers.put(cfgManager.getServerr(review.getServerData().getServerId()).getName(), review.getServerData());
+            ServerData server = cfgManager.getServerr(review.getServerData().getServerId());
+            if (server != null) {
+                String serverName = server.getName();
+                servers.put(serverName, review.getServerData());
+            }
 		}
 
 		return new ArrayList<ServerData>(servers.values());
