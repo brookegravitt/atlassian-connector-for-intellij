@@ -23,6 +23,10 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     }
 
+    protected void setTaskRepositoryClass(Class taskRepositoryClass) {
+        this.taskRepositoryClass = taskRepositoryClass;
+    }
+
 
     public String getUrl() {
         if (taskRepositoryClass != null) {
