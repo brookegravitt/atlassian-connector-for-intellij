@@ -24,9 +24,9 @@ public class JiraRepository extends TaskRepositoryImpl {
             PluginUtil.getLogger().error("Cannot load class", e);
         }
 
+        setTaskRepositoryClass(jiraRepositoryClass);
     }
 
-    
     public LocalTask findTask(final String taskId) {
         Method findTask = null;
         try {

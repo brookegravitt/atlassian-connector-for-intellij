@@ -349,8 +349,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
               && PluginTaskManager.isValidIdeaVersion()) {
 
           final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
-                  PluginUtil.PRODUCT_NAME, "Plugin provides experimental support of IntelliJ IDEA Task integration.\n"
-                  + "Please report any inconveniences or suggestions");
+                  PluginUtil.PRODUCT_NAME,
+                        "Atlassian IntelliJ Connector now provides experimental<br>"
+                        + "integration with IntelliJ IDEA Tasks.<br>"
+                        + "Please report any inconveniences or suggestions");
           SwingUtilities.invokeLater(new Runnable() {
 
               public void run() {
