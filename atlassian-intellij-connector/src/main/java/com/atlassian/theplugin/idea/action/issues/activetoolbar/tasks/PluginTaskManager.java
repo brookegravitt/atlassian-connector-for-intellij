@@ -601,7 +601,7 @@ public final class PluginTaskManager {
     }
 
     public static boolean isValidIdeaVersion() {
-        return IdeaVersionFacade.getInstance().isIdea9() && !IdeaVersionFacade.getInstance().isCommunityEdition();
+        return false && IdeaVersionFacade.getInstance().isIdea9() && !IdeaVersionFacade.getInstance().isCommunityEdition();
     }
 
     @Nullable
