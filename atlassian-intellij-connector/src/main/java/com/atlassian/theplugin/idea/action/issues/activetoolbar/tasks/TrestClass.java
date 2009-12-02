@@ -7,4 +7,5 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 public class TrestClass {
     ///test
     //test 1
+    //test 2
 }
