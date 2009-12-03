@@ -9,4 +9,6 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
  */
 public class dummyCls {
     ///testing 1
+    //testing2
+    //test 3
 }
