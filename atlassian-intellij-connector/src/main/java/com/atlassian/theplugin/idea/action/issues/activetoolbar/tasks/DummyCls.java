@@ -7,7 +7,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
  * Time: 3:28:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class dummyCls {
+public class DummyCls {
     ///testing 1
     //testing2
     //test 3
