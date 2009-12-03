@@ -40,7 +40,7 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 		final IntelliJCrucibleServerFacade facade = new IntelliJCrucibleServerFacade(
 				new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()) {
 			@Override
-			protected CrucibleSession getSession(final ConnectionCfg server)
+			public CrucibleSession getSession(final ConnectionCfg server)
 					throws RemoteApiException, ServerPasswordNotProvidedException {
 				return crucibleSessionMock;
 			}
