@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
-import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * User: kalamon
@@ -11,8 +13,8 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
  * Runs query for: "updated:previous=-1w&sorter/field=updated"
  */
 public class UpdatedRecentlyPresetFilter extends JiraPresetFilter {
-    public UpdatedRecentlyPresetFilter(JiraServerData jiraServer) {
-        super(jiraServer);
+    public UpdatedRecentlyPresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
+        super(projectCfgManager,jiraServer);
     }
 
     public String getName() {

@@ -1,8 +1,11 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
+import com.sun.istack.internal.NotNull;
 
 import javax.swing.*;
 
@@ -10,15 +13,17 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class JIRAManualFilterTreeNode extends AbstractTreeNode {
-	private JiraCustomFilter manualFilter;
-	private ServerData jiraServerCfg;
-	//private JIRAFilterListModel listModel;
+    private final ProjectCfgManager projectCfgManager;
+    private JiraCustomFilter manualFilter;
+    private ServerId serverId;
 
-	public JIRAManualFilterTreeNode(final JiraCustomFilter manualFilter, ServerData jiraServerCfg) {
+	public JIRAManualFilterTreeNode(@NotNull ProjectCfgManager projectCfgManager, final JiraCustomFilter manualFilter,
+                                    ServerData jiraServerCfg) {
 		super(manualFilter.getName(), null, null);
-		this.manualFilter = manualFilter;
+        this.projectCfgManager = projectCfgManager;
+        this.manualFilter = manualFilter;
 
-		this.jiraServerCfg = jiraServerCfg;
+		this.serverId = jiraServerCfg.getServerId();
 	}
 
 	public String toString() {
@@ -33,7 +38,7 @@ public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 
 
 	public ServerData getJiraServerCfg() {
-		return jiraServerCfg;
+		return projectCfgManager.getJiraServerr(serverId);
 	}
 
 	public JiraCustomFilter getManualFilter() {

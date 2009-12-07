@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
-import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import org.jetbrains.annotations.NotNull;
+
 
 /**
  * User: kalamon
@@ -11,8 +14,8 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
  * Runs query for: "assigneeSelect=issue_current_user&resolution=-1&sorter/field=priority"
  */
 public class AssignedToMePresetFilter extends JiraPresetFilter {
-    public AssignedToMePresetFilter(JiraServerData jiraServer) {
-        super(jiraServer);
+    public AssignedToMePresetFilter(@NotNull ProjectCfgManager projectCfgManager,JiraServerData jiraServer) {
+        super(projectCfgManager, jiraServer);
     }
 
     public String getName() {

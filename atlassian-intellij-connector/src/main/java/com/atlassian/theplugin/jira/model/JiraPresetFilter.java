@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.sun.istack.internal.NotNull;
 
 /**
  * User: kalamon
@@ -8,14 +11,16 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
  * Time: 14:23:28
  */
 public abstract class JiraPresetFilter {
-    private final JiraServerData jiraServer;
+    private final ServerId serverId;
+    private final ProjectCfgManager projectCfgManager;
 
-    protected JiraPresetFilter(JiraServerData jiraServer) {
-        this.jiraServer = jiraServer;
+    protected JiraPresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
+        this.projectCfgManager = projectCfgManager;
+        this.serverId = jiraServer.getServerId();
     }
 
     public JiraServerData getJiraServer() {
-        return jiraServer;
+        return (JiraServerData) projectCfgManager.getJiraServerr(serverId);
     }
 
     public abstract String getName();
