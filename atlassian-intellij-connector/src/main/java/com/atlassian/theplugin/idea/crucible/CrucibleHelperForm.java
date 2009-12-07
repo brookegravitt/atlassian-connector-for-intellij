@@ -535,7 +535,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                                         }
                                     }
                                 }
-                            } while (newReview == null || isCancelled);
+                            } while (newReview == null && !isCancelled);
 
                             final ReviewAdapter newReviewFinal = newReview;
                             SwingUtilities.invokeLater(new Runnable() {
