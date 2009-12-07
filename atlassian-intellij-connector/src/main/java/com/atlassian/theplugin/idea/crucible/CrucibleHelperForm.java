@@ -459,11 +459,12 @@ public class CrucibleHelperForm extends DialogWrapper {
                                 List<String> revList = new ArrayList<String>();
                                 for (Change change : changeList.getChanges()) {
                                     //only for deleted file
-                                    if (change.getBeforeRevision() != null && change.getAfterRevision() == null) {
+                                    if (change.getBeforeRevision() != null) {
 
                                         revList.add(change.getBeforeRevision().getRevisionNumber().asString());
                                         contentRevision = change.getBeforeRevision();
-                                    } else  if (change.getAfterRevision() != null ) {
+                                    }
+                                    if (change.getAfterRevision() != null ) {
                                         //newly created or new file to be added to review
                                         revList.add(change.getAfterRevision().getRevisionNumber().asString());
                                         contentRevision = change.getAfterRevision();
