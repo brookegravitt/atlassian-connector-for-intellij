@@ -1,16 +1,17 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.presetfilters.AddedRecentlyPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.UpdatedRecentlyPresetFilter;
 import com.atlassian.theplugin.jira.model.presetfilters.AllPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.OutstandingPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.UnscheduledPresetFilter;
 import com.atlassian.theplugin.jira.model.presetfilters.AssignedToMePresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.MostImportantPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.OutstandingPresetFilter;
 import com.atlassian.theplugin.jira.model.presetfilters.ReportedByMePresetFilter;
 import com.atlassian.theplugin.jira.model.presetfilters.ResolvedRecentlyPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.MostImportantPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.UnscheduledPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.UpdatedRecentlyPresetFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,8 +25,13 @@ import java.util.Set;
  * User: pmaruszak
  */
 public class JIRAFilterListModel implements FrozenModel {
+    private final ProjectCfgManager projectCfgManager;
 
-	private Map<JiraServerData, JIRAServerFiltersBean> serversFilters =
+    public JIRAFilterListModel(ProjectCfgManager projectCfgManager) {
+        this.projectCfgManager = projectCfgManager;
+    }
+
+    private Map<JiraServerData, JIRAServerFiltersBean> serversFilters =
             new HashMap<JiraServerData, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
@@ -93,15 +99,15 @@ public class JIRAFilterListModel implements FrozenModel {
     public Collection<JiraPresetFilter> getPresetFilters(JiraServerData jiraServer) {
         List<JiraPresetFilter> list = new ArrayList<JiraPresetFilter>();
 
-        list.add(new AllPresetFilter(jiraServer));
-        list.add(new OutstandingPresetFilter(jiraServer));
-        list.add(new UnscheduledPresetFilter(jiraServer));
-        list.add(new AssignedToMePresetFilter(jiraServer));
-        list.add(new ReportedByMePresetFilter(jiraServer));
-        list.add(new ResolvedRecentlyPresetFilter(jiraServer));
-        list.add(new AddedRecentlyPresetFilter(jiraServer));
-        list.add(new UpdatedRecentlyPresetFilter(jiraServer));
-        list.add(new MostImportantPresetFilter(jiraServer));
+        list.add(new AllPresetFilter(projectCfgManager, jiraServer));
+        list.add(new OutstandingPresetFilter(projectCfgManager, jiraServer));
+        list.add(new UnscheduledPresetFilter(projectCfgManager, jiraServer));
+        list.add(new AssignedToMePresetFilter(projectCfgManager, jiraServer));
+        list.add(new ReportedByMePresetFilter(projectCfgManager, jiraServer));
+        list.add(new ResolvedRecentlyPresetFilter(projectCfgManager, jiraServer));
+        list.add(new AddedRecentlyPresetFilter(projectCfgManager, jiraServer));
+        list.add(new UpdatedRecentlyPresetFilter(projectCfgManager, jiraServer));
+        list.add(new MostImportantPresetFilter(projectCfgManager, jiraServer));
 
         return list;
     }

@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
@@ -34,17 +35,19 @@ import java.util.Set;
 public class JIRAFilterTree extends AbstractTree {
 
 	private static final JIRAFilterTreeRenderer MY_RENDERER = new JIRAFilterTreeRenderer();
-	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
+    private final ProjectCfgManager projectCfgManager;
+    private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 	//	private JIRAFilterListModel listModel;
 	private boolean isAlreadyInitialized = false;
 	private Collection<JiraFilterTreeSelectionListener> selectionListeners = new HashSet<JiraFilterTreeSelectionListener>();
 	private LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
     private JiraServerData lastSelectedServer;
 
-   public JIRAFilterTree(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+   public JIRAFilterTree(@NotNull ProjectCfgManager projectCfgManager, @NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final JIRAFilterListModel listModel) {
+       this.projectCfgManager = projectCfgManager;
 
-		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
+       this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 
 		listModel.addModelListener(new LocalFilterListModelListener());
 		setShowsRootHandles(true);
@@ -67,6 +70,7 @@ public class JIRAFilterTree extends AbstractTree {
 		});
 	}
 
+    @Nullable
 	public JiraServerData getSelectedServer() {
 		TreePath selectionPath = getSelectionModel().getSelectionPath();
 
@@ -190,7 +194,7 @@ public class JIRAFilterTree extends AbstractTree {
 		for (int i = 0; i < rootNode.getChildCount(); i++) {
 			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
-				if (node.getJiraServer().getServerId().equals(serverId)) {
+				if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
 						if (node.getChildAt(j) instanceof JIRASavedFilterTreeNode) {
 							JIRASavedFilterTreeNode savedFilterNode = (JIRASavedFilterTreeNode) node.getChildAt(j);
@@ -215,7 +219,7 @@ public class JIRAFilterTree extends AbstractTree {
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
                 JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
-                if (node.getJiraServer().getServerId().equals(serverId)) {
+                if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
                     for (int j = 0; j < node.getChildCount(); j++) {
                         if (node.getChildAt(j) instanceof JiraPresetFilterTreeNode) {
                             JiraPresetFilterTreeNode filterNode = (JiraPresetFilterTreeNode) node.getChildAt(j);
@@ -240,7 +244,7 @@ public class JIRAFilterTree extends AbstractTree {
 		for (int i = 0; i < rootNode.getChildCount(); i++) {
 			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
-				if (node.getJiraServer().getServerId().equals(serverId)) {
+				if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
 						if (node.getChildAt(j) instanceof JIRAManualFilterTreeNode) {
 							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);
@@ -288,7 +292,7 @@ public class JIRAFilterTree extends AbstractTree {
 //		Collections.sort(servers);
 
 		for (JiraServerData server : aListModel.getJIRAServers()) {
-			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(server);
+			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(projectCfgManager, server);
 			createFilterNodes(server, serverNode, aListModel);
 			rootNode.add(serverNode);
 		}
@@ -302,13 +306,13 @@ public class JIRAFilterTree extends AbstractTree {
             }
 
 			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
-				node.add(new JIRASavedFilterTreeNode(savedFilter, jiraServer));
+				node.add(new JIRASavedFilterTreeNode(projectCfgManager, savedFilter, jiraServer));
 			}
 
 			Set<JiraCustomFilter> manualFilterSet = aListModel.getManualFilters(jiraServer);
 
             for (JiraCustomFilter filter : manualFilterSet) {
-			    node.add(new JIRAManualFilterTreeNode(filter, jiraServer));
+			    node.add(new JIRAManualFilterTreeNode(projectCfgManager, filter, jiraServer));
             }
 		}
 

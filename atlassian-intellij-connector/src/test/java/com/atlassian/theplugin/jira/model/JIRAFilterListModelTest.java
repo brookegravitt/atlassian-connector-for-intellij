@@ -36,7 +36,7 @@ public class JIRAFilterListModelTest extends TestCase {
 
 	public void setUp() throws Exception {
 		super.setUp();
-		listModel = new JIRAFilterListModel();
+		listModel = new JIRAFilterListModel(null);
 		notifiedModelChanged = 0;
 		notifiedManualFilterChanged = 0;
 		notifiedServerRemoved = 0;

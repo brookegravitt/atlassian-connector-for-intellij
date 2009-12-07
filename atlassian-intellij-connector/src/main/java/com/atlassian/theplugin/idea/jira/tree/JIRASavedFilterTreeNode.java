@@ -1,8 +1,11 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.sun.istack.internal.NotNull;
 
 import javax.swing.*;
 
@@ -10,14 +13,17 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class JIRASavedFilterTreeNode extends AbstractTreeNode {
-	private JIRASavedFilter savedFilter;
-	private ServerData serverData;
+    private final ProjectCfgManager projectCfgManager;
+    private JIRASavedFilter savedFilter;
+    private ServerId serverId;
 
-
-	public JIRASavedFilterTreeNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg) {
+	public JIRASavedFilterTreeNode(@NotNull ProjectCfgManager projectCfgManager, final JIRASavedFilter savedFilter,
+                                final ServerData jiraServerCfg) {
 		super(savedFilter.getName(), null, null);
-		this.savedFilter = savedFilter;
-		this.serverData = jiraServerCfg;
+        this.projectCfgManager = projectCfgManager;
+        this.savedFilter = savedFilter;
+        this.serverId = jiraServerCfg.getServerId();
+
 	}
 
 	public String toString() {
@@ -32,12 +38,16 @@ public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 	}
 
 	public ServerData getServerData() {
-		return serverData;
+		return getJiraServerData();
 	}
 
 	public JIRASavedFilter getSavedFilter() {
 		return savedFilter;
 	}
 
+    private ServerData getJiraServerData() {
+        return projectCfgManager.getJiraServerr(serverId);
+
+    }
 
 }

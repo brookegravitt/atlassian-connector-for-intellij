@@ -97,7 +97,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		fillJiraCfg(jiraCfg);
 
 		builder = new JIRAFilterListBuilder();
-		listModel = new JIRAFilterListModel();
+		listModel = new JIRAFilterListModel(null);
 		builder.setListModel(listModel);
 		builder.setJiraWorkspaceCfg(jiraCfg);
 	}

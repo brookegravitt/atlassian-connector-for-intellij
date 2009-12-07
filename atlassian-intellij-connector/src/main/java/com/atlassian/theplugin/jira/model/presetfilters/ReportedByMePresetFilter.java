@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
-import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * User: kalamon
@@ -14,8 +16,8 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
  *
  */
 public class ReportedByMePresetFilter extends JiraPresetFilter {
-    public ReportedByMePresetFilter(JiraServerData jiraServer) {
-        super(jiraServer);
+    public ReportedByMePresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
+        super(projectCfgManager,jiraServer);
     }
 
     public String getName() {
