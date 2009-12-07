@@ -3,7 +3,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
+
 
 /**
  * User: kalamon
