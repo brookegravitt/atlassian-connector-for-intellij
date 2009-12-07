@@ -5,9 +5,11 @@ import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+
+
 
 /**
  * User: pmaruszak
