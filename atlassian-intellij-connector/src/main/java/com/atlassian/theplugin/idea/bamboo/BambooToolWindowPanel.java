@@ -315,15 +315,19 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 	private BambooBuildAdapter getBuildFromModel(final String buildKey, final int buildNumber,
 			final BambooServerData server) {
-		BambooBuildAdapter build = null;
-		for (BambooBuildAdapter b : bambooModel.getAllBuilds()) {
-			if (b.getBuild().getPlanKey().equals(buildKey)
-					&& b.getNumber() == buildNumber
-					&& b.getServer().getServerId().equals(server.getServerId())) {
-				build = b;
-				break;
-			}
-		}
+        BambooBuildAdapter build = null;
+        for (BambooBuildAdapter b : bambooModel.getAllBuilds()) {
+            try {
+                if (b.getBuild().getPlanKey().equals(buildKey)
+                        && b.getNumber() == buildNumber
+                        && b.getServer().getServerId().equals(server.getServerId())) {
+                    build = b;
+                    break;
+                }
+            } catch (UnsupportedOperationException e) {
+               //unsupported operation can be ignored ==> build number == null
+            }
+        }
 		return build;
 	}
 
