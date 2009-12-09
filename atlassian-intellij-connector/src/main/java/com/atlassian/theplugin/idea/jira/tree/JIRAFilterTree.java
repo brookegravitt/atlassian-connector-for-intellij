@@ -8,12 +8,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.atlassian.theplugin.jira.model.FrozenModel;
-import com.atlassian.theplugin.jira.model.FrozenModelListener;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JiraCustomFilter;
-import com.atlassian.theplugin.jira.model.JiraPresetFilter;
+import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +38,9 @@ public class JIRAFilterTree extends AbstractTree {
 	private LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
     private JiraServerData lastSelectedServer;
 
-   public JIRAFilterTree(@NotNull ProjectCfgManager projectCfgManager, @NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
-			@NotNull final JIRAFilterListModel listModel) {
+   public JIRAFilterTree(@NotNull ProjectCfgManager projectCfgManager,
+                         @NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+                         @NotNull final JIRAFilterListModel listModel) {
        this.projectCfgManager = projectCfgManager;
 
        this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;

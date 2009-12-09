@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class AddedRecentlyPresetFilter extends JiraPresetFilter {
     public AddedRecentlyPresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
-        super(projectCfgManager,jiraServer);
+        super(projectCfgManager, jiraServer);
     }
 
     public String getName() {

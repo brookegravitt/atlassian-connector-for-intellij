@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * Runs query for: "assigneeSelect=issue_current_user&resolution=-1&sorter/field=priority"
  */
 public class AssignedToMePresetFilter extends JiraPresetFilter {
-    public AssignedToMePresetFilter(@NotNull ProjectCfgManager projectCfgManager,JiraServerData jiraServer) {
+    public AssignedToMePresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
         super(projectCfgManager, jiraServer);
     }
 
