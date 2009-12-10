@@ -19,12 +19,18 @@ import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -55,8 +61,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public abstract class CrucibleReviewCreateForm extends DialogWrapper {
@@ -995,7 +1006,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                 private boolean isUnknownChangeSetException(Throwable e) {
                     return e != null
                             && e.getMessage() != null
-                            && e.getMessage().contains("Specified change set id does not exist");
+                            && (e.getMessage().contains("Specified change set id does not exist") ||
+                                (e.getMessage().contains(" Change set id")
+                                        && e.getMessage().contains(" does not exist in repository")));
 
                 }
             };
