@@ -21,7 +21,7 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 	public JIRAServerTreeNode(ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
 		super(jiraServer.getName(), null, null);
         this.projectCfgManager = projectCfgManager;
-        this.serverId = jiraServer != null ? jiraServer.getServerId() : null;
+        this.serverId = jiraServer.getServerId();
 
 	}
 

@@ -83,6 +83,7 @@ public final class PluginTaskManager {
     private static boolean actionsRegistered = false;
 
 
+    
     private PluginTaskManager(final Project project) {
         this.project = project;
 
