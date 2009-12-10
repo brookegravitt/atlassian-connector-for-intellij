@@ -13,8 +13,27 @@
         <url>https://atlaseye.atlassian.com</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
+      <crucible>
+        <server-id>14c88921-2e5f-43ce-9dec-9506c59b4479</server-id>
+        <name>LEch</name>
+        <url>http://lech:8020/crucible-2.0</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <bamboo>
+        <server-id>ad58ce22-4cc4-48e1-9c1b-03c584fcb21f</server-id>
+        <name>gdansk</name>
+        <url>https://gdansk.bamboo2.atlassian.com</url>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <isBamboo2M9>true</isBamboo2M9>
+        <plans>
+          <plan key="INT-CS" />
+          <plan key="INT-CLO" />
+          <plan key="INT-TST" />
+        </plans>
+        <isBamboo24>true</isBamboo24>
+      </bamboo>
     </servers>
-    <default-crucible-server>0ff1e631-b3af-402b-b15a-996637c60c75</default-crucible-server>
     <default-jira-server>2d0248e9-aae5-42f5-9c00-647ee553f6f8</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
