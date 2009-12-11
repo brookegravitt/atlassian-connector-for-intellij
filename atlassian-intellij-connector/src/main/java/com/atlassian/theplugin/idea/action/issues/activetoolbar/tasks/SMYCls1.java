@@ -8,4 +8,5 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
  * To change this template use File | Settings | File Templates.
  */
 public class SMYCls1 {
+    ///test1
 }
