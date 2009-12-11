@@ -8,4 +8,8 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
  * To change this template use File | Settings | File Templates.
  */
 public class DD1 {
+
+    ///test
+    //test2
+    //test 3
 }
