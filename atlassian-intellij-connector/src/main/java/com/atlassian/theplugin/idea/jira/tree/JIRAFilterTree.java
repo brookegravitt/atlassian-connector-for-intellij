@@ -296,19 +296,29 @@ public class JIRAFilterTree extends AbstractTree {
 
 	private void createFilterNodes(JiraServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
 		if (aListModel != null) {
-            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(jiraServer);
-            for (JiraPresetFilter filter : presetFilterSet) {
-			    node.add(new JiraPresetFilterTreeNode(filter));
-            }
+
+//            JiraPresetFiltersGroupTreeNode pfg = new JiraPresetFiltersGroupTreeNode(projectCfgManager, jiraServer);
+//            node.add(pfg);
+//
+//            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(jiraServer);
+//            for (JiraPresetFilter filter : presetFilterSet) {
+//			    pfg.add(new JiraPresetFilterTreeNode(filter));
+//            }
+
+            JiraSavedFiltersGroupTreeNode sfg = new JiraSavedFiltersGroupTreeNode(projectCfgManager, jiraServer);
+            node.add(sfg);
 
 			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
-				node.add(new JIRASavedFilterTreeNode(projectCfgManager, savedFilter, jiraServer));
+				sfg.add(new JIRASavedFilterTreeNode(projectCfgManager, savedFilter, jiraServer));
 			}
 
 			Set<JiraCustomFilter> manualFilterSet = aListModel.getManualFilters(jiraServer);
 
+            JiraCustomFiltersGroupTreeNode cfg = new JiraCustomFiltersGroupTreeNode(projectCfgManager, jiraServer);
+            node.add(cfg);
+
             for (JiraCustomFilter filter : manualFilterSet) {
-			    node.add(new JIRAManualFilterTreeNode(projectCfgManager, filter, jiraServer));
+			    cfg.add(new JIRAManualFilterTreeNode(projectCfgManager, filter, jiraServer));
             }
 		}
 

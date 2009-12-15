@@ -912,21 +912,21 @@
           <!-- JIRA Server Popup -->
          <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
-                text="Remove"
+                text="Remove Custom Filter"
                 icon="/icons/jira/nodes/ico_jira_remove_filter.png"
                 description="Remove Custom filter">
         </action>
 
         <action id="ThePlugin.JiraIssues.CustomFilter.AddAction"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.AddAction"
-                text="Add Manual Filter"
+                text="Add Custom Filter"
                 icon="/icons/jira/nodes/ico_jira_add_filter.png"
                 description="Add Custom Filter">
          </action>
 
          <action id="ThePlugin.JiraIssues.CustomFilter.Edit"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
-                text="Edit"
+                text="Edit Custom Filter"
                 icon="/actions/editSource.png"
                 description="Change manual filter details">
          </action>
