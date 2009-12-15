@@ -99,7 +99,7 @@ public class JIRAFilterListModel implements FrozenModel {
     public Collection<JiraPresetFilter> getPresetFilters(JiraServerData jiraServer) {
         List<JiraPresetFilter> list = new ArrayList<JiraPresetFilter>();
 
-        list.add(new AllPresetFilter(projectCfgManager, jiraServer));
+//        list.add(new AllPresetFilter(projectCfgManager, jiraServer));
         list.add(new OutstandingPresetFilter(projectCfgManager, jiraServer));
         list.add(new UnscheduledPresetFilter(projectCfgManager, jiraServer));
         list.add(new AssignedToMePresetFilter(projectCfgManager, jiraServer));

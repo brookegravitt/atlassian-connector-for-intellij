@@ -13,8 +13,9 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class JIRAServerTreeNode extends AbstractTreeNode {
-	private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
-	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
+	public static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
+	public static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
+    
     private final ProjectCfgManager projectCfgManager;
     private ServerId serverId;
 
@@ -38,6 +39,7 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 
         return null;
     }
+
 	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
 
          return new JLabel("Invalid renderer");

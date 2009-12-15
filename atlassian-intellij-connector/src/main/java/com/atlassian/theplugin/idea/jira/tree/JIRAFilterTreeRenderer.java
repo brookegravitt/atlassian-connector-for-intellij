@@ -19,13 +19,12 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
-    private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_custom_filter.png");
-    private static final Icon JIRA_PRESET_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_preset_filter.png");
-    private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_saved_filter.png");
+
+    private static final Icon JIRA_FILTER_ICON = IconLoader.getIcon("/icons/jira/nodes/ico_jira_filter.png");
+
     private static final Icon JIRA_RECENTLY_OPEN_ISSUES_ICON =
             IconLoader.getIcon("/icons/jira/nodes/ico_jira_recent_issues.png");
-    private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
-	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
+
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
             + "color: 'black'; width: '100%'\">"
             + "<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p>";
@@ -39,7 +38,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         setToolTipText(null);
 
         if (value instanceof JiraPresetFilterTreeNode && c instanceof JLabel) {
-            ((JLabel) c).setIcon(JIRA_PRESET_FILTER_ICON);
+            ((JLabel) c).setIcon(JIRA_FILTER_ICON);
             return c;
         }
 
@@ -47,7 +46,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
             final JIRAManualFilterTreeNode filterTreeNode = (JIRAManualFilterTreeNode) value;
             setToolTipText(createManualFilterToolTipText(filterTreeNode.getManualFilter(),
                     filterTreeNode.getJiraServerCfg()));
-            ((JLabel) c).setIcon(JIRA_MANUAL_FILTER_ICON);
+            ((JLabel) c).setIcon(JIRA_FILTER_ICON);
 
             JiraCustomFilter filter = ((JIRAManualFilterTreeNode) value).getManualFilter();
             if (filter != null && filter.isEmpty()) {
@@ -59,8 +58,12 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         }
 
         if (value instanceof JIRASavedFilterTreeNode && c instanceof JLabel) {
+            ((JLabel) c).setIcon(JIRA_FILTER_ICON);
+            return c;
+        }
 
-            ((JLabel) c).setIcon(JIRA_SAVED_FILTER_ICON);
+        if (value instanceof AbstractJiraFilterGroupTreeNode) {
+            ((JLabel) c).setIcon(((AbstractJiraFilterGroupTreeNode) value).getIcon());
             return c;
         }
 
@@ -70,9 +73,9 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         }
 
         if (value instanceof JIRAServerTreeNode && c instanceof JLabel) {
-            ((JLabel) c).setIcon(JIRA_SERVER_ENABLED_ICON);
-            ((JLabel) c).setDisabledIcon(JIRA_SERVER_DISABLED_ICON);
-            ((JLabel) c).setBorder(BorderFactory.createEmptyBorder());
+            ((JLabel) c).setIcon(JIRAServerTreeNode.JIRA_SERVER_ENABLED_ICON);
+            ((JLabel) c).setDisabledIcon(JIRAServerTreeNode.JIRA_SERVER_DISABLED_ICON);
+            c.setBorder(BorderFactory.createEmptyBorder());
             return c;
         }
         
