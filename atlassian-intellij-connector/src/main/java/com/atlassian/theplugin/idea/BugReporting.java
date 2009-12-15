@@ -74,6 +74,7 @@ public final class BugReporting {
         //the same number as 2.2.1
         versionMap.put("2.2.0-beta-1", "11314");
         versionMap.put("2.2.1", "11314");
+        versionMap.put("2.2.2", "11454");
         versionMap.put("2.3.0", "11312");
 	}
 

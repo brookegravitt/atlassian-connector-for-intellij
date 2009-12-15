@@ -52,7 +52,7 @@ public class AboutForm {
 				+ "code in <a href=\"http://www.atlassian.com/software/fisheye\">FishEye</a> is just a click away." +
 				"<br><br><br><br>" + "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
 				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>" +
-				"<br><br><br><br>Licensed under the Apache License, Version 2.2.1 Copyright (c) Atlassian 2009"
+				"<br><br><br><br>Licensed under the Apache License, Version 2.2.2 Copyright (c) Atlassian 2009"
 				+ "</center></body></html>");
 	}
 
