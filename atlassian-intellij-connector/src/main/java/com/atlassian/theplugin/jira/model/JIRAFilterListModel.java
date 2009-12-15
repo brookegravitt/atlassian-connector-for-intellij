@@ -3,23 +3,10 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.jira.model.presetfilters.AddedRecentlyPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.AllPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.AssignedToMePresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.MostImportantPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.OutstandingPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.ReportedByMePresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.ResolvedRecentlyPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.UnscheduledPresetFilter;
-import com.atlassian.theplugin.jira.model.presetfilters.UpdatedRecentlyPresetFilter;
+import com.atlassian.theplugin.jira.model.presetfilters.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: pmaruszak
