@@ -42,7 +42,7 @@ public class JoinReviewAction extends AnAction {
 						event.getPresentation().setEnabled(false);
 						return;
 					}
-					if (review.getModerator().getUsername().equals(userName)) {
+					if (review.getModerator() != null && review.getModerator().getUsername().equals(userName)) {
 						event.getPresentation().setVisible(false);
 						event.getPresentation().setEnabled(false);
 						return;
