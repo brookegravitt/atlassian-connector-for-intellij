@@ -158,8 +158,9 @@ public class CrucibleHelperForm extends DialogWrapper {
 							statusField.setText(review.getState().value());
 							titleField.setText(review.getName());
 							authorField.setText(review.getAuthor().getDisplayName());
-							if (review.getModerator() != null)
-                                moderatorField.setText(review.getModerator().getDisplayName());
+							if (review.getModerator() != null) {
+								moderatorField.setText(review.getModerator().getDisplayName());
+							}
 							descriptionArea.setText(review.getDescription());
 
 							fillServerRelatedCombos(review);
