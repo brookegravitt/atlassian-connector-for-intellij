@@ -17,7 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -25,6 +27,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.fisheye.api.model.FisheyePathHistoryItem;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -54,19 +57,15 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static javax.swing.Action.NAME;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+
+import static javax.swing.Action.NAME;
 
 enum AddMode {
 	ADDREVISION,
@@ -86,7 +85,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private JPanel customComponentPanel;
 	private JLabel repositoryLabel;
 
-	private CrucibleServerFacade crucibleServerFacade;
+    private FishEyeServerFacade fisheyeServerFacade;
+    private CrucibleServerFacade crucibleServerFacade;
 	private ChangeList[] changes;
 	private final Project project;
 	private PermId permId;
@@ -99,19 +99,21 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private RepositoryComboBoxItem NON_REPO;
     private int changesetAddTimeout = -1;
 
-    public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
+    public CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
+                              CrucibleServerFacade crucibleServerFacade,
 			ChangeList[] changes, final ProjectCfgManagerImpl projectCfgManager) {
-		this(project, crucibleServerFacade, projectCfgManager);
+		this(project, fisheyeServerFacade, crucibleServerFacade, projectCfgManager);
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
 		setTitle("Add revision to review... ");
 		getOKAction().putValue(NAME, "Add revision...");
 	}
 
-	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			Collection<Change> changes, final ProjectCfgManagerImpl projectCfgManager) {
+    public CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
+                              IntelliJCrucibleServerFacade crucibleServerFacade,
+                              Collection<Change> changes, ProjectCfgManagerImpl projectCfgManager) {
 
-		this(project, crucibleServerFacade, projectCfgManager);
+		this(project, fisheyeServerFacade, crucibleServerFacade, projectCfgManager);
 		localChanges = changes;
         this.mode = AddMode.ADDITEMS;
 		this.repositoryLabel.setVisible(false);
@@ -127,11 +129,13 @@ public class CrucibleHelperForm extends DialogWrapper {
         this.changesetAddTimeout = changesetAddTimeout;
     }
 
-    private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			final ProjectCfgManagerImpl projectCfgManager) {
+    private CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
+                               CrucibleServerFacade crucibleServerFacade,
+                               final ProjectCfgManagerImpl projectCfgManager) {
 
 		super(false);
-		this.crucibleServerFacade = crucibleServerFacade;
+        this.fisheyeServerFacade = fisheyeServerFacade;
+        this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 
@@ -446,6 +450,20 @@ public class CrucibleHelperForm extends DialogWrapper {
                 try {
                     switch (mode) {
                         case ADDREVISION:
+                            Collection<ServerData> serversWithFisheye =
+                                    projectCfgManager.getAllEnabledCrucibleServersContainingFisheye();
+                            boolean found = false;
+                            for (ServerData serverData : serversWithFisheye) {
+                                if (serverData.equals(server)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                throw new IllegalArgumentException(
+                                        "Crucible server must contain FishEye instance for this action to be possible");
+                            }
+
                             SvnRepository svnRepo = crucibleServerFacade.getRepository(server, repoName);
                             if (svnRepo == null) {
                                 throw new IllegalArgumentException("Selected repository is not an SVN repository");
@@ -453,93 +471,75 @@ public class CrucibleHelperForm extends DialogWrapper {
 
                             final Set<String> revisions = new HashSet<String>();
                             final List<PathAndRevision> pathsAndRevisions = new ArrayList<PathAndRevision>();
+                            final boolean[] askedQuestionAboutDeletedFiles = {false};
                             for (ChangeList changeList : changes) {
-                                ContentRevision contentRevision = null;
-
-                                List<String> revList = new ArrayList<String>();
                                 for (Change change : changeList.getChanges()) {
-                                    //only for deleted file
-                                    if (change.getBeforeRevision() != null) {
 
-                                        revList.add(change.getBeforeRevision().getRevisionNumber().asString());
-                                        contentRevision = change.getBeforeRevision();
+                                    ContentRevision contentRevision = null;
+                                    List<String> revList = new ArrayList<String>();
+
+                                    if (change.getType() == Change.Type.DELETED) {
+                                        if (askedQuestionAboutDeletedFiles[0]) {
+                                            continue;
+                                        }
+                                        final boolean[] abort = {false};
+                                        ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+                                            public void run() {
+                                                if (Messages.showYesNoDialog(
+                                                        "Crucible does not handle deleted files, do you want to continue"
+                                                        + "\nadding changes to review (deleted files will be skipped)?",
+                                                        "Adding Change Set to Review",
+                                                        Messages.getQuestionIcon()) != DialogWrapper.OK_EXIT_CODE) {
+                                                    abort[0] = true;
+                                                }
+                                                askedQuestionAboutDeletedFiles[0] = true;
+                                            }
+                                        }, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
+                                        if (abort[0]) {
+                                            return;
+                                        }
                                     }
+
                                     if (change.getAfterRevision() != null ) {
-                                        //newly created or new file to be added to review
                                         revList.add(change.getAfterRevision().getRevisionNumber().asString());
                                         contentRevision = change.getAfterRevision();
                                     }
 
-                                    break;
-                                }
-                                if (contentRevision != null) {
-                                    String path = getPathFromRevision(contentRevision);
-                                    if (path != null) {
-//                                    if (contentRevision instanceof SvnRepositoryContentRevision) {
-//                                        String path = ((SvnRepositoryContentRevision) contentRevision).getPath();
-                                        String svnRepoPath = svnRepo.getPath();
-                                        if (!path.startsWith("/" + svnRepoPath + "/")) {
-                                            throw new IllegalArgumentException(
-                                                    "Selected files do not seem to be\n"
-                                                    + "present in the selected Crucible repository");
-                                        }
-                                        path = path.substring(svnRepoPath.length() + 2);
+                                    if (contentRevision != null) {
+                                        String path = getPathFromRevision(contentRevision);
+                                        if (path != null) {
+                                            String svnRepoPath = svnRepo.getPath();
+                                            if (!path.startsWith("/" + svnRepoPath + "/")) {
+                                                throw new IllegalArgumentException(
+                                                        "Selected files do not seem to be\n"
+                                                        + "present in the selected Crucible repository");
+                                            }
+                                            path = path.substring(svnRepoPath.length() + 2);
 
-                                        pathsAndRevisions.add(new PathAndRevision(path, revList));
-                                    } else {
-                                        revisions.add(contentRevision.getRevisionNumber().asString());
+                                            pathsAndRevisions.add(new PathAndRevision(path, revList));
+                                        } else {
+                                            revisions.add(contentRevision.getRevisionNumber().asString());
+                                        }
                                     }
                                 }
                             }
 
                             ReviewAdapter newReview = null;
-                            Date startDate = new Date();
-                            boolean isCancelled = false;
-                            do {
-                                try {
-                                    indicator.setText("Adding change set to review...");
 
-                                    if (pathsAndRevisions.size() > 0) {
-                                        newReview = crucibleServerFacade.addFileVersionsToReview(
-                                                server, permId, repoName, pathsAndRevisions);
-                                    } else if (revisions.size() > 0) {
-                                        newReview = crucibleServerFacade.addRevisionsToReview(
-                                                server, permId, repoName, new ArrayList<String>(revisions));
-                                    }
-                                } catch (Exception e) {
-                                    if (isUnknownChangeSetException(e, repoName)) {
-                                        try {
-                                            Date now = new Date();
-                                            if (changesetAddTimeout > 0
-                                                    && now.getTime() - startDate.getTime() >
-                                                    changesetAddTimeout * CrucibleReviewCreateForm.MILLISECONDS_IN_MINUTE) {
-                                                SwingUtilities.invokeLater(new Runnable() {
-                                                    public void run() {
-                                                        Messages.showErrorDialog(project,
-                                                                "Adding change set to review " + permId
-                                                                        + " on server " + server.getName()
-                                                                        + "\ntimed out after "
-                                                                        + changesetAddTimeout + " minutes",
-                                                                "Adding Change Set to Review Timeout");
-                                                    }
-                                                });
-                                                break;
-                                            }
-                                            indicator.setText("Waiting for Crucible to update to newest change set...");
-                                            for (int i = 0; i < 10; ++i) {
-                                                if (indicator.isCanceled()) {
-                                                    isCancelled = true;
-                                                    break;
-                                                }
-                                                Thread.sleep(1000);
-                                            }
-                                        } catch (InterruptedException ex) {
-                                            // eeeem, now what?
-                                            LoggerImpl.getInstance().error(ex);
-                                        }
-                                    }
+                            indicator.setText("Adding change set to review...");
+
+                            if (pathsAndRevisions.size() > 0) {
+                                if (!getPreviousRevisions(server, repoName, indicator, pathsAndRevisions)) {
+                                    // message box was shown in the method above (or so I hope)
+                                    return;
                                 }
-                            } while (newReview == null && !isCancelled);
+
+                                newReview = crucibleServerFacade.addFileVersionsToReview(
+                                        server, permId, repoName, pathsAndRevisions);
+                            } else if (revisions.size() > 0) {
+                                newReview = crucibleServerFacade.addRevisionsToReview(
+                                        server, permId, repoName, new ArrayList<String>(revisions));
+                            }
 
                             final ReviewAdapter newReviewFinal = newReview;
                             SwingUtilities.invokeLater(new Runnable() {
@@ -590,11 +590,93 @@ public class CrucibleHelperForm extends DialogWrapper {
         super.doOKAction();
     }
 
-    private boolean isUnknownChangeSetException(Throwable e, String repoName) {
-        return e != null
-                && e.getMessage() != null
-                && e.getMessage().contains("does not exist in source " + repoName);
+    private boolean getPreviousRevisions(ServerData server, String repoName, ProgressIndicator indicator,
+                                         List<PathAndRevision> pathsAndRevisions) throws RemoteApiException {
+
+        Date startDate = new Date();
+        boolean isCancelled = false;
+
+        do {
+            try {
+                boolean allDone = true;
+                for (PathAndRevision pathsAndRevision : pathsAndRevisions) {
+                    Collection<FisheyePathHistoryItem> items =
+                            fisheyeServerFacade.getPathHistory(
+                                    server.toConnectionCfg(), repoName, pathsAndRevision.getPath());
+                    if (pathsAndRevision.getRevisions().size() == 0) {
+                        return false;
+                    }
+                    String topRevision = pathsAndRevision.getRevisions().get(0);
+                    String previousRevision = null;
+                    boolean found = false;
+                    for (FisheyePathHistoryItem item : items) {
+                        if (item.getRev().equals(topRevision)) {
+                            found = true;
+                            previousRevision = item.getAncestor();
+                            break;
+                        }
+                    }
+                    // previous revisions of all files must be visible to Fisheye,
+                    // otherwise skip the rest and wait or die
+                    if (!found) {
+                        allDone = false;
+                        break;
+                    }
+                    // for added files, previous revision is null
+                    if (previousRevision != null) {
+                        pathsAndRevision.getRevisions().add(previousRevision);
+                    }
+                }
+
+                if (allDone) {
+                    return true;
+                }
+
+                // die if timed out
+                Date now = new Date();
+                if (changesetAddTimeout > 0
+                        && now.getTime() - startDate.getTime() >
+                        changesetAddTimeout * CrucibleReviewCreateForm.MILLISECONDS_IN_MINUTE) {
+                    break;
+                }
+
+                // sleep for 10 seconds, watching the "cancel" button state
+                indicator.setText("Waiting for FishEye to update to newest change set...");
+                for (int i = 0; i < 10; ++i) {
+                    if (indicator.isCanceled()) {
+                        isCancelled = true;
+                        break;
+                    }
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException ex) {
+                // eeeem, now what?
+                LoggerImpl.getInstance().error(ex);
+            }
+
+        } while (!isCancelled);
+
+        // if the user cancelled the task, let's die in silence
+        if (!isCancelled) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    Messages.showErrorDialog(project,
+                            "Adding change set to review " + permId
+                                    + " on server " + CrucibleHelperForm.this.server.getName()
+                                    + "\ntimed out after "
+                                    + changesetAddTimeout + " minutes",
+                            "Adding Change Set to Review Timeout");
+                }
+            });
+        }
+        return false;
     }
+
+//    private boolean isUnknownChangeSetException(Throwable e, String repoName) {
+//        return e != null
+//                && e.getMessage() != null
+//                && e.getMessage().contains("does not exist in source " + repoName);
+//    }
 
 	private void createUIComponents() {
 	}

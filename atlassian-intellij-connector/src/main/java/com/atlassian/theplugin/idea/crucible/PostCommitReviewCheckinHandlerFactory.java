@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -152,7 +153,8 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
                                         ChangeList[] chlist = new ChangeList[1];
                                         chlist[0] = changeList;
                                         CrucibleHelperForm form = new CrucibleHelperForm(
-                                                project, IntelliJCrucibleServerFacade.getInstance(),
+                                                project, IntelliJFishEyeServerFacade.getInstance(),
+                                                IntelliJCrucibleServerFacade.getInstance(),
                                                 chlist, IdeaHelper.getProjectCfgManager(project));
                                         form.setChangesetAddTimeout(cruciblePluginConfig.getReviewCreationTimeout());
                                         form.show();

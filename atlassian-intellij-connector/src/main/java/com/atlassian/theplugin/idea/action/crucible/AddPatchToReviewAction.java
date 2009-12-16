@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,7 +34,8 @@ public class AddPatchToReviewAction extends Crucible16RepositoryAction {
 			return;
 		}
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
-		new CrucibleHelperForm(project, IntelliJCrucibleServerFacade.getInstance(), changes[0].getChanges(),
+		new CrucibleHelperForm(project, IntelliJFishEyeServerFacade.getInstance(), 
+                IntelliJCrucibleServerFacade.getInstance(), changes[0].getChanges(),
 				IdeaHelper.getProjectCfgManager(event)).show();
 	}
 }
