@@ -601,8 +601,7 @@ class DetailsPanel extends JPanel {
 		body.add(new BoldLabel("Author"), gbc1);
 		body.add(new JLabel(ra.getCreator().getDisplayName()), gbc2);
 
-        if (ra.getModerator() != null)
-        {
+        if (ra.getModerator() != null) {
 		    gbc1.gridy++;
     		gbc2.gridy++;
     		body.add(new BoldLabel("Moderator"), gbc1);
