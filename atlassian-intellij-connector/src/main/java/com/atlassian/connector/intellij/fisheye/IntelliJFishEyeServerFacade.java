@@ -6,6 +6,7 @@ import com.atlassian.connector.commons.fisheye.FishEyeServerFacade2;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.fisheye.api.model.FisheyePathHistoryItem;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
@@ -34,7 +35,12 @@ public final class IntelliJFishEyeServerFacade implements FishEyeServerFacade {
 		return facade.getRepositories(server.toHttpConnectionCfg());
 	}
 
-	public ServerType getServerType() {
+    public Collection<FisheyePathHistoryItem> getPathHistory(ConnectionCfg server, String repo, String path)
+            throws RemoteApiException {
+        return facade.getPathHistory(server, repo, path);
+    }
+
+    public ServerType getServerType() {
 		return facade.getServerType();
 	}
 
