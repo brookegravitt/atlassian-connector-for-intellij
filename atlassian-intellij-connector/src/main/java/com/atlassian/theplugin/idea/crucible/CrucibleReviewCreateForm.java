@@ -895,7 +895,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                             if (!leaveAsDraftCheckBox.isSelected()) {
                                 try {
                                     ReviewAdapter newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-                                    if (newReview.getModerator().getUsername().equals(server.getUsername())) {
+                                    if (newReview.getModerator() != null && newReview.getModerator().getUsername().equals(server.getUsername())) {
                                         if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
                                             LoggerImpl.getInstance().info("runCreateReviewTask.run() - before approveReview()");
                                             newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());

@@ -232,9 +232,12 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		sb.append(review.getAuthor().getDisplayName());
 		sb.append("</td></tr>");
 
-		sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
-		sb.append(review.getModerator().getDisplayName());
-		sb.append("</td></tr>");
+        if(review.getModerator() != null)
+        {
+		    sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
+    		sb.append(review.getModerator().getDisplayName());
+    		sb.append("</td></tr>");
+        }
 
 		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
 		sb.append(review.getCreateDate());
