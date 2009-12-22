@@ -26,13 +26,10 @@ import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.ui.CertMessageDialogImpl;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
-import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.extensions.AreaPicoContainer;
-import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.util.IconLoader;
@@ -51,10 +48,6 @@ import java.util.Timer;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
-    static {
-        AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
-        PicoUtil.populateGlobalPicoContainer(apc);
-    }
 
     private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
     private static DisplayChangeHandler displayChangeHandler = new DisplayChangeHandler();
