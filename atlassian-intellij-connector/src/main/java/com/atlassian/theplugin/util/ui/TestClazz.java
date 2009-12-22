@@ -10,7 +10,6 @@ package com.atlassian.theplugin.util.ui;
 public class TestClazz {
     ///1
     ///2
-    ///3
     ///4
     ///5
     ///6
