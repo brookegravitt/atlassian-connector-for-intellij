@@ -104,8 +104,7 @@
 	<depends>JUnit</depends>
     <depends>Subversion</depends>
 
-	<extensions defaultExtensionNs="com.intellij">
-		<arealistener implementation="com.atlassian.theplugin.idea.PerProjectPicoInit"/>
+	<extensions defaultExtensionNs="com.intellij">		
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
@@ -178,7 +177,18 @@
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao"
 							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
 
+        <applicationService serviceInterface="com.atlassian.theplugin.commons.UIActionScheduler"
+                            serviceImplementation="com.atlassian.theplugin.idea.IdeaActionScheduler"/>
+        
+        <applicationService serviceInterface="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"
+                            serviceImplementation="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"/>
 
+        <projectService serviceInterface="com.atlassian.theplugin.crucible.model.ReviewListModelBuilder"
+                        serviceImplementation="com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl"/>
+
+        <projectService serviceInterface="com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker"
+                        serviceImplementation="com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker"/>
+        	
 		<!--<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"-->
 		<!--serviceImplementation="com.atlassian.theplugin.commons.cfg.CfgManagerImpl"/>-->
 
