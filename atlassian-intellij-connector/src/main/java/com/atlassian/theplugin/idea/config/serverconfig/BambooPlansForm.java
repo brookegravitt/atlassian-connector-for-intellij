@@ -39,7 +39,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import static java.lang.System.arraycopy;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -237,7 +239,7 @@ public class BambooPlansForm extends JPanel {
                 bambooServerCfg.setIsBamboo2M9(
                         bambooServerFacade.isBamboo2M9(new BambooServerData(bambooServerCfg, defaultCredentials)));
 
-                StringBuilder msg = new StringBuilder();
+                final StringBuilder msg = new StringBuilder();
                 try {
                     ServerId key = queryServer.getServerId();
                     if (!serverPlans.containsKey(key)) {
@@ -280,12 +282,17 @@ public class BambooPlansForm extends JPanel {
                         msg.append("Build plans updated based on cached values");
                     }
                 } finally {
-                    setBambooVersionNumberInfo(queryServer);
-                    progressAnimation.stopProgressAnimation();
-                    final String message = msg.toString();
-                    EventQueue.invokeLater(new Runnable() {
+                    SwingUtilities.invokeLater(new Runnable() {
+
                         public void run() {
-                            updatePlanNames(queryServer, message);
+                            setBambooVersionNumberInfo(queryServer);
+                            progressAnimation.stopProgressAnimation();
+                            final String message = msg.toString();
+                            EventQueue.invokeLater(new Runnable() {
+                                public void run() {
+                                    updatePlanNames(queryServer, message);
+                                }
+                            });
                         }
                     });
                 }
