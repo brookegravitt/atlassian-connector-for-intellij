@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
@@ -101,6 +104,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
         final Map<CrucibleFilter, ReviewNotificationBean> newReviews;
 
         try {
+            if (updateReason == UpdateReason.REFRESH) {
+                //for every manual refresh clear cache
+                IntelliJCrucibleServerFacade.getInstance().clearCache();
+            }
             newReviews = reviewListModelBuilder.getReviewsFromServer(this, updateReason, requestId);
 
             ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -280,6 +287,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     public List<CrucibleNotification> updateReviews(final long executedEpoch,
                                                     final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
                                                     final UpdateReason updateReason) {
+
         if (executedEpoch != this.epoch.get()) {
             return Collections.emptyList();
         }

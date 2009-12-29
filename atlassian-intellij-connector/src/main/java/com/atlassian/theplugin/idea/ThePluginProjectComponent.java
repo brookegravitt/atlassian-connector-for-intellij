@@ -153,7 +153,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		/*
 
 										WARNING!!!
-		BEFORE ADDING SOME INITIALIZATION CODE TO COSTRUCTOR THINK TWICE
+		BEFORE ADDING SOME INITIALIZATION CODE TO CONSTRUCTOR THINK TWICE
                                          st
 		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
 		(WHICH IS INVOKED WHEN THE ENTIRE PLUGIN ENVIRONMENT IS SET UP)?
@@ -321,6 +321,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			issuesToolWindowPanel.init();
 			checkDefaultServerValues();
             informAboutIdea9TaskIntegrationAsExperimental();
+
+            projectCfgManager.addProjectConfigurationListener(IntelliJCrucibleServerFacade.getInstance());
 		}
 
 
