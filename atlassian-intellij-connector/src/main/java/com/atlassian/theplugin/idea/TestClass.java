@@ -10,7 +10,6 @@ package com.atlassian.theplugin.idea;
 public class TestClass {
     //1
     //2
-    //3
     //4
     //5
     //6
