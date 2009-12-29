@@ -13,6 +13,7 @@ import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.project.Project;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 			final UpdateReason updateReason,
 			final long epoch) throws InterruptedException {
 
+        
 		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
 		final RecentlyOpenReviewsFilter recentlyOpenFilter =
