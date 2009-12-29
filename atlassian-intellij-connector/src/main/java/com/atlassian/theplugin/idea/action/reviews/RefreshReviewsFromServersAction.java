@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * User: pmaruszak
  */
 public class RefreshReviewsFromServersAction extends AbstractCrucibleToolbarAction {
-                             	@Override
+    @Override
 	public void actionPerformed(final AnActionEvent e) {
 		final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(e);
 		if (panel != null) {
