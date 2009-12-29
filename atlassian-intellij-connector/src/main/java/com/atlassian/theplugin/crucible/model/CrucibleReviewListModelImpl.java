@@ -1,10 +1,8 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
