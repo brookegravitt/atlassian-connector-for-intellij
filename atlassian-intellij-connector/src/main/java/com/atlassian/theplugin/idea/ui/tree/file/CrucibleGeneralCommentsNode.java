@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 
@@ -20,14 +19,14 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 			}
 		} else {
 			try {
-				List<GeneralComment> comments = review.getGeneralComments();
-				for (GeneralComment c : comments) {
+				List<Comment> comments = review.getGeneralComments();
+				for (Comment c : comments) {
 					if (!c.isDeleted()) {
 						GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, c, null);
 						addNode(commentNode);
 
 						for (Comment reply : c.getReplies()) {
-							commentNode.addNode(new GeneralCommentTreeNode(review, (GeneralComment) reply, null));
+							commentNode.addNode(new GeneralCommentTreeNode(review, reply, null));
 						}
 					}
 				}
@@ -61,7 +60,7 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 
 		try {
 			n = getReview().getGeneralComments().size();
-			for (GeneralComment gc : getReview().getGeneralComments()) {
+			for (Comment gc : getReview().getGeneralComments()) {
 				n += gc.getReplies().size();
 			}
 		} catch (ValueNotYetInitialized e) {
@@ -74,13 +73,13 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
         int n = 0;
 
         try {
-            for (GeneralComment comment : getReview().getGeneralComments()) {
+            for (Comment comment : getReview().getGeneralComments()) {
                 if (comment.getReadState() == Comment.ReadState.UNREAD
                         || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
                     ++n;
                 }
             }
-            for (GeneralComment gc : getReview().getGeneralComments()) {
+            for (Comment gc : getReview().getGeneralComments()) {
                 for (Comment reply : gc.getReplies()) {
                     if (reply.getReadState() == Comment.ReadState.UNREAD
                         || reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {

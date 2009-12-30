@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -73,7 +73,7 @@ public class RemoveAction extends AbstractCommentAction {
 
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			GeneralComment comment = node.getComment();
+			Comment comment = node.getComment();
 			review = node.getReview();
 
 			if (comment == null || review == null) {
@@ -124,7 +124,7 @@ public class RemoveAction extends AbstractCommentAction {
 		ProgressManager.getInstance().run(task);
 	}
 
-	private void removeGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment) {
+	private void removeGeneralComment(final Project project, final ReviewAdapter review, final Comment comment) {
 
 		Task.Backgroundable task = new Task.Backgroundable(project, "Removing General Comment", false) {
 

@@ -32,7 +32,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -41,21 +41,21 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @date Jun 10, 2008
  */
 public class CommentNode  extends DefaultMutableTreeNode {
-	private GeneralComment generalComment;
+	private Comment generalComment;
     // TODO why its 10???                                    
     private static final int BEGIN_INDEX = 10;
 
-    public CommentNode(GeneralComment aGeneralComment) {
+    public CommentNode(Comment aGeneralComment) {
 		this.generalComment = aGeneralComment;
 	}
 
    // public abstract ServerType getServerType();
 
-	public GeneralComment getGeneralComment() {
+	public Comment getGeneralComment() {
 		return generalComment;
 	}
 
-	public void setGeneralComment(GeneralComment generalComment) {
+	public void setGeneralComment(Comment generalComment) {
 		this.generalComment = generalComment;
 	}
 

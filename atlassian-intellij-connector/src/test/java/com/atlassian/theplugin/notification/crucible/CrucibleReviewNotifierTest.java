@@ -57,8 +57,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		return new Review("http://bogus");
 	}
 
-	private GeneralComment prepareGeneralComment(final PermId permId, final GeneralComment reply) {
-		return new GeneralComment() {
+	private Comment prepareGeneralComment(final PermId permId, final Comment reply) {
+		return new Comment() {
 
 			public PermId getPermId() {
 				return permId;
@@ -112,8 +112,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return ReadState.READ;
             }
 
-            public List<GeneralComment> getReplies2() {
-				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<GeneralComment>buildArrayList();
+            public List<Comment> getReplies2() {
+				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<Comment>buildArrayList();
 			}
 		};
 	}
@@ -247,11 +247,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		Reviewer reviewer4 = new Reviewer("alice", "Alice", false);
 
 		Review review1 = prepareReview();
-		((Review) review1).setGeneralComments(new ArrayList<GeneralComment>());
+		review1.setGeneralComments(new ArrayList<Comment>());
 //		((Review) review1).setVersionedComments(new ArrayList<VersionedComment>());
-		((Review) review1).setPermId(reviewId1);
-		((Review) review1).setState(state);
-		((Review) review1).setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
+		review1.setPermId(reviewId1);
+		review1.setState(state);
+		review1.setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
 
 
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
@@ -266,7 +266,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 
 		Review review2 = prepareReview();
-		review2.setGeneralComments(new ArrayList<GeneralComment>());
+		review2.setGeneralComments(new ArrayList<Comment>());
 //		((Review) review2).setVersionedComments(new ArrayList<VersionedComment>());
 		review2.setPermId(reviewId2);
 		review2.setState(state);

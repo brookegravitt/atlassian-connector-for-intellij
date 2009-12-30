@@ -26,11 +26,11 @@ public interface CrucibleReviewListener {
 	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment);
 
-	void createdOrEditedGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
-			GeneralComment comment);
+	void createdOrEditedGeneralCommentReply(ReviewAdapter review, Comment parentComment,
+			Comment comment);
 
 
-	void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment);
+	void createdOrEditedGeneralComment(ReviewAdapter review, Comment comment);
 
 	void createdOrEditedVersionedComment(ReviewAdapter review,
 			PermId file,
@@ -38,7 +38,7 @@ public interface CrucibleReviewListener {
 
 	void removedComment(ReviewAdapter review, Comment comment);
 
-	void publishedGeneralComment(ReviewAdapter review, GeneralComment comment);
+	void publishedGeneralComment(ReviewAdapter review, Comment comment);
 
 	void publishedVersionedComment(ReviewAdapter review, PermId filePermId,
 			VersionedComment comment);

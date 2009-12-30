@@ -29,10 +29,10 @@ public class CrucibleReviewListenerAdapter implements CrucibleReviewListener {
 	}
 
 	public void createdOrEditedGeneralCommentReply(ReviewAdapter review,
-			GeneralComment parentComment, GeneralComment comment) {
+			Comment parentComment, Comment comment) {
 	}
 
-	public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
+	public void createdOrEditedGeneralComment(ReviewAdapter review, Comment comment) {
 	}
 
 	public void createdOrEditedVersionedComment(ReviewAdapter review, PermId file, VersionedComment comment) {
@@ -41,7 +41,7 @@ public class CrucibleReviewListenerAdapter implements CrucibleReviewListener {
 	public void removedComment(ReviewAdapter review, Comment comment) {
 	}
 
-	public void publishedGeneralComment(ReviewAdapter review, GeneralComment comment) {
+	public void publishedGeneralComment(ReviewAdapter review, Comment comment) {
 	}
 
 	public void publishedVersionedComment(ReviewAdapter review, PermId filePermId, VersionedComment comment) {

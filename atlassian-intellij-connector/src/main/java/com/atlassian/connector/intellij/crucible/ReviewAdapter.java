@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
@@ -189,7 +188,7 @@ public class ReviewAdapter {
 		return review.getReviewers();
 	}
 
-	public List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized {
+	public List<Comment> getGeneralComments() throws ValueNotYetInitialized {
 		return review.getGeneralComments();
 	}
 
@@ -248,14 +247,14 @@ public class ReviewAdapter {
 		return listeners.remove(listener);
 	}
 
-	public void setGeneralComments(final List<GeneralComment> generalComments) {
+	public void setGeneralComments(final List<Comment> generalComments) {
 		review.setGeneralComments(generalComments);
 	}
 
-	public void addGeneralComment(final GeneralComment comment) throws ValueNotYetInitialized, RemoteApiException,
+	public void addGeneralComment(final Comment comment) throws ValueNotYetInitialized, RemoteApiException,
 			ServerPasswordNotProvidedException {
 
-		GeneralComment newComment = facade.addGeneralComment(getServerData(), review.getPermId(), comment);
+		Comment newComment = facade.addGeneralComment(getServerData(), review.getPermId(), comment);
 
 		if (newComment != null) {
 			review.getGeneralComments().add(newComment);
@@ -267,13 +266,13 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void addGeneralCommentReply(final GeneralComment parentComment, final GeneralCommentBean replyComment)
+	public void addGeneralCommentReply(final Comment parentComment, final GeneralCommentBean replyComment)
 			throws RemoteApiException, ServerPasswordNotProvidedException, ValueNotYetInitialized {
-		GeneralComment newReply = facade.addGeneralCommentReply(getServerData(), getPermId(),
+		Comment newReply = facade.addGeneralCommentReply(getServerData(), getPermId(),
 				parentComment.getPermId(), replyComment);
 
 		if (newReply != null) {
-			for (GeneralComment comment : review.getGeneralComments()) {
+			for (Comment comment : review.getGeneralComments()) {
 				if (comment.equals(parentComment)) {
 					comment.getReplies().add(newReply);
 					break;
@@ -297,7 +296,7 @@ public class ReviewAdapter {
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException
 	 *          in case of communication problem
 	 */
-	public synchronized void removeGeneralComment(final GeneralComment generalComment) throws RemoteApiException,
+	public synchronized void removeGeneralComment(final Comment generalComment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 
 		// remove comment from the server
@@ -376,7 +375,7 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void editGeneralComment(final GeneralComment comment) throws RemoteApiException,
+	public void editGeneralComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.updateComment(getServerData(), getPermId(), comment);
 		try {
@@ -444,7 +443,7 @@ public class ReviewAdapter {
 		facade.markAllCommentsRead(getServerData(), getPermId());
 
 		try {
-			List<GeneralComment> gcs = getGeneralComments();
+			List<Comment> gcs = getGeneralComments();
 			for (Comment generalComment : gcs) {
 				markLeaveUnreadCommentRead(generalComment);
 			}
@@ -486,7 +485,7 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void publishGeneralComment(final GeneralComment comment) throws RemoteApiException,
+	public void publishGeneralComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.publishComment(getServerData(), getPermId(), comment.getPermId());
 

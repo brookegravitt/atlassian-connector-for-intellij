@@ -165,7 +165,7 @@ public class AddAction extends AbstractCommentAction {
 	}
 
 	private void addReplyToGeneralComment(final AnActionEvent event, final ReviewAdapter review,
-                                          final GeneralComment parentComment) {
+                                          final Comment parentComment) {
 
 		final GeneralCommentBean newComment = new GeneralCommentBean();
 		newComment.setReply(true);
