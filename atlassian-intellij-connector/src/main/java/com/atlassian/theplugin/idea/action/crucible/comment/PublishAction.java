@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -64,7 +64,7 @@ public class PublishAction extends AbstractCommentAction {
 	private void publishComment(final Project project, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			GeneralComment comment = node.getComment();
+			Comment comment = node.getComment();
 
 			publishGeneralCommen(project, node.getReview(), comment);
 
@@ -97,7 +97,7 @@ public class PublishAction extends AbstractCommentAction {
 	}
 
 
-	private void publishGeneralCommen(final Project project, final ReviewAdapter review, final GeneralComment comment) {
+	private void publishGeneralCommen(final Project project, final ReviewAdapter review, final Comment comment) {
 
 		Task.Backgroundable task = new Task.Backgroundable(project, "Publishing General Comment", false) {
 

@@ -25,7 +25,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
@@ -282,11 +281,11 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 		}
 
-		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-				final GeneralComment comment) {
+		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final Comment parentComment,
+				final Comment comment) {
 		}
 
-		public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+		public void createdOrEditedGeneralComment(final ReviewAdapter review, final Comment comment) {
 		}
 
 		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId file,
@@ -296,7 +295,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		public void removedComment(final ReviewAdapter review, final Comment comment) {
 		}
 
-		public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+		public void publishedGeneralComment(final ReviewAdapter review, final Comment comment) {
 		}
 
 		public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId,
@@ -682,11 +681,11 @@ class DetailsPanel extends JPanel {
 			final VersionedComment parentComment, final VersionedComment comment) {
 	}
 
-	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-			final GeneralComment comment) {
+	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final Comment parentComment,
+			final Comment comment) {
 	}
 
-	public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+	public void createdOrEditedGeneralComment(final ReviewAdapter review, final Comment comment) {
 	}
 
 	public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId file, final VersionedComment comment) {
@@ -695,7 +694,7 @@ class DetailsPanel extends JPanel {
 	public void removedComment(final ReviewAdapter review, final Comment comment) {
 	}
 
-	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+	public void publishedGeneralComment(final ReviewAdapter review, final Comment comment) {
 	}
 
 	public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId, final VersionedComment comment) {

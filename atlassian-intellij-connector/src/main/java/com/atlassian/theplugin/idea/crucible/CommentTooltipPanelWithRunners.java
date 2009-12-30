@@ -31,7 +31,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     public CommentTooltipPanelWithRunners(AnActionEvent event, ReviewAdapter review,
-                                          GeneralComment comment, GeneralComment parentComment) {
+                                          Comment comment, Comment parentComment) {
         this(event, review, null, comment, parentComment, Mode.SHOW);
     }
 
@@ -54,7 +54,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     private CommentBean createCommentBean(Comment comment) {
         final CommentBean bean = comment instanceof VersionedComment
-                ? new VersionedCommentBean((VersionedComment) comment) : new GeneralCommentBean((GeneralComment) comment);
+                ? new VersionedCommentBean((VersionedComment) comment) : new GeneralCommentBean(comment);
         bean.setAuthor(new User(getReview().getServerData().getUsername()));
         bean.setCreateDate(new Date());
 
@@ -133,7 +133,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     if (comment instanceof VersionedComment) {
                         getReview().removeVersionedComment((VersionedComment) comment, getFileInfo());
                     } else {
-                        getReview().removeGeneralComment((GeneralComment) comment);
+                        getReview().removeGeneralComment(comment);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage(), true);
@@ -150,7 +150,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     if (comment instanceof VersionedComment) {
                         getReview().editVersionedComment(getFileInfo(), (VersionedComment) comment);
                     } else {
-                        getReview().editGeneralComment((GeneralComment) comment);
+                        getReview().editGeneralComment(comment);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage(), true);
@@ -168,7 +168,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     if (comment instanceof VersionedComment) {
                         getReview().addVersionedComment(getFileInfo(), (VersionedComment) comment);
                     } else {
-                        getReview().addGeneralComment((GeneralComment) comment);
+                        getReview().addGeneralComment(comment);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
@@ -187,7 +187,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                         getReview().addVersionedCommentReply(getFileInfo(), (VersionedComment) parent,
                                 (VersionedCommentBean) reply);
                     } else {
-                        getReview().addGeneralCommentReply((GeneralComment) parent, (GeneralCommentBean) reply);
+                        getReview().addGeneralCommentReply(parent, (GeneralCommentBean) reply);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
@@ -205,7 +205,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     if (comment instanceof VersionedComment) {
                         getReview().publishVersionedComment(getFileInfo(), (VersionedComment) comment);
                     } else {
-                        getReview().publishGeneralComment((GeneralComment) comment);
+                        getReview().publishGeneralComment(comment);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage(), true);

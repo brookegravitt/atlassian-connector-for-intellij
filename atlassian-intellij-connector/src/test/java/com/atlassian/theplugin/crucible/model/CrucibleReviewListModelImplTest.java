@@ -523,7 +523,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		adapter.setFacade(new MyFacade());
 
 		// add general comments
-		adapter.setGeneralComments(new ArrayList<GeneralComment>());
+		adapter.setGeneralComments(new ArrayList<Comment>());
 		GeneralCommentBean generalComment = new GeneralCommentBean();
 		generalComment.setCreateDate(date);
 		adapter.addGeneralComment(generalComment);
@@ -547,7 +547,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	private class MyFacade extends MockCrucibleFacadeAdapter {
 
-		public GeneralComment addGeneralComment(ServerData server, PermId permId, GeneralComment comment)
+		public Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return comment;
 		}

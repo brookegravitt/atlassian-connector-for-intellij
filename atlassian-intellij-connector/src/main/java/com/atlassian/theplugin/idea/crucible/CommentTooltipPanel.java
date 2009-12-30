@@ -6,7 +6,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.Constants;
@@ -1048,8 +1047,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 
         @Override
-        public void createdOrEditedGeneralCommentReply(ReviewAdapter rev, GeneralComment parentComment,
-                                                       GeneralComment comment) {
+        public void createdOrEditedGeneralCommentReply(ReviewAdapter rev, Comment parentComment,
+                                                       Comment comment) {
             createdOrEditedCommentReply(rev, null, parentComment, comment);
         }
 
@@ -1120,7 +1119,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         }
 
         @Override
-        public void createdOrEditedGeneralComment(ReviewAdapter rev, GeneralComment comment) {
+        public void createdOrEditedGeneralComment(ReviewAdapter rev, Comment comment) {
             createdOrEditedComment(rev, null, comment);
         }
 
@@ -1196,7 +1195,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 
         @Override
-        public void publishedGeneralComment(ReviewAdapter rev, GeneralComment comment) {
+        public void publishedGeneralComment(ReviewAdapter rev, Comment comment) {
             publishedComment(rev, null, comment);
         }
 

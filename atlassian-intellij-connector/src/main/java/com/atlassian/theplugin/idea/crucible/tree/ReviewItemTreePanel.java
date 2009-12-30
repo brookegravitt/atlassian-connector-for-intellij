@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
@@ -501,13 +500,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	private class LocalReviewListener extends CrucibleReviewListenerAdapter {
 		@Override
-		public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+		public void createdOrEditedGeneralComment(final ReviewAdapter review, final Comment comment) {
 			refreshView(review);
 		}
 
 		@Override
-		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-				final GeneralComment comment) {
+		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final Comment parentComment,
+				final Comment comment) {
 			refreshView(review);
 		}
 
@@ -530,7 +529,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+		public void publishedGeneralComment(final ReviewAdapter review, final Comment comment) {
 			refreshView(review);
 		}
 

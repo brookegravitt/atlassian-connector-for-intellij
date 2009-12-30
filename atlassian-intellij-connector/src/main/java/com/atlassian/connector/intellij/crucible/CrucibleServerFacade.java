@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -144,7 +143,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 //	List<Comment> getComments(CrucibleServerCfg server, PermId permId)
 //			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<GeneralComment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
+	List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
 	List<VersionedComment> getVersionedComments(ServerData server, PermId permId) throws RemoteApiException,
@@ -156,7 +155,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 //	List<GeneralComment> getReplies(CrucibleServerCfg server, PermId permId, PermId commentId)
 //			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	GeneralComment addGeneralComment(ServerData server, PermId permId, GeneralComment comment)
+	Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
@@ -171,7 +170,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	void publishAllCommentsForReview(ServerData server, PermId reviewId) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-	GeneralComment addGeneralCommentReply(ServerData server, PermId id, PermId cId, GeneralComment comment)
+	Comment addGeneralCommentReply(ServerData server, PermId id, PermId cId, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	VersionedComment addVersionedCommentReply(ServerData server, PermId id, PermId cId, VersionedComment comment)

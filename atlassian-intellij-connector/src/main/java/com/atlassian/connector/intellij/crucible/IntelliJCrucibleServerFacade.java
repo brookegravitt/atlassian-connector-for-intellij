@@ -15,7 +15,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -128,12 +127,12 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return new ReviewAdapter(review, serverData, getProject(serverData, review.getProjectKey()));
     }
 
-    public GeneralComment addGeneralComment(ServerData server, PermId permId, GeneralComment comment)
+    public Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         return facade.addGeneralComment(server.toHttpConnectionCfg(), permId, comment);
     }
 
-    public GeneralComment addGeneralCommentReply(ServerData server, PermId id, PermId cId, GeneralComment comment)
+    public Comment addGeneralCommentReply(ServerData server, PermId id, PermId cId, Comment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         return facade.addGeneralCommentReply(server.toHttpConnectionCfg(), id, cId, comment);
     }
@@ -239,7 +238,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return facade.getFiles(server.toHttpConnectionCfg(), permId);
     }
 
-    public List<GeneralComment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
+    public List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
             ServerPasswordNotProvidedException {
         return facade.getGeneralComments(server.toHttpConnectionCfg(), permId);
     }

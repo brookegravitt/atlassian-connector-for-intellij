@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
@@ -57,8 +57,8 @@ public class EditAction extends AbstractCommentAction {
 	private void editComment(AnActionEvent event, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			GeneralComment comment = node.getComment();
-            GeneralComment parent =
+			Comment comment = node.getComment();
+            Comment parent =
                     comment.isReply() ? ((GeneralCommentTreeNode) node.getParent()).getComment() : null;
 			editGeneralComment(event, node.getReview(), comment, parent);
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
@@ -71,7 +71,7 @@ public class EditAction extends AbstractCommentAction {
 	}
 
 	private void editGeneralComment(AnActionEvent event, final ReviewAdapter review,
-                                    final GeneralComment comment, final GeneralComment parent) {
+                                    final Comment comment, final Comment parent) {
 
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
