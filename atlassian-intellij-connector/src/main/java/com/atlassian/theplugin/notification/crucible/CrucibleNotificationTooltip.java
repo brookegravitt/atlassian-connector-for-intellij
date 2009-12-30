@@ -214,12 +214,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					case NOT_VISIBLE_REVIEW:
 					case REVIEW_DATA_CHANGED:
 						break;
-					case NEW_GENERAL_COMMENT:
-					case NEW_VERSIONED_COMMENT:
-					case NEW_REPLY:
-					case REMOVED_GENERAL_COMMENT:
-					case REMOVED_VERSIONED_COMMENT:
-					case REMOVED_REPLY:
+					case NEW_COMMENT:
+					case REMOVED_COMMENT:
 						AbstractCommentNotification commentNotification = (AbstractCommentNotification) notification;
 						if (!commentNotification.isDraft()) {
 							changesCount++;
@@ -230,9 +226,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 									.append(notification.getPresentationMessage()).append("</td></tr>");
 						}
 						break;
-					case UPDATED_GENERAL_COMMENT:
-					case UPDATED_VERSIONED_COMMENT:
-					case UPDATED_REPLY:
+					case UPDATED_COMMENT:
 						AbstractUpdatedCommentNotification updatedCommentNotification
 								= (AbstractUpdatedCommentNotification) notification;
 						if (!updatedCommentNotification.isDraft()
