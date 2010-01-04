@@ -1600,10 +1600,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
                     for (JiraServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
                         try {
-                            for (JIRAProject p : jiraServerModel.getProjects(server)) {
-                                projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
-                            }
-                        } catch (JIRAException e) {
+							List<JIRAProject> jiraProjects = jiraServerModel.getProjects(server);
+							if (jiraProjects != null) {
+								for (JIRAProject p : jiraProjects) {
+									projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
+								}
+							}
+						} catch (JIRAException e) {
                             setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]. "
                                     + e.getMessage(), e);
                         }
