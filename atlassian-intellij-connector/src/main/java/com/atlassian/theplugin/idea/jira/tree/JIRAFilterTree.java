@@ -192,12 +192,17 @@ public class JIRAFilterTree extends AbstractTree {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
 				if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
-						if (node.getChildAt(j) instanceof JIRASavedFilterTreeNode) {
-							JIRASavedFilterTreeNode savedFilterNode = (JIRASavedFilterTreeNode) node.getChildAt(j);
-							if (savedFilterNode.getSavedFilter().getId() == savedFilterId) {
-								setSelectionPath(new TreePath(savedFilterNode.getPath()));
-								scrollPathToVisible(new TreePath(savedFilterNode.getPath()));
-								return true;
+						if (node.getChildAt(j) instanceof JiraSavedFiltersGroupTreeNode) {
+							JiraSavedFiltersGroupTreeNode sfNode = (JiraSavedFiltersGroupTreeNode) node.getChildAt(j);
+							for (int k = 0; k < sfNode.getChildCount(); k++) {
+								if (sfNode.getChildAt(k) instanceof JIRASavedFilterTreeNode) {
+									JIRASavedFilterTreeNode savedFilterNode = (JIRASavedFilterTreeNode) sfNode.getChildAt(k);
+									if (savedFilterNode.getSavedFilter().getId() == savedFilterId) {
+										setSelectionPath(new TreePath(savedFilterNode.getPath()));
+										scrollPathToVisible(new TreePath(savedFilterNode.getPath()));
+										return true;
+									}
+								}
 							}
 						}
 					}
@@ -217,14 +222,19 @@ public class JIRAFilterTree extends AbstractTree {
                 JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
                 if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
                     for (int j = 0; j < node.getChildCount(); j++) {
-                        if (node.getChildAt(j) instanceof JiraPresetFilterTreeNode) {
-                            JiraPresetFilterTreeNode filterNode = (JiraPresetFilterTreeNode) node.getChildAt(j);
-                            if (filterNode.getPresetFilter().getClass().getCanonicalName().equals(filterClass)) {
-                                setSelectionPath(new TreePath(filterNode.getPath()));
-                                scrollPathToVisible(new TreePath(filterNode.getPath()));
-                                return true;
-                            }
-                        }
+						if (node.getChildAt(j) instanceof JiraPresetFiltersGroupTreeNode) {
+							JiraPresetFiltersGroupTreeNode pfNode = (JiraPresetFiltersGroupTreeNode) node.getChildAt(j);
+							for (int k = 0; k < pfNode.getChildCount(); k++) {
+								if (pfNode.getChildAt(k) instanceof JiraPresetFilterTreeNode) {
+		                            JiraPresetFilterTreeNode filterNode = (JiraPresetFilterTreeNode) pfNode.getChildAt(k);
+		                            if (filterNode.getPresetFilter().getClass().getCanonicalName().equals(filterClass)) {
+		                                setSelectionPath(new TreePath(filterNode.getPath()));
+		                                scrollPathToVisible(new TreePath(filterNode.getPath()));
+		                                return true;
+	                            	}
+	                        	}
+							}
+						}
                     }
                 }
             }
@@ -242,17 +252,22 @@ public class JIRAFilterTree extends AbstractTree {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
 				if (node.getJiraServer() != null && node.getJiraServer().getServerId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
-						if (node.getChildAt(j) instanceof JIRAManualFilterTreeNode) {
-							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);
-                            if (manualFilterNode.getManualFilter().getUid().equals(filterId)) {
+						if (node.getChildAt(j) instanceof JiraCustomFiltersGroupTreeNode) {
+							JiraCustomFiltersGroupTreeNode cfNode = (JiraCustomFiltersGroupTreeNode) node.getChildAt(j);
+							for (int k = 0; k < cfNode.getChildCount(); k++) {
+								if (cfNode.getChildAt(k) instanceof JIRAManualFilterTreeNode) {
+									JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) cfNode.getChildAt(k);
+	                            	if (manualFilterNode.getManualFilter().getUid().equals(filterId)) {
 
-							// single manual filter support
-//							if (manualFilterNode.getManualFilterSet().equals(manualFilter)) {
-							    setSelectionPath(new TreePath(manualFilterNode.getPath()));
-							    scrollPathToVisible(new TreePath(manualFilterNode.getPath()));
-							    return true;
-                            }
+									// single manual filter support
+//									if (manualFilterNode.getManualFilterSet().equals(manualFilter)) {
+										setSelectionPath(new TreePath(manualFilterNode.getPath()));
+										scrollPathToVisible(new TreePath(manualFilterNode.getPath()));
+								 		return true;
+									}
 //							}
+								}
+							}
 						}
 					}
 				}
