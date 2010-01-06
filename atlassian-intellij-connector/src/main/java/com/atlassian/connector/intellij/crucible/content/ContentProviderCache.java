@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.util.SimpleLruCache;
  *@author pmaruszak
  * @date Dec 29, 2009
  */
-final public class ContentProviderCache  {
+public final class ContentProviderCache  {
     private static int cacheSize = 100;
     private static ContentProviderCache instance;
     private static SimpleLruCache<String, ReviewFileContentProvider> cache;
