@@ -18,12 +18,13 @@ package com.atlassian.connector.intellij.crucible.content;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.util.SimpleLruCache;
+import com.atlassian.theplugin.util.PluginUtil;
 
 /**
  * @user pmaruszak
  * @date Dec 29, 2009
  */
-final public class FileContentCache {
+public final class FileContentCache {
     private static FileContentCache instance;
     private static int cacheSize = 100;
     
@@ -42,8 +43,9 @@ final public class FileContentCache {
             if (downloadingThread != null) {
                 try {
                     //wait for thread to finish downloading
-                    downloadingThread.join(TIME_TO_WAIT);
+                    downloadingThread.join();
                 } catch (InterruptedException e) {
+                    PluginUtil.getLogger().warn("Downloading file interrupted :" + virtualFile.getAbsoluteUrl());
                 }
             }
         }
