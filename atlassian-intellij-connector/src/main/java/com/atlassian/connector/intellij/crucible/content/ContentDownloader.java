@@ -16,7 +16,6 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.psi.PsiFile;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -75,7 +74,8 @@ public final class ContentDownloader {
     }
 
     private ReviewFileContentProvider getContentProvider(@NotNull Project project, @NotNull final CrucibleFileInfo reviewItem,
-                                                         @NotNull ReviewAdapter review, final VersionedVirtualFile virtualFile) throws VcsException {
+                                                         @NotNull ReviewAdapter review,
+                                                         final VersionedVirtualFile virtualFile) throws VcsException {
 
         final PsiFile psiFile = CodeNavigationUtil
                 .guessCorrespondingPsiFile(project, virtualFile.getAbsoluteUrl());
@@ -130,18 +130,22 @@ public final class ContentDownloader {
 
                         switch (reviewItem.getCommitType()) {
                             case Added:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem, reviewItem.getFileDescriptor());                                
+                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                        reviewItem.getFileDescriptor());
                                 break;
                             case Deleted:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem, reviewItem.getOldFileDescriptor());
+                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                        reviewItem.getOldFileDescriptor());
                                 break;
                             case Modified:
                             case Moved:
                             case Copied:
                             case Unknown:
                             default:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem, reviewItem.getFileDescriptor());
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem, reviewItem.getOldFileDescriptor());
+                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                        reviewItem.getFileDescriptor());
+                                numberOfFiles += downloadSingleFile(project, review, reviewItem, 
+                                        reviewItem.getOldFileDescriptor());
 
                         }
 

@@ -15,21 +15,12 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.connector.intellij.crucible.CrucibleReviewListener;
-import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.*;
 import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
-import com.atlassian.connector.intellij.crucible.content.ContentUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -326,8 +317,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			Thread thread = ContentDownloader.getInstance().getDownloadingThread(reviewItem);
             if (thread != null) {
                 try {
-                    thread.join(5000);
-                } catch (InterruptedException e) {                    
+                    thread.join();
+                } catch (InterruptedException e) {
+                    PluginUtil.getLogger().warn("Review " + reviewItem.getPermId() + " files download interrupted");
                 }
             } else {
                 hasNoDetails = true;

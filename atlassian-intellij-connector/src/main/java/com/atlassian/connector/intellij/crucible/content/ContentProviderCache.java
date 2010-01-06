@@ -22,14 +22,14 @@ import com.atlassian.theplugin.commons.util.SimpleLruCache;
  *@author pmaruszak
  * @date Dec 29, 2009
  */
-public class ContentProviderCache  {
+final public class ContentProviderCache  {
     private static int cacheSize = 100;
     private static ContentProviderCache instance;
     private static SimpleLruCache<String, ReviewFileContentProvider> cache;
 
     private ContentProviderCache(int cacheSize) {
        ContentProviderCache.cacheSize = cacheSize;
-        cache = new SimpleLruCache<String,ReviewFileContentProvider>(cacheSize);
+        cache = new SimpleLruCache<String, ReviewFileContentProvider>(cacheSize);
 
     }
 
