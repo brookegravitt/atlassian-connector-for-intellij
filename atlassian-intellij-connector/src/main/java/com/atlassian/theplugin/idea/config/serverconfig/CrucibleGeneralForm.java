@@ -41,7 +41,8 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private JRadioButton unreadCrucibleReviews;
 	private JRadioButton never;
 	private JSpinner reviewCreationTimeoutSpinner;
-	private SpinnerModel pollTimeModel;
+    private JSpinner reviewFilesCacheSizeSpinner;
+    private SpinnerModel pollTimeModel;
 	private SpinnerModel reviewCreationTimeoutModel;
 
 	private transient PluginConfiguration globalPluginConfiguration;
@@ -51,8 +52,9 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static CrucibleGeneralForm instance;
 	private static final int MAX_VALUE = 1000;
+    private SpinnerNumberModel reviewFilesCacheSizeModel;
 
-	private CrucibleGeneralForm(PluginConfiguration globalPluginConfiguration) {
+    private CrucibleGeneralForm(PluginConfiguration globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -63,6 +65,11 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 
 		reviewCreationTimeoutModel = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		reviewCreationTimeoutSpinner.setModel(reviewCreationTimeoutModel);
+        reviewFilesCacheSizeModel = new SpinnerNumberModel(CrucibleConfigurationBean.DEFAULT_REVIEW_FILE_CACHE_SIZE, 
+                CrucibleConfigurationBean.MIN_REVIEW_FILE_CACHE_SIZE,
+                CrucibleConfigurationBean.MAX_REVIEW_FILE_CACHE_SIZE, 1);
+        
+        reviewFilesCacheSizeSpinner.setModel(reviewFilesCacheSizeModel);
 
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
@@ -93,6 +100,10 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 				!= IdeaHelper.getSpinnerIntValue(reviewCreationTimeoutSpinner)) {
 			return true;
 		}
+
+        if (crucibleConfiguration.getReviewFileCacheSize() != IdeaHelper.getSpinnerIntValue(reviewFilesCacheSizeSpinner)) {
+            return true;
+        }
 		return IdeaHelper.getSpinnerIntValue(pollTimeSpinner) != crucibleConfiguration.getPollTime();
 	}
 
@@ -119,6 +130,8 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 				.setReviewCreationTimeout((Integer) reviewCreationTimeoutModel.getValue());
 		globalPluginConfiguration.getCrucibleConfigurationData()
 				.setReviewCreationTimeout((Integer) reviewCreationTimeoutModel.getValue());
+        globalPluginConfiguration.getCrucibleConfigurationData().
+                setReviewFileCacheSize((Integer) reviewFilesCacheSizeModel.getValue());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -146,6 +159,7 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 
 		pollTimeModel.setValue(crucibleConfiguration.getPollTime());
 		reviewCreationTimeoutModel.setValue(crucibleConfiguration.getReviewCreationTimeout());
+        reviewFilesCacheSizeModel.setValue(crucibleConfiguration.getReviewFileCacheSize());
 	}
 
 	private void setDefaultTooltipOption() {
