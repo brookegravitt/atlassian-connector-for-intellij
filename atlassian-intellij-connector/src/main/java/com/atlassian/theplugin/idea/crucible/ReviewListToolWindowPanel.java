@@ -17,6 +17,9 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
+import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
+import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -430,6 +433,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
+                FileContentCache.getInstance().clear();
+                ContentProviderCache.getInstance().clear();
                 reviewListModel.rebuildModel(reason);
             }
         };

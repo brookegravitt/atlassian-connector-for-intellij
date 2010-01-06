@@ -121,8 +121,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		super.closeToolWindow(TOOL_WINDOW_TITLE, event);
 		CommentHighlighter.removeCommentsInEditors(project);
         CommentHighlighter.removeAllDocumentListeners(project);
-		ChangeViewer.removeHighlightersInEditors(project);
-		this.contentParams.reviewAdapter.clearContentCache();
+		ChangeViewer.removeHighlightersInEditors(project);		
 	}
 
 	public Object getData(@NonNls final String dataId) {
@@ -485,7 +484,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 // kalamon: I absolutely bloody hate hate hate package-scope non-inner classes
 
-// piggy-backed on the main class of the file. To the author of this class - you suck.
+// piggy-backed on the main class of the file. To the author of this class - you suck. Sure refactoring is your friend.
 class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
@@ -559,19 +558,6 @@ class DetailsPanel extends JPanel {
 		scroll.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-////				statementOfObjectives.doLayout();
-//				System.out.println(statementOfObjectives.getX());
-//				int preferredWidth = e.getComponent().getWidth() - statementOfObjectives.getX();
-//				System.out.println(preferredWidth);
-//				statementOfObjectives.setSize(preferredWidth, 100);
-//				final int prefHeight = statementOfObjectives.getPreferredSize().height;
-//				System.out.println("H" + prefHeight);
-//				statementOfObjectives.setPreferredSize(new Dimension(preferredWidth , prefHeight));
-//				statementOfObjectives.setSize(preferredWidth, prefHeight);
-//				body.validate();
-////				invalidate();
-//
-//
 				body.setPreferredSize(null);
 
 				body.setPreferredSize(new Dimension(scroll.getViewport().getWidth(),

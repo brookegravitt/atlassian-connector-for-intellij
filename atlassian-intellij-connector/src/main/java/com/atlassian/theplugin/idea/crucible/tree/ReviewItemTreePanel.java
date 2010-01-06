@@ -20,6 +20,8 @@ import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
+import com.atlassian.connector.intellij.crucible.content.ContentUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -316,12 +318,22 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		boolean hasNoDetails = false;
 
+        do {
 		try {
 			reviewItem.getGeneralComments();
 			reviewItem.getFiles();
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			hasNoDetails = true;
+			Thread thread = ContentDownloader.getInstance().getDownloadingThread(reviewItem);
+            if (thread != null) {
+                try {
+                    thread.join(5000);
+                } catch (InterruptedException e) {                    
+                }
+            } else {
+                hasNoDetails = true;
+            }
 		}
+        }  while(ContentDownloader.getInstance().isDownloadInProgress(reviewItem));
 
 		if (hasNoDetails || refreshDetails) {
 			try {
