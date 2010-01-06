@@ -326,8 +326,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 
 
-        PluginTaskManager.getInstance(project).addChangeListListener();
-
+        PluginTaskManager.getInstance(project).addChangeListListener();        
 
 	}
 

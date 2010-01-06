@@ -16,43 +16,20 @@
 
 package com.atlassian.connector.intellij.crucible;
 
-import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
+import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
+import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.ReviewDifferenceProducer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ReviewAdapter {
 	private final Review review;
@@ -61,18 +38,6 @@ public class ReviewAdapter {
 
 	private List<CustomFieldDef> metricDefinitions;
 
-	@SuppressWarnings("serial")
-	private final Map<String, ReviewFileContent> fetchedFilesCache = Collections.synchronizedMap(
-			new LinkedHashMap<String, ReviewFileContent>() {
-				@Override
-				protected boolean removeEldestEntry(final Map.Entry<String, ReviewFileContent> eldest) {
-					return (size() > 100);
-				}
-			});
-
-	private final Map<String, ReviewFileContentProvider> contentProviders = Collections.synchronizedMap(
-			new HashMap<String, ReviewFileContentProvider>());
-
 	private static final int HASHCODE_MAGIC = 31;
 
 	private CrucibleServerFacade facade;
@@ -80,7 +45,7 @@ public class ReviewAdapter {
 	private final Collection<CrucibleReviewListener> listeners = new HashSet<CrucibleReviewListener>();
 	private final CrucibleProject crucibleProject;
 
-	private Collection<CrucibleReviewListener> getListeners() {
+    private Collection<CrucibleReviewListener> getListeners() {
 		return listeners;
 	}
 
@@ -599,7 +564,7 @@ public class ReviewAdapter {
         //add notification
 	}
 
-	public Set<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+	public Set<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {        
 		if (review.getFiles() == null) {
 			throw new ValueNotYetInitialized("Files collection is empty");
 		}
@@ -673,51 +638,23 @@ public class ReviewAdapter {
 	}
 
 	public void addContentProvider(final ReviewFileContentProvider contentProvider) {
-		String key = getFileCacheKey(contentProvider.getFileInfo().getFileDescriptor());
-		String key2 = getFileCacheKey(contentProvider.getFileInfo().getOldFileDescriptor());
-		if (!"".equals(key)) {
-			contentProviders.put(key, contentProvider);
-		}
-		if (!"".equals(key2)) {
-			contentProviders.put(key2, contentProvider);
-		}
+        ContentProviderCache.getInstance().addContentProvider(contentProvider);
 	}
 
 	public ReviewFileContentProvider getContentProvider(VersionedVirtualFile fileInfo) {
-		String key = getFileCacheKey(fileInfo);
-		if (contentProviders.containsKey(key)) {
-			return contentProviders.get(key);
+		if (ContentProviderCache.getInstance().containsProvider(fileInfo)) {
+			return ContentProviderCache.getInstance().getContentProvider(fileInfo);
 		}
 		return null;
 	}
 
-	public ReviewFileContent getFileContent(VersionedVirtualFile fileInfo) throws ReviewFileContentException {
-		String key = getFileCacheKey(fileInfo);
-		if (fetchedFilesCache.containsKey(key)) {
-			return fetchedFilesCache.get(key);
-		}
-
-		ReviewFileContentProvider provider = contentProviders.get(key);
-		if (provider != null) {
-			ReviewFileContent content = provider.getContent(this, fileInfo);
-			fetchedFilesCache.put(key, content);
-			//contentProviders.remove(key);
-			return content;
-		}
-		return null;
-	}
 
 	public void clearContentCache() {
-		fetchedFilesCache.clear();
-		contentProviders.clear();
+		FileContentCache.getInstance().clear();
+		ContentProviderCache.getInstance().clear();
 	}
 
-	private static String getFileCacheKey(VersionedVirtualFile virtualFile) {
-		if (StringUtils.isBlank(virtualFile.getRevision()) && StringUtils.isBlank(virtualFile.getUrl())) {
-			return "";
-		}
-		return virtualFile.getRevision() + ":" + virtualFile.getUrl();
-	}
+
 
 	public ServerData getServerData() {
 		return server;
