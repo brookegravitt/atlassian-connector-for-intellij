@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
  * To change this template use File | Settings | File Templates.
  */
 public final class ContentUtil {
-    public ContentUtil() {
+    private ContentUtil() {
     }
 
     public static String getKey(VersionedVirtualFile virtualFile) {
