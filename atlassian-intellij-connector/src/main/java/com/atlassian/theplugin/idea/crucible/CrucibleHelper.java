@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
@@ -494,7 +495,8 @@ public final class CrucibleHelper {
 				return virtualFile;
 			}
 
-			IdeaReviewFileContent content = (IdeaReviewFileContent) review.getFileContent(fileInfo);
+			IdeaReviewFileContent content =
+                    (IdeaReviewFileContent) ContentDownloader.getInstance().getFileContent(project, review, fileInfo);
 			IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
 
 			//get local file if not dirty and has the same revision as remote

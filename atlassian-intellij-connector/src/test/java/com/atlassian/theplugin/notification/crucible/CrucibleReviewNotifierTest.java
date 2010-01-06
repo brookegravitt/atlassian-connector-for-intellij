@@ -112,6 +112,22 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return ReadState.READ;
             }
 
+            public int getNumReplies() {
+                return 0;
+            }
+
+            public int getNumberOfUnreadReplies() {
+                return 0;
+            }
+
+            public int getNumberOfDraftReplies() {
+                return 0;
+            }
+
+            public boolean isEffectivelyUnread() {
+                return false;
+            }
+
             public List<Comment> getReplies2() {
 				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<Comment>buildArrayList();
 			}
