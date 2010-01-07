@@ -116,10 +116,12 @@ public class DatePicker extends DialogWrapper implements CaretListener {
 		JTextFieldDateEditor dateEditor = (JTextFieldDateEditor) dateChooser.getDateEditor();
 
 		dateEditor.caretUpdate(event);
-		if (dateEditor.getForeground() == Color.RED)
+		if (dateEditor.getForeground() == Color.RED) {
 			shouldEnableOkAction = false;
-		if (!allowEmptyDate && dateEditor.getText().trim().equals(""))
+		}
+		if (!allowEmptyDate && dateEditor.getText().trim().equals("")) {
 			shouldEnableOkAction = false;
+		}
 
 		setOKActionEnabled(shouldEnableOkAction);
 	}
