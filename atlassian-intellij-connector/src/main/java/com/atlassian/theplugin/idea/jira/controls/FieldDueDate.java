@@ -66,11 +66,17 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 					dueDate = new Date();
 				}
 
-				DatePicker datePicker = new DatePicker("Select Due Date", dueDate);
+				DatePicker datePicker = new DatePicker("Select Due Date", dueDate, true);
 				datePicker.show();
 				if (datePicker.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-					SimpleDateFormat dateFormat = new SimpleDateFormat(DUE_DATE_FORMAT, Locale.US);
-					textField.setText(dateFormat.format(datePicker.getSelectedDate()));
+					Date selectedDate = datePicker.getSelectedDate();
+					String text = "";
+					if (selectedDate != null) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat(DUE_DATE_FORMAT, Locale.US);
+						text = dateFormat.format(selectedDate);
+						selectedDate = null;
+					}
+					textField.setText(text);
 				}
 			}
 		});

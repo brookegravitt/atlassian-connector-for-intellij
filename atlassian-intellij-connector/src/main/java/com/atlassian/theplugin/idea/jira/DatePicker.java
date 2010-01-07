@@ -16,9 +16,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.intellij.openapi.ui.DialogWrapper;
-import net.sf.nachocalendar.CalendarFactory;
-import net.sf.nachocalendar.components.CalendarPanel;
-import net.sf.nachocalendar.model.DateSelectionModel;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JTextFieldDateEditor;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,16 +31,23 @@ import java.util.Date;
 /**
  * @author Jacek Jaroczynski
  */
-public class DatePicker extends DialogWrapper {
+public class DatePicker extends DialogWrapper implements CaretListener {
 
 	private JPanel panel = new JPanel();
 
-	private CalendarPanel calendar;
+	private JDateChooser dateChooser;
 	private JPanel bottomPanel = new JPanel();
+	private boolean allowEmptyDate;
 
 	public DatePicker(final String title, final Date dateToSelect) {
+		this(title, dateToSelect, false);
+	}
+
+	public DatePicker(final String title, final Date dateToSelect, boolean allowEmptyDate) {
 		super(false);
 		init();
+
+		this.allowEmptyDate = allowEmptyDate;
 
 		setTitle(title);
 
@@ -47,12 +57,9 @@ public class DatePicker extends DialogWrapper {
 	}
 
 	private void createCalendar(final Date dateToSelect) {
-		calendar = CalendarFactory.createCalendarPanel(1);
-		calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
-
+		// calculate time to midnight
 		Calendar nowcal = Calendar.getInstance();
 
-		// calculate time to midnight
 		nowcal.setTime(dateToSelect);
 		nowcal.set(Calendar.HOUR_OF_DAY, 0);
 		nowcal.set(Calendar.MINUTE, 0);
@@ -61,8 +68,9 @@ public class DatePicker extends DialogWrapper {
 
 		Date nowZeroZero = nowcal.getTime();
 
-		calendar.setDate(nowZeroZero);
-		calendar.setValue(nowZeroZero);
+		dateChooser = new JDateChooser(nowZeroZero);
+        JTextFieldDateEditor dateEditor = (JTextFieldDateEditor) dateChooser.getDateEditor();
+		dateEditor.addCaretListener(this);
 	}
 
 	private void createPanel() {
@@ -77,7 +85,7 @@ public class DatePicker extends DialogWrapper {
 		gbc.weightx = 1;
 		panel.add(new JLabel("Day", SwingConstants.CENTER), gbc);
 		gbc.gridy = 1;
-		panel.add(calendar, gbc);
+		panel.add(dateChooser, gbc);
 
 		gbc.gridy = 2;
 		panel.add(bottomPanel, gbc);
@@ -96,9 +104,24 @@ public class DatePicker extends DialogWrapper {
 	}
 
 	/**
-	 * @return Date selected in the calendar control
+	 * @return Date selected in the calendar control or null if empty
 	 */
+	@Nullable
 	public Date getSelectedDate() {
-		return (Date) calendar.getValue();
+		return dateChooser.getDate();
 	}
+
+	public void caretUpdate(CaretEvent event) {
+		boolean shouldEnableOkAction = true;
+		JTextFieldDateEditor dateEditor = (JTextFieldDateEditor) dateChooser.getDateEditor();
+
+		dateEditor.caretUpdate(event);
+		if (dateEditor.getForeground() == Color.RED)
+			shouldEnableOkAction = false;
+		if (!allowEmptyDate && dateEditor.getText().trim().equals(""))
+			shouldEnableOkAction = false;
+
+		setOKActionEnabled(shouldEnableOkAction);
+	}
+
 }
