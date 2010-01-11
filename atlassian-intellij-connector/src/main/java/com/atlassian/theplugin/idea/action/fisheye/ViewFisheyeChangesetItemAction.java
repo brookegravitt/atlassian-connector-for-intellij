@@ -48,7 +48,8 @@ public class ViewFisheyeChangesetItemAction extends AbstractFisheyeAction {
 		}
 		boolean enabled = false;
 		final Change[] changes = DataKeys.CHANGES.getData(event.getDataContext());
-		if (changes != null && changes.length == 1) {
+        Project project = IdeaHelper.getCurrentProject(event);
+		if (changes != null && changes.length == 1 && project != null && project.getBaseDir() != null)  {
 			if (changes[0].getAfterRevision() != null) {
 				if (event.getPresentation().isVisible()) {
 					enabled = true;

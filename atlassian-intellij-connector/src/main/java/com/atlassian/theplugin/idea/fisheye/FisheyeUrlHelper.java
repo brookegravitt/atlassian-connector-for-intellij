@@ -73,7 +73,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
 		final ProjectCfgManager projectCfg = IdeaHelper.getProjectCfgManager(project);
-		if (projectCfg == null) {
+		if (projectCfg == null || project.getBaseDir() == null || virtualFile == null) {
 			return null;
 		}
 
