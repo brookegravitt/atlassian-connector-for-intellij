@@ -17,15 +17,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -306,7 +298,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
                 }
 
                 if (openInIde != null && openInIde.size() > 0) {
-                    getCollectionForFilter(reviews, PredefinedFilter.OpenInIde);
                     for (ReviewAdapter reviewAdapter : openInIde) {
                         notifications.addAll(addReview(PredefinedFilter.OpenInIde, reviewAdapter, updateReason));
                     }

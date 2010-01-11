@@ -16,7 +16,8 @@ public class OpenReviewAction extends AbstractCrucibleToolbarAction {
         Project project = IdeaHelper.getCurrentProject(e);
         ReviewAdapter review = e.getData(Constants.REVIEW_KEY);
         if (review != null) {
-            IdeaHelper.getReviewDetailsToolWindow(project).showReview(review, false);
+            //IdeaHelper.getReviewDetailsToolWindow(project).showReview(review, false);
+            IdeaHelper.getReviewListToolWindowPanel(project).openReview(review, false);
             ContentDownloader.getInstance().downloadFilesContent(project, review);
         }
     }
