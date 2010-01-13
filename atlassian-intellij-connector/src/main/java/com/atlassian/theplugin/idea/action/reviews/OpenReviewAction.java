@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -18,7 +17,7 @@ public class OpenReviewAction extends AbstractCrucibleToolbarAction {
         if (review != null) {
             //IdeaHelper.getReviewDetailsToolWindow(project).showReview(review, false);
             IdeaHelper.getReviewListToolWindowPanel(project).openReview(review, false);
-            ContentDownloader.getInstance().downloadFilesContent(project, review);
+
         }
     }
 
