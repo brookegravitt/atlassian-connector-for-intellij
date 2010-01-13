@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
@@ -186,6 +187,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         CommentHighlighter.removeCommentsInEditors(project);
         reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
         IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review, retrieveDetails);
+        ContentDownloader.getInstance().downloadFilesContent(project, review);
     }
 
     public void closeReviewDetailsWindow(final AnActionEvent event) {
