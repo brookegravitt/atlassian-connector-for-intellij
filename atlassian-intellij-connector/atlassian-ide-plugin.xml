@@ -27,13 +27,21 @@
         <bamboo2>true</bamboo2>
         <isBamboo2M9>true</isBamboo2M9>
         <plans>
+          <plan key="ACC-CS" />
+          <plan key="ACC-DPL" />
+          <plan key="ACC-TST" />
           <plan key="INT-CS" />
           <plan key="INT-CLO" />
           <plan key="INT-TST" />
         </plans>
-        <isBamboo24>true</isBamboo24>
+        <isBamboo24>false</isBamboo24>
       </bamboo>
+      <jira>
+        <server-id>a906e883-830a-47d9-afc0-b2f21355d30d</server-id>
+        <name>Studio</name>
+        <url>https://studio.atlassian.com</url>
+        <dontUseBasicAuth>true</dontUseBasicAuth>
+      </jira>
     </servers>
-    <default-jira-server>2d0248e9-aae5-42f5-9c00-647ee553f6f8</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
