@@ -29,9 +29,6 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NotNull;
-import org.veryquick.embweb.HttpRequestHandler;
-import org.veryquick.embweb.Response;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -46,8 +43,12 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
-import javax.swing.Icon;
-import java.awt.EventQueue;
+import org.jetbrains.annotations.NotNull;
+import org.veryquick.embweb.HttpRequestHandler;
+import org.veryquick.embweb.Response;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -84,6 +85,12 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		} else if (method.equals("build")) {
 			writeIcon(response);
 			handleDirectClickThroughRequest(new OpenBuildRequest(parameters));
+		} else if (method.equals("stacktrace")) {
+			writeIcon(response);
+			handleDirectClickThroughRequest(new OpenStackTraceHandler(parameters));
+		} else if (method.equals("stacktraceEntry")) {
+			writeIcon(response);
+			handleDirectClickThroughRequest(new OpenStackTraceEntryHandler(parameters));
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
@@ -102,7 +109,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		response.setOk();
 	}
 
-	private static void bringIdeaToFront(final Project project) {
+	public static void bringIdeaToFront(final Project project) {
 		WindowManager.getInstance().getFrame(project).setVisible(true);
 
 		String osName = System.getProperty("os.name");
@@ -121,30 +128,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
 		WindowManager.getInstance().getFrame(project).requestFocus();
 		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
-	}
-
-	private abstract static class DirectClickThroughRequest implements Runnable {
-
-		protected static boolean isDefined(final String param) {
-			return param != null && param.length() > 0;
-		}
-
-		protected void reportProblem(final String problem) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					PluginUtil.getLogger().warn(problem);
-
-					// try to show message box in the first open IDEA window
-					if (ProjectManager.getInstance().getOpenProjects().length > 0) {
-						Project project = ProjectManager.getInstance().getOpenProjects()[0];
-						bringIdeaToFront(project);
-						Messages.showInfoMessage(project, problem, PluginUtil.PRODUCT_NAME);
-					} else {
-						Messages.showInfoMessage(problem, PluginUtil.PRODUCT_NAME);
-					}
-				}
-			});
-		}
 	}
 
 	private static final class OpenBuildRequest extends DirectClickThroughRequest {
