@@ -20,7 +20,7 @@ public class TaskListenerProxy1 implements InvocationHandler {
             Object taskListenerObj = java.lang.reflect.Proxy.newProxyInstance(
                     classLoader,
                     new Class[]{taskListenerInterface},
-                    new TaskListenerProxy(pluginTaskManager));
+                    new TaskListenerProxy1(pluginTaskManager));
             taskActivatedMethod = taskListenerInterface.getMethod("taskActivated",
                     classLoader.loadClass(PluginTaskManager.LOCAL_TASK_CLASS));
             return taskListenerObj;
@@ -32,7 +32,7 @@ public class TaskListenerProxy1 implements InvocationHandler {
     }
 
 
-    private TaskListenerProxy(PluginTaskManager projectTaskManager) {
+    private TaskListenerProxy1(PluginTaskManager projectTaskManager) {
 
         this.projectTaskManager = projectTaskManager;
     }
