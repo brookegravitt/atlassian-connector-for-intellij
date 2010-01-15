@@ -1,12 +1,14 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
+import com.atlassian.theplugin.util.PluginUtil;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
  * @author: pmaruszak
  */
-public class TaskListenerProxy implements InvocationHandler {
+public final class TaskListenerProxy implements InvocationHandler {
     public static final String TASK_LISTENER = "com.intellij.tasks.TaskListener";
     
     private static Method taskActivatedMethod;
@@ -25,7 +27,7 @@ public class TaskListenerProxy implements InvocationHandler {
                     classLoader.loadClass(PluginTaskManager.LOCAL_TASK_CLASS));
             return taskListenerObj;
         } catch (Exception e) {
-
+            PluginUtil.getLogger().error("Cannot instantiate class " + TaskListenerProxy.class.getName());
         }
 
         return null;
@@ -45,8 +47,7 @@ public class TaskListenerProxy implements InvocationHandler {
                System.out.print("task activated");
             }
         } catch (Exception e) {
-            throw new RuntimeException("unexpected invocation exception: " +
-                    e.getMessage());
+            throw new RuntimeException("unexpected invocation exception: " + e.getMessage());
         } finally {
             System.out.println("after method " + m.getName());
         }
