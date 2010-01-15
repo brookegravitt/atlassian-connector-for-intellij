@@ -633,7 +633,7 @@ public final class PluginTaskManager {
             setRepositories(newJiraReposList);
             return jiraRepository;
         } catch (Exception e) {
-
+            PluginUtil.getLogger().error("Cannot create JIRA repository");
         }
 
         return null;

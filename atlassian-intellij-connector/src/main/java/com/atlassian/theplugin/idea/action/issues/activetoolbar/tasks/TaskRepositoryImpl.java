@@ -111,7 +111,7 @@ public class TaskRepositoryImpl implements TaskRepository {
             Method getRepositoryTypeMethod = taskRepositoryClass.getMethod("getRepositoryType");
             Object repositoryTypeObj = getRepositoryTypeMethod.invoke(taskRepositoryObj);
             return new TaskRepositoryTypeImpl(repositoryTypeObj, classLoader);
-        } catch(Exception e) {
+        } catch (Exception e) {
              PluginUtil.getLogger().error("Cannot get repository type : " + e.getMessage());
         }
 
