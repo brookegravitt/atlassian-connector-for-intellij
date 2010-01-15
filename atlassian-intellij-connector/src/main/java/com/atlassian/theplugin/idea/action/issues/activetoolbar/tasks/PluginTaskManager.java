@@ -45,10 +45,7 @@ import javax.swing.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -58,7 +55,7 @@ public final class PluginTaskManager {
     private static final String TASK_MANAGER_IMPL_CLASS = "com.intellij.tasks.impl.TaskManagerImpl";
 
     private static final String TASK_CLASS = "com.intellij.tasks.Task";
-    private static final String LOCAL_TASK_CLASS = "com.intellij.tasks.LocalTask";
+    public static final String LOCAL_TASK_CLASS = "com.intellij.tasks.LocalTask";
     private static final String CHANGE_LIST_INFO = "com.intellij.tasks.ChangeListInfo";
     private static final String PLUGIN_ID_TASKS = "com.intellij.tasks";
 
@@ -81,9 +78,9 @@ public final class PluginTaskManager {
     private Object taskManagerObj;
     private boolean alreadyAdded = false;
     private static boolean actionsRegistered = false;
+    private Object taskListnerObj;
 
 
-    
     private PluginTaskManager(final Project project) {
         this.project = project;
 
@@ -97,6 +94,10 @@ public final class PluginTaskManager {
 
             taskManagerObj = getTaskManager();
             myListener = new TaskChangeListAdapter(project);
+            taskListnerObj = TaskListenerProxy.newInstance(classLoader, this);
+            if (taskListnerObj != null) {
+                addTaskListener(taskListnerObj);
+            }
         }
     }
 
@@ -133,6 +134,7 @@ public final class PluginTaskManager {
         return null;
     }
 
+
     private static AnAction[] getGroupActionsOrStubs(DefaultActionGroup group) {
         AnAction[] actions = new AnAction[0];
         ClassLoader classLoader = DefaultActionGroup.class.getClassLoader();
@@ -148,6 +150,32 @@ public final class PluginTaskManager {
         }
 
         return actions;
+    }
+
+    public void addTaskListener(Object taskListenerObj) {
+        try {
+        Method addTaskListenerMethod = taskManagerClass.getMethod("addTaskListener",
+                classLoader.loadClass(TaskListenerProxy.TASK_LISTENER));
+            addTaskListenerMethod.invoke(taskManagerObj, taskListenerObj);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error("TaskListener not added:" + e.getMessage());
+        }
+    }
+    public List<TaskRepository> getAllRepositories() {
+        Method getAllRepositoriesMethod = null;
+        List<TaskRepository> repos = new ArrayList<TaskRepository>();
+        try {
+            getAllRepositoriesMethod = taskManagerClass.getMethod("getAllRepositories");
+            Object[] repositoriesArrayObj = (Object[]) getAllRepositoriesMethod.invoke(taskManagerObj);
+
+            for (Object repo : repositoriesArrayObj) {
+                repos.add(new TaskRepositoryImpl(repo, classLoader));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return repos;
     }
 
     public void removeTaskFromIdea(LocalTask localTask) {
@@ -311,6 +339,7 @@ public final class PluginTaskManager {
 
 
     //assume that RO change list is default
+
     @Nullable
     LocalChangeList getDefaultChangeList() {
         String defaultChangeListNameNoVcs = "Default task";
@@ -456,38 +485,92 @@ public final class PluginTaskManager {
     }
 
 
-    private List<TaskRepositoryType> getAllRepositoryTypes() {
-        List<TaskRepositoryType> repoTypes = new ArrayList<TaskRepositoryType>();
-        try {
-            Method getAllRepositoryTypes = taskManagerClass.getMethod("getAllRepositoryTypes");
-            Object[] repoTypesObj = (Object[]) getAllRepositoryTypes.invoke(taskManagerObj);
-            if (repoTypesObj != null) {
-                for (Object r : repoTypesObj) {
-                    repoTypes.add(new JiraTaskRepositoryTypeImpl(r, classLoader));
-                }
-            }
-        } catch (Exception e) {
-            PluginUtil.getLogger().error("Cannot get all repository types", e);
-        }
+//    private List<TaskRepositoryType> getAllRepositoryTypes() {
+//        List<TaskRepositoryType> repoTypes = new ArrayList<TaskRepositoryType>();
+//        try {
+//            Method getAllRepositoryTypes = taskManagerClass.getMethod("getAllRepositoryTypes");
+//            Object[] repoTypesObj = (Object[]) getAllRepositoryTypes.invoke(taskManagerObj);
+//            if (repoTypesObj != null) {
+//                for (Object r : repoTypesObj) {
+//                    repoTypes.add(new JiraTaskRepositoryTypeImpl(r, classLoader));
+//                }
+//            }
+//        } catch (Exception e) {
+//            PluginUtil.getLogger().error("Cannot get all repository types", e);
+//        }
+//
+//        return repoTypes;
+//    }
 
-        return repoTypes;
-    }
-
-    private void setRepositories(Object repositories, TaskRepositoryType repositoryType) {
+    private void setRepositories(Object repositories) {
 
         try {
             Method setRepositories = null;
-            setRepositories = taskManagerClass.getMethod("setRepositories", List.class,
-                    ((TaskRepositoryType) repositoryType).getTaskRepositoryTypeClass());
+            setRepositories = taskManagerClass.getMethod("setRepositories", List.class);
             //public abstract void (java.util.List list, com.intellij.tasks.TaskRepositoryType taskrepositorytype);
-            setRepositories.invoke(taskManagerObj, repositories, repositoryType.getRepositoryTypeObj());
+            setRepositories.invoke(taskManagerObj, repositories);
         } catch (Exception e) {
             PluginUtil.getLogger().error("Cannot set repositories for repository type JIRA", e);
         }
 
     }
 
+//    //get or creates
+//    private JiraRepository getJiraRepository(final ServerData jiraServer) {
+//
+//        if (classLoader != null) {
+//            try {
+//                taskManagerClass = classLoader.loadClass(TASK_MANAGER_IMPL_CLASS);
+//
+//                if (taskManagerObj != null) {
+//                    //@todo we should check repository type and username password not to duplicate
+//                    for (TaskRepositoryType repositoryType : getAllRepositoryTypes()) {
+//
+//                        if (repositoryType != null && repositoryType.getName() != null
+//                                && repositoryType.getName().equalsIgnoreCase("JIRA")) {
+//                            List<TaskRepository> repositories = repositoryType.getRepositories();
+//
+//                            for (TaskRepository jiraRepo : repositories) {
+//
+//                                String url = jiraRepo.getUrl();
+//                                if (url != null && url.equalsIgnoreCase(jiraServer.getUrl())) {
+//                                    return (JiraRepository) jiraRepo;
+//                                }
+//                            }
+//
+//                            //create jira repo
+//                            JiraRepository jiraRepository = (JiraRepository) repositoryType.createRepository();
+//                            if (jiraRepository != null) {
+//                                jiraRepository.setUrl(jiraServer.getUrl());
+//                                jiraRepository.setUsername(jiraServer.getUsername());
+//                                jiraRepository.setPassword(jiraServer.getPassword());
+//                                jiraRepository.setShared(true);
+//                            }
+//
+//                            Class listClass = classLoader.loadClass("java.util.ArrayList");
+//                            List<Object> newJiraReposList = (List<Object>) listClass.newInstance();
+//                            for (TaskRepository repo : repositories) {
+//                                newJiraReposList.add(repo.getTaskRepositoryObj());
+//                            }
+//
+//                            newJiraReposList.add(jiraRepository.getTaskRepositoryObj());
+//
+//                            setRepositories(newJiraReposList, repositoryType);
+//                            return jiraRepository;
+//                        }
+//                    }
+//                }
+//
+//            } catch (Exception e) {
+//                PluginUtil.getLogger().error(CANNOT_GET_JIRA_REPOSITORY, e);
+//            }
+//        }
+//        return null;
+//    }
+
     //get or creates
+
+    @Nullable
     private JiraRepository getJiraRepository(final ServerData jiraServer) {
 
         if (classLoader != null) {
@@ -495,48 +578,64 @@ public final class PluginTaskManager {
                 taskManagerClass = classLoader.loadClass(TASK_MANAGER_IMPL_CLASS);
 
                 if (taskManagerObj != null) {
+                    Collection<TaskRepository> repositories = getAllRepositories();
                     //@todo we should check repository type and username password not to duplicate
-                    for (TaskRepositoryType repositoryType : getAllRepositoryTypes()) {
+                    if (repositories == null) {
+                        return null;
+                    }
+
+                    for (TaskRepository repository : repositories) {
+                        TaskRepositoryType repositoryType = repository.getRepositoryType();
 
                         if (repositoryType != null && repositoryType.getName() != null
                                 && repositoryType.getName().equalsIgnoreCase("JIRA")) {
-                            List<TaskRepository> repositories = repositoryType.getRepositories();
 
-                            for (TaskRepository jiraRepo : repositories) {
-
-                                String url = jiraRepo.getUrl();
-                                if (url != null && url.equalsIgnoreCase(jiraServer.getUrl())) {
-                                    return (JiraRepository) jiraRepo;
-                                }
+                            String url = repository.getUrl();
+                            if (url != null && url.equalsIgnoreCase(jiraServer.getUrl())) {
+                                return new JiraRepository(repository.getTaskRepositoryObj(), classLoader);
                             }
-
-                            //create jira repo
-                            JiraRepository jiraRepository = (JiraRepository) repositoryType.createRepository();
-                            if (jiraRepository != null) {
-                                jiraRepository.setUrl(jiraServer.getUrl());
-                                jiraRepository.setUsername(jiraServer.getUsername());
-                                jiraRepository.setPassword(jiraServer.getPassword());
-                                jiraRepository.setShared(true);
-                            }
-
-                            Class listClass = classLoader.loadClass("java.util.ArrayList");
-                            List<Object> newJiraReposList = (List<Object>) listClass.newInstance();
-                            for (TaskRepository repo : repositories) {
-                                newJiraReposList.add(repo.getTaskRepositoryObj());
-                            }
-
-                            newJiraReposList.add(jiraRepository.getTaskRepositoryObj());
-
-                            setRepositories(newJiraReposList, repositoryType);
-                            return jiraRepository;
                         }
                     }
+                    //create jira repo
+
                 }
+
 
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_GET_JIRA_REPOSITORY, e);
             }
         }
+        return createJiraRepository(jiraServer);
+    }
+
+    @Nullable
+    private JiraRepository createJiraRepository(final ServerData jiraServer) {
+        JiraTaskRepositoryTypeImpl rt =  JiraTaskRepositoryTypeImpl.createInstance(classLoader);
+        try {
+            JiraRepository jiraRepository = (JiraRepository) rt.createRepository();
+            if (jiraRepository != null) {
+                jiraRepository.setUrl(jiraServer.getUrl());
+                jiraRepository.setUsername(jiraServer.getUsername());
+                jiraRepository.setPassword(jiraServer.getPassword());
+                jiraRepository.setShared(true);
+            }
+
+            Class listClass = classLoader.loadClass("java.util.ArrayList");
+            List<Object> newJiraReposList = (List<Object>) listClass.newInstance();
+            List<TaskRepository> repositories = getAllRepositories();
+
+            for (TaskRepository repo : repositories) {
+                newJiraReposList.add(repo.getTaskRepositoryObj());
+            }
+
+            newJiraReposList.add(jiraRepository.getTaskRepositoryObj());
+
+            setRepositories(newJiraReposList);
+            return jiraRepository;
+        } catch (Exception e) {
+
+        }
+
         return null;
     }
 
@@ -602,7 +701,7 @@ public final class PluginTaskManager {
     }
 
     public static boolean isValidIdeaVersion() {
-        return false && IdeaVersionFacade.getInstance().isIdea9() && !IdeaVersionFacade.getInstance().isCommunityEdition();
+        return IdeaVersionFacade.getInstance().isIdea9() && !IdeaVersionFacade.getInstance().isCommunityEdition();
     }
 
     @Nullable

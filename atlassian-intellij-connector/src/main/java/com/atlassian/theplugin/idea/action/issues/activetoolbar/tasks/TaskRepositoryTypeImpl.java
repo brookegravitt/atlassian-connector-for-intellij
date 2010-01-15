@@ -25,6 +25,8 @@ public class TaskRepositoryTypeImpl implements TaskRepositoryType {
             PluginUtil.getLogger().error("Cannot load class " + TASK_REPOSITORY_TYPE_CLASS);
         }
     }
+
+    
     @Nullable
     public String getName() {
         if (taskRepositoryTypeClass != null) {

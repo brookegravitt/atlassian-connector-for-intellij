@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 
@@ -10,11 +11,13 @@ import java.lang.reflect.Method;
 public class TaskRepositoryImpl implements TaskRepository {
     private static final String TASK_REPOSITORY_CLASS = "com.intellij.tasks.TaskRepository";
     private final Object taskRepositoryObj;
+    private final ClassLoader classLoader;
     private Class taskRepositoryClass = null;
 
 
     public TaskRepositoryImpl(Object jiraRepositoryObj, ClassLoader classLoader) {
         this.taskRepositoryObj = jiraRepositoryObj;
+        this.classLoader = classLoader;
         try {
             this.taskRepositoryClass = classLoader.loadClass(TASK_REPOSITORY_CLASS);
         } catch (ClassNotFoundException e) {
@@ -83,7 +86,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     public void setShared(final boolean shared) {
-                if (taskRepositoryClass == null) {
+        if (taskRepositoryClass == null) {
             return;
         }
         try {
@@ -97,4 +100,24 @@ public class TaskRepositoryImpl implements TaskRepository {
     public Object getTaskRepositoryObj() {
         return taskRepositoryObj;
     }
+
+    @Nullable
+    public TaskRepositoryType getRepositoryType() {
+       if (taskRepositoryClass == null) {
+           return null;
+       }
+
+        try {
+            Method getRepositoryTypeMethod = taskRepositoryClass.getMethod("getRepositoryType");
+            Object repositoryTypeObj = getRepositoryTypeMethod.invoke(taskRepositoryObj);
+            return new TaskRepositoryTypeImpl(repositoryTypeObj, classLoader);
+        } catch(Exception e) {
+             PluginUtil.getLogger().error("Cannot get repository type : " + e.getMessage());
+        }
+
+        return null;
+    }
+
+
+
 }
