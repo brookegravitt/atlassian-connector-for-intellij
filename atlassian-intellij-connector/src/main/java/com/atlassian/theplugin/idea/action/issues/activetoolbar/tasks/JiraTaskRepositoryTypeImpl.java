@@ -47,6 +47,17 @@ public class JiraTaskRepositoryTypeImpl extends TaskRepositoryTypeImpl {
         return null;
     }
 
+    @Nullable
+    public static JiraTaskRepositoryTypeImpl createInstance(ClassLoader classLoader) {
+        try {
+         Class jiraRepositoryTypeClass = classLoader.loadClass(JIRA_REPOSITORY_TYPE_CLASS);
+        return new JiraTaskRepositoryTypeImpl(jiraRepositoryTypeClass.newInstance(), classLoader);
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
     @Override
    public List<TaskRepository> getRepositories() {
         List<TaskRepository> repositories = new ArrayList<TaskRepository>();

@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created by IntelliJ IDEA.
  * User: pmaruszak
@@ -20,4 +22,7 @@ public interface TaskRepository {
     void setShared(boolean shared);
 
     Object getTaskRepositoryObj();
+
+    @Nullable
+    TaskRepositoryType getRepositoryType();
 }
