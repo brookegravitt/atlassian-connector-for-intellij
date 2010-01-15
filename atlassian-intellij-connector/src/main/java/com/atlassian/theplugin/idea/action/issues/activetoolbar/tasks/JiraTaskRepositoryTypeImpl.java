@@ -53,7 +53,7 @@ public class JiraTaskRepositoryTypeImpl extends TaskRepositoryTypeImpl {
          Class jiraRepositoryTypeClass = classLoader.loadClass(JIRA_REPOSITORY_TYPE_CLASS);
         return new JiraTaskRepositoryTypeImpl(jiraRepositoryTypeClass.newInstance(), classLoader);
         } catch (Exception e) {
-
+            PluginUtil.getLogger().error("Cannot create class" + JiraTaskRepositoryTypeImpl.class.getName());
         }
         return null;
     }
