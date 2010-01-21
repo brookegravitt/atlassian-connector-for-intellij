@@ -32,6 +32,7 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
@@ -589,6 +590,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             openIssue(issueKey, server, true);
         } else {
             Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
+			ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, issueKey, ServerType.JIRA_SERVER);
         }
     }
 

@@ -19,6 +19,7 @@ import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -33,6 +34,7 @@ import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -265,6 +267,8 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			openBuild(buildKey, buildNumber, (BambooServerData) server);
 		} else {
 			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
+			// todo: buildNumber and server is lost:
+			ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, buildKey, ServerType.BAMBOO_SERVER);
 		}
 	}
 
