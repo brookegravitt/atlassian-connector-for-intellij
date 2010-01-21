@@ -379,8 +379,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             body.add(new JLabel(review.getAuthor().getDisplayName(), SwingConstants.LEFT), gbc2);
             gbc1.gridy++;
             gbc2.gridy++;
-            if (review.getModerator() != null)
-            {
+            if (review.getModerator() != null) {
                 body.add(new BoldLabel("Moderator"), gbc1);
                 body.add(new JLabel(review.getModerator().getDisplayName(), SwingConstants.LEFT), gbc2);
                 gbc1.gridy++;
