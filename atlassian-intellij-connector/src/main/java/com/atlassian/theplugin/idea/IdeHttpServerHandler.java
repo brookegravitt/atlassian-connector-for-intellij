@@ -183,7 +183,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				});
 			} else {
 				reportProblem("Cannot open build. Incorrect call. "
-						+ "At least one of the params is not proveded: build_key, build_number, server_url");
+						+ "At least one of the params is not provided: build_key, build_number, server_url");
 			}
 		}
 	}
