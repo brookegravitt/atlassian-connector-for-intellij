@@ -19,12 +19,7 @@ import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -359,7 +354,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			configuration = setDefaultProjectConfiguration();
 		}
 
-        
+
 		projectConfigurationPanel =
 				new ProjectConfigurationPanel(project, configuration.getClone(), IntelliJCrucibleServerFacade.getInstance(),
 						IntelliJFishEyeServerFacade.getInstance(), 
@@ -387,6 +382,17 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel.setData(projectCfgManager.getProjectConfiguration().getClone());
 		projectCfgManager.setDefaultCredentials(projectConfigurationPanel.getDefaultCredentials());
 		projectCfgManager.setDefaultCredentialsAsked(projectConfigurationPanel.isDefaultCredentialsAsked());
+	}
+
+	public void updateConfiguration(final ProjectConfiguration projectConfiguration) {
+		projectCfgManager.updateProjectConfiguration(projectConfiguration);
+		if (projectConfigurationPanel != null) {
+			projectConfigurationPanel.setData(projectCfgManager.getProjectConfiguration().getClone());
+		}
+	}
+
+	public ProjectConfiguration getProjectConfigurationClone() {
+		return projectCfgManager.getProjectConfiguration().getClone();
 	}
 
 	public void reset() {
