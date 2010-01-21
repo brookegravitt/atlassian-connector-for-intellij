@@ -22,9 +22,7 @@ import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
@@ -38,6 +36,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.*;
@@ -47,6 +46,7 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -567,7 +567,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
      * @return review
      */
     public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
-        ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
+        final ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
 
         if (server != null) {
             // todo uncomment that if local review contains details
@@ -597,11 +597,45 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
                 });
             }
         } else {
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
-                            PluginUtil.PRODUCT_NAME);
-                }
+			final Project p = project;
+
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
+							PluginUtil.PRODUCT_NAME);
+
+					if (p != null) {
+						ProjectConfigurationComponent component = p.getComponent(ProjectConfigurationComponent.class);
+
+						ProjectConfiguration configurationClone = component.getProjectConfigurationClone();
+						
+						ServerIdImpl id = new ServerIdImpl();
+						String name = serverUrl;
+						if (name.contains("://")) {
+							name = name.substring(name.indexOf("://") + 3);
+							if (name.contains("/")) {
+								name = name.substring(0, name.indexOf("/"));
+							}
+						}
+						ServerCfg serverCfg = new CrucibleServerCfg(false, name, id);
+						serverCfg.setUrl(serverUrl);
+						serverCfg.setUseDefaultCredentials(true);
+						serverCfg.setEnabled(true);
+
+						configurationClone.getServers().add(serverCfg);
+						component.updateConfiguration(configurationClone);
+						component.setSelectedServer(new ServerData(serverCfg, new UserCfg()));
+
+						final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
+						if (settingsUtil != null) {
+							if (settingsUtil.editConfigurable(p, component)) {
+								openReviewWithDetails(reviewKey, serverUrl);
+							} else {
+								//todo: remove recently added serverCfg... (because user clicked 'cancel' button)
+							}
+						}
+					}
+				}
             });
         }
         return null;
