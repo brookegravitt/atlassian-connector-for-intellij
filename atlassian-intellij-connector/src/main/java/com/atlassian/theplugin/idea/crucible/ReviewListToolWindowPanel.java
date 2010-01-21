@@ -21,6 +21,7 @@ import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -597,44 +598,13 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
                 });
             }
         } else {
-			final Project p = project;
-
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
 							PluginUtil.PRODUCT_NAME);
 
-					if (p != null) {
-						ProjectConfigurationComponent component = p.getComponent(ProjectConfigurationComponent.class);
-
-						ProjectConfiguration configurationClone = component.getProjectConfigurationClone();
-						
-						ServerIdImpl id = new ServerIdImpl();
-						String name = serverUrl;
-						if (name.contains("://")) {
-							name = name.substring(name.indexOf("://") + 3);
-							if (name.contains("/")) {
-								name = name.substring(0, name.indexOf("/"));
-							}
-						}
-						ServerCfg serverCfg = new CrucibleServerCfg(false, name, id);
-						serverCfg.setUrl(serverUrl);
-						serverCfg.setUseDefaultCredentials(true);
-						serverCfg.setEnabled(true);
-
-						configurationClone.getServers().add(serverCfg);
-						component.updateConfiguration(configurationClone);
-						component.setSelectedServer(new ServerData(serverCfg, new UserCfg()));
-
-						final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
-						if (settingsUtil != null) {
-							if (settingsUtil.editConfigurable(p, component)) {
-								openReviewWithDetails(reviewKey, serverUrl);
-							} else {
-								//todo: remove recently added serverCfg... (because user clicked 'cancel' button)
-							}
-						}
-					}
+					ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, reviewKey,
+							ServerType.CRUCIBLE_SERVER);
 				}
             });
         }

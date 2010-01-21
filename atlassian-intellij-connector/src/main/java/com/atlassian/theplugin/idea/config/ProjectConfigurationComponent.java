@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
@@ -32,6 +33,7 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -393,6 +395,76 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public ProjectConfiguration getProjectConfigurationClone() {
 		return projectCfgManager.getProjectConfiguration().getClone();
+	}
+
+	// pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
+	static public void addDirectClickedServer(final Project project, final String serverUrl, final String artifactKey,
+			ServerType serverType) {
+		ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
+
+		ProjectConfiguration configurationClone = component.getProjectConfigurationClone();
+
+		ServerIdImpl id = new ServerIdImpl();
+		String name = serverUrl;
+		if (name.contains("://")) {
+			name = name.substring(name.indexOf("://") + 3);
+			if (name.contains("/")) {
+				name = name.substring(0, name.indexOf("/"));
+			}
+		}
+		ServerCfg serverCfg = null;
+
+		//beautiful switch :/
+		switch (serverType) {
+			case BAMBOO_SERVER:
+				serverCfg = new BambooServerCfg(name, id);
+				break;
+			case CRUCIBLE_SERVER:
+				serverCfg = new CrucibleServerCfg(name, id);
+				break;
+			case JIRA_SERVER:
+				serverCfg = new JiraServerCfg(name, id, true);
+				break;
+			case FISHEYE_SERVER:
+				serverCfg = new FishEyeServerCfg(name, id);
+				break;
+			case JIRA_STUDIO_SERVER:
+				break;
+			default:
+				throw new AssertionError("switch not implemented for [" + serverType + "]");
+		}
+
+		serverCfg.setUrl(serverUrl);
+		serverCfg.setUseDefaultCredentials(true);
+
+		configurationClone.getServers().add(serverCfg);
+		component.updateConfiguration(configurationClone);
+		component.setSelectedServer(new ServerData(serverCfg, new UserCfg()));
+
+		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
+		if (settingsUtil != null) {
+			if (settingsUtil.editConfigurable(project, component)) {
+				switch (serverType) {
+					case BAMBOO_SERVER:
+						//todo:
+						break;
+					case CRUCIBLE_SERVER:
+						IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(artifactKey, serverUrl);
+						break;
+					case JIRA_SERVER:
+						IdeaHelper.getIssueListToolWindowPanel(project).openIssue(artifactKey, serverUrl);
+						break;
+//					case FISHEYE_SERVER:
+//						break;
+//					case JIRA_STUDIO_SERVER:
+//						break;
+					default:
+						throw new AssertionError("switch not implemented for [" + serverType + "]");
+				}
+			} else {
+				//todo: remove recently added serverCfg... (because user clicked 'cancel' button)
+			}
+		}
 	}
 
 	public void reset() {
