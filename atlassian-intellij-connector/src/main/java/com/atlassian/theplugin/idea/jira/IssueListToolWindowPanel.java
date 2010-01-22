@@ -590,7 +590,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             openIssue(issueKey, server, true);
         } else {
             Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
-			ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, issueKey, ServerType.JIRA_SERVER);
+			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.JIRA_SERVER)) {
+				openIssue(issueKey, serverUrl);
+			}
         }
     }
 

@@ -397,9 +397,13 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return projectCfgManager.getProjectConfiguration().getClone();
 	}
 
-	// pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
-	static public void addDirectClickedServer(final Project project, final String serverUrl, final String artifactKey,
-			ServerType serverType) {
+	/**
+	 * Method for adding auto-filled server configuration based on parameters passed by directClickThroughRequest
+	 *
+	 * @return true if user clicked accept, false if clicked cancel
+	 * @remark pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
+	 */
+	static public boolean addDirectClickedServer(final Project project, final String serverUrl, ServerType serverType) {
 		ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
 
 		ProjectConfiguration configurationClone = component.getProjectConfigurationClone();
@@ -414,7 +418,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 		ServerCfg serverCfg = null;
 
-		//beautiful switch :/
+		//beautiful switch: :/
 		switch (serverType) {
 			case BAMBOO_SERVER:
 				serverCfg = new BambooServerCfg(name, id);
@@ -443,28 +447,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 		if (settingsUtil != null) {
-			if (settingsUtil.editConfigurable(project, component)) {
-				switch (serverType) {
-					case BAMBOO_SERVER:
-						//todo:
-						break;
-					case CRUCIBLE_SERVER:
-						IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(artifactKey, serverUrl);
-						break;
-					case JIRA_SERVER:
-						IdeaHelper.getIssueListToolWindowPanel(project).openIssue(artifactKey, serverUrl);
-						break;
-//					case FISHEYE_SERVER:
-//						break;
-//					case JIRA_STUDIO_SERVER:
-//						break;
-					default:
-						throw new AssertionError("switch not implemented for [" + serverType + "]");
-				}
-			} else {
-				//todo: remove recently added serverCfg... (because user clicked 'cancel' button)
-			}
+			return settingsUtil.editConfigurable(project, component);
 		}
+		return false;
 	}
 
 	public void reset() {
