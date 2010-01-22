@@ -63,10 +63,8 @@ import java.util.Set;
  */
 class IdeHttpServerHandler implements HttpRequestHandler {
 
-	private Set<String> supportedCapabilities = MiscUtil.buildHashSet("stacktrace", "stacktraceEntry");
-
-
-	private Map<String, AbstractDirectClickThroughHandler> registeredHandlers = new HashMap<String, AbstractDirectClickThroughHandler>() {{
+	private final Map<String, AbstractDirectClickThroughHandler> registeredHandlers
+			= new HashMap<String, AbstractDirectClickThroughHandler>() {{
 		put("file", new OpenFileHandler());
 		put("issue", new OpenIssueHandler());
 		put("build", new OpenBuildHandler());
