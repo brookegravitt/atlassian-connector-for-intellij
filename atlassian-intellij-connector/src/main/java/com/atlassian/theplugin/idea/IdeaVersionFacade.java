@@ -9,6 +9,7 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.ExecutionConsole;
 import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.execution.ui.RunContentManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
@@ -535,7 +536,7 @@ public final class IdeaVersionFacade {
 
 		// as reflections
 		// ExecutionManager.getInstance(project).getContentManager().showRunContent(runner, descriptor);
-		final Method showRunContentMethod = ExecutionManager.class.getMethod("showRunContent",
+		final Method showRunContentMethod = RunContentManager.class.getMethod("showRunContent",
 				javaProgramRunnerClass, RunContentDescriptor.class);
 		showRunContentMethod.invoke(ExecutionManager.getInstance(project).getContentManager(), javaProgramRunner, descriptor);
 
