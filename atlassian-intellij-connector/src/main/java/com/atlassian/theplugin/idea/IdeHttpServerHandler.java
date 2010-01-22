@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -64,7 +63,7 @@ import java.util.Set;
 class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private final Map<String, AbstractDirectClickThroughHandler> registeredHandlers
-			= new HashMap<String, AbstractDirectClickThroughHandler>() {{
+			= new HashMap<String, AbstractDirectClickThroughHandler>() { {
 		put("file", new OpenFileHandler());
 		put("issue", new OpenIssueHandler());
 		put("build", new OpenBuildHandler());
