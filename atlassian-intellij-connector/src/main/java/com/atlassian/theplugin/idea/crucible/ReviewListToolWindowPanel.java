@@ -603,8 +603,10 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 					Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
 							PluginUtil.PRODUCT_NAME);
 
-					ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, reviewKey,
-							ServerType.CRUCIBLE_SERVER);
+					if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.CRUCIBLE_SERVER)) {
+						//todo: do it as a background task...
+						openReviewWithDetails(reviewKey, serverUrl);
+					}
 				}
             });
         }

@@ -267,8 +267,9 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			openBuild(buildKey, buildNumber, (BambooServerData) server);
 		} else {
 			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
-			// todo: buildNumber and server is lost:
-			ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, buildKey, ServerType.BAMBOO_SERVER);
+			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.BAMBOO_SERVER)) {
+				openBuild(buildKey, buildNumber, serverUrl);
+			}
 		}
 	}
 
