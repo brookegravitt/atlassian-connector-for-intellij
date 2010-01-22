@@ -403,7 +403,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	 * @return true if user clicked accept, false if clicked cancel
 	 * @remark pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
 	 */
-	static public boolean addDirectClickedServer(final Project project, final String serverUrl, ServerType serverType) {
+	public static boolean addDirectClickedServer(final Project project, final String serverUrl, ServerType serverType) {
 		ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
 
 		ProjectConfiguration configurationClone = component.getProjectConfigurationClone();

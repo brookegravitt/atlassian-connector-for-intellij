@@ -547,7 +547,8 @@ public final class IdeaVersionFacade {
 		public MyConsolePanel(ExecutionConsole consoleView, ActionGroup toolbarActions) {
 			super(new BorderLayout());
 			JPanel toolbarPanel = new JPanel(new BorderLayout());
-			toolbarPanel.add(ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, false).getComponent());
+			toolbarPanel.add(ActionManager.getInstance()
+					.createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, false).getComponent());
 			add(toolbarPanel, BorderLayout.WEST);
 			add(consoleView.getComponent(), BorderLayout.CENTER);
 		}
