@@ -23,12 +23,14 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -51,6 +53,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +62,24 @@ import java.util.Set;
  * @author Jacek Jaroczynski
  */
 class IdeHttpServerHandler implements HttpRequestHandler {
+
+	private Set<String> supportedCapabilities = MiscUtil.buildHashSet("stacktrace", "stacktraceEntry");
+
+
+	private Map<String, AbstractDirectClickThroughHandler> registeredHandlers = new HashMap<String, AbstractDirectClickThroughHandler>() {{
+		put("file", new OpenFileHandler());
+		put("issue", new OpenIssueHandler());
+		put("build", new OpenBuildHandler());
+		put("stacktraceEntry", new OpenStackTraceEntryHandler());
+		put("stacktrace", new OpenStackTraceHandler());
+		put("review", new OpenReviewHandler());
+		put("icon", new AbstractDirectClickThroughHandler() {
+			@Override
+			public void handle(Map<String, String> parameters) {
+			}
+		});
+	}};
+
 	private final byte[] icon;
 
 	public IdeHttpServerHandler(final byte[] iconArray) {
@@ -67,41 +88,33 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	public Response handleRequest(final Type type, final String url, final Map<String, String> parameters) {
 
-		final String method = StringUtil.removeTrailingSlashes(url);
+		final String method = StringUtil.removeLeadingAndTrailingSlashes(url);
+		final Response response = new Response();
 
-		Response response = new Response();
+		if ("supportsCapabilities".equals(method)) {
+			if (registeredHandlers.keySet().containsAll(parameters.keySet())) {
+				writeIcon(response);
+			} else {
+				response.setNoContent();
+			}
+			return response;
+		}
 
-		if (method.equals("icon")) {
+		final AbstractDirectClickThroughHandler clickThroughHandler = registeredHandlers.get(method);
+		if (clickThroughHandler != null) {
 			writeIcon(response);
-		} else if (method.equals("file")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenFileRequest(parameters));
-		} else if (method.equals("issue")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenIssueRequest(parameters));
-		} else if (method.equals("review")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenReviewRequest(parameters));
-		} else if (method.equals("build")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenBuildRequest(parameters));
-		} else if (method.equals("stacktrace")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenStackTraceHandler(parameters));
-		} else if (method.equals("stacktraceEntry")) {
-			writeIcon(response);
-			handleDirectClickThroughRequest(new OpenStackTraceEntryHandler(parameters));
+			ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+				public void run() {
+					clickThroughHandler.handle(parameters);
+				}
+			});
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
 		}
-
 		return response;
 	}
 
-	private void handleDirectClickThroughRequest(final DirectClickThroughRequest request) {
-		new Thread(request).start();
-	}
 
 	private void writeIcon(final Response response) {
 		response.setContentType("image/png");
@@ -130,14 +143,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
 	}
 
-	private static final class OpenBuildRequest extends DirectClickThroughRequest {
-		private final Map<String, String> parameters;
+	private static final class OpenBuildHandler extends AbstractDirectClickThroughHandler {
 
-		private OpenBuildRequest(final Map<String, String> parameters) {
-			this.parameters = parameters;
-		}
-
-		public void run() {
+		public void handle(final Map<String, String> parameters) {
 			final String buildKey = parameters.get("build_key");
 			String buildNumber = parameters.get("build_number");
 			final String serverUrl = parameters.get("server_url");
@@ -188,14 +196,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static class OpenIssueRequest extends DirectClickThroughRequest {
-		private final Map<String, String> parameters;
+	private static class OpenIssueHandler extends AbstractDirectClickThroughHandler {
 
-		public OpenIssueRequest(final Map<String, String> parameters) {
-			this.parameters = parameters;
-		}
-
-		public void run() {
+		public void handle(final Map<String, String> parameters) {
 			final String issueKey = parameters.get("issue_key");
 			final String serverUrl = parameters.get("server_url");
 			if (isDefined(issueKey) && isDefined(serverUrl)) {
@@ -220,14 +223,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static class OpenFileRequest extends DirectClickThroughRequest {
-		private final Map<String, String> parameters;
+	private static class OpenFileHandler extends AbstractDirectClickThroughHandler {
 
-		public OpenFileRequest(final Map<String, String> parameters) {
-			this.parameters = parameters;
-		}
-
-		public void run() {
+		public void handle(final Map<String, String> parameters) {
 			final String file = StringUtil.removePrefixSlashes(parameters.get("file"));
 			final String path = StringUtil.removeSuffixSlashes(parameters.get("path"));
 			final String vcsRoot = StringUtil.removeSuffixSlashes(parameters.get("vcs_root"));
@@ -250,13 +248,13 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				String filePath = (path == null ? file : path + "/" + file);
 				// find file by name (and path if provided)
 				Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
-                if (psiFiles == null || psiFiles.size() == 0) {
-                    psiFiles = new ArrayList<PsiFile>();
-                    PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
-                    if (psiFile != null) {
-                        psiFiles.add(psiFile);
-                    }
-                }
+				if (psiFiles == null || psiFiles.size() == 0) {
+					psiFiles = new ArrayList<PsiFile>();
+					PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
+					if (psiFile != null) {
+						psiFiles.add(psiFile);
+					}
+				}
 
 				// narrow found list of files by VCS
 				if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
@@ -358,14 +356,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static class OpenReviewRequest extends DirectClickThroughRequest {
-		private final Map<String, String> parameters;
+	private static class OpenReviewHandler extends AbstractDirectClickThroughHandler {
 
-		public OpenReviewRequest(final Map<String, String> parameters) {
-			this.parameters = parameters;
-		}
-
-		public void run() {
+		public void handle(final Map<String, String> parameters) {
 			final String reviewKey = parameters.get("review_key");
 			final String serverUrl = parameters.get("server_url");
 			final String filePath = parameters.get("file_path");

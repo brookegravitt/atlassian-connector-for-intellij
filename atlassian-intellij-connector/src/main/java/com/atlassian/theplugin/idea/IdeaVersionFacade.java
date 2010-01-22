@@ -1,9 +1,17 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
+import com.intellij.execution.ui.ConsoleView;
+import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.ui.ExecutionConsole;
+import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -431,4 +439,117 @@ public final class IdeaVersionFacade {
     public boolean isCommunityEdition() {
         return communityEdition;
     }
+
+	public boolean openStackTrace(@NotNull Project project, String stracktrace, String title) {
+		if (isIdea8 || isIdea9) {
+			try {
+				final Class<?> analyzeStackTraceUtil = Class.forName("com.intellij.unscramble.AnalyzeStacktraceUtil");
+				for (Method method : analyzeStackTraceUtil.getMethods()) {
+					if ("addConsole".equals(method.getName())) {
+						final ConsoleView consoleView = (ConsoleView) method.invoke(null, project, null, title);
+						final Method printStackTraceMethod
+								= analyzeStackTraceUtil.getMethod("printStacktrace", ConsoleView.class, String.class);
+						printStackTraceMethod.invoke(null, consoleView, stracktrace);
+						return true;
+					}
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				final ConsoleView consoleView = createConsoleView(project, title);
+				printStacktrace(consoleView, stracktrace);
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+
+		}
+
+		return false;
+	}
+
+
+	public static void printStacktrace(final ConsoleView consoleView, final String unscrambledTrace) {
+		consoleView.clear();
+		consoleView.print(unscrambledTrace + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+		consoleView.performWhenNoDeferredOutput(
+				new Runnable() {
+					public void run() {
+						consoleView.scrollTo(0);
+					}
+				}
+		);
+	}
+
+
+
+	private static ConsoleView createConsoleView(Project project, String tabTitle) throws Exception {
+		ConsoleView consoleview = TextConsoleBuilderFactory.getInstance().createBuilder(project).getConsole();
+		// this code as reflections (sucks terribly, but as a guest developer I have no time to improve m2 build
+		// infrastructure for the whole project to support IntelliJ version specific dependencies
+		//
+		//  JavaProgramRunner runner = ExecutionRegistry.getInstance().getDefaultRunner();
+		//
+		final Class<?> executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
+		final Method getInstanceMethod = executionRegistryClass.getMethod("getInstance");
+		final Object executionRegistry = getInstanceMethod.invoke(null);
+		final Method getDefaultRunnerMethod = executionRegistryClass.getMethod("getDefaultRunner");
+		final Object javaProgramRunner = getDefaultRunnerMethod.invoke(executionRegistry);
+
+		DefaultActionGroup toolbarActions = new DefaultActionGroup();
+		MyConsolePanel consoleComponent = new MyConsolePanel(consoleview, toolbarActions);
+		RunContentDescriptor descriptor = new RunContentDescriptor(consoleview, null, consoleComponent, tabTitle) {
+			public boolean isContentReuseProhibited() {
+				return true;
+			}
+		};
+
+		// such code as reflections
+		// final CloseAction closeAction = new CloseAction(runner, descriptor, project);
+		//
+		final Class<?> closeActionClass = Class.forName("com.intellij.execution.ui.CloseAction");
+		final Class<?> javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
+
+		final Constructor<?> constructor = closeActionClass.getConstructor(
+				javaProgramRunnerClass, RunContentDescriptor.class, Project.class);
+		final AnAction closeAction = (AnAction) constructor.newInstance(javaProgramRunner, descriptor, project);
+
+		// such code as reflections
+		// consoleview.createUpDownStacktraceActions();
+		//
+		toolbarActions.add(closeAction);
+		final Method createUpDownStacktraceActionsMethod = ConsoleView.class.getMethod("createUpDownStacktraceActions");
+		AnAction[] defaultActions = (AnAction[]) createUpDownStacktraceActionsMethod.invoke(consoleview);  
+		for (AnAction action : defaultActions) {
+			toolbarActions.add(action);
+		}
+
+		// as reflections
+		// ExecutionManager.getInstance(project).getContentManager().showRunContent(runner, descriptor);
+		final Method showRunContentMethod = ExecutionManager.class.getMethod("showRunContent",
+				javaProgramRunnerClass, RunContentDescriptor.class);
+		showRunContentMethod.invoke(ExecutionManager.getInstance(project).getContentManager(), javaProgramRunner, descriptor);
+
+		return consoleview;
+	}
+
+	private static final class MyConsolePanel extends JPanel {
+		public MyConsolePanel(ExecutionConsole consoleView, ActionGroup toolbarActions) {
+			super(new BorderLayout());
+			JPanel toolbarPanel = new JPanel(new BorderLayout());
+			toolbarPanel.add(ActionManager.getInstance().createActionToolbar(ActionPlaces.UNKNOWN, toolbarActions, false).getComponent());
+			add(toolbarPanel, BorderLayout.WEST);
+			add(consoleView.getComponent(), BorderLayout.CENTER);
+		}
+	}
+
 }

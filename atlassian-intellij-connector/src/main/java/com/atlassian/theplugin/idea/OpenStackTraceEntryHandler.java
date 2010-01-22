@@ -16,15 +16,9 @@ import java.util.Map;
 /**
  * @author Wojciech Seliga
  */
-public class OpenStackTraceEntryHandler extends DirectClickThroughRequest {
+public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandler {
 
-	private final Map<String, String> parameters;
-
-	public OpenStackTraceEntryHandler(final Map<String, String> parameters) {
-		this.parameters = parameters;
-	}
-
-	public void run() {
+	public void handle(final Map<String, String> parameters) {
 		final String stacktraceEntry = parameters.get("stacktraceEntry");
 		if (stacktraceEntry == null) {
 			reportProblem("Cannot open stacktrace. Incorrect call with params [" + parameters + "]");
