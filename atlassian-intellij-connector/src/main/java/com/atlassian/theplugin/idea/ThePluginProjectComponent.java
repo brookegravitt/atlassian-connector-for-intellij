@@ -326,7 +326,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 
 
-        PluginTaskManager.getInstance(project).addChangeListListener();        
+
 
 	}
 
@@ -502,8 +502,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
 				changesToolBar.remove(action);
 			}
-
-            PluginTaskManager.getInstance(project).removeChangeListListener();
 
 			created = false;
 		}

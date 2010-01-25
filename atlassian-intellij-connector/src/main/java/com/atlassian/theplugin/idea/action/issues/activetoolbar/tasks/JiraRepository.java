@@ -13,6 +13,7 @@ public class JiraRepository extends TaskRepositoryImpl {
     private final Object jiraRepositoryObj;
     private final ClassLoader classLoader;
     private Class jiraRepositoryClass = null;
+
     public JiraRepository(Object jiraRepositoryObj, ClassLoader classLoader) {
         super(jiraRepositoryObj, classLoader);
 
@@ -31,8 +32,13 @@ public class JiraRepository extends TaskRepositoryImpl {
         Method findTask = null;
         try {
             findTask = jiraRepositoryClass.getMethod("findTask", String.class);
-            Object foundTaskObj = findTask.invoke(jiraRepositoryObj, taskId);
-            return new LocalTaskImpl(foundTaskObj, classLoader);
+            if (findTask != null && jiraRepositoryObj != null) {
+                Object foundTaskObj = findTask.invoke(jiraRepositoryObj, taskId);
+
+                if (foundTaskObj != null) {
+                    return new LocalTaskImpl(foundTaskObj, classLoader);
+                }
+            }
         } catch (Exception e) {
             PluginUtil.getLogger().error("Cannot find task", e);
         }

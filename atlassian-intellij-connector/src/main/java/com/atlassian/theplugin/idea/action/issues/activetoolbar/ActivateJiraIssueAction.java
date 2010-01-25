@@ -17,12 +17,16 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import org.joda.time.DateTime;
+
+import javax.swing.*;
 
 /**
  * User: pmaruszak
@@ -30,16 +34,29 @@ import org.joda.time.DateTime;
 public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(final AnActionEvent event) {
-		JiraIssueAdapter selectedIssue;
-		selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+		final JiraIssueAdapter selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (selectedIssue != null) {
 			if (!isSelectedIssueActive(event, selectedIssue)) {
 				if (selectedIssue.getJiraServerData() != null) {
-					ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
+					final ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
 							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
-                    Project project = IdeaHelper.getCurrentProject(event);
-					ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData(), null);
+                    final Project project = IdeaHelper.getCurrentProject(event);
+					if (!PluginTaskManager.isValidIdeaVersion()) {
+                        SwingUtilities.invokeLater(new Runnable(){
+                            public void run() {
+                                ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData(), null);
+                            }
+                        });
+
+                    } else {
+                        ApplicationManager.getApplication().invokeLater(new Runnable(){
+                            public void run() {
+                                PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).activateLocalTask(newActiveIssue);
+                            }
+                        });
+
+                    }
 				}
 			} else {
 				DeactivateJiraIssuePopupAction.runDeactivateTask(event);

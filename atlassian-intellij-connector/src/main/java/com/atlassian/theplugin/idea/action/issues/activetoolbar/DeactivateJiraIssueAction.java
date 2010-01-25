@@ -15,12 +15,11 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.DeactivateIssueRunnable;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
-import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
@@ -34,62 +33,21 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
     }
 
     public static void runDeactivateTask(final AnActionEvent event) {
+        final Project currentProject = IdeaHelper.getCurrentProject(event);
 
+        if (!PluginTaskManager.isValidIdeaVersion()) {
+            SwingUtilities.invokeLater(new DeactivateIssueRunnable(currentProject));
+        } else {
+            ApplicationManager.getApplication().invokeLater(new Runnable(){
+                public void run() {
 
-        SwingUtilities.invokeLater(new LocalRunnable(event));
-
-//                //success is invoked only if actions are selected (ie. stop progress action)
-//                if (isOk && conf != null) {
-//                    conf.setActiveJiraIssuee(null);
-//                    PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-//                }
-    }
-
-    private static class LocalRunnable implements Runnable {
-        private final Project project;
-        private final JiraWorkspaceConfiguration conf;
-        private final AnActionEvent event;
-
-        public LocalRunnable(AnActionEvent event) {
-
-            this.event = event;
-            conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-            project = IdeaHelper.getCurrentProject(event);
-        }
-
-
-        public void run() {
-            ActiveIssueUtils.deactivate(event, new ActiveIssueResultHandler() {
-                public void success() {
-                    if (conf != null) {
-                        conf.setActiveJiraIssuee(null);
-                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-                    }
-                }
-
-                public void failure(final Throwable problem) {
-                    if (conf != null) {
-                        conf.setActiveJiraIssuee(null);
-                        PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).deactivateToDefaultTask();
-                    }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            if (project != null && !project.isDisposed()) {
-                                DialogWithDetails.showExceptionDialog(
-                                        project,
-                                        "Issue Deactivated Locally but Failed to Deactivate Issue remotely.", problem);
-                            }
-                        }
-                    });
-                }
-
-                public void cancel(String problem) {
-                    //deactivation cancelled
-                    PluginTaskManager.getInstance(project).addChangeListListener();
+                    PluginTaskManager.getInstance(currentProject).deactivateToDefaultTask();
                 }
             });
         }
     }
+
+
 
     public void onUpdate(final AnActionEvent event) {
     }

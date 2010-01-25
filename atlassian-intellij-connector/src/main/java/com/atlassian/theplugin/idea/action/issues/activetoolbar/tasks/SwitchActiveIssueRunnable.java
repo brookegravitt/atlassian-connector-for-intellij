@@ -11,97 +11,75 @@ import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * User: pmaruszak
  */
-   public class SwitchActiveIssueRunnable implements Runnable {
+public class SwitchActiveIssueRunnable implements Runnable {
     private final Project project;
-    private final ChangeList newDefaultList;
+    private final LocalTask activatedLocalTask;
 
-        public SwitchActiveIssueRunnable(Project project, ChangeList newDefaultList) {
-            this.project = project;
-            this.newDefaultList = newDefaultList;
+    public SwitchActiveIssueRunnable(Project project, LocalTask activatedLocalTask) {
+        this.project = project;
+
+        this.activatedLocalTask = activatedLocalTask;
+    }
+
+    public void run() {
+        final PluginTaskManager taskManager = PluginTaskManager.getInstance(project);
+        String activeTaskUrl = activatedLocalTask.getIssueUrl();
+        JiraIssueAdapter jiraActiveIssueAdapater = null;
+
+
+        if (activeTaskUrl == null) {
+            activeTaskUrl = taskManager.getIssueUrl(activatedLocalTask.getId());
         }
 
-        public void run() {
-            final PluginTaskManager taskManager = PluginTaskManager.getInstance(project);
-            LocalTask activeTask = taskManager.findTaskByChangeList(newDefaultList);
-            String activeTaskUrl =  activeTask.getIssueUrl();
-
-            if (activeTask == null) {
+        try {
+            //the same issue activated == omit
+             jiraActiveIssueAdapater = ActiveIssueUtils.getJIRAIssue(project);
+            if (activeTaskUrl != null && jiraActiveIssueAdapater != null
+                    && activeTaskUrl.equals(jiraActiveIssueAdapater.getIssueUrl())) {
                 return;
             }
-            //removeChangeListListener();
-
-            //switched to default task so silentDeactivate issue
-            if (taskManager.getLocalChangeListId(newDefaultList) != null
-                    && taskManager.getLocalChangeListId(taskManager.getDefaultChangeList()) != null
-                    && taskManager.getLocalChangeListId(newDefaultList)
-                    .equals(taskManager.getLocalChangeListId(taskManager.getDefaultChangeList()))) {
-                taskManager.deactivateTask();
-                return;
-            }
-
-            if (activeTaskUrl == null) {
-                activeTaskUrl = taskManager.getActiveIssueUrl(activeTask.getId());
-            }
-            final String finalActiveTaskUrl = activeTaskUrl;
-
-
-            if (activeTaskUrl != null) {
-                final JiraServerData server = taskManager.findJiraPluginJiraServer(activeTaskUrl);
-                final ActiveJiraIssueBean issue = new ActiveJiraIssueBean();
-                issue.setIssueKey(activeTask.getId());
-                issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
-
-                ApplicationManager.getApplication().invokeLater(
-                        new LocalRunnable(activeTask.getId(), server, issue, finalActiveTaskUrl, newDefaultList),
-                        ModalityState.defaultModalityState());
-            } else {
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        Messages.showInfoMessage(project, "Cannot activate an issue "
-                                + taskManager.getActiveTask().getId() + "."
-                                + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
-                    }
-                });
-
-                taskManager.deactivateTask();
-            }
-
+        } catch (Exception e) {
+             PluginUtil.getLogger().error("Cannot get issue " + activeTaskUrl);
+        }
+        //switched to default task so silentDeactivate issue
+        if (activatedLocalTask.getId() != null && activatedLocalTask.getId().equalsIgnoreCase("Default")) {
+            taskManager.deactivateToDefaultTask();
+            return;
         }
 
+        final String finalActiveTaskUrl = activeTaskUrl;
+        if (activeTaskUrl != null) {
+            final JiraServerData server = taskManager.findJiraPluginJiraServer(activeTaskUrl);
+            final ActiveJiraIssueBean issue = new ActiveJiraIssueBean();
+            issue.setIssueKey(activatedLocalTask.getId());
+            issue.setServerId(server != null ? (ServerIdImpl) server.getServerId() : null);
+
+            activateTask(activatedLocalTask.getId(), server, issue, finalActiveTaskUrl, null);
+        } else {
 
 
-    final class LocalRunnable implements Runnable {
-        private final String issueId;
-        private final JiraServerData server;
-        private final ActiveJiraIssueBean issue;
-        private final String finalActiveTaskUrl;
-        private final ChangeList newDefaultList;
+            Messages.showInfoMessage(project, "Cannot activate an issue "
+                    + taskManager.getActiveTask().getId() + "."
+                    + "\nIssue without linked server.", PluginUtil.PRODUCT_NAME);
 
-        public LocalRunnable(String issueId, JiraServerData server, ActiveJiraIssueBean issue,
-                             String finalActiveTaskUrl, ChangeList newDefaultList) {
-            this.issueId = issueId;
-            this.server = server;
-            this.issue = issue;
-            this.finalActiveTaskUrl = finalActiveTaskUrl;
-            this.newDefaultList = newDefaultList;
+            taskManager.deactivateToDefaultTask();
         }
 
+    }
 
-        public void run() {
+    private void activateTask(final String issueId, final JiraServerData server, final ActiveJiraIssueBean issue,
+                              final String finalActiveTaskUrl, final ChangeList newDefaultList) {
+        {
             JIRAIssueListModelBuilder builder = IdeaHelper.getJIRAIssueListModelBuilder(project);
             if (server != null && builder != null) {
                 try {
@@ -116,32 +94,28 @@ import java.util.List;
                     }
 
                 } catch (final JIRAException e) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            DialogWithDetails.showExceptionDialog(project,
-                                    "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
-                        }
-                    });
+
+                    DialogWithDetails.showExceptionDialog(project,
+                            "Cannot fetch issue " + issueId + " from server " + server.getName(), e);
 
                 }
 
                 if ((ActiveIssueUtils.getActiveJiraIssue(project) == null && issueId != null)
                         || (ActiveIssueUtils.getActiveJiraIssue(project) != null && issueId != null
                         && !issueId.equals(ActiveIssueUtils.getActiveJiraIssue(project).getIssueKey()))) {
-                    ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
+
+                            ActiveIssueUtils.activateIssue(project, null, issue, server, newDefaultList);
+                       
+
                 }
             } else {
-                PluginTaskManager.getInstance(project).addChangeListListener();
-                SwingUtilities.invokeLater(new Runnable() {
+                
 
-                    public void run() {
-                        Messages.showInfoMessage(project, "Cannot activate issue " + finalActiveTaskUrl,
-                                PluginUtil.PRODUCT_NAME);
-                    }
-                });
+                Messages.showInfoMessage(project, "Cannot activate issue " + finalActiveTaskUrl,
+                        PluginUtil.PRODUCT_NAME);
 
             }
         }
     }
 
-    }
+}
