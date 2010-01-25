@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -22,7 +23,7 @@ public class LocalTaskImpl implements LocalTask {
     private Class localTaskImplClass = null;
 
     public LocalTaskImpl(Object localTask, ClassLoader classLoader) {
-        this.localTaskObj = localTask;        
+        this.localTaskObj = localTask;
         try {
             localTaskImplClass = classLoader.loadClass(LOCAL_TASK_IMPL_CLASS);
         } catch (ClassNotFoundException e) {
@@ -45,12 +46,13 @@ public class LocalTaskImpl implements LocalTask {
         return null;
     }
 
+    @Nullable
     public String getIssueUrl() {
         if (localTaskImplClass != null) {
             try {
                 Method getUrlMethod = localTaskImplClass.getMethod("getIssueUrl");
                 Object issueUrlObj = getUrlMethod.invoke(localTaskObj);
-                return issueUrlObj.toString();
+                return (String)issueUrlObj;
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_SUMMARY, e);
             }
@@ -74,6 +76,34 @@ public class LocalTaskImpl implements LocalTask {
         }
 
         return taskChangeLists;
+    }
+
+    public String getAssociatedChangelistId() {
+        String changeListId = "";
+        try {
+            Method getAssociatedChangelistIdMethod = localTaskImplClass.getMethod("getAssociatedChangelistId");
+            changeListId = (String) getAssociatedChangelistIdMethod.invoke(localTaskObj);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error("Cannot get associated changelist id");
+        }
+
+        return changeListId;
+    }
+
+    public String getSummary() {
+        String summary = "";
+        try {
+            Method getSummary = localTaskImplClass.getMethod("getSummary");
+            summary = (String) getSummary.invoke(localTaskObj);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error("Cannot getSummary", e);
+        }
+
+        return summary;
+    }
+
+    public boolean isDefaultTask() {
+        return (getId() != null && getId().equalsIgnoreCase("Default")) || getSummary().equalsIgnoreCase("Default task");
     }
 
 

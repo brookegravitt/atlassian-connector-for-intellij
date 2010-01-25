@@ -26,4 +26,7 @@ public interface LocalTask {
     Object getLocalTaskObj();
 
     List<Object> getChangeLists();
+    String getAssociatedChangelistId();
+    String getSummary();
+    boolean isDefaultTask();
 }
