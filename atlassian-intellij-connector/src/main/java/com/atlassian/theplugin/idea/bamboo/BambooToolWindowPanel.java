@@ -266,10 +266,12 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		if (server != null && server instanceof BambooServerData) {
 			openBuild(buildKey, buildNumber, (BambooServerData) server);
 		} else {
-			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
-			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.BAMBOO_SERVER)) {
-				openBuild(buildKey, buildNumber, serverUrl);
-			}
+			ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.BAMBOO_SERVER,
+					new Runnable() {
+						public void run() {
+							openBuild(buildKey, buildNumber, serverUrl);
+						}
+					});
 		}
 	}
 

@@ -21,7 +21,6 @@ import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -47,7 +46,6 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleCustomFilterTreeNode;
@@ -71,7 +69,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +80,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -613,27 +611,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
                 });
 
                 return ra;
-            } else {
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
-                                PluginUtil.PRODUCT_NAME);
-                    }
-                });
-            }
-        } else {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
-							PluginUtil.PRODUCT_NAME);
-
-					if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.CRUCIBLE_SERVER)) {
-						//todo: do it as a background task...
-						openReviewWithDetails(reviewKey, serverUrl);
-					}
-				}
-            });
-        }
+			}
+		}
         return null;
     }
 
