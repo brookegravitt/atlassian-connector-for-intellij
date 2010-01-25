@@ -60,11 +60,13 @@ public final class TaskListenerProxy implements InvocationHandler {
                         final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
                         if (jiraIssue == null || !lt.getId().equals(jiraIssue.getIssueKey())) {
 
-                            final JiraServerData sd = PluginTaskManager.getInstance(project).findJiraPluginJiraServer(lt.getIssueUrl());
+                            final JiraServerData sd = PluginTaskManager.getInstance(project).findJiraPluginJiraServer(
+                                    lt.getIssueUrl());
 
                             if (sd != null) {
-                                final ActiveJiraIssue ai = new ActiveJiraIssueBean(sd.getServerId(), lt.getId(), new DateTime());
-                                SwingUtilities.invokeLater(new Runnable(){
+                                final ActiveJiraIssue ai = new ActiveJiraIssueBean(sd.getServerId(), lt.getId(),
+                                        new DateTime());
+                                SwingUtilities.invokeLater(new Runnable() {
 
                                     public void run() {
                                         ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
@@ -83,9 +85,8 @@ public final class TaskListenerProxy implements InvocationHandler {
             }
         } catch (Exception e) {
             throw new RuntimeException("unexpected invocation exception: " + e.getMessage());
-        } finally {
-            //System.out.println("after method " + m.getName());
         }
+        
         return null;
     }
 
