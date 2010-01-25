@@ -180,12 +180,12 @@ public final class ActiveIssueUtils {
                     "Deactivating current issue",
                     Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
             if (!isDeactivated && PluginTaskManager.isValidIdeaVersion()) {
-               SwingUtilities.invokeLater(new Runnable(){
+                SwingUtilities.invokeLater(new Runnable() {
 
-                   public void run() {
-                       PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
-                   }
-               });
+                    public void run() {
+                        PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                    }
+                });
 
                 return;
             }
@@ -195,25 +195,28 @@ public final class ActiveIssueUtils {
 
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
-                   SwingUtilities.invokeLater(new Runnable() {
+                    SwingUtilities.invokeLater(new Runnable() {
 
-                       public void run() {
-                           ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList, new ActiveIssueResultHandler() {
+                        public void run() {
+                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
+                                    new ActiveIssueResultHandler() {
 
-                               public void success() {
-                               }
+                                        public void success() {
+                                        }
 
-                               public void failure(Throwable problem) {
-                                   PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                                        public void failure(Throwable problem) {
+                                            PluginTaskManager.getInstance(project).activateLocalTask(
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
 
-                               }
+                                        }
 
-                               public void cancel(String problem) {
-                                   PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
-                               }
-                           });
-                       }
-                   });
+                                        public void cancel(String problem) {
+                                            PluginTaskManager.getInstance(project).activateLocalTask(
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                        }
+                                    });
+                        }
+                    });
 
 
                 }

@@ -38,7 +38,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
         if (!PluginTaskManager.isValidIdeaVersion()) {
             SwingUtilities.invokeLater(new DeactivateIssueRunnable(currentProject));
         } else {
-            ApplicationManager.getApplication().invokeLater(new Runnable(){
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
 
                     PluginTaskManager.getInstance(currentProject).deactivateToDefaultTask();

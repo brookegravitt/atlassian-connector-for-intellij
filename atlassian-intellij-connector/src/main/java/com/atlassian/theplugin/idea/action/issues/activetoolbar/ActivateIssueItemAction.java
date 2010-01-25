@@ -81,13 +81,15 @@ public class ActivateIssueItemAction extends AnAction {
 				activeIssue.resetTimeSpent();
 				if (!PluginTaskManager.isValidIdeaVersion()) {
 
-                       ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event), event, activeIssue, jiraServer, null);
+                      ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event),
+                              event, activeIssue, jiraServer, null);
 
 
                 } else {
-                    ApplicationManager.getApplication().invokeLater(new Runnable(){
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
                         public void run() {
-                            PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).activateLocalTask(activeIssue);
+                            PluginTaskManager.getInstance(
+                                    IdeaHelper.getCurrentProject(event)).activateLocalTask(activeIssue);
                         }
                     });
 

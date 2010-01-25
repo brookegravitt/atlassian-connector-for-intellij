@@ -52,7 +52,7 @@ public class LocalTaskImpl implements LocalTask {
             try {
                 Method getUrlMethod = localTaskImplClass.getMethod("getIssueUrl");
                 Object issueUrlObj = getUrlMethod.invoke(localTaskObj);
-                return (String)issueUrlObj;
+                return (String) issueUrlObj;
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_SUMMARY, e);
             }

@@ -43,16 +43,18 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
                     final Project project = IdeaHelper.getCurrentProject(event);
 					if (!PluginTaskManager.isValidIdeaVersion()) {
-                        SwingUtilities.invokeLater(new Runnable(){
+                        SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                ActiveIssueUtils.activateIssue(project, event, newActiveIssue, selectedIssue.getJiraServerData(), null);
+                                ActiveIssueUtils.activateIssue(project, event, newActiveIssue,
+                                        selectedIssue.getJiraServerData(), null);
                             }
                         });
 
                     } else {
-                        ApplicationManager.getApplication().invokeLater(new Runnable(){
+                        ApplicationManager.getApplication().invokeLater(new Runnable() {
                             public void run() {
-                                PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).activateLocalTask(newActiveIssue);
+                                PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).activateLocalTask(
+                                        newActiveIssue);
                             }
                         });
 
