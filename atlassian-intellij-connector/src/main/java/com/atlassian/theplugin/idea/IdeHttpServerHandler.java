@@ -410,15 +410,16 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				// open review
 				review = IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(reviewKey, serverUrl);
 
-				if (review == null)
-				{
+				if (review == null)	{
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.CRUCIBLE_SERVER,
+							ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl,
+									ServerType.CRUCIBLE_SERVER,
 							new Runnable() {
 								public void run() {
 									ProgressManager.getInstance().run(new FindAndOpenReviewTask(project,
-											"Looking for Review " + reviewKey, false, reviewKey, serverUrl, filePath, commentId));
+											"Looking for Review " + reviewKey, false, reviewKey, serverUrl,
+											filePath, commentId));
 								}
 							});
 						}
