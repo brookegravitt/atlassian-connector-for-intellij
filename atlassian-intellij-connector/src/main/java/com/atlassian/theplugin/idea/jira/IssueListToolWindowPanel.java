@@ -72,7 +72,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
@@ -589,10 +588,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         if (server != null) {
             openIssue(issueKey, server, true);
         } else {
-            Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
-			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, ServerType.JIRA_SERVER)) {
-				openIssue(issueKey, serverUrl);
-			}
+			ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.JIRA_SERVER,
+					new Runnable() {
+						public void run() {
+							openIssue(issueKey, serverUrl);
+						}
+					});
         }
     }
 

@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -25,6 +26,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
@@ -379,7 +381,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 		}
 
-		private static class FindAndOpenReviewTask extends Task.Modal {
+		public static class FindAndOpenReviewTask extends Task.Modal {
 			private final Project project;
 			private final String reviewKey;
 			private final String serverUrl;
@@ -408,7 +410,23 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				// open review
 				review = IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(reviewKey, serverUrl);
 
-				if (review != null && (isDefined(filePath) || isDefined(commentId))) {
+				if (review == null)
+				{
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.CRUCIBLE_SERVER,
+							new Runnable() {
+								public void run() {
+									ProgressManager.getInstance().run(new FindAndOpenReviewTask(project,
+											"Looking for Review " + reviewKey, false, reviewKey, serverUrl, filePath, commentId));
+								}
+							});
+						}
+					});
+					return;
+				}
+
+				if ((isDefined(filePath) || isDefined(commentId))) {
 					try {
 						// get details for review (files and comments)
 						IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);

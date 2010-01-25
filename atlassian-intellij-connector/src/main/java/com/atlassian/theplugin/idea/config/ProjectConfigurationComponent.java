@@ -25,7 +25,10 @@ import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -50,8 +53,13 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -397,7 +405,42 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return projectCfgManager.getProjectConfiguration().getClone();
 	}
 
-	/**
+
+	// pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
+	public static void fireDirectClickedServerPopup(final Project project, final String serverUrl, final ServerType serverType,
+			final Runnable runnable) {
+		final Color BACKGROUND_COLOR = new Color(255, 255, 200);
+
+		StringBuilder sb = new StringBuilder("Server <i>" + serverUrl + "</i> not found in configuration<br>");
+		sb.append("<br>Click on this notification to open configuration panel and add this server");
+
+		JEditorPane content = new JEditorPane();
+		content.setEditable(false);
+		content.setContentType("text/html");
+		content.setEditorKit(new ClasspathHTMLEditorKit());
+		content.setText("<html>" + Constants.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+		content.setBackground(BACKGROUND_COLOR);
+		content.addHyperlinkListener(new GenericHyperlinkListener());
+
+		content.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, serverType)) {
+					EventQueue.invokeLater(runnable);
+				}
+			}
+		});
+
+		IdeaVersionFacade.getInstance().fireNotification(
+				project,
+				new JScrollPane(content),
+				content.getText(),
+				"/icons/crucible-blue-16.png",
+				IdeaVersionFacade.OperationStatus.INFO,
+				BACKGROUND_COLOR);
+	}
+
+	/*
 	 * Method for adding auto-filled server configuration based on parameters passed by directClickThroughRequest
 	 *
 	 * @return true if user clicked accept, false if clicked cancel
@@ -447,7 +490,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 		if (settingsUtil != null) {
-			return settingsUtil.editConfigurable(project, component);
+			boolean hasClickedOkButton = settingsUtil.editConfigurable(project, component);
+			if (!hasClickedOkButton) {
+				configurationClone = component.getProjectConfigurationClone();
+				ServerCfg toRemoveCfg = configurationClone.getServerCfg(id);
+				configurationClone.getServers().remove(toRemoveCfg);
+				component.updateConfiguration(configurationClone);
+			}
+			return hasClickedOkButton;
 		}
 		return false;
 	}
