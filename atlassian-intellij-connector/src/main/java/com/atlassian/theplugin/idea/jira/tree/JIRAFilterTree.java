@@ -312,13 +312,13 @@ public class JIRAFilterTree extends AbstractTree {
 	private void createFilterNodes(JiraServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
 		if (aListModel != null) {
 
-//            JiraPresetFiltersGroupTreeNode pfg = new JiraPresetFiltersGroupTreeNode(projectCfgManager, jiraServer);
-//            node.add(pfg);
-//
-//            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(jiraServer);
-//            for (JiraPresetFilter filter : presetFilterSet) {
-//			    pfg.add(new JiraPresetFilterTreeNode(filter));
-//            }
+            JiraPresetFiltersGroupTreeNode pfg = new JiraPresetFiltersGroupTreeNode(projectCfgManager, jiraServer);
+            node.add(pfg);
+
+            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(jiraServer);
+            for (JiraPresetFilter filter : presetFilterSet) {
+			    pfg.add(new JiraPresetFilterTreeNode(filter));
+            }
 
             JiraSavedFiltersGroupTreeNode sfg = new JiraSavedFiltersGroupTreeNode(projectCfgManager, jiraServer);
             node.add(sfg);
