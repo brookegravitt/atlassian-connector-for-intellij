@@ -80,6 +80,13 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             super(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
             CellConstraints cc = new CellConstraints();
 
+            reason = new SelectableHoverLabel(false, hover, true, getBuildReasonString(build), null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
+            empty2 = new SelectableHoverLabel(false, hover, true, "", null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
+            empty1 = new SelectableHoverLabel(false, hover, true, "", null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
+            
             setBackground(UIUtil.getTreeTextBackground());
 
             buildStatusIcon = new JLabel(build.getIcon());
@@ -104,6 +111,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             empty1.setSelected(selected, hover, enabled);
             reason.setSelected(selected, hover, enabled);
             empty2.setSelected(selected, hover, enabled);
+
             setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
             server.setSelected(selected, hover, enabled);
             setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
@@ -142,8 +150,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             gbc.anchor = GridBagConstraints.LINE_END;
 
             // gap
-            empty1 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
-                    SwingConstants.LEADING, ICON_HEIGHT);
+//             empty1 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
+//                    SwingConstants.LEADING, ICON_HEIGHT);
+            empty1.setSelected(selected, aHover, enabled);
             setFixedComponentSize(empty1, 2 * GAP, ICON_HEIGHT);
             detailsPanel.add(empty1, gbc);
 
@@ -151,8 +160,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             gbc.gridx++;
             gbc.weightx = 0.0;
             gbc.fill = GridBagConstraints.NONE;
-            reason = new SelectableHoverLabel(selected, aHover, enabled, getBuildReasonString(build), null,
-                    SwingConstants.LEADING, ICON_HEIGHT);
+//            reason = new SelectableHoverLabel(selected, aHover, enabled, getBuildReasonString(build), null,
+//                    SwingConstants.LEADING, ICON_HEIGHT);
+            reason.setSelected(selected, aHover, enabled);
             setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
             reason.setHorizontalAlignment(SwingConstants.RIGHT);
             detailsPanel.add(reason, gbc);
@@ -161,8 +171,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             gbc.gridx++;
             gbc.weightx = 0.0;
             gbc.fill = GridBagConstraints.NONE;
-            empty2 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
-                    SwingConstants.LEADING, ICON_HEIGHT);
+            empty2.setSelected(selected, hover, enabled);
+
+//            empty2 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
+//                    SwingConstants.LEADING, ICON_HEIGHT);
             setFixedComponentSize(empty2, 2 * GAP, ICON_HEIGHT);
             detailsPanel.add(empty2, gbc);
 
