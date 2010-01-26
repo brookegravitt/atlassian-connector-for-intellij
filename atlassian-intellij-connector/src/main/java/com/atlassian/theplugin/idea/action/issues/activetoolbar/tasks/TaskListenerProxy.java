@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 public final class TaskListenerProxy implements InvocationHandler {
     public static final String TASK_LISTENER = "com.intellij.tasks.TaskListener";
 
+
     private static Method taskActivatedMethod;
     private static Class taskListenerInterface;
     private final ClassLoader classLoader;
@@ -53,40 +54,42 @@ public final class TaskListenerProxy implements InvocationHandler {
         Object result;
         try {
             if (m.equals(taskActivatedMethod)) {
-                if (isDifferentEvent(args[0])) {
-                    final LocalTask lt = new LocalTaskImpl(args[0], classLoader);
+                System.out.println("prev:" + prevObj + " new:" + args[0]);
+                if (!PluginTaskManager.getInstance(project).isSilent()) {
+                    if (isDifferentEvent(args[0])) {
+                        final LocalTask lt = new LocalTaskImpl(args[0], classLoader);
 
-                    if (!lt.isDefaultTask()) {
-                        final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
-                        if (jiraIssue == null || !lt.getId().equals(jiraIssue.getIssueKey())) {
+                        if (!lt.isDefaultTask()) {
+                            final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+                            if (jiraIssue == null || !lt.getId().equals(jiraIssue.getIssueKey())) {
 
-                            final JiraServerData sd = PluginTaskManager.getInstance(project).findJiraPluginJiraServer(
-                                    lt.getIssueUrl());
+                                final JiraServerData sd = PluginTaskManager.getInstance(project).findJiraPluginJiraServer(
+                                        lt.getIssueUrl());
 
-                            if (sd != null) {
-                                final ActiveJiraIssue ai = new ActiveJiraIssueBean(sd.getServerId(), lt.getId(),
-                                        new DateTime());
-                                SwingUtilities.invokeLater(new Runnable() {
+                                if (sd != null) {
+                                    final ActiveJiraIssue ai = new ActiveJiraIssueBean(sd.getServerId(), lt.getId(),
+                                            new DateTime());
 
-                                    public void run() {
-                                        ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
-                                    }
-                                });
-
+                                    ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
+                                }
                             }
+
+                        } else {
+                            SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
                         }
-
-                    } else {
-                        SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
                     }
+
+
+                } else {
+                    prevObj = null;
                 }
-
-
+            } else {
+                PluginTaskManager.getInstance(project).setSilent(false);
             }
         } catch (Exception e) {
             throw new RuntimeException("unexpected invocation exception: " + e.getMessage());
         }
-        
+
         return null;
     }
 
@@ -101,9 +104,10 @@ public final class TaskListenerProxy implements InvocationHandler {
         return false;
 
     }
+
     private synchronized boolean isDifferentEvent(Object newObject) {
-        boolean isDifferent =   prevObj == null || prevObj != null && !prevObj.equals(newObject);
-        prevObj = newObject;
+        boolean isDifferent = prevObj == null || !prevObj.equals(newObject);
+            prevObj = newObject;
         return isDifferent;
     }
 }

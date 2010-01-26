@@ -17,8 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
-import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
-import com.atlassian.connector.intellij.crucible.content.FileContentCache;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
@@ -90,8 +88,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         }
 
         addActionToDiffToolbar();
-        FileContentCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
-        ContentProviderCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
+        //FileContentCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
+        //ContentProviderCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
     }
 
     private void addActionToDiffToolbar() {
