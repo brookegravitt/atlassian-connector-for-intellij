@@ -17,7 +17,7 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
-import com.atlassian.connector.intellij.crucible.content.FileContentCache;
+import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -650,7 +650,7 @@ public class ReviewAdapter {
 
 
 	public void clearContentCache() {
-		FileContentCache.getInstance().clear();
+		FileContentExpiringCache.getInstance().clear();
 		ContentProviderCache.getInstance().clear();
 	}
 
