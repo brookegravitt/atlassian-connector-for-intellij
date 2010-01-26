@@ -551,12 +551,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         if (server != null) {
             openIssue(issueKey, server, true);
         } else {
-			ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.JIRA_SERVER,
-					new Runnable() {
-						public void run() {
-							openIssue(issueKey, serverUrl);
-						}
-					});
+            ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.JIRA_SERVER,
+                    new Runnable() {
+                        public void run() {
+                            openIssue(issueKey, serverUrl);
+                        }
+                    });
         }
     }
 
@@ -686,7 +686,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     public void logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,
-                                            final boolean deactivateIssue, ActiveIssueResultHandler resultHandler) {
+                                         final boolean deactivateIssue, ActiveIssueResultHandler resultHandler) {
         if (issue != null) {
             final WorkLogCreateAndMaybeDeactivateDialog dialog =
                     new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog,
@@ -696,18 +696,20 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 Task.Backgroundable logWork =
                         new LogWorkWorkerTask(issue, dialog, jiraServer, deactivateIssue, resultHandler);
                 ProgressManager.getInstance().run(logWork);
-                return;
+                
+            } else {
+                if (resultHandler != null) {
+                    resultHandler.cancel("User cancelled deactivating an issue");
+                }
             }
         }
-        if (resultHandler != null) {
-            resultHandler.cancel("User cancelled deactivating an issue");
-        }
+
     }
 
     /**
      * Blocking method. Must be called in the background thread.
      *
-     * @param issue issue to work on
+     * @param issue          issue to work on
      * @param newActiveIssue
      * @return modified issue or the same issue if no modification performed
      */
@@ -722,7 +724,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 jiraServerFacade.setAssignee(jiraServerData, issue, jiraServerData.getUsername());
                 //no exception == assignee set properly
                 updatedIssue.setAssignee(jiraServerData.getUsername());
-                
+
             } catch (JIRAException e) {
                 final String msg = "Error starting progress on issue. Assigning failed: ";
                 setStatusErrorMessage(msg + e.getMessage(), e);
@@ -794,7 +796,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             isOk = createChangeListAction(issue);
         }
 
-        
+
         if (isOk) {
             ProgressManager.getInstance().run(new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 
@@ -811,7 +813,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, updatedIssue);
                         }
                     });
-
 
 
                     //no matter what cannot start in progress or change assignee consider it as success
@@ -1079,7 +1080,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         /**
          * Add requestes server's data to the server model
          *
-         * @param jiraServerData           server added to the model with all fetched data
+         * @param jiraServerData   server added to the model with all fetched data
          * @param refreshIssueList refresh issue list
          */
         public MetadataFetcherBackgroundableTask(final JiraServerData jiraServerData, boolean refreshIssueList) {
@@ -1570,13 +1571,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
                     for (JiraServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
                         try {
-							List<JIRAProject> jiraProjects = jiraServerModel.getProjects(server);
-							if (jiraProjects != null) {
-								for (JIRAProject p : jiraProjects) {
-									projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
-								}
-							}
-						} catch (JIRAException e) {
+                            List<JIRAProject> jiraProjects = jiraServerModel.getProjects(server);
+                            if (jiraProjects != null) {
+                                for (JIRAProject p : jiraProjects) {
+                                    projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
+                                }
+                            }
+                        } catch (JIRAException e) {
                             setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]. "
                                     + e.getMessage(), e);
                         }
@@ -1601,8 +1602,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     issueTreeBuilder.setProjectKeysToNames(projectMap);
                     issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 //					expandAllRightTreeNodes();
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }

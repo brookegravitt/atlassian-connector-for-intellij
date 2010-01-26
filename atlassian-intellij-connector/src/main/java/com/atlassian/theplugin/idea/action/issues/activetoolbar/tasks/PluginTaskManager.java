@@ -72,6 +72,7 @@ public final class PluginTaskManager {
     private boolean alreadyAdded = false;
     private static boolean actionsRegistered = false;
     private Object taskListnerObj;
+    private boolean silent = false;
 
 
     private PluginTaskManager(final Project project) {
@@ -86,11 +87,9 @@ public final class PluginTaskManager {
             }
 
             taskManagerObj = getTaskManager();
-            //myListener = new TaskChangeListAdapter(project);
             taskListnerObj = TaskListenerProxy.newInstance(classLoader, project);
             if (taskListnerObj != null) {
-                addTaskListener(taskListnerObj);
-                removeTaskListener(taskListnerObj);
+                addTaskListener(taskListnerObj);                
             }
         }
     }
@@ -146,6 +145,10 @@ public final class PluginTaskManager {
         return actions;
     }
 
+    public boolean isSilent() {
+        return silent;
+    }
+
     public void addTaskListener(Object taskListenerObj) {
         try {
         Method addTaskListenerMethod = taskManagerClass.getMethod("addTaskListener",
@@ -155,6 +158,17 @@ public final class PluginTaskManager {
             PluginUtil.getLogger().error("TaskListener not added:" + e.getMessage());
         }
     }
+
+    private void removeTaskListener(Object taskListenerObj) {
+            try {
+        Method removeTaskListener = taskManagerClass.getMethod("removeTaskListener",
+                classLoader.loadClass(TaskListenerProxy.TASK_LISTENER));
+            removeTaskListener.invoke(taskManagerObj, taskListenerObj);
+        } catch (Exception e) {
+            PluginUtil.getLogger().error("TaskListener not removed:" + e.getMessage());
+        }
+    }
+
     public List<TaskRepository> getAllRepositories() {
         Method getAllRepositoriesMethod = null;
         List<TaskRepository> repos = new ArrayList<TaskRepository>();
@@ -304,13 +318,12 @@ public final class PluginTaskManager {
 
     @Nullable
     private LocalTask getDefaultTask() {
-        ChangeListManager manager = ChangeListManager.getInstance(project);
-        if (manager != null) {
-            ChangeList defaultChangeList = getDefaultChangeList();
-            return getChangeListTask(defaultChangeList);
+       LocalTask defaultTask = findLocalTaskById("Default task");
+        if (defaultTask == null) {
+            defaultTask = findLocalTaskById("Default");
         }
 
-        return null;
+        return defaultTask;
     }
 
 
@@ -434,6 +447,7 @@ public final class PluginTaskManager {
     }
 
     private void activateTask(final LocalTask task, final boolean clearContext, final boolean createChangeset) {
+        System.out.println("Activating: " +  task.getId());
         if (classLoader != null && task != null) {
             try {
 
@@ -454,17 +468,6 @@ public final class PluginTaskManager {
         }
 
     }
-
-    private void removeTaskListener(Object taskListenerObj) {
-            try {
-        Method addTaskListenerMethod = taskManagerClass.getMethod("removeTaskListener",
-                classLoader.loadClass(TaskListenerProxy.TASK_LISTENER));
-            addTaskListenerMethod.invoke(taskManagerObj, taskListenerObj);
-        } catch (Exception e) {
-            PluginUtil.getLogger().error("TaskListener not removed:" + e.getMessage());
-        }
-    }
-
 
     private void setRepositories(Object repositories) {
 
@@ -606,4 +609,15 @@ public final class PluginTaskManager {
 //        }
 //        return null;
 //    }
+
+    public synchronized void silentActivateLocalTask(ActiveJiraIssue activeJiraIssue) {
+        //removeTaskListener(taskListnerObj);
+        silent = true;
+        activateLocalTask(activeJiraIssue);
+        //addTaskListener(taskListnerObj);
+    }
+
+    public synchronized void setSilent(boolean silent) {
+        this.silent = silent;
+    }
 }

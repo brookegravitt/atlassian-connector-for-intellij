@@ -169,29 +169,9 @@ public final class ActiveIssueUtils {
                                      final JiraServerData jiraServerCfg, final ChangeList newDefaultList) {
 
         final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
-        final boolean isAlreadyActive = activeIssue != null && newActiveIssue != activeIssue;
+        final boolean isOtherIssueActive = activeIssue != null && newActiveIssue != activeIssue;
 
-
-        boolean isDeactivated = true;
-        if (isAlreadyActive) {
-            isDeactivated = Messages.showYesNoDialog(project,
-                    activeIssue.getIssueKey()
-                            + " is active. Would you like to deactivate it first and proceed?",
-                    "Deactivating current issue",
-                    Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-            if (!isDeactivated && PluginTaskManager.isValidIdeaVersion()) {
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    public void run() {
-                        PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
-                    }
-                });
-
-                return;
-            }
-
-        }
-        if (isDeactivated) {
+        if (isOtherIssueActive) {
 
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
@@ -222,15 +202,27 @@ public final class ActiveIssueUtils {
                 }
 
                 public void failure(Throwable problem) {
-                    PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                    SwingUtilities.invokeLater(new Runnable(){
+
+                        public void run() {
+                             PluginTaskManager.getInstance(project).silentActivateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                        }
+                    });
+
+
                 }
 
                 public void cancel(String problem) {
-                    PluginTaskManager.getInstance(project).activateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                      SwingUtilities.invokeLater(new Runnable(){
+
+                        public void run() {
+                             PluginTaskManager.getInstance(project).silentActivateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                        }
+                    });
                 }
             });
-
-
+        } else {
+             ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, null);
         }
 
 
@@ -370,6 +362,7 @@ public final class ActiveIssueUtils {
                         panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
                                 StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
                                 true, resultHandler);
+                        return;
 
                     }
                 } catch (JIRAException e) {
@@ -382,10 +375,10 @@ public final class ActiveIssueUtils {
                     }
                 }
             }
-            if (resultHandler != null) {
-                resultHandler.success();
-                return;
-            }
+//            if (resultHandler != null) {
+//                resultHandler.success();
+//                return;
+//            }
         }
 
         //always allow to activate issue even if remote de-activation fails
