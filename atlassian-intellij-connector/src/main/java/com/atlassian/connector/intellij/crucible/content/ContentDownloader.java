@@ -126,15 +126,15 @@ public final class ContentDownloader {
                 for (CrucibleFileInfo reviewItem : reviewItems) {
 
                     try {
-                        int numberOfFiles = 0;
+
 
                         switch (reviewItem.getCommitType()) {
                             case Added:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                downloadSingleFile(project, review, reviewItem,
                                         reviewItem.getFileDescriptor());
                                 break;
                             case Deleted:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                downloadSingleFile(project, review, reviewItem,
                                         reviewItem.getOldFileDescriptor());
                                 break;
                             case Modified:
@@ -142,16 +142,13 @@ public final class ContentDownloader {
                             case Copied:
                             case Unknown:
                             default:
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem,
+                                downloadSingleFile(project, review, reviewItem,
                                         reviewItem.getFileDescriptor());
-                                numberOfFiles += downloadSingleFile(project, review, reviewItem, 
+                                downloadSingleFile(project, review, reviewItem,
                                         reviewItem.getOldFileDescriptor());
 
                         }
 
-                        if (numberOfFiles >= FileContentCache.getCacheSize()) {
-                            break;
-                        }
                         //impossible or no files
                     } catch (VcsException e) {
                         //not important
@@ -174,7 +171,7 @@ public final class ContentDownloader {
         ReviewFileContentProvider provider = ContentProviderCache.getInstance().get(fileKey);
 
         if (downloadInProgress.containsKey(fileKey)
-                || FileContentCache.getInstance().getFileContent(virtualFile) != null) {
+                || FileContentExpiringCache.getInstance().recover(virtualFile) != null) {
             return 0;
         }
 
@@ -195,7 +192,7 @@ public final class ContentDownloader {
                             //do nothing if file is not downloaded
                         }
 
-                        FileContentCache.getInstance().put(fileKey, content);
+                        FileContentExpiringCache.getInstance().admit(fileKey, content);
 
                     }
                     downloadInProgress.remove(fileKey);
@@ -224,7 +221,7 @@ public final class ContentDownloader {
 
     public synchronized ReviewFileContent getFileContent(Project project, ReviewAdapter review, VersionedVirtualFile fileInfo) {
         String key = ContentUtil.getKey(fileInfo);
-        if (FileContentCache.getInstance().getFileContent(fileInfo) == null && !isDownloadInProgress(key)) {
+        if (FileContentExpiringCache.getInstance().recover(fileInfo) == null && !isDownloadInProgress(key)) {
             downloadFilesContent(project, review);
         }
 
@@ -239,7 +236,7 @@ public final class ContentDownloader {
             }
         }
 
-        return FileContentCache.getInstance().getFileContent(fileInfo);
+        return FileContentExpiringCache.getInstance().recover(fileInfo);
     }
 
 
