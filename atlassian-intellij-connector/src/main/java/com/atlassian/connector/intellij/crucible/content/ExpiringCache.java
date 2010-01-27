@@ -23,24 +23,26 @@ timerTask using that array).  Making operations synchronized will slow down
 the operations.
 
 */
-public class ExpiringCache<K,V> {
+public class ExpiringCache<K, V> {
 
-	static Category logger = Category.getInstance(ExpiringCache.class);
+  private static Category logger = Category.getInstance(ExpiringCache.class);
 
   public static final long DEFAULT_TIME_TO_LIVE = 10 * 60 * 1000;
   public static final long DEFAULT_ACCESS_TIMEOUT = 5 * 60 * 1000;
   public static final long DEFAULT_TIMER_INTERVAL = 2 * 60 * 1000;
 
-  long ttl = DEFAULT_TIME_TO_LIVE;
-  long ato = DEFAULT_ACCESS_TIMEOUT;
-  long tiv = DEFAULT_TIMER_INTERVAL;
+  private long ttl = DEFAULT_TIME_TO_LIVE;
+  private long ato = DEFAULT_ACCESS_TIMEOUT;
+  private long tiv = DEFAULT_TIMER_INTERVAL;
 
-  LRUMap cacheMap;
-  Timer cacheManager;
+  private LRUMap cacheMap;
+  private Timer cacheManager;
 
 
   protected void finalize() throws Throwable {
-    if (cacheManager != null) cacheManager.cancel();
+    if (cacheManager != null) {
+        cacheManager.cancel();
+    }
   }
 
   public ExpiringCache() {
@@ -48,7 +50,14 @@ public class ExpiringCache<K,V> {
     initialize();
   }
 
-  // All times in millisecs
+    public static Category getLogger() {
+        return logger;
+    }
+
+    public static void setLogger(Category logger) {
+        ExpiringCache.logger = logger;
+    }
+// All times in millisecs
   public ExpiringCache(long timeToLive, long accessTimeout,
     int maximumCachedQuantity, long timerInterval
   ) {
@@ -81,8 +90,14 @@ public class ExpiringCache<K,V> {
 
 
   public void initialize() {
-    if (logger.isDebugEnabled()) logger.debug("initialize() started");
-    if (cacheManager != null) cacheManager.cancel();
+    if (logger.isDebugEnabled())  {
+        logger.debug("initialize() started");
+    }
+
+    if (cacheManager != null) {
+        cacheManager.cancel();
+    }
+
     cacheManager = new Timer(true);
     cacheManager.schedule(
       new TimerTask() {
@@ -92,13 +107,14 @@ public class ExpiringCache<K,V> {
           try {
             MapIterator itr = cacheMap.mapIterator();
             while (itr.hasNext()) {
-              K key = (K)itr.next();
+              K key = (K) itr.next();
               CachedObject cobj = (CachedObject) itr.getValue();
               if (cobj == null || cobj.hasExpired(now)) {
-                if (logger.isDebugEnabled()) logger.debug(
+                if (logger.isDebugEnabled()) { logger.debug(
                   "Removing " + key + ": Idle time=" +
                   (now - cobj.timeAccessedLast) + "; Stale time:" +
                   (now - cobj.timeCached));
+                }
                 itr.remove();
                 Thread.yield();
               }
@@ -109,8 +125,9 @@ public class ExpiringCache<K,V> {
             Ignorable.  This is just a timer cleaning up.
             It will catchup on cleaning next time it runs.
             */
-            if (logger.isDebugEnabled()) logger.debug(
+            if (logger.isDebugEnabled()) { logger.debug(
               "Ignorable ConcurrentModificationException");
+            }
           }
           NDC.remove();
         }
@@ -149,28 +166,25 @@ public class ExpiringCache<K,V> {
     if (cobj == null) {
       cacheMap.put(key, new CachedObject(dataToCache));
       return null;
-    }
-    else {
+    } else {
       V obj = cobj.getCachedData(key);
       if (obj == null) {
         if (dataToCache == null) {
           // Avoids creating unnecessary new cachedObject
           // Number of accesses is not reset because object is the same
-          cobj.timeCached = cobj.timeAccessedLast = System.currentTimeMillis();
+          cobj.timeAccessedLast = System.currentTimeMillis();
+          cobj.timeCached = cobj.timeAccessedLast;
           return null;
-        }
-        else {
+        } else {
           cacheMap.put(key, new CachedObject(dataToCache));
           return null;
         }
-      }
-      else if (obj.equals(dataToCache)) {
+      } else if (obj.equals(dataToCache)) {
         // Avoids creating unnecessary new cachedObject
         // Number of accesses is not reset because object is the same
         cobj.timeCached = cobj.timeAccessedLast = System.currentTimeMillis();
         return null;
-      }
-      else {
+      } else {
         cacheMap.put(key, new CachedObject(dataToCache));
         return obj;
       }
@@ -205,13 +219,13 @@ public class ExpiringCache<K,V> {
       else if (obj.equals(dataToCache)) {
         // Avoids creating unnecessary new cachedObject
         // Number of accesses is not reset because object is the same
-        cobj.timeCached = cobj.timeAccessedLast = System.currentTimeMillis();
+        cobj.timeAccessedLast = System.currentTimeMillis();
+        cobj.timeCached =  cobj.timeAccessedLast;
         cobj.objectTTL = objectTimeToLive;
         cobj.objectIdleTimeout = objectIdleTimeout;
         cobj.userTimeouts = true;
         return null;
-      }
-      else {
+      } else {
         cacheMap.put(key, new CachedObject(dataToCache, objectTimeToLive, objectIdleTimeout));
         return obj;
       }
@@ -222,8 +236,11 @@ public class ExpiringCache<K,V> {
   @Nullable
   public V recover(K key) {
     CachedObject cobj = (CachedObject) cacheMap.get(key);
-    if (cobj == null) return null;
-    else return cobj.getCachedData(key);
+    if (cobj == null) {
+        return null;
+    } else {
+        return cobj.getCachedData(key);
+    }
   }
 
 
@@ -234,21 +251,27 @@ public class ExpiringCache<K,V> {
 
   public long whenCached(K key) {
     CachedObject cobj = (CachedObject) cacheMap.get(key);
-    if (cobj == null) return 0;
+    if (cobj == null) {
+        return 0;
+    }
     return cobj.timeCached;
   }
 
 
   public long whenLastAccessed(K key) {
     CachedObject cobj = (CachedObject) cacheMap.get(key);
-    if (cobj == null) return 0;
+    if (cobj == null) {
+        return 0;
+    }
     return cobj.timeAccessedLast;
   }
 
 
   public int howManyTimesAccessed(K key) {
     CachedObject cobj = (CachedObject) cacheMap.get(key);
-    if (cobj == null) return 0;
+    if (cobj == null) {
+        return 0;
+    }
     return cobj.numberOfAccesses;
   }
 
@@ -258,13 +281,13 @@ public class ExpiringCache<K,V> {
   it was accessed.
   */
   protected class CachedObject {
-    V cachedData;
-    long timeCached;
-    long timeAccessedLast;
-    int numberOfAccesses;
-    long objectTTL;
-    long objectIdleTimeout;
-    boolean userTimeouts;
+    private V cachedData;
+    private long timeCached;
+    private long timeAccessedLast;
+    private int numberOfAccesses;
+    private long objectTTL;
+    private long objectIdleTimeout;
+    private boolean userTimeouts;
 
 
     CachedObject(V cachedData) {
@@ -300,15 +323,11 @@ public class ExpiringCache<K,V> {
     }
 
     boolean hasExpired(long now) {
-      long usedTTL = userTimeouts?objectTTL:ttl;
-      long usedATO = userTimeouts?objectIdleTimeout:ato;
+      long usedTTL = userTimeouts ? objectTTL : ttl;
+      long usedATO = userTimeouts ? objectIdleTimeout : ato;
 
-      if (now > timeAccessedLast + usedATO ||
-        now > timeCached + usedTTL
-      ) {
-        return true;
-      }
-      else return false;
+        return now > timeAccessedLast + usedATO ||
+                now > timeCached + usedTTL;
     }
 
 

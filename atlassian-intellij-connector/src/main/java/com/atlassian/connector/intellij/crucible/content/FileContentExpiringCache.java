@@ -7,15 +7,15 @@ import com.atlassian.theplugin.util.PluginUtil;
 /**
  * @user pmaruszak
  */
-public class FileContentExpiringCache extends ExpiringCache<String, ReviewFileContent> {
-    private final static FileContentExpiringCache instance = new FileContentExpiringCache();
+public final class FileContentExpiringCache extends ExpiringCache<String, ReviewFileContent> {
+    private final static FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
 
     private FileContentExpiringCache() {
     }
 
 
     public static FileContentExpiringCache getInstance() {
-        return instance;         
+        return INSTANCE;         
     }
 
     public ReviewFileContent recover(VersionedVirtualFile virtualFile) {
