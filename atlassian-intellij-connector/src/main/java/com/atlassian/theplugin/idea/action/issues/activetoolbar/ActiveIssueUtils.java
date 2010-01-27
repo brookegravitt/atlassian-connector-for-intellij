@@ -180,14 +180,11 @@ public final class ActiveIssueUtils {
                         public void run() {
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
                                     new ActiveIssueResultHandler() {
-
                                         public void success() {
                                         }
-
                                         public void failure(Throwable problem) {
                                             PluginTaskManager.getInstance(project).activateLocalTask(
                                                     ActiveIssueUtils.getActiveJiraIssue(project));
-
                                         }
 
                                         public void cancel(String problem) {
@@ -197,10 +194,7 @@ public final class ActiveIssueUtils {
                                     });
                         }
                     });
-
-
                 }
-
                 public void failure(Throwable problem) {
                     SwingUtilities.invokeLater(new Runnable() {
 
@@ -209,10 +203,7 @@ public final class ActiveIssueUtils {
                                      ActiveIssueUtils.getActiveJiraIssue(project));
                         }
                     });
-
-
                 }
-
                 public void cancel(String problem) {
                       SwingUtilities.invokeLater(new Runnable() {
 
