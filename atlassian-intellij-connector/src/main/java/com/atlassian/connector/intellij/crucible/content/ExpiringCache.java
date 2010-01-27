@@ -111,16 +111,15 @@ public class ExpiringCache<K, V> {
               CachedObject cobj = (CachedObject) itr.getValue();
               if (cobj == null || cobj.hasExpired(now)) {
                 if (logger.isDebugEnabled()) { logger.debug(
-                  "Removing " + key + ": Idle time=" +
-                  (now - cobj.timeAccessedLast) + "; Stale time:" +
-                  (now - cobj.timeCached));
+                  "Removing " + key + ": Idle time="
+                  + (now - cobj.timeAccessedLast) + "; Stale time:"
+                  + (now - cobj.timeCached));
                 }
                 itr.remove();
                 Thread.yield();
               }
             }
-          }
-          catch (ConcurrentModificationException cme) {
+          } catch (ConcurrentModificationException cme) {
             /*
             Ignorable.  This is just a timer cleaning up.
             It will catchup on cleaning next time it runs.
@@ -182,7 +181,8 @@ public class ExpiringCache<K, V> {
       } else if (obj.equals(dataToCache)) {
         // Avoids creating unnecessary new cachedObject
         // Number of accesses is not reset because object is the same
-        cobj.timeCached = cobj.timeAccessedLast = System.currentTimeMillis();
+        cobj.timeAccessedLast = System.currentTimeMillis();
+        cobj.timeCached = cobj.timeAccessedLast;
         return null;
       } else {
         cacheMap.put(key, new CachedObject(dataToCache));
@@ -198,25 +198,24 @@ public class ExpiringCache<K, V> {
     if (cobj == null) {
       cacheMap.put(key, new CachedObject(dataToCache, objectTimeToLive, objectIdleTimeout));
       return null;
-    }
-    else {
+    } else {
       V obj = cobj.getCachedData(key);
       if (obj == null) {
         if (dataToCache == null) {
           // Avoids creating unnecessary new cachedObject
           // Number of accesses is not reset because object is the same
-          cobj.timeCached = cobj.timeAccessedLast = System.currentTimeMillis();
+
+          cobj.timeAccessedLast = System.currentTimeMillis();
+          cobj.timeCached = cobj.timeAccessedLast; 
           cobj.objectTTL = objectTimeToLive;
           cobj.objectIdleTimeout = objectIdleTimeout;
           cobj.userTimeouts = true;
           return null;
-        }
-        else {
+        } else {
           cacheMap.put(key, new CachedObject(dataToCache, objectTimeToLive, objectIdleTimeout));
           return null;
         }
-      }
-      else if (obj.equals(dataToCache)) {
+      } else if (obj.equals(dataToCache)) {
         // Avoids creating unnecessary new cachedObject
         // Number of accesses is not reset because object is the same
         cobj.timeAccessedLast = System.currentTimeMillis();
@@ -326,8 +325,8 @@ public class ExpiringCache<K, V> {
       long usedTTL = userTimeouts ? objectTTL : ttl;
       long usedATO = userTimeouts ? objectIdleTimeout : ato;
 
-        return now > timeAccessedLast + usedATO ||
-                now > timeCached + usedTTL;
+        return now > timeAccessedLast + usedATO
+                || now > timeCached + usedTTL;
     }
 
 

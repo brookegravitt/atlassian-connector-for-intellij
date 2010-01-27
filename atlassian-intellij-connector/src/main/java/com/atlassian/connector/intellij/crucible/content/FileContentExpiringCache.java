@@ -8,7 +8,7 @@ import com.atlassian.theplugin.util.PluginUtil;
  * @user pmaruszak
  */
 public final class FileContentExpiringCache extends ExpiringCache<String, ReviewFileContent> {
-    private final static FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
+    private  static final FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
 
     private FileContentExpiringCache() {
     }
