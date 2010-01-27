@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -32,18 +31,15 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindowManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.JSpinner;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
@@ -198,16 +194,6 @@ public final class IdeaHelper {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occurred while using remote service:\n"
 						+ e.getMessage(), DialogWithDetails.getExceptionString(e)
 						+ (e.getServerStackTrace() != null ? e.getServerStackTrace() : ""));
-			}
-		});
-	}
-
-	public static void handleError(final Project project, final ValueNotYetInitialized valueNotYetInitialized) {
-		ApplicationManager.getApplication().invokeLater(new Runnable() {
-			public void run() {
-				PluginUtil.getLogger().warn(valueNotYetInitialized);
-				Messages.showErrorDialog(project, "The following error has occurred:\n"
-						+ valueNotYetInitialized.getMessage(), "Error");
 			}
 		});
 	}

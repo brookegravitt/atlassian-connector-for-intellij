@@ -17,18 +17,18 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,7 +41,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 	private static final String GENERAL_COMMENTS_SECTION = "General Comments";
 
 	private TreeCellRenderer myRenderer;
-	private ReviewAdapter review;
+	private final ReviewAdapter review;
 
 
 	public GeneralSectionNode(ReviewAdapter review, AtlassianClickAction action) {
@@ -52,12 +52,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 	}
 
 	void initRenderer() {
-			int noOfGeneralComments = 0;
-		try {
-			noOfGeneralComments = review.getGeneralComments().size();
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			PluginUtil.getLogger().error("No General Comments");
-		}		
+		int noOfGeneralComments = review.getGeneralComments().size();
 		this.myRenderer = new MyRenderer(noOfGeneralComments);
 	}
 

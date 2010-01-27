@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
@@ -43,7 +42,7 @@ public final class ReviewCommentRendererTestUi {
 	private ReviewCommentRendererTestUi() {
 	}
 
-	public static void main(String[] args) throws ValueNotYetInitialized {
+	public static void main(String[] args) {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
 		ServerData cruc = new ServerData(new ServerCfg(true, "my crucible server", "", new ServerIdImpl()) {
 			@Override

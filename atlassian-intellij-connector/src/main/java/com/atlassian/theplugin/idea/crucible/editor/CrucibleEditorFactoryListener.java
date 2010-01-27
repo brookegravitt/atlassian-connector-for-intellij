@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
@@ -15,8 +15,6 @@ import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 
 public class CrucibleEditorFactoryListener implements EditorFactoryListener {
@@ -39,18 +37,12 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 					Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
 					if (!reviews.isEmpty()) {
 						for (ReviewAdapter review : reviews) {
-							try {
-								crucibleFile = CodeNavigationUtil
-										.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								// don't do anything - should not happen
-								// but even if happens - we don't want to break file opening
-							}
+							crucibleFile = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review
+									.getFiles());
 
 							if (crucibleFile != null) {
 								showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,
-										review,
-										crucibleFile);
+										review, crucibleFile);
 							}
 						}
 					}

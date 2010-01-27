@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -85,15 +84,11 @@ public class AddAction extends AbstractCommentAction {
         event.getPresentation().setEnabled(editor == null);
     }
 
-    private boolean checkIfAuthorized(final ReviewAdapter review) {
+	private boolean checkIfAuthorized(final ReviewAdapter review) {
 		if (review == null) {
 			return false;
 		}
-		try {
-			if (!review.getActions().contains(CrucibleAction.COMMENT)) {
-				return false;
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+		if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 			return false;
 		}
 		return true;

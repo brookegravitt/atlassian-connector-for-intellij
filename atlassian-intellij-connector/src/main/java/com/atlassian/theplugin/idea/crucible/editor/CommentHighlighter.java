@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.connector.commons.misc.IntRanges;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
@@ -28,6 +27,8 @@ import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigati
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
@@ -36,18 +37,23 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public final class CommentHighlighter {
 	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(0xf2, 0xd0, 0x55);
@@ -157,17 +163,13 @@ public final class CommentHighlighter {
 					final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
 					if (data != null && file != null) {
 						if (data.getPermId().equals(review.getPermId())) {
-							try {
-								for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
-									if (crucibleFileInfo.equals(file)) {
-										applyHighlighters(project, editor, review, crucibleFileInfo);
-										virtualFile.putUserData(REVIEW_DATA_KEY, review);
-										virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
-										virtualFile.putUserData(COMMENT_DATA_KEY, true);
-									}
+							for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
+								if (crucibleFileInfo.equals(file)) {
+									applyHighlighters(project, editor, review, crucibleFileInfo);
+									virtualFile.putUserData(REVIEW_DATA_KEY, review);
+									virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+									virtualFile.putUserData(COMMENT_DATA_KEY, true);
 								}
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								throw new RuntimeException(valueNotYetInitialized);
 							}
 						} else {
 							removeHighlightersAndContextData(
@@ -175,39 +177,35 @@ public final class CommentHighlighter {
 						}
 					}
 				} else {
-					try {
-						Set<CrucibleFileInfo> files = review.getFiles();
-						if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
-							final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-									virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
-							if (fileInfo != null) {
-								CrucibleHelper.openFileWithDiffs(project
-										, false
-										, review
-										, fileInfo
-										, 1
-										, 1
-										,
-										new UpdateEditorWithContextActionImpl(project, editor, review,
-												fileInfo));
-							}
-						} else {
-							CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-									virtualFile.getPath(), files);
-							if (fileInfo != null && fileInfo.getRepositoryType() != RepositoryType.PATCH) {
-								CrucibleHelper.openFileWithDiffs(project
-										, false
-										, review
-										, fileInfo
-										, 1
-										, 1
-										,
-										new UpdateEditorCurrentContentActionImpl(project, editor, review,
-												fileInfo));
-							}
+					Set<CrucibleFileInfo> files = review.getFiles();
+					if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
+						final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+								virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
+						if (fileInfo != null) {
+							CrucibleHelper.openFileWithDiffs(project
+									, false
+									, review
+									, fileInfo
+									, 1
+									, 1
+									,
+									new UpdateEditorWithContextActionImpl(project, editor, review,
+									fileInfo));
 						}
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						// don't do anything - should not happen, but even if happens - we don't want to break file opening
+					} else {
+						CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+								virtualFile.getPath(), files);
+						if (fileInfo != null && fileInfo.getRepositoryType() != RepositoryType.PATCH) {
+							CrucibleHelper.openFileWithDiffs(project
+									, false
+									, review
+									, fileInfo
+									, 1
+									, 1
+									,
+									new UpdateEditorCurrentContentActionImpl(project, editor, review,
+									fileInfo));
+						}
 					}
 				}
 			}
@@ -398,7 +396,8 @@ public final class CommentHighlighter {
             //
             Timer t = new Timer();
             t.schedule(new TimerTask() {
-                public void run() {
+                @Override
+				public void run() {
                     ApplicationManager.getApplication().invokeLater(new Runnable() {
                         public void run() {
                             Document doc = editor.getDocument();

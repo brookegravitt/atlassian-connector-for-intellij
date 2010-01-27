@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.Constants;
@@ -36,26 +35,22 @@ public abstract class AbstractCompleteReviewAction extends AnAction {
 		if (review == null) {
 			event.getPresentation().setEnabled(false);
 		} else {
-			try {
-				if (review.getActions().contains(getRequestedAction())) {
-					for (Reviewer reviewer : review.getReviewers()) {
-						if (reviewer.getUsername().equals(review.getServerData().getUsername())) {
-							if (reviewer.isCompleted() == !getCompletionStatus()) {
-								event.getPresentation().setEnabled(true);
-								event.getPresentation().setVisible(true);
-							} else {
-								event.getPresentation().setEnabled(false);
-								event.getPresentation().setVisible(false);
-							}
-							break;
+			if (review.getActions().contains(getRequestedAction())) {
+				for (Reviewer reviewer : review.getReviewers()) {
+					if (reviewer.getUsername().equals(review.getServerData().getUsername())) {
+						if (reviewer.isCompleted() == !getCompletionStatus()) {
+							event.getPresentation().setEnabled(true);
+							event.getPresentation().setVisible(true);
+						} else {
+							event.getPresentation().setEnabled(false);
+							event.getPresentation().setVisible(false);
 						}
+						break;
 					}
-				} else {
-					event.getPresentation().setEnabled(false);
-					event.getPresentation().setVisible(false);
 				}
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized.printStackTrace();
+			} else {
+				event.getPresentation().setEnabled(false);
+				event.getPresentation().setVisible(false);
 			}
 		}
 	}

@@ -20,7 +20,6 @@ import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -164,23 +163,23 @@ public class ReviewAdapter {
 		return review.getSummary();
 	}
 
-	public Set<Reviewer> getReviewers() throws ValueNotYetInitialized {
+	public Set<Reviewer> getReviewers() {
 		return review.getReviewers();
 	}
 
-	public List<Comment> getGeneralComments() throws ValueNotYetInitialized {
+	public List<Comment> getGeneralComments() {
 		return review.getGeneralComments();
 	}
 
-	public EnumSet<CrucibleAction> getTransitions() throws ValueNotYetInitialized {
+	public EnumSet<CrucibleAction> getTransitions() {
 		return review.getTransitions();
 	}
 
-	public EnumSet<CrucibleAction> getActions() throws ValueNotYetInitialized {
+	public EnumSet<CrucibleAction> getActions() {
 		return review.getActions();
 	}
 
-	public CrucibleFileInfo getFileByPermId(PermId id) throws ValueNotYetInitialized {
+	public CrucibleFileInfo getFileByPermId(PermId id) {
 		return review.getFileByPermId(id);
 	}
 
@@ -231,7 +230,7 @@ public class ReviewAdapter {
 		review.setGeneralComments(generalComments);
 	}
 
-	public void addGeneralComment(final Comment comment) throws ValueNotYetInitialized, RemoteApiException,
+	public void addGeneralComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 
 		Comment newComment = facade.addGeneralComment(getServerData(), review, comment);
@@ -247,7 +246,7 @@ public class ReviewAdapter {
 	}
 
 	public void addGeneralCommentReply(final Comment parentComment, final GeneralComment replyComment)
-			throws RemoteApiException, ServerPasswordNotProvidedException, ValueNotYetInitialized {
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		Comment newReply = facade.addGeneralCommentReply(getServerData(), replyComment);
 
 		if (newReply != null) {
@@ -342,7 +341,7 @@ public class ReviewAdapter {
 	 *
 	 */
 	public void removeVersionedComment(final VersionedComment versionedComment, final CrucibleFileInfo file)
-			throws RemoteApiException, ServerPasswordNotProvidedException, ValueNotYetInitialized {
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		// remove comment from the server
 		facade.removeComment(getServerData(), review.getPermId(), versionedComment);
 
@@ -358,15 +357,11 @@ public class ReviewAdapter {
 	public void editGeneralComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.updateComment(getServerData(), getPermId(), comment);
-		try {
-			for (int i = 0; i < getGeneralComments().size(); i++) {
-				if (comment.getPermId().equals(getGeneralComments().get(i).getPermId())) {
-					getGeneralComments().set(i, new GeneralComment(comment));
-					break;
-				}
+		for (int i = 0; i < getGeneralComments().size(); i++) {
+			if (comment.getPermId().equals(getGeneralComments().get(i).getPermId())) {
+				getGeneralComments().set(i, new GeneralComment(comment));
+				break;
 			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			throw new RuntimeException(valueNotYetInitialized);
 		}
 		// notify listeners
 		for (CrucibleReviewListener listener : getListeners()) {
@@ -377,17 +372,13 @@ public class ReviewAdapter {
 	public void editVersionedComment(final CrucibleFileInfo file, final VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		facade.updateComment(getServerData(), getPermId(), comment);
-		try {
-			for (CrucibleFileInfo fileInfo : getFiles()) {
-				for (int i = 0; i < fileInfo.getVersionedComments().size(); i++) {
-					if (comment.getPermId().equals(fileInfo.getVersionedComments().get(i).getPermId())) {
-						fileInfo.getVersionedComments().set(i, new VersionedComment(comment));
-						break;
-					}
+		for (CrucibleFileInfo fileInfo : getFiles()) {
+			for (int i = 0; i < fileInfo.getVersionedComments().size(); i++) {
+				if (comment.getPermId().equals(fileInfo.getVersionedComments().get(i).getPermId())) {
+					fileInfo.getVersionedComments().set(i, new VersionedComment(comment));
+					break;
 				}
 			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			throw new RuntimeException(valueNotYetInitialized);
 		}
 		// notify listeners
 		for (CrucibleReviewListener listener : getListeners()) {
@@ -422,19 +413,15 @@ public class ReviewAdapter {
 	public void markAllCommentsRead() throws RemoteApiException, ServerPasswordNotProvidedException {
 		facade.markAllCommentsRead(getServerData(), getPermId());
 
-		try {
-			List<Comment> gcs = getGeneralComments();
-			for (Comment generalComment : gcs) {
-				markLeaveUnreadCommentRead(generalComment);
+		List<Comment> gcs = getGeneralComments();
+		for (Comment generalComment : gcs) {
+			markLeaveUnreadCommentRead(generalComment);
+		}
+		Set<CrucibleFileInfo> files = getFiles();
+		for (CrucibleFileInfo file : files) {
+			for (VersionedComment versionedComment : file.getVersionedComments()) {
+				markLeaveUnreadCommentRead(versionedComment);
 			}
-			Set<CrucibleFileInfo> files = getFiles();
-			for (CrucibleFileInfo file : files) {
-				for (VersionedComment versionedComment : file.getVersionedComments()) {
-					markLeaveUnreadCommentRead(versionedComment);
-				}
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			throw new RuntimeException(valueNotYetInitialized);
 		}
 	}
 
@@ -525,23 +512,11 @@ public class ReviewAdapter {
 		review.setProjectKey(newReview.getProjectKey());
 		review.setDescription(newReview.getDescription());
 		review.setSummary(newReview.getSummary());
-		try {
-			review.setReviewers(newReview.getReviewers());
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			// shame
-		}
+		review.setReviewers(newReview.getReviewers());
 		if (!reviewDifferenceProducer.isShortEqual()) {
-			try {
-				setGeneralComments(newReview.getGeneralComments());
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// shame
-			}
+			setGeneralComments(newReview.getGeneralComments());
 
-			try {
-				review.setActions(newReview.getActions());
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// shame
-			}
+			review.setActions(newReview.getActions());
 			review.setAllowReviewerToJoin(newReview.isAllowReviewerToJoin());
 			review.setCloseDate(newReview.getCloseDate());
 			review.setCreateDate(newReview.getCreateDate());
@@ -550,19 +525,11 @@ public class ReviewAdapter {
 			review.setParentReview(newReview.getParentReview());
 			review.setRepoName(newReview.getRepoName());
 			review.setState(newReview.getState());
-			try {
-				review.setTransitions(newReview.getTransitions());
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// shame
-			}
+			review.setTransitions(newReview.getTransitions());
 		}
 
 		if (!reviewDifferenceProducer.isFilesEqual()) {
-			try {
-				setFiles(newReview.getFiles());
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// shame
-			}
+			setFiles(newReview.getFiles());
 		}
 
 		if (reviewChanged) {
@@ -579,10 +546,7 @@ public class ReviewAdapter {
         //add notification
 	}
 
-	public Set<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {        
-		if (review.getFiles() == null) {
-			throw new ValueNotYetInitialized("Files collection is empty");
-		}
+	public Set<CrucibleFileInfo> getFiles() {        
 		return review.getFiles();
 	}
 
@@ -591,55 +555,55 @@ public class ReviewAdapter {
 	 * @throws com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized
 	 *
 	 */
-	public int getNumberOfVersionedComments() throws ValueNotYetInitialized {
+	public int getNumberOfVersionedComments() {
 		return review.getNumberOfVersionedComments();
 	}
 
-	public int getNumberOfVersionedComments(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfVersionedComments(final String userName) {
 		return review.getNumberOfVersionedComments(userName);
 	}
 
-	public int getNumberOfVersionedCommentsDefects() throws ValueNotYetInitialized {
+	public int getNumberOfVersionedCommentsDefects() {
 		return review.getNumberOfVersionedCommentsDefects();
 	}
 
-	public int getNumberOfVersionedCommentsDefects(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfVersionedCommentsDefects(final String userName) {
 		return review.getNumberOfVersionedCommentsDefects(userName);
 	}
 
-	public int getNumberOfVersionedCommentsDrafts() throws ValueNotYetInitialized {
+	public int getNumberOfVersionedCommentsDrafts() {
 		return review.getNumberOfVersionedCommentsDrafts();
 	}
 
-	public int getNumberOfGeneralCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfGeneralCommentsDrafts(final String userName) {
 		return review.getNumberOfGeneralCommentsDrafts(userName);
 	}
 
-	public int getNumberOfGeneralComments() throws ValueNotYetInitialized {
+	public int getNumberOfGeneralComments() {
 		return review.getNumberOfGeneralComments();
 	}
 
-	public int getNumberOfGeneralComments(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfGeneralComments(final String userName) {
 		return review.getNumberOfGeneralComments(userName);
 	}
 
-	public int getNumberOfGeneralCommentsDefects() throws ValueNotYetInitialized {
+	public int getNumberOfGeneralCommentsDefects() {
 		return review.getNumberOfGeneralCommentsDefects();
 	}
 
-	public int getNumberOfGeneralCommentsDefects(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfGeneralCommentsDefects(final String userName) {
 		return review.getNumberOfGeneralCommentsDefects(userName);
 	}
 
-	public int getNumberOfGeneralCommentsDrafts() throws ValueNotYetInitialized {
+	public int getNumberOfGeneralCommentsDrafts() {
 		return review.getNumberOfGeneralCommentsDrafts();
 	}
 
-	public int getNumberOfVersionedCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+	public int getNumberOfVersionedCommentsDrafts(final String userName) {
 		return review.getNumberOfVersionedCommentsDrafts(userName);
 	}
 
-	public int getNumberOfUnreadComments() throws ValueNotYetInitialized {
+	public int getNumberOfUnreadComments() {
 		return review.getNumberOfUnreadComments();
 	}
 

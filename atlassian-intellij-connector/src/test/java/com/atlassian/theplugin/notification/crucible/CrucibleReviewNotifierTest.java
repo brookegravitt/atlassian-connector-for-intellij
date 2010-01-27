@@ -18,7 +18,6 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -301,7 +300,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		};
 	}
 
-	private List<ReviewAdapter> prepareReviewData(State state) throws ValueNotYetInitialized {
+	private List<ReviewAdapter> prepareReviewData(State state) {
 //		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 
 		PermId reviewId1 = new PermId("CR-1");
@@ -346,7 +345,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 //		((Review) review2).setVersionedComments(new ArrayList<VersionedComment>());
 		review2.setPermId(reviewId2);
 		review2.setState(state);
-		review2.setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
+		review2.setReviewers(new HashSet<Reviewer>(Arrays.asList(reviewer3, reviewer4)));
 
 		review2.getGeneralComments().add(prepareGeneralComment(review1, newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);

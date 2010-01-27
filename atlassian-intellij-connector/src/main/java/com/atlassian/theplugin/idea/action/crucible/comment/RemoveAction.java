@@ -17,9 +17,8 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -59,6 +58,7 @@ public class RemoveAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
+	@Override
 	public void actionPerformed(AnActionEvent e) {
 		Project currentProject = e.getData(DataKeys.PROJECT);
 		AtlassianTreeNode node = getSelectedNode(e);
@@ -108,6 +108,7 @@ public class RemoveAction extends AbstractCommentAction {
 
 		Task.Backgroundable task = new Task.Backgroundable(project, "Removing File Comment", false) {
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
 					review.removeVersionedComment(comment, file);
@@ -115,8 +116,6 @@ public class RemoveAction extends AbstractCommentAction {
 					IdeaHelper.handleRemoteApiException(project, e);
 				} catch (ServerPasswordNotProvidedException e) {
 					IdeaHelper.handleMissingPassword(e);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					Messages.showErrorDialog(project, valueNotYetInitialized.getMessage(), "Error");
 				}
 			}
 		};
@@ -128,6 +127,7 @@ public class RemoveAction extends AbstractCommentAction {
 
 		Task.Backgroundable task = new Task.Backgroundable(project, "Removing General Comment", false) {
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
 					review.removeGeneralComment(comment);

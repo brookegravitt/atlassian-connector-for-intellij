@@ -15,11 +15,17 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import static javax.swing.Action.NAME;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -31,6 +37,9 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -42,22 +51,34 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ListSpeedSearch;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-
-import static javax.swing.Action.NAME;
+import java.util.Map;
+import java.util.Set;
 
 
 public abstract class CrucibleReviewCreateForm extends DialogWrapper {
@@ -76,7 +97,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
     private JLabel repositoryLabel;
     private JLabel selectedReviewers;
     private DefaultListModel userListModel;
-    private UserListCellRenderer cellRenderer = new UserListCellRenderer();
+    private final UserListCellRenderer cellRenderer = new UserListCellRenderer();
 
     protected Project project;
     protected CrucibleServerFacade crucibleServerFacade;
@@ -574,7 +595,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
         }
     }
 
-    private Map<ServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
+    private final Map<ServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
 
 
     private void updateServerRelatedCombos(final ServerData server, final CrucibleServerData crucibleServerData) {
@@ -883,35 +904,30 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
                             }
 
-                            if (!leaveAsDraftCheckBox.isSelected()) {
-                                try {
-                                    ReviewAdapter newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-                                    if (newReview.getModerator() != null && newReview.getModerator().getUsername().equals(server.getUsername())) {
-                                        if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
-                                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before approveReview()");
-                                            newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
-                                        } else {
-                                            Messages.showErrorDialog(project,
-                                                    newReview.getAuthor().getDisplayName() +
-                                                            " is authorized to approve review.\n"
-                                                            + "Leaving review in draft state.", "Permission denied");
-                                        }
-                                    } else {
-                                        if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
-                                            LoggerImpl.getInstance().info("runCreateReviewTask.run() - before submitReview()");
-                                            newlyCreated = crucibleServerFacade.submitReview(server, draftReview.getPermId());
-                                        } else {
-                                            Messages.showErrorDialog(project,
-                                                    newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
-                                                            + "Leaving review in draft state.", "Permission denied");
-                                        }
-                                    }
-                                } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                                    Messages.showErrorDialog(project,
-                                            "Unable to change review state. Leaving review in draft state.",
-                                            "Permission denied");
-                                }
-                            } else {
+							if (!leaveAsDraftCheckBox.isSelected()) {
+								ReviewAdapter newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+								if (newReview.getModerator() != null
+										&& newReview.getModerator().getUsername().equals(server.getUsername())) {
+									if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
+										LoggerImpl.getInstance().info("runCreateReviewTask.run() - before approveReview()");
+										newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
+									} else {
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() +
+												" is authorized to approve review.\n"
+												+ "Leaving review in draft state.", "Permission denied");
+									}
+								} else {
+									if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
+										LoggerImpl.getInstance().info("runCreateReviewTask.run() - before submitReview()");
+										newlyCreated = crucibleServerFacade.submitReview(server, draftReview.getPermId());
+									} else {
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
+												+ "Leaving review in draft state.", "Permission denied");
+									}
+								}
+							} else {
                                 newlyCreated = draftReview;
                             }
 
