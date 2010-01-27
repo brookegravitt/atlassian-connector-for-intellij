@@ -81,7 +81,7 @@
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>7.0</version>
-			<classifier>7590</classifier>
+			<classifier>7590</classifier>                            
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
