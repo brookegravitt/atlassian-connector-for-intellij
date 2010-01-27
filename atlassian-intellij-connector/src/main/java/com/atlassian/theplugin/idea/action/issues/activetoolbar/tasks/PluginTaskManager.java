@@ -447,7 +447,7 @@ public final class PluginTaskManager {
     }
 
     private void activateTask(final LocalTask task, final boolean clearContext, final boolean createChangeset) {
-        System.out.println("Activating: " +  task.getId());
+        //System.out.println("Activating: " +  task.getId());
         if (classLoader != null && task != null) {
             try {
 
