@@ -176,7 +176,6 @@ public final class ActiveIssueUtils {
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
                     SwingUtilities.invokeLater(new Runnable() {
-
                         public void run() {
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
                                     new ActiveIssueResultHandler() {
