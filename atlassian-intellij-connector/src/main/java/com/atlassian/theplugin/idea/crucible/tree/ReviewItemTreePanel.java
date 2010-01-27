@@ -23,7 +23,6 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -321,21 +320,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		boolean hasNoDetails = false;
 
         do {
-		try {
 			reviewItem.getGeneralComments();
 			reviewItem.getFiles();
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			Thread thread = ContentDownloader.getInstance().getDownloadingThread(reviewItem);
-            if (thread != null) {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    PluginUtil.getLogger().warn("Review " + reviewItem.getPermId() + " files download interrupted");
-                }
-            } else {
-                hasNoDetails = true;
-            }
-		}
         }  while(ContentDownloader.getInstance().isDownloadInProgress(reviewItem));
 
 		if (hasNoDetails || refreshDetails) {

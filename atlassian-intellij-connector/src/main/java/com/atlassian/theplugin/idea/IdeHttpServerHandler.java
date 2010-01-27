@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -444,13 +443,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 					// find file
 					if (isDefined(filePath)) {
-						final Set<CrucibleFileInfo> files;
-						try {
-							files = review.getFiles();
-						} catch (ValueNotYetInitialized e) {
-							PluginUtil.getLogger().warn("Files collection not available for review", e);
-							return;
-						}
+						final Set<CrucibleFileInfo> files = review.getFiles();
 
 						for (final CrucibleFileInfo f : files) {
 							if (f.getFileDescriptor().getUrl().endsWith(filePath)) {
@@ -468,13 +461,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					if (isDefined(commentId)) {
 
 						// try to find general comment with specified ID
-						final List<Comment> generalComments;
-						try {
-							generalComments = review.getGeneralComments();
-						} catch (ValueNotYetInitialized e) {
-							PluginUtil.getLogger().warn("General comments collection not available for review", e);
-							return;
-						}
+						final List<Comment> generalComments = review.getGeneralComments();
 
 						for (Comment comment : generalComments) {
 							if (comment.getPermId().getId().equals(commentId)) {

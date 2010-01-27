@@ -4,7 +4,6 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -44,23 +43,16 @@ public final class ContentDownloader {
     }
 
 
-    private List<CrucibleFileInfo> getFileList(final ReviewAdapter review) {
-        List<CrucibleFileInfo> list = new ArrayList<CrucibleFileInfo>();
+	private List<CrucibleFileInfo> getFileList(final ReviewAdapter review) {
+		List<CrucibleFileInfo> list = new ArrayList<CrucibleFileInfo>();
 
-        try {
-            review.getFiles();
-        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-        }
+		review.getFiles();
 
-        try {
-            for (CrucibleFileInfo item : review.getFiles()) {
-                list.add(item);
-            }
-            return list;
-        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-            return list;
-        }
-    }
+		for (CrucibleFileInfo item : review.getFiles()) {
+			list.add(item);
+		}
+		return list;
+	}
 
     
     public synchronized void downloadFilesContent(@NotNull final Project project, final ReviewAdapter review) {

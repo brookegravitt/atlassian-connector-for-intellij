@@ -16,13 +16,13 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.util.PluginUtil;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vcs.FileStatus;
@@ -30,16 +30,13 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
 import com.intellij.util.ui.UIUtil;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-
-import javax.swing.*;
+import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.Color;
 
 public class CrucibleFileNode extends FileNode {
 
-	private CrucibleFileInfo file;
+	private final CrucibleFileInfo file;
 	private static final ColoredTreeCellRenderer MY_RENDERER = new CrucibleFileNodeRenderer();
 	private ReviewAdapter review;
 
@@ -73,15 +70,11 @@ public class CrucibleFileNode extends FileNode {
 
 	public void setReview(ReviewAdapter review) {
 		this.review = review;
-		try {
-			for (CrucibleFileInfo info : review.getFiles()) {
-				if (info.getPermId().equals(file.getPermId())) {
-					file.setVersionedComments(info.getVersionedComments());
-					break;
-				}
+		for (CrucibleFileInfo info : review.getFiles()) {
+			if (info.getPermId().equals(file.getPermId())) {
+				file.setVersionedComments(info.getVersionedComments());
+				break;
 			}
-		} catch (ValueNotYetInitialized e) {
-			PluginUtil.getLogger().warn(e);
 		}
 	}
 

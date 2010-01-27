@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -45,6 +44,9 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.util.Htmlizer;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -58,14 +60,26 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Date;
@@ -78,8 +92,8 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 	private ReviewAdapter reviewAdapter;
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
-	private PluginConfiguration pluginConfiguration;
-	private WorkspaceConfigurationBean workspaceConfiguration;
+	private final PluginConfiguration pluginConfiguration;
+	private final WorkspaceConfigurationBean workspaceConfiguration;
 
 	private ReviewPanel contentPanel;
 	private ReviewContentParameters contentParams;
@@ -166,7 +180,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
     private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
-		private boolean refreshDetails;
+		private final boolean refreshDetails;
 
 		private ReviewContentParameters(ReviewAdapter reviewAdapter, final boolean refreshDetails) {
 			this.reviewAdapter = reviewAdapter;
@@ -201,12 +215,12 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 	private final class ReviewPanel extends MultiTabToolWindow.ContentPanel implements CrucibleReviewListener {
 		private final ReviewContentParameters params;
-		private DetailsPanel detailsPanel;
-		private SummaryPanel summaryPanel;
-		private CommentsPanel commentsPanel;
+		private final DetailsPanel detailsPanel;
+		private final SummaryPanel summaryPanel;
+		private final CommentsPanel commentsPanel;
 		private static final String TAB_DETAILS = "Details";
 		private static final String TAB_FILES_AND_COMMENTS = "Files and Comments";
-		private JTabbedPane tabs;
+		private final JTabbedPane tabs;
 
 		private ReviewPanel(ReviewContentParameters params) {
 			this.params = params;
@@ -339,8 +353,8 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		}
 
 		private final class CommentsPanel extends JPanel {
-			private ReviewItemTreePanel reviewItemTreePanel;
-			private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+			private final ReviewItemTreePanel reviewItemTreePanel;
+			private final ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 			private CommentsPanel(final boolean retrieveDetails) {
 				super(new BorderLayout());
@@ -406,7 +420,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 		private class SummaryPanel extends JPanel implements DataProvider {
 
-			private JEditorPane summary;
+			private final JEditorPane summary;
 
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
@@ -486,7 +500,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 // piggy-backed on the main class of the file. To the author of this class - you suck. Sure refactoring is your friend.
 class DetailsPanel extends JPanel {
-	private JScrollPane scroll;
+	private final JScrollPane scroll;
 
 	private final ReviewAdapter ra;
 	private static final int MAX_DISPLAYED_LINK_LENGTH = 80;
@@ -586,12 +600,12 @@ class DetailsPanel extends JPanel {
 		body.add(new BoldLabel("Author"), gbc1);
 		body.add(new JLabel(ra.getCreator().getDisplayName()), gbc2);
 
-        if (ra.getModerator() != null) {
-		    gbc1.gridy++;
-    		gbc2.gridy++;
-    		body.add(new BoldLabel("Moderator"), gbc1);
-    		body.add(new JLabel(ra.getModerator().getDisplayName()), gbc2);
-        }
+		if (ra.getModerator() != null) {
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Moderator"), gbc1);
+			body.add(new JLabel(ra.getModerator().getDisplayName()), gbc2);
+		}
 
 		gbc1.gridy++;
 		gbc2.gridy++;
@@ -607,22 +621,18 @@ class DetailsPanel extends JPanel {
 		reviewers.setLayout(layout);
 
 		Icon reviewCompletedIcon = IconLoader.getIcon("/icons/icn_complete.gif");
-		try {
-			for (Reviewer reviewer : ra.getReviewers()) {
-				JLabel label = new JLabel(reviewer.getDisplayName(),
-						reviewer.isCompleted() ? reviewCompletedIcon : null,
-						SwingConstants.LEFT);
-				label.setOpaque(true);
-				label.setBackground(Color.WHITE);
-				label.setHorizontalTextPosition(SwingUtilities.LEFT);
-				label.setHorizontalAlignment(SwingUtilities.LEFT);
-				reviewers.add(label);
-			}
-
-			body.add(reviewers, gbc2);
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			//do not care
+		for (Reviewer reviewer : ra.getReviewers()) {
+			JLabel label = new JLabel(reviewer.getDisplayName(),
+					reviewer.isCompleted() ? reviewCompletedIcon : null,
+					SwingConstants.LEFT);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			label.setHorizontalTextPosition(SwingUtilities.LEFT);
+			label.setHorizontalAlignment(SwingUtilities.LEFT);
+			reviewers.add(label);
 		}
+
+		body.add(reviewers, gbc2);
 
 		gbc1.gridy++;
 		gbc1.weighty = 1.0;
@@ -637,10 +647,12 @@ class DetailsPanel extends JPanel {
 
 	public static void main(String[] args) {
 		ServerData cruc = new ServerData(new ServerCfg(true, "mybamboo", "", new ServerIdImpl()) {
+			@Override
 			public ServerType getServerType() {
 				return null;
 			}
 
+			@Override
 			public ServerCfg getClone() {
 				return null;
 			}

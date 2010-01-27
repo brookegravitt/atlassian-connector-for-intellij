@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -139,11 +138,7 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 		if (review == null) {
 			return false;
 		}
-		try {
-			if (!review.getActions().contains(CrucibleAction.COMMENT)) {
-				return false;
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+		if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 			return false;
 		}
 		return true;

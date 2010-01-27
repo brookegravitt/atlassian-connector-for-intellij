@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -84,17 +83,13 @@ public class CommentAction extends AnAction {
 						visible = false;
 					} else {
 						final Project project = e.getData(DataKeys.PROJECT);
-						CrucibleReviewListModel crucibleReviewListModel
-								= IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
+						CrucibleReviewListModel crucibleReviewListModel = IdeaHelper.getProjectComponent(project,
+								CrucibleReviewListModel.class);
 						if (crucibleReviewListModel == null
 								|| !crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
 							visible = false;
 						} else {
-							try {
-								if (!review.getActions().contains(CrucibleAction.COMMENT)) {
-									visible = false;
-								}
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 								visible = false;
 							}
 						}
