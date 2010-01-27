@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.crucible.comment.gutter;
 
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -19,14 +19,14 @@ public class EditAction extends AbstractGutterCommentAction {
 		editComment(project, comment, null, null);
 	}
 
-	private void editComment(final Project project, final VersionedComment comment, final VersionedCommentBean localCopy,
+	private void editComment(final Project project, final VersionedComment comment, final VersionedComment localCopy,
 			final Throwable error) {
 
-		final VersionedCommentBean newComment;
+		final VersionedComment newComment;
 		if (localCopy != null) {
-			newComment = new VersionedCommentBean(localCopy);
+			newComment = new VersionedComment(localCopy);
 		} else {
-			newComment = new VersionedCommentBean(comment);
+			newComment = new VersionedComment(comment);
 		}
 
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);

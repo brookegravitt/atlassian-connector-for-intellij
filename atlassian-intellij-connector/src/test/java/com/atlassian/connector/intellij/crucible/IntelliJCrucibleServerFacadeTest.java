@@ -13,20 +13,21 @@ import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import org.mockito.Mockito;
 import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
-import org.mockito.Mockito;
 
 /**
  * @author Wojciech Seliga
  */
 public class IntelliJCrucibleServerFacadeTest extends TestCase {
-	private User U1 = new User("wseliga", "Wojciech Seliga");
-	private User U2 = new User("pmaruszak", "Piotr Maruszak");
-	private User U3 = new User("jgorycki", "Janusz Gorycki");
-	private CrucibleProject P1 = new CrucibleProject("1", "PRJ1", "Project One", MiscUtil.buildArrayList("wseliga", "pmaruszak"));
-	private CrucibleProject P2 = new CrucibleProject("2", "PRJ2", "Project Two", MiscUtil.buildArrayList("wseliga"));
+	private final User U1 = new User("wseliga", "Wojciech Seliga");
+	private final User U2 = new User("pmaruszak", "Piotr Maruszak");
+	private final User U3 = new User("jgorycki", "Janusz Gorycki");
+	private final CrucibleProject P1 = new CrucibleProject("1", "PRJ1", "Project One", MiscUtil.buildArrayList("wseliga", "pmaruszak"));
+	private final CrucibleProject P2 = new CrucibleProject("2", "PRJ2", "Project Two", MiscUtil.buildArrayList("wseliga"));
 
 	public void testGetAllowedReviewers() throws RemoteApiException, ServerPasswordNotProvidedException {
 		final CrucibleServerCfg SERVER_CFG = new CrucibleServerCfg(true, "myname", new ServerIdImpl());
@@ -38,7 +39,7 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 		Mockito.when(crucibleSessionMock.getUsers()).thenReturn(MiscUtil.buildArrayList(U1, U2, U3));
 
 		final IntelliJCrucibleServerFacade facade = new IntelliJCrucibleServerFacade(
-				new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()) {
+				new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()) {
 			@Override
 			public CrucibleSession getSession(final ConnectionCfg server)
 					throws RemoteApiException, ServerPasswordNotProvidedException {

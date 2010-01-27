@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
@@ -51,10 +51,10 @@ public class CommentEditForm extends DialogWrapper {
 
 
     private boolean saveAsDraft = false;
-    private final CommentBean comment;
+    private final Comment comment;
     private Throwable lastError;
 
-    public CommentEditForm(final Project project, final ReviewAdapter review, final CommentBean comment) {
+    public CommentEditForm(final Project project, final ReviewAdapter review, final Comment comment) {
 
         super(project, false);
         this.comment = comment;
@@ -136,7 +136,7 @@ public class CommentEditForm extends DialogWrapper {
         getOKAction().putValue(Action.NAME, "Post");
     }
 
-    public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean data, final Throwable error) {
+    public CommentEditForm(Project project, final ReviewAdapter review, final Comment data, final Throwable error) {
         this(project, review, data);
         if (error != null) {
             errorPanel.setBackground(Constants.FAIL_COLOR);

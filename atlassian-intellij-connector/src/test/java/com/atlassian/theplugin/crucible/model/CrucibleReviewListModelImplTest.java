@@ -6,24 +6,41 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import junit.framework.TestCase;
-
-import java.util.*;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModelImplAdapter model;
 	private ServerData server1;
 	private ServerData server2;
 	private int addedReviews, changedReviews, removedReviews;
-	private Date date = new Date();
-	private User moderator = new User("moderator");
-	private User author = new User("author");
+	private final Date date = new Date();
+	private final User moderator = new User("moderator");
+	private final User author = new User("author");
 	private static final CrucibleProject PROJECT_1 = new CrucibleProject("My Id", "TEST", "My Test Project");
 
 	@Override
@@ -63,10 +80,12 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	private ServerData createServerData(final ServerIdImpl id) {
 		return new ServerData(new ServerCfg(true, "test", "", id) {
+			@Override
 			public ServerType getServerType() {
 				return null;
 			}
 
+			@Override
 			public ServerCfg getClone() {
 				return null;
 			}
@@ -218,7 +237,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		listModel.addReview(ra2);
 		assertEquals(2, listModel.getReviews().size());
 		Map<CrucibleFilter, ReviewNotificationBean> emptyResult = new HashMap<CrucibleFilter, ReviewNotificationBean>();
-		listModel.updateReviews((long) 0, emptyResult, UpdateReason.REFRESH); //.removeAll();
+		listModel.updateReviews(0, emptyResult, UpdateReason.REFRESH); //.removeAll();
 		assertEquals(0, listModel.getReviews().size());
 	}
 
@@ -492,10 +511,12 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	private ServerData createServer(int id) {
 		return new ServerData(new ServerCfg(true, "server" + id, "", new ServerIdImpl()) {
+			@Override
 			public ServerType getServerType() {
 				return null;
 			}
 
+			@Override
 			public ServerCfg getClone() {
 				return null;
 			}
@@ -503,40 +524,40 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	private ReviewAdapter createReviewAdapter(int id, ServerData server) {
-		Review rb = new Review("test_" + id, "TEST", author, moderator);
+		Review review = new Review("test_" + id, "TEST", author, moderator);
 		PermId pId = new PermId("permId_" + id);
-		rb.setPermId(pId);
-		rb.setState(State.REVIEW);
-		rb.setActions(new HashSet<CrucibleAction>());
+		review.setPermId(pId);
+		review.setState(State.REVIEW);
+		review.setActions(new HashSet<CrucibleAction>());
 
-		return new ReviewAdapter(rb, server, PROJECT_1);
+		return new ReviewAdapter(review, server, PROJECT_1);
 	}
 
 	private ReviewAdapter createReviewAdapterWithComments(int id, ServerData server)
 			throws RemoteApiException, ValueNotYetInitialized, ServerPasswordNotProvidedException {
-		Review rb = new Review("test_" + id, "TEST", author, moderator);
+		Review review = new Review("test_" + id, "TEST", author, moderator);
 		PermId pId = new PermId("permId_" + id);
-		rb.setPermId(pId);
+		review.setPermId(pId);
 
 		// create review adapter
-		ReviewAdapter adapter = new ReviewAdapter(rb, server, PROJECT_1);
+		ReviewAdapter adapter = new ReviewAdapter(review, server, PROJECT_1);
 		adapter.setFacade(new MyFacade());
 
 		// add general comments
 		adapter.setGeneralComments(new ArrayList<Comment>());
-		GeneralCommentBean generalComment = new GeneralCommentBean();
+		GeneralComment generalComment = new GeneralComment(review, null);
 		generalComment.setCreateDate(date);
 		adapter.addGeneralComment(generalComment);
 
 		// add files and versioned comments
 		Set<CrucibleFileInfo> files = new HashSet<CrucibleFileInfo>();
-		CrucibleFileInfoImpl file = new CrucibleFileInfoImpl(
+		CrucibleFileInfo file = new CrucibleFileInfo(
 				new VersionedVirtualFile("", ""),
 				new VersionedVirtualFile("", ""),
 				new PermId("file ID"));
 		files.add(file);
 		List<VersionedComment> versionedComments = new ArrayList<VersionedComment>();
-		VersionedCommentBean versionedComment = new VersionedCommentBean();
+		VersionedComment versionedComment = new VersionedComment(review, file);
 		versionedComment.setReviewItemId(file.getPermId());
 		versionedComment.setPermId(new PermId("comment ID"));
 		versionedComments.add(versionedComment);
@@ -547,7 +568,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	private class MyFacade extends MockCrucibleFacadeAdapter {
 
-		public Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
+		@Override
+		public Comment addGeneralComment(ServerData server, Review review, Comment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return comment;
 		}

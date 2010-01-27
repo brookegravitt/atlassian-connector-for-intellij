@@ -18,7 +18,11 @@ package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
@@ -32,8 +36,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-
-import javax.swing.*;
+import javax.swing.Icon;
 import java.util.Date;
 
 /**
@@ -149,7 +152,7 @@ public class CommentAction extends AnAction {
 	private void createLineComment(AnActionEvent event, final ReviewAdapter review,
                                    final CrucibleFileInfo file, final int start, final int end) {
 
-		final VersionedCommentBean newComment = new VersionedCommentBean();
+		final VersionedComment newComment = new VersionedComment(review.getReview(), file);
         newComment.setCreateDate(new Date());
         newComment.setAuthor(new User(review.getServerData().getUsername()));
         if (file.getCommitType() == CommitType.Deleted) {

@@ -7,8 +7,8 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -26,10 +26,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAdapter implements CrucibleServerFacade {
-
 
     public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
         private final Map<ConnectionCfg, Map<String, CrucibleProject>> serverMap
@@ -97,7 +96,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     }
 
     private IntelliJCrucibleServerFacade() {
-        this(new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()));
+        this(new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()));
     }
 
     IntelliJCrucibleServerFacade(CrucibleServerFacadeImpl facade) {
@@ -127,14 +126,14 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return new ReviewAdapter(review, serverData, getProject(serverData, review.getProjectKey()));
     }
 
-    public Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
+	public Comment addGeneralComment(ServerData server, Review review, Comment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.addGeneralComment(server.toHttpConnectionCfg(), permId, comment);
+		return facade.addGeneralComment(server.toHttpConnectionCfg(), review, comment);
     }
 
-    public Comment addGeneralCommentReply(ServerData server, PermId id, PermId cId, Comment comment)
+	public Comment addGeneralCommentReply(ServerData server, Comment reply)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.addGeneralCommentReply(server.toHttpConnectionCfg(), id, cId, comment);
+		return facade.addGeneralCommentReply(server.toHttpConnectionCfg(), reply);
     }
 
     public ReviewAdapter addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items)
@@ -166,14 +165,14 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
                 permId, repoName, pathsAndRevisions), server);
     }
 
-    public VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
+	public VersionedComment addVersionedComment(ServerData server, Review review, PermId riId, VersionedComment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.addVersionedComment(server.toHttpConnectionCfg(), permId, riId, comment);
+		return facade.addVersionedComment(server.toHttpConnectionCfg(), review, riId, comment);
     }
 
-    public VersionedComment addVersionedCommentReply(ServerData server, PermId id, PermId cId, VersionedComment comment)
+	public VersionedComment addVersionedCommentReply(ServerData server, Review review, PermId cId, VersionedComment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.addVersionedCommentReply(server.toHttpConnectionCfg(), id, cId, comment);
+		return facade.addVersionedCommentReply(server.toHttpConnectionCfg(), review, cId, comment);
     }
 
     public ReviewAdapter approveReview(ServerData server, PermId permId)
@@ -220,10 +219,6 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return toReviewAdapterList(facade.getAllReviews(server.toHttpConnectionCfg()), server);
     }
 
-    public void fillDetailsForReview(ReviewAdapter reviewItem) throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.fillDetailsForReview(reviewItem.getServerData().toHttpConnectionCfg(), reviewItem.getReview());
-    }
-
     public String getDisplayName(@NotNull ServerData server, @NotNull String username) {
         return facade.getDisplayName(server.toHttpConnectionCfg(), username);
     }
@@ -233,15 +228,15 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return facade.getFileContent(server.toHttpConnectionCfg(), contentUrl);
     }
 
-    public Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
-            ServerPasswordNotProvidedException {
-        return facade.getFiles(server.toHttpConnectionCfg(), permId);
-    }
+//    public Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
+//            ServerPasswordNotProvidedException {
+//        return facade.getFiles(server.toHttpConnectionCfg(), permId);
+//    }
 
-    public List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
-            ServerPasswordNotProvidedException {
-        return facade.getGeneralComments(server.toHttpConnectionCfg(), permId);
-    }
+	// public List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
+	// ServerPasswordNotProvidedException {
+	// return facade.getGeneralComments(server.toHttpConnectionCfg(), permId);
+	// }
 
     public List<CustomFieldDef> getMetrics(ServerData server, int version) throws RemoteApiException,
             ServerPasswordNotProvidedException {
@@ -308,14 +303,14 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return facade.getUsers(server.toHttpConnectionCfg());
     }
 
-    public List<VersionedComment> getVersionedComments(ServerData server, PermId permId) throws RemoteApiException,
-            ServerPasswordNotProvidedException {
-        return facade.getVersionedComments(server.toHttpConnectionCfg(), permId);
-    }
+//	public List<VersionedComment> getVersionedComments(ServerData server, Review review) throws RemoteApiException,
+//            ServerPasswordNotProvidedException {
+//		return facade.getVersionedComments(server.toHttpConnectionCfg(), review);
+//    }
 
-    public List<VersionedComment> getVersionedComments(ServerData server, PermId permId, PermId reviewItemId)
+	public List<VersionedComment> getVersionedComments(ServerData server, Review review, CrucibleFileInfo reviewItem)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.getVersionedComments(server.toHttpConnectionCfg(), permId, reviewItemId);
+		return facade.getVersionedComments(server.toHttpConnectionCfg(), review, reviewItem);
     }
 
     public void publishAllCommentsForReview(ServerData server, PermId reviewId) throws RemoteApiException,
