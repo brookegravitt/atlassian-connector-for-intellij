@@ -202,10 +202,11 @@ public final class ActiveIssueUtils {
                 }
 
                 public void failure(Throwable problem) {
-                    SwingUtilities.invokeLater(new Runnable(){
+                    SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                             PluginTaskManager.getInstance(project).silentActivateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                             PluginTaskManager.getInstance(project).silentActivateLocalTask(
+                                     ActiveIssueUtils.getActiveJiraIssue(project));
                         }
                     });
 
@@ -213,10 +214,11 @@ public final class ActiveIssueUtils {
                 }
 
                 public void cancel(String problem) {
-                      SwingUtilities.invokeLater(new Runnable(){
+                      SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                             PluginTaskManager.getInstance(project).silentActivateLocalTask(ActiveIssueUtils.getActiveJiraIssue(project));
+                             PluginTaskManager.getInstance(project).silentActivateLocalTask(
+                                     ActiveIssueUtils.getActiveJiraIssue(project));
                         }
                     });
                 }
