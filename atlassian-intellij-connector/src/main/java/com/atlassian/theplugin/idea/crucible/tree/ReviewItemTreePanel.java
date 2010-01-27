@@ -15,12 +15,19 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.connector.intellij.crucible.*;
+import com.atlassian.connector.intellij.crucible.CrucibleReviewListener;
+import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -49,6 +56,9 @@ import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -57,18 +67,18 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -211,7 +221,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
     private void markCommentRead(final CommentTreeNode node) {
         Task.Backgroundable task = new Task.Backgroundable(project, "Marking comment as read", true) {
             private Throwable error = null;
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
                 try {
@@ -230,7 +241,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
                     DialogWithDetails.showExceptionDialog(
                             getAtlassianTreeWithToolbar(), "Marking comment as read failed", error);
                 } else {
-                    ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
+                    (node.getComment()).setReadState(Comment.ReadState.READ);
                     ((DefaultTreeModel) reviewFilesAndCommentsTree.getTreeComponent().getModel()).nodeChanged(node);
                 }
             }
@@ -328,15 +339,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
         }  while(ContentDownloader.getInstance().isDownloadInProgress(reviewItem));
 
 		if (hasNoDetails || refreshDetails) {
-			try {
-				IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(reviewItem);
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-				return;
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-				return;
-			}
+//			try {
+//				// @fixme wseliga this whole code should be now refactored
+//			IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(reviewItem);
+//			} catch (RemoteApiException e) {
+//				IdeaHelper.handleRemoteApiException(project, e);
+//				return;
+//			} catch (ServerPasswordNotProvidedException e) {
+//				IdeaHelper.handleMissingPassword(e);
+//				return;
+//			}
 		}
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
 	}
@@ -549,7 +561,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			refreshView(review);
 		}
 
-        public void commentReadStateChanged(final ReviewAdapter review, final Comment comment) {
+        @Override
+		public void commentReadStateChanged(final ReviewAdapter review, final Comment comment) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     AtlassianTree tree = reviewFilesAndCommentsTree.getTreeComponent();
@@ -561,7 +574,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
                         if (n instanceof CommentTreeNode) {
                             CommentTreeNode ctn = (CommentTreeNode) n;
                             if (ctn.getComment().getPermId().equals(comment.getPermId())) {
-                                ((CommentBean) ctn.getComment()).setReadState(comment.getReadState());
+                                (ctn.getComment()).setReadState(comment.getReadState());
                                 ((DefaultTreeModel) tree.getModel()).nodeChanged(ctn);
                                 TreeNode[] path = n.getPath();
                                 for (TreeNode treeNode : path) {

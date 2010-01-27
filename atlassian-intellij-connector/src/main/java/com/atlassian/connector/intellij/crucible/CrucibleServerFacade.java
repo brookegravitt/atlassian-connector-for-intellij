@@ -16,8 +16,8 @@
 
 package com.atlassian.connector.intellij.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -37,7 +37,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -137,28 +136,28 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-	Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
+//	Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
+//			ServerPasswordNotProvidedException;
 
 //	List<Comment> getComments(CrucibleServerCfg server, PermId permId)
 //			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
+//	List<Comment> getGeneralComments(ServerData server, Review review) throws RemoteApiException,
+//			ServerPasswordNotProvidedException;
 
-	List<VersionedComment> getVersionedComments(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
+//	List<VersionedComment> getVersionedComments(ServerData server, Review review) throws RemoteApiException,
+//			ServerPasswordNotProvidedException;
 
-	List<VersionedComment> getVersionedComments(ServerData server, PermId permId, PermId reviewItemId)
+	List<VersionedComment> getVersionedComments(ServerData server, Review review, CrucibleFileInfo reviewItem)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 //	List<GeneralComment> getReplies(CrucibleServerCfg server, PermId permId, PermId commentId)
 //			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
+	Comment addGeneralComment(ServerData server, Review review, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	VersionedComment addVersionedComment(ServerData server, PermId permId, PermId riId, VersionedComment comment)
+	VersionedComment addVersionedComment(ServerData server, Review review, PermId riId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	void updateComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
@@ -170,10 +169,10 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	void publishAllCommentsForReview(ServerData server, PermId reviewId) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-	Comment addGeneralCommentReply(ServerData server, PermId id, PermId cId, Comment comment)
+	Comment addGeneralCommentReply(ServerData server, Comment reply)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	VersionedComment addVersionedCommentReply(ServerData server, PermId id, PermId cId, VersionedComment comment)
+	VersionedComment addVersionedCommentReply(ServerData server, Review review, PermId cId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 //	void updateReply(CrucibleServerCfg server, PermId id, PermId cId, PermId rId, GeneralComment comment)
@@ -214,8 +213,6 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
 	ReviewAdapter addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
-
-	void fillDetailsForReview(final ReviewAdapter reviewItem) throws RemoteApiException, ServerPasswordNotProvidedException;
 
     void markCommentRead(ServerData server, PermId reviewId, PermId commentId)  throws RemoteApiException,
 			ServerPasswordNotProvidedException;

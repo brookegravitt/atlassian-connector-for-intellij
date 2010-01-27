@@ -21,15 +21,21 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.ui.SimpleIconProvider;
-
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Collections;
 
@@ -40,10 +46,12 @@ public final class ReviewCommentRendererTestUi {
 	public static void main(String[] args) throws ValueNotYetInitialized {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
 		ServerData cruc = new ServerData(new ServerCfg(true, "my crucible server", "", new ServerIdImpl()) {
+			@Override
 			public ServerType getServerType() {
 				return null;
 			}
 
+			@Override
 			public ServerCfg getClone() {
 				return null;
 			}
@@ -52,15 +60,15 @@ public final class ReviewCommentRendererTestUi {
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc, null);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");
 		VersionedVirtualFile vvf2 = new VersionedVirtualFile("mypath", "1.567");
-		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfoImpl(vvf1, vvf2, new PermId("mypermid"));
+		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfo(vvf1, vvf2, new PermId("mypermid"));
 
-		final VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
+		final VersionedComment versionedCommentBean = new VersionedComment(review, crucibleFileInfo);
 		versionedCommentBean.setMessage("my beautiful message");
 		versionedCommentBean.setDefectRaised(true);
 		final Reviewer author = new Reviewer("wseliga", "Wojciech Seliga");
 		versionedCommentBean.setAuthor(author);
 
-		final VersionedCommentBean versionedCommentBean2 = new VersionedCommentBean();
+		final VersionedComment versionedCommentBean2 = new VersionedComment(review, crucibleFileInfo);
 		versionedCommentBean2.setMessage(
 				"my very very very beautiful but annoyingly very very long long long long long comment."
 						+ "Let us check if it wraps correctly \nWe have also another line here"
@@ -79,7 +87,7 @@ public final class ReviewCommentRendererTestUi {
 		versionedCommentBean2.setToLineInfo(true);
 		versionedCommentBean2.setDraft(true);
 
-		final VersionedCommentBean versionedCommentBean3 = new VersionedCommentBean();
+		final VersionedComment versionedCommentBean3 = new VersionedComment(review, crucibleFileInfo);
 		versionedCommentBean3.setMessage("Another comment. Let us see if it wraps corrent.\nAnd if empty lines work fine\n"
 				+ "This statement sucks:\n\tif (false) {\n\t\t...\n\t}");
 		versionedCommentBean3.setToStartLine(21);
@@ -100,7 +108,7 @@ public final class ReviewCommentRendererTestUi {
 		final VersionedCommentTreeNode n3 = new VersionedCommentTreeNode(reviewAdapter, crucibleFileInfo, versionedCommentBean3,
 				null);
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		GeneralCommentBean generalComment = new GeneralCommentBean();
+		GeneralComment generalComment = new GeneralComment(review, null);
 		generalComment.setAuthor(author3);
 		generalComment.setMessage("This is general comment for this review in two lines.\nShould be quite lengthy");
 		GeneralCommentTreeNode generalCommentTreeNode = new GeneralCommentTreeNode(reviewAdapter, generalComment, null);

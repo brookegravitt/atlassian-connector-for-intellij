@@ -24,8 +24,8 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
 
 public class VersionedCommentTreeNode extends CommentTreeNode {
-	private CrucibleFileInfo file;
-	private VersionedComment comment;
+	private final CrucibleFileInfo file;
+	private final VersionedComment comment;
 
 	public VersionedCommentTreeNode(ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment,
             AtlassianClickAction action) {

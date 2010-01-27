@@ -13,20 +13,24 @@ import com.atlassian.theplugin.idea.crucible.CrucibleWebContentProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleWebContentProviderForAddedAndDeletedFiles;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import java.util.*;
+import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author pmaruszak
  * @date Dec 30, 2009
  */
 public final class ContentDownloader {
-    private ThreadGroup group = new ThreadGroup("Crucible file content download");
+    private final ThreadGroup group = new ThreadGroup("Crucible file content download");
     private static ContentDownloader instance = new ContentDownloader();
 
     private ContentDownloader() {
@@ -46,16 +50,6 @@ public final class ContentDownloader {
         try {
             review.getFiles();
         } catch (ValueNotYetInitialized valueNotYetInitialized) {
-            try {
-                // get details for review (files and comments)
-                IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);
-            } catch (RemoteApiException e) {
-                PluginUtil.getLogger().warn("Error when retrieving review details", e);
-                return list;
-            } catch (ServerPasswordNotProvidedException e) {
-                PluginUtil.getLogger().warn("Missing password exception caught when retrieving review details", e);
-                return list;
-            }
         }
 
         try {

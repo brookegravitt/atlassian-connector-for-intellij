@@ -20,8 +20,8 @@ import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -41,7 +41,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -83,10 +82,6 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	public ReviewAdapter addItemsToReview(final ServerData server, final PermId permId, final Collection<UploadItem> items)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
-	}
-
-	public void fillDetailsForReview(final ReviewAdapter reviewItem)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
 	public ReviewAdapter createReviewFromRevision(ServerData server, Review review, List<String> revisions)
@@ -192,32 +187,17 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return null;
 	}
 
-	public Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId)
+	public List<VersionedComment> getVersionedComments(ServerData server, Review review, CrucibleFileInfo reviewItem)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public List<Comment> getGeneralComments(ServerData server, PermId permId)
+	public Comment addGeneralComment(ServerData server, Review review, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public List<VersionedComment> getVersionedComments(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public List<VersionedComment> getVersionedComments(ServerData server, PermId permId, PermId reviewItemId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public Comment addGeneralComment(ServerData server, PermId permId, Comment comment)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public VersionedComment addVersionedComment(ServerData server, PermId permId,
+	public VersionedComment addVersionedComment(ServerData server, Review review,
 			PermId riId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
@@ -235,13 +215,12 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public Comment addGeneralCommentReply(ServerData server, PermId id,
-			PermId cId, Comment comment)
+	public Comment addGeneralCommentReply(ServerData server, Comment reply)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public VersionedComment addVersionedCommentReply(ServerData server, PermId id,
+	public VersionedComment addVersionedCommentReply(ServerData server, Review review,
 			PermId cId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;

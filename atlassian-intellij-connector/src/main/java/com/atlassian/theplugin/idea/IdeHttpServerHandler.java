@@ -15,15 +15,12 @@
  */
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
@@ -31,6 +28,9 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.veryquick.embweb.HttpRequestHandler;
+import org.veryquick.embweb.Response;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -46,12 +46,8 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
-import org.veryquick.embweb.HttpRequestHandler;
-import org.veryquick.embweb.Response;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -144,6 +140,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private static final class OpenBuildHandler extends AbstractDirectClickThroughHandler {
 
+		@Override
 		public void handle(final Map<String, String> parameters) {
 			final String buildKey = parameters.get("build_key");
 			String buildNumber = parameters.get("build_number");
@@ -197,6 +194,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private static class OpenIssueHandler extends AbstractDirectClickThroughHandler {
 
+		@Override
 		public void handle(final Map<String, String> parameters) {
 			final String issueKey = parameters.get("issue_key");
 			final String serverUrl = parameters.get("server_url");
@@ -224,6 +222,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private static class OpenFileHandler extends AbstractDirectClickThroughHandler {
 
+		@Override
 		public void handle(final Map<String, String> parameters) {
 			final String file = StringUtil.removePrefixSlashes(parameters.get("file"));
 			final String path = StringUtil.removeSuffixSlashes(parameters.get("path"));
@@ -357,6 +356,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private static class OpenReviewHandler extends AbstractDirectClickThroughHandler {
 
+		@Override
 		public void handle(final Map<String, String> parameters) {
 			final String reviewKey = parameters.get("review_key");
 			final String serverUrl = parameters.get("server_url");
@@ -428,16 +428,17 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				}
 
 				if ((isDefined(filePath) || isDefined(commentId))) {
-					try {
-						// get details for review (files and comments)
-						IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);
-					} catch (RemoteApiException e) {
-						PluginUtil.getLogger().warn("Error when retrieving review details", e);
-						return;
-					} catch (ServerPasswordNotProvidedException e) {
-						PluginUtil.getLogger().warn("Missing password exception caught when retrieving review details", e);
-						return;
-					}
+					// @fixme wseliga refactoring in progress
+//					try {
+//						// get details for review (files and comments)
+//						IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);
+//					} catch (RemoteApiException e) {
+//						PluginUtil.getLogger().warn("Error when retrieving review details", e);
+//						return;
+//					} catch (ServerPasswordNotProvidedException e) {
+//						PluginUtil.getLogger().warn("Missing password exception caught when retrieving review details", e);
+//						return;
+//					}
 
 					CrucibleFileInfo file = null;
 

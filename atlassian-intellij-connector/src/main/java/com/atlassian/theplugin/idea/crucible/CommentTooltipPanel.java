@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -348,7 +348,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		this.popup = pop;
 	}
 
-	public void resumeEditing(final CommentBean comment) {
+	public void resumeEditing(final Comment comment) {
 		CommentPanel panel = null;
 		for (CommentPanel commentPanel : commentPanelList) {
             if ((commentPanel.comment.getPermId() == null && comment.getPermId() == null)
@@ -362,7 +362,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 	}
 
-	public void resumeAdding(final CommentBean comment) {
+	public void resumeAdding(final Comment comment) {
 		CommentPanel panel = null;
 		for (CommentPanel commentPanel : commentPanelList) {
 			if (commentPanel.comment == null || commentPanel.comment == commentTemplate) {
@@ -662,7 +662,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
         public void updateReadUnreadButtonState(Comment cmt) {
             final Comment.ReadState state = cmt.getReadState();
-            ((CommentBean) comment).setReadState(state);
+            ((Comment) comment).setReadState(state);
             if (btnMarkUnread != null && btnMarkRead != null
                     && (state == Comment.ReadState.READ || state == Comment.ReadState.LEAVE_UNREAD)) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -834,7 +834,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				btnEdit.setVisible(false);
 				btnCancel.setVisible(false);
 				if (comment != null) {
-					((CommentBean) comment).setDraft(false);
+					((Comment) comment).setDraft(false);
 				}
 				addOrUpdateCommentForReview(this, comment, commentBody.getText(),
 						comment != null && comment.isDraft(),
@@ -1007,7 +1007,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                 addNewReply(rootComment, text, draft);
             } else {
                 setStatusText("Adding new comment...", false);
-                ((CommentBean) commentTemplate).setMessage(text);
+                ((Comment) commentTemplate).setMessage(text);
                 updateDefectFields(commentTemplate, defect);
                 addNewComment(commentTemplate, draft);
             }
@@ -1019,7 +1019,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 	}
 
     private void updateDefectFields(Comment comment, boolean defect) {
-        CommentBean bean = (CommentBean) comment;
+        Comment bean = (Comment) comment;
         bean.setDefectRaised(defect);
         if (!defect) {
             bean.getCustomFields().clear();
@@ -1221,7 +1221,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 						Comment cmt = panel.getComment();
 						if (isTheSameComment(cmt, comment)) {
 							setStatusText("Comment published", false);
-							((CommentBean) cmt).setDraft(false);
+							((Comment) cmt).setDraft(false);
 							panel.setComment(cmt);
 							return;
 						}

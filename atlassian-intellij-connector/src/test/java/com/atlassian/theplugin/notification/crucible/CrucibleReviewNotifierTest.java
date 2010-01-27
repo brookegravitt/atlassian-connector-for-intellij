@@ -19,8 +19,26 @@ package com.atlassian.theplugin.notification.crucible;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.FileType;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.easymock.IMocksControl;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.picocontainer.PicoContainer;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -31,16 +49,14 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.PomModel;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.messages.MessageBus;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import junit.framework.TestCase;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.easymock.IMocksControl;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.picocontainer.PicoContainer;
-
-import java.util.*;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
@@ -49,7 +65,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		final Project project = new DummysProject();
-//		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker(project));
 		notifier = new CrucibleReviewNotifier(project);
 	}
 
@@ -57,45 +72,60 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		return new Review("http://bogus");
 	}
 
-	private Comment prepareGeneralComment(final PermId permId, final Comment reply) {
-		return new Comment() {
+	private Comment prepareGeneralComment(final Review review, final PermId permId, final Comment reply) {
+		return new Comment(review, null) {
 
+			@Override
+			public Review getReview() {
+				return review;
+			}
+
+			@Override
 			public PermId getPermId() {
 				return permId;
 			}
 
+			@Override
 			public String getMessage() {
 				return "";
 			}
 
+			@Override
 			public boolean isDraft() {
 				return false;
 			}
 
+			@Override
 			public boolean isDeleted() {
 				return false;
 			}
 
+			@Override
 			public boolean isDefectRaised() {
 				return false;
 			}
 
+			@Override
 			public boolean isDefectApproved() {
 				return false;
 			}
 
+			@Override
 			public boolean isReply() {
 				return false;
 			}
 
+			@Override
 			public User getAuthor() {
 				return null;
 			}
 
+			@Override
 			public Date getCreateDate() {
 				return null;
 			}
 
+			@Override
 			public List<Comment> getReplies() {
 				List<Comment> replies = new ArrayList<Comment>();
 				if (reply != null) {
@@ -104,33 +134,44 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return replies;
 			}
 
+			@Override
 			public Map<String, CustomField> getCustomFields() {
 				return null;
 			}
 
-            public ReadState getReadState() {
+            @Override
+			public ReadState getReadState() {
                 return ReadState.READ;
             }
 
-            public int getNumReplies() {
+            @Override
+			public int getNumReplies() {
                 return 0;
             }
 
-            public int getNumberOfUnreadReplies() {
+            @Override
+			public int getNumberOfUnreadReplies() {
                 return 0;
             }
 
-            public int getNumberOfDraftReplies() {
+            @Override
+			public int getNumberOfDraftReplies() {
                 return 0;
             }
 
-            public boolean isEffectivelyUnread() {
+            @Override
+			public boolean isEffectivelyUnread() {
                 return false;
             }
 
             public List<Comment> getReplies2() {
 				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<Comment>buildArrayList();
 			}
+            
+            @Override
+            protected Comment createReplyBean(Comment reply) {
+            	return null;
+            }
 		};
 	}
 
@@ -155,86 +196,105 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private CrucibleFileInfo prepareReviewItem(final PermId newItem) {
-		return new CrucibleFileInfo() {
-			private ArrayList<VersionedComment>
-					versionedComments = new ArrayList<VersionedComment>();
+		return new CrucibleFileInfo(null, null, newItem) {
+			private final ArrayList<VersionedComment> versionedComments = new ArrayList<VersionedComment>();
 
+			@Override
 			public VersionedVirtualFile getOldFileDescriptor() {
 				return null;
 			}
 
+			@Override
 			public PermId getPermId() {
 				return newItem;
 			}
 
+			@Override
 			public String getRepositoryName() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
+			@Override
 			public FileType getFileType() {
 				return null;
 			}
 
+			@Override
 			public String getAuthorName() {
 				return null;
 			}
 
+			@Override
 			public Date getCommitDate() {
 				return null;
 			}
 
+			@Override
 			public CommitType getCommitType() {
 				return null;
 			}
 
+			@Override
 			public void addComment(final VersionedComment comment) {
 
 			}
 
+			@Override
 			public List<VersionedComment> getVersionedComments() {
 				return versionedComments;
 			}
 
+			@Override
 			public void setVersionedComments(final List<VersionedComment> versionedComments) {
 
 			}
 
+			@Override
 			public int getNumberOfCommentsDefects() {
 				return 0;
 			}
 
+			@Override
 			public int getNumberOfCommentsDefects(final String userName) {
 				return 0;
 			}
 
+			@Override
 			public int getNumberOfCommentsDrafts() {
 				return 0;
 			}
 
+			@Override
 			public int getNumberOfCommentsDrafts(final String userName) {
 				return 0;
 			}
 
+			@Override
 			public int getNumberOfLineComments() {
 				return 0;
 			}
 
+			@Override
 			public RepositoryType getRepositoryType() {
 				return null;
 			}
 
+			@Override
 			public int getNumberOfComments() {
 				return 0;
 			}
 
-            public int getNumberOfUnreadComments() {
+            @Override
+			public int getNumberOfUnreadComments() {
                 return 0;
             }
 
-            public int getNumberOfComments(final String userName) {
+            @Override
+			public int getNumberOfComments(final String userName) {
 				return 0;
 			}
 
+			@Override
 			public VersionedVirtualFile getFileDescriptor() {
 				return null;
 			}
@@ -270,7 +330,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		review1.setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
 
 
-		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
+		review1.getGeneralComments().add(prepareGeneralComment(review1, newCommentId, null));
 		CrucibleFileInfo file1 = prepareReviewItem(newItem);
 		file1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
 		Set<CrucibleFileInfo> files1 = new HashSet<CrucibleFileInfo>();
@@ -288,7 +348,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		review2.setState(state);
 		review2.setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
 
-		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
+		review2.getGeneralComments().add(prepareGeneralComment(review1, newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
 		file2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
 		Set<CrucibleFileInfo> files2 = new HashSet<CrucibleFileInfo>();

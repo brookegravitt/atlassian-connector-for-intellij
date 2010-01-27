@@ -1,15 +1,18 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Date;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * User: kalamon
@@ -40,9 +43,14 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
         super(event, review, fileInfo, comment, parent, mode);
     }
 
-    private CommentBean createReplyBean(Comment parent, String text) {
-        final CommentBean reply = parent instanceof VersionedComment
-                ? new VersionedCommentBean() : new GeneralCommentBean();
+    private Comment createReplyBean(Comment parent, String text) {
+        final Comment reply;
+		if (parent instanceof VersionedComment) {
+			VersionedComment parentVersionedComment = (VersionedComment)parent;
+			reply = new VersionedComment(getReview().getReview(), parentVersionedComment.getCrucibleFileInfo());
+		} else {
+			reply = new GeneralComment(getReview().getReview(), parent);
+		}
         reply.setMessage(text);
         reply.setAuthor(new User(getReview().getServerData().getUsername()));
         reply.setDefectRaised(false);
@@ -52,54 +60,62 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
         return reply;
     }
 
-    private CommentBean createCommentBean(Comment comment) {
-        final CommentBean bean = comment instanceof VersionedComment
-                ? new VersionedCommentBean((VersionedComment) comment) : new GeneralCommentBean(comment);
+    private Comment createCommentBean(Comment comment) {
+        final Comment bean = comment instanceof VersionedComment
+                ? new VersionedComment((VersionedComment) comment) : new GeneralComment(comment);
         bean.setAuthor(new User(getReview().getServerData().getUsername()));
         bean.setCreateDate(new Date());
 
         return bean;
     }
 
-    protected void addNewComment(final Comment comment, boolean draft) {
-        final CommentBean newComment = createCommentBean(comment);
+    @Override
+	protected void addNewComment(final Comment comment, boolean draft) {
+        final Comment newComment = createCommentBean(comment);
         newComment.setDraft(draft);
 
         runAddCommentTask(newComment, this);
     }
 
-    protected void addNewReply(final Comment parentComment, String text, boolean draft) {
-        final CommentBean reply = createReplyBean(parentComment, text);
+    @Override
+	protected void addNewReply(final Comment parentComment, String text, boolean draft) {
+        final Comment reply = createReplyBean(parentComment, text);
         reply.setDraft(draft);
 
         runAddReplyTask(parentComment, reply, this);
     }
 
-    protected void updateComment(final Comment cmt, String text) {
-        final CommentBean commentBean = (CommentBean) cmt;
+    @Override
+	protected void updateComment(final Comment cmt, String text) {
+        final Comment commentBean = cmt;
         commentBean.setMessage(text);
         runUpdateCommandTask(commentBean, this);
     }
 
-    protected void removeComment(final Comment aComment) {
+    @Override
+	protected void removeComment(final Comment aComment) {
         runRemoveCommentTask(aComment, this);
     }
 
-    protected void publishComment(Comment aComment) {
+    @Override
+	protected void publishComment(Comment aComment) {
         runPublishCommentTask(aComment, this);
     }
 
-    protected void markCommentsRead(final Collection<Comment> comments) {
+    @Override
+	protected void markCommentsRead(final Collection<Comment> comments) {
         runMarkCommentsReadTask(comments, this);
     }
 
-    protected void markCommentLeaveUnread(final Comment comment) {
+    @Override
+	protected void markCommentLeaveUnread(final Comment comment) {
         runMarkCommentLeaveUnreadTask(comment, this);
     }
 
     private void runMarkCommentsReadTask(final Collection<Comment> comments, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Marking comments as read", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     for (Comment comment : comments) {
                         getReview().markCommentRead(comment);
@@ -114,7 +130,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     private void runMarkCommentLeaveUnreadTask(final Comment comment, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Leaving comment unread", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     getReview().markCommentLeaveUnread(comment);
                 } catch (Exception e) {
@@ -128,7 +145,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     private void runRemoveCommentTask(final Comment comment, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(),
                 "Removing comment", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
                         getReview().removeVersionedComment((VersionedComment) comment, getFileInfo());
@@ -143,9 +161,10 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
         ProgressManager.getInstance().run(task);
     }
 
-    private void runUpdateCommandTask(final CommentBean comment, final CommentTooltipPanel panel) {
+    private void runUpdateCommandTask(final Comment comment, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Updating comment", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
                         getReview().editVersionedComment(getFileInfo(), (VersionedComment) comment);
@@ -163,7 +182,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     private void runAddCommentTask(final Comment comment, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Adding new comment", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
                         getReview().addVersionedComment(getFileInfo(), (VersionedComment) comment);
@@ -172,22 +192,23 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     }
                 } catch (Exception e) {
                     panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
-                    panel.resumeAdding((CommentBean) comment);
+                    panel.resumeAdding(comment);
                 }
             }
         };
         ProgressManager.getInstance().run(task);
     }
     
-    private void runAddReplyTask(final Comment parent, final CommentBean reply, final CommentTooltipPanel panel) {
+    private void runAddReplyTask(final Comment parent, final Comment reply, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Adding new comment reply", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (parent instanceof VersionedComment) {
                         getReview().addVersionedCommentReply(getFileInfo(), (VersionedComment) parent,
-                                (VersionedCommentBean) reply);
+                                (VersionedComment) reply);
                     } else {
-                        getReview().addGeneralCommentReply(parent, (GeneralCommentBean) reply);
+                        getReview().addGeneralCommentReply(parent, (GeneralComment) reply);
                     }
                 } catch (Exception e) {
                     panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
@@ -200,7 +221,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     private void runPublishCommentTask(final Comment comment, final CommentTooltipPanel panel) {
         Task.Backgroundable task = new Task.Backgroundable(getProject(), "Publishing comment", false) {
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
                         getReview().publishVersionedComment(getFileInfo(), (VersionedComment) comment);

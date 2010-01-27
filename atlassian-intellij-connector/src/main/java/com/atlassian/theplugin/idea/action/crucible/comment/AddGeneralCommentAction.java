@@ -19,15 +19,15 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class AddGeneralCommentAction extends AbstractCommentAction {
 
@@ -73,7 +73,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	}
 
 	private void addGeneralComment(AnActionEvent event, final ReviewAdapter review) {
-		final GeneralCommentBean newComment = new GeneralCommentBean();
+		final GeneralComment newComment = new GeneralComment(review.getReview(), null);
 
 		event.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(event));
 		CommentTooltipPanel.showCommentTooltipPopup(
