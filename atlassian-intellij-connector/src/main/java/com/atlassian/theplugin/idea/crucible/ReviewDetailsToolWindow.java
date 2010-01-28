@@ -657,7 +657,8 @@ class DetailsPanel extends JPanel {
 				return null;
 			}
 		}, "", "");
-		Review review = new Review("myReview");
+		final Reviewer author = new Reviewer("wseliga", "Wojciech Seliga");
+		Review review = new Review("http://localhost", "CR", author, author);
 		review.setProjectKey("CR");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc,
 				new CrucibleProject("myid", review.getProjectKey(), "My project"));
@@ -667,10 +668,7 @@ class DetailsPanel extends JPanel {
 		review.setName("My review name");
 		review.setState(State.REVIEW);
 		review.setCreateDate(new Date());
-		final Reviewer author = new Reviewer("wseliga", "Wojciech Seliga");
-		review.setAuthor(author);
 		review.setCreator(author);
-		review.setModerator(author);
 
 		SwingAppRunner.run(new DetailsPanel(reviewAdapter));
 	}
