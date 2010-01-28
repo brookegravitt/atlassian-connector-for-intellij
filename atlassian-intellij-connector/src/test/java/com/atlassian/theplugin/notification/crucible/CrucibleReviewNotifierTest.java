@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.FileType;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewTestUtil;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
@@ -69,7 +68,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private Review prepareReview() {
-		return ReviewTestUtil.createReview("http://bogus");
+		return new Review("http://bogus", "mykey", new User("anauthor"), null);
 	}
 
 	private Comment prepareGeneralComment(final Review review, final PermId permId, final Comment reply) {
