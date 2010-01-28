@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
@@ -55,7 +56,7 @@ public final class ReviewCommentRendererTestUi {
 				return null;
 			}
 		}, "", "");
-		Review review = new Review("myReview");
+		Review review = new Review("myReview", "prjkey", new User("myauthor"), null);
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc, null);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");
 		VersionedVirtualFile vvf2 = new VersionedVirtualFile("mypath", "1.567");

@@ -215,10 +215,6 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return toReviewAdapter(facade.createReviewFromUpload(server.toHttpConnectionCfg(), review, uploadItems), server);
     }
 
-    public List<ReviewAdapter> getAllReviews(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapterList(facade.getAllReviews(server.toHttpConnectionCfg()), server);
-    }
-
     public String getDisplayName(@NotNull ServerData server, @NotNull String username) {
         return facade.getDisplayName(server.toHttpConnectionCfg(), username);
     }

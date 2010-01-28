@@ -18,14 +18,14 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 
 public abstract class AbstractCrucibleCreatePreCommitReviewForm extends CrucibleReviewCreateForm {
@@ -36,7 +36,7 @@ public abstract class AbstractCrucibleCreatePreCommitReviewForm extends Crucible
 	}
 
 	@Override
-	protected boolean isValid(final ReviewProvider reviewProvider) {
+	protected boolean isValid(final Review review) {
 		return true;
 	}
 
@@ -50,11 +50,11 @@ public abstract class AbstractCrucibleCreatePreCommitReviewForm extends Crucible
 		return false;
 	}
 
-	protected ReviewAdapter createReviewImpl(final ServerData server, final ReviewProvider reviewProvider,
+	protected ReviewAdapter createReviewImpl(final ServerData server, final Review reviewBeingConstructed,
 			final Collection<Change> changes) throws RemoteApiException, ServerPasswordNotProvidedException {
 		Collection<UploadItem> uploadItems = CrucibleHelper.getUploadItemsFromChanges(project, changes);
 		return crucibleServerFacade
-				.createReviewFromUpload(server, reviewProvider, uploadItems);
+				.createReviewFromUpload(server, reviewBeingConstructed, uploadItems);
 	}
 
 

@@ -18,12 +18,14 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -35,9 +37,7 @@ import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +45,8 @@ import java.util.List;
 public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleCreatePostCommitReviewForm {
     private boolean doCreateReview = false;
     List<CommittedChangeList> list;
-    private CrucibleConfigurationBean cruciblePluginConfig;
-    private Collection<VirtualFile> virtualFiles;
+    private final CrucibleConfigurationBean cruciblePluginConfig;
+    private final Collection<VirtualFile> virtualFiles;
 
     public CrucibleCreatePostCommitReviewDelayedForm(
             final Project project,
@@ -71,9 +71,9 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
     }
 
     @Override
-    protected ReviewAdapter createReview(final ServerData server, final ReviewProvider reviewProvider)
+	protected ReviewAdapter createReview(final ServerData server, final Review reviewBeingConstructed)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return createReviewImpl(server, reviewProvider, getChanges());
+		return createReviewImpl(server, reviewBeingConstructed, getChanges());
     }
 
     private ChangeList[] getChanges() {
@@ -111,7 +111,8 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
             super(project, "Fetching recent commits");
         }
 
-        public void run(@NotNull ProgressIndicator progressIndicator) {
+        @Override
+		public void run(@NotNull ProgressIndicator progressIndicator) {
             final VirtualFile baseDir = project.getBaseDir();
             if (baseDir == null) {
                 throw new RuntimeException("Cannot determine base directory of the project");

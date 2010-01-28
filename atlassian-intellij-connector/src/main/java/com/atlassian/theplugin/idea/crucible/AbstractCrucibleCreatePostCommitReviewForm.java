@@ -17,16 +17,16 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 
 public abstract class AbstractCrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm {
@@ -37,8 +37,8 @@ public abstract class AbstractCrucibleCreatePostCommitReviewForm extends Crucibl
 	}
 
 	@Override
-	protected boolean isValid(final ReviewProvider reviewProvider) {
-		return (reviewProvider.getRepoName() != null);
+	protected boolean isValid(final Review review) {
+		return (review.getRepoName() != null);
 	}
 
 	@Override
@@ -46,9 +46,9 @@ public abstract class AbstractCrucibleCreatePostCommitReviewForm extends Crucibl
 		return crucibleServerData.getRepositories().size() == 1;
 	}
 
-	protected ReviewAdapter createReviewImpl(final ServerData server, final ReviewProvider reviewProvider,
+	protected ReviewAdapter createReviewImpl(final ServerData server, final Review reviewBeingConstructed,
 			final ChangeList[] changes) throws RemoteApiException, ServerPasswordNotProvidedException {
-		if (reviewProvider.getRepoName() == null) {
+		if (reviewBeingConstructed.getRepoName() == null) {
 			Messages.showErrorDialog(project, "Repository not selected. Unable to create review.\n", "Repository required");
 			return null;
 		}
@@ -63,9 +63,9 @@ public abstract class AbstractCrucibleCreatePostCommitReviewForm extends Crucibl
 		}
 
 		if (revisions.isEmpty()) {
-			return crucibleServerFacade.createReview(server, reviewProvider);
+			return crucibleServerFacade.createReview(server, reviewBeingConstructed);
 		} else {
-			return crucibleServerFacade.createReviewFromRevision(server, reviewProvider, revisions);
+			return crucibleServerFacade.createReviewFromRevision(server, reviewBeingConstructed, revisions);
 		}
 
 	}

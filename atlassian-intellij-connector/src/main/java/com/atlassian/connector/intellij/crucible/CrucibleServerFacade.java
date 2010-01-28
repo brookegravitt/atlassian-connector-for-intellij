@@ -119,7 +119,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	void completeReview(ServerData server, PermId permId, boolean complete) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-	List<ReviewAdapter> getAllReviews(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException;
+	// List<ReviewAdapter> getAllReviews(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<ReviewAdapter> getReviewsForFilter(ServerData server, PredefinedFilter filter) throws RemoteApiException,
 			ServerPasswordNotProvidedException;

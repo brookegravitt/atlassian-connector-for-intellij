@@ -19,11 +19,14 @@ import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -43,10 +46,7 @@ import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
+import java.awt.Component;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	public static final DataKey<CrucibleCreatePostCommitReviewForm> COMMITTED_CHANGES_BROWSER_KEY = DataKey
 			.create(COMMITTED_CHANGES_BROWSER);
 
-	private CommittedChangesTreeBrowser commitedChangesBrowser;
+	private final CommittedChangesTreeBrowser commitedChangesBrowser;
 	private final UiTaskExecutor taskExecutor;
 	private int revisionsNumber = 30;
 
@@ -87,13 +87,13 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	}
 
 	@Override
-	protected ReviewAdapter createReview(final ServerData server, final ReviewProvider reviewProvider)
+	protected ReviewAdapter createReview(final ServerData server, final Review reviewBeingConstructed)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		final MyDataSink dataSink = new MyDataSink();
 		//noinspection deprecation
 		commitedChangesBrowser.calcData(DataKeys.CHANGE_LISTS, dataSink);
 		final ChangeList[] changes = dataSink.getChanges();
-		return createReviewImpl(server, reviewProvider, changes);
+		return createReviewImpl(server, reviewBeingConstructed, changes);
 	}
 
 	public Object getData(@NonNls final String dataId) {

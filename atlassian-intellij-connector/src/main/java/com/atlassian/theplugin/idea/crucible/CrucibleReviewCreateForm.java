@@ -21,10 +21,8 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -749,93 +747,64 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
         return getRootComponent();
     }
 
-    protected class ReviewProvider extends Review {
-        private final ServerData server;
+	@Nullable
+	protected Review prepareReview(ServerData server) {
+		User author = getSelectedAuthor();
+		if (author == null) {
+			return null;
+		}
 
-        public ReviewProvider(ServerData server) {
-            super(server.getUrl());
-            this.server = server;
-        }
+		final User creator = new User(server.getUsername());
+		final String description = statementArea.getText();
+		final String name = titleText.getText();
+		final User moderator = getSelectedModerator();
+		final String prjKey = getSelectedProjectKey();
+		final String repoName = getSelectedRepoName();
+		boolean isAllowedAnyoneToJoin = allowCheckBox.isSelected();
 
-        @NotNull
-        @Override
-        public User getAuthor() {
-            if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-                return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
-            } else {
-                // @fixme !!!
-                return null;
-            }
-        }
+		final Review review = new Review(server.getUrl(), prjKey, author, moderator);
+		review.setCreator(creator);
+		review.setDescription(description);
+		review.setName(name);
+		review.setRepoName(repoName);
+		review.setAllowReviewerToJoin(isAllowedAnyoneToJoin);
 
-        @Override
-        public User getCreator() {
-            return new User(server.getUsername());
-        }
+		return review;
+	}
 
-        @Override
-        public String getDescription() {
-            return statementArea.getText();
-        }
+	@Nullable
+	private String getSelectedRepoName() {
+		if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
+			return ((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepository().getName();
+		} else {
+			return null;
+		}
+	}
 
-        @NotNull
-        @Override
-        public User getModerator() {
-            if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-                return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
-            } else {
-                // @fixme !!!
-                return null;
-            }
-        }
+	@Nullable
+	private User getSelectedAuthor() {
+		if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+			return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
+		} else {
+			return null;
+		}
+	}
 
-        @Override
-        public String getName() {
-            return titleText.getText();
-        }
+	@Nullable
+	private User getSelectedModerator() {
+		if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+			return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
+		} else {
+			return null;
+		}
+	}
 
-        @Nullable
-        @Override
-        public PermId getParentReview() {
-            return null;
-        }
+	@NotNull
+	private String getSelectedProjectKey() {
+		return ((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getWrappedProject().getKey();
+	}
 
-        @Nullable
-        @Override
-        public PermId getPermId() {
-            return null;
-        }
-
-        @NotNull
-        @Override
-        public String getProjectKey() {
-            return ((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getWrappedProject().getKey();
-        }
-
-        @Nullable
-        @Override
-        public String getRepoName() {
-            if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
-                return ((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepository().getName();
-            } else {
-                return null;
-            }
-        }
-
-        @Nullable
-        @Override
-        public State getState() {
-            return null;
-        }
-
-        @Override
-        public boolean isAllowReviewerToJoin() {
-            return allowCheckBox.isSelected();
-        }
-    }
-
-
-    protected abstract ReviewAdapter createReview(ServerData server, ReviewProvider reviewProvider)
+	protected abstract ReviewAdapter createReview(ServerData server, Review reviewBeingConstructed)
             throws RemoteApiException,
             ServerPasswordNotProvidedException;
 
@@ -862,6 +831,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
                 public boolean isCancelled = false;
 
+				@Nullable
+				private String errorMessage;
+
                 @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
 
@@ -877,15 +849,14 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                         try {
 
                             LoggerImpl.getInstance().info("runCreateReviewTask.run() - before createReview()");
-
-                            final ReviewAdapter draftReview = createReview(server, new ReviewProvider(server));
+							Review reviewBeingCreated = prepareReview(server);
+							if (reviewBeingCreated == null) {
+								errorMessage = "Review not created: " + "Cannot prepare review data";
+								return;
+							}
+							final ReviewAdapter draftReview = createReview(server, reviewBeingCreated);
                             if (draftReview == null) {
-                                EventQueue.invokeLater(new Runnable() {
-                                    public void run() {
-                                        Messages.showErrorDialog(
-                                                project, "Review not created. Null returned.", PluginUtil.PRODUCT_NAME);
-                                    }
-                                });
+								errorMessage = "Review not created: createReview returned null";
                                 return;
                             }
                             submissionSuccess = true;
@@ -912,19 +883,18 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 										LoggerImpl.getInstance().info("runCreateReviewTask.run() - before approveReview()");
 										newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
 									} else {
-										Messages.showErrorDialog(project,
-												newReview.getAuthor().getDisplayName() +
-												" is authorized to approve review.\n"
-												+ "Leaving review in draft state.", "Permission denied");
+										errorMessage = "Permission denied: " + newReview.getAuthor().getDisplayName() +
+												" is not authorized to approve review.\n"
+												+ "Leaving review in draft state.";
+										return;
 									}
 								} else {
 									if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
 										LoggerImpl.getInstance().info("runCreateReviewTask.run() - before submitReview()");
 										newlyCreated = crucibleServerFacade.submitReview(server, draftReview.getPermId());
 									} else {
-										Messages.showErrorDialog(project,
-												newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
-												+ "Leaving review in draft state.", "Permission denied");
+										errorMessage = "Permission denied: " + newReview.getAuthor().getDisplayName()
+												+ " is not authorized submit review.\n" + "Leaving review in draft state.";
 									}
 								}
 							} else {
@@ -1018,6 +988,15 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                         && e.getMessage().contains(" does not exist in repository")));
 
                 }
+                
+				@Override
+				public void onSuccess() {
+					if (errorMessage != null) {
+						Messages.showErrorDialog(
+								project, errorMessage, PluginUtil.PRODUCT_NAME);
+
+					}
+				};
             };
             ProgressManager.getInstance().run(changesTask);
         } else {
@@ -1025,7 +1004,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
         }
     }
 
-    protected boolean isValid(ReviewProvider reviewProvider) {
+	protected boolean isValid(Review review) {
         return true;
     }
 
@@ -1035,7 +1014,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                 && authorComboBox.getSelectedItem() instanceof UserComboBoxItem
                 && moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
             final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-            return isValid(new ReviewProvider(selectedItem.getServer()));
+			return isValid(prepareReview(selectedItem.getServer()));
         } else {
             return false;
         }
