@@ -9,6 +9,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicReview;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -250,10 +251,11 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return crucibleProject;
     }
 
-    private List<ReviewAdapter> toReviewAdapterList(Collection<Review> reviews, ServerData server)
+	private List<ReviewAdapter> toReviewAdapterList(Collection<BasicReview> reviews, ServerData server)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         final ArrayList<ReviewAdapter> res = MiscUtil.buildArrayList(reviews.size());
-        for (Review review : reviews) {
+		for (BasicReview basicReview : reviews) {
+			Review review = facade.getReview(server.toHttpConnectionCfg(), basicReview.getPermId());
             res.add(toReviewAdapter(review, server));
         }
         return res;
@@ -285,11 +287,13 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return facade.getReviewers(server.toHttpConnectionCfg(), permId);
     }
 
+	// @todo performance is crappy here: N + 1 remote calls. This method should return List<BasicReviewAdapter>
     public List<ReviewAdapter> getReviewsForCustomFilter(ServerData server, CustomFilter filter) throws RemoteApiException,
             ServerPasswordNotProvidedException {
         return toReviewAdapterList(facade.getReviewsForCustomFilter(server.toHttpConnectionCfg(), filter), server);
     }
 
+	// @todo performance is crappy here: N + 1 remote calls. This method should return List<BasicReviewAdapter>
     public List<ReviewAdapter> getReviewsForFilter(ServerData server, PredefinedFilter filter) throws RemoteApiException,
             ServerPasswordNotProvidedException {
         return toReviewAdapterList(facade.getReviewsForFilter(server.toHttpConnectionCfg(), filter), server);
