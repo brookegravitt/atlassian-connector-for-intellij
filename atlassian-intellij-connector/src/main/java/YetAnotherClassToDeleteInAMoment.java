@@ -6,7 +6,4 @@
  * To change this template use File | Settings | File Templates.
  */
 public class YetAnotherClassToDeleteInAMoment {
-    // comment 1
-    // comment 2
-    // comment 2a
 }
