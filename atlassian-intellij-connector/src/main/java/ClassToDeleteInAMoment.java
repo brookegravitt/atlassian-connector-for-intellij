@@ -7,4 +7,5 @@
  */
 public class ClassToDeleteInAMoment {
     // comment 1
+    // comment 2
 }
