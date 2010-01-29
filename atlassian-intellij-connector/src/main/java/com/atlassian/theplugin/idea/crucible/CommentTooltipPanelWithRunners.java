@@ -46,7 +46,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     private Comment createReplyBean(Comment parent, String text) {
         final Comment reply;
 		if (parent instanceof VersionedComment) {
-			VersionedComment parentVersionedComment = (VersionedComment)parent;
+			VersionedComment parentVersionedComment = (VersionedComment) parent;
 			reply = new VersionedComment(getReview().getReview(), parentVersionedComment.getCrucibleFileInfo());
 		} else {
 			reply = new GeneralComment(getReview().getReview(), parent);

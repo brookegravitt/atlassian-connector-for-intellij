@@ -97,7 +97,8 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     }
 
     private IntelliJCrucibleServerFacade() {
-        this(new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()));
+        this(new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), 
+        		new IntelliJHttpSessionCallback()));
     }
 
     IntelliJCrucibleServerFacade(CrucibleServerFacadeImpl facade) {

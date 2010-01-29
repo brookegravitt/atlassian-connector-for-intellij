@@ -324,7 +324,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			reviewItem.getFiles();
         }  while(ContentDownloader.getInstance().isDownloadInProgress(reviewItem));
 
-		if (hasNoDetails || refreshDetails) {
+//		if (hasNoDetails || refreshDetails) {
 //			try {
 //				// @fixme wseliga this whole code should be now refactored
 //			IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(reviewItem);
@@ -335,7 +335,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 //				IdeaHelper.handleMissingPassword(e);
 //				return;
 //			}
-		}
+//		}
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
 	}
 
