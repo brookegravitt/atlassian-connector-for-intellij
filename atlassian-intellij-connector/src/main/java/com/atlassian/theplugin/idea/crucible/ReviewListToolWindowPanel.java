@@ -185,13 +185,23 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         CommentHighlighter.removeCommentsInEditors(project);
         reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
         IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review, retrieveDetails);
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run() {
-                FileContentExpiringCache.getInstance().initDownload(project, review);
-            }
-        });
-
+		new FetchingReviewDetailsTask(review).queue();
     }
+
+	private class FetchingReviewDetailsTask extends Task.Modal {
+		private final ReviewAdapter review;
+
+		public FetchingReviewDetailsTask(final ReviewAdapter review) {
+			super(project, "Fetching review details", false);
+			this.review = review;
+		}
+
+		@Override
+		public void run(@NotNull ProgressIndicator progressIndicator) {
+			progressIndicator.setIndeterminate(true);
+			FileContentExpiringCache.getInstance().initDownload(project, review);
+		}
+	}
 
     public void closeReviewDetailsWindow(final AnActionEvent event) {
         reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
