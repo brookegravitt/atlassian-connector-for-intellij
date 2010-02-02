@@ -32,10 +32,12 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
 
 public class CrucibleVcsContentProvider extends IdeaReviewFileContentProvider {
+    private final Project project;
 
     public CrucibleVcsContentProvider(Project project, CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
-        super(project, virtualFile, fileInfo);
-	}
+        super(virtualFile, fileInfo);
+        this.project = project;
+    }
 
     public IdeaReviewFileContent getContent(final ReviewAdapter review,
 			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {

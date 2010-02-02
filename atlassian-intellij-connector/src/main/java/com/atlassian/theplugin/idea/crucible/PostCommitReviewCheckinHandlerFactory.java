@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
@@ -10,7 +11,6 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcsHelper;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
@@ -37,11 +37,11 @@ import java.util.List;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
 	private final CrucibleWorkspaceConfiguration config;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final CrucibleConfigurationBean cruciblePluginConfig;
 
     public PostCommitReviewCheckinHandlerFactory(@NotNull final WorkspaceConfigurationBean projectConfiguration,
-			@NotNull ProjectCfgManagerImpl cfgManager,
+			@NotNull ProjectCfgManager cfgManager,
 			@NotNull PluginConfigurationBean pluginCfg) {
 		this.projectCfgManager = cfgManager;
 		config = projectConfiguration.getCrucibleConfiguration();

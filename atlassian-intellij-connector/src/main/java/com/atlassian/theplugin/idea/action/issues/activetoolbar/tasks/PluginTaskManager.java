@@ -436,7 +436,7 @@ public final class PluginTaskManager {
                 List<Object> changeSetList = task.getChangeLists();
                 if (changeSetList != null && changeSetList.size() > 0) {
                     return id.get(changeSetList.get(0)).toString();
-                }
+                }              
                 return null;
             } catch (Exception e) {
                 PluginUtil.getLogger().error(CANNOT_GET_LOCAL_TASK_ASSOCIATED_CHANGE_LIST, e);
@@ -611,7 +611,7 @@ public final class PluginTaskManager {
 //    }
 
     public synchronized void silentActivateLocalTask(ActiveJiraIssue activeJiraIssue) {
-        //removeTaskListener(taskListnerObj);
+        removeTaskListener(taskListnerObj);
         silent = true;
         activateLocalTask(activeJiraIssue);
         //addTaskListener(taskListnerObj);

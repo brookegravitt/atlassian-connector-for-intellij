@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -57,7 +57,7 @@ public class PluginToolWindow {
 	private static final int INITIAL_NUMBER_OF_TABS = 4;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
-	private final ProjectCfgManagerImpl cfgManager;
+	private final ProjectCfgManager cfgManager;
 	private final BambooToolWindowPanel bambooToolWindowPanel;
 
 
@@ -81,7 +81,7 @@ public class PluginToolWindow {
 
 	}
 
-	public PluginToolWindow(@NotNull Project project, @NotNull ProjectCfgManagerImpl cfgManager,
+	public PluginToolWindow(@NotNull Project project, @NotNull ProjectCfgManager cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull ReviewListToolWindowPanel reviewsToolWindowPanel,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
@@ -232,7 +232,7 @@ public class PluginToolWindow {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
-				final ProjectCfgManagerImpl myCfgManager = IdeaHelper.getProjectCfgManager(project);
+				final ProjectCfgManager myCfgManager = IdeaHelper.getProjectCfgManager(project);
 				if (myCfgManager.getAllEnabledServerss(serverType).size() > 0) {
 					// tab is not visible
 					final ContentManager contentManager = ideaToolWindow.getContentManager();

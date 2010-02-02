@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -23,7 +24,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.Collection;
@@ -41,11 +41,11 @@ import java.util.TimerTask;
  */
 public final class CrucibleStatusChecker implements SchedulableChecker {
 	private static final String NAME = "Atlassian Crucible checker";
-	private final ProjectCfgManagerImpl cfgManager;
+	private final ProjectCfgManager cfgManager;
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final CrucibleConfigurationBean crucibleConfiguration;
 
-	public CrucibleStatusChecker(ProjectCfgManagerImpl cfgManager,
+	public CrucibleStatusChecker(ProjectCfgManager cfgManager,
 			PluginConfiguration pluginConfiguration,
 			CrucibleReviewListModel crucibleReviewListModel) {
 		this.cfgManager = cfgManager;

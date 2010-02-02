@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
@@ -26,7 +27,6 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.jira.tree.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -71,7 +71,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
     public static final String MANUAL_FILTER_MENU_PLACE = "edit JIRA manual filter";
-    private ProjectCfgManagerImpl projectCfgManager;
+    private ProjectCfgManager projectCfgManager;
     private final PluginConfiguration pluginConfiguration;
     private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 
@@ -107,7 +107,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private static final int ONE_SECOND = 1000;
 
     public IssueListToolWindowPanel(@NotNull final Project project,
-                                    @NotNull final ProjectCfgManagerImpl projectCfgManager,
+                                    @NotNull final ProjectCfgManager projectCfgManager,
                                     @NotNull final PluginConfiguration pluginConfiguration,
                                     @NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
                                     @NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
@@ -264,7 +264,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 //		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 //	}
 
-    public ProjectCfgManagerImpl getProjectCfgManager() {
+    public ProjectCfgManager getProjectCfgManager() {
         return projectCfgManager;
     }
 
@@ -1022,7 +1022,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         if (getSelectedIssue() != null) {
             ServerId serverId = getSelectedIssue().getJiraServerData().getServerId();
-            return projectCfgManager.getJiraServerr(serverId);
+            return (JiraServerData)projectCfgManager.getJiraServerr(serverId);
         }
 
         if (projectCfgManager.getDefaultJiraServer() != null) {
@@ -1161,7 +1161,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverConnectionDataChanged(final ServerId serverId) {
-            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
+            JiraServerData server = (JiraServerData)projectCfgManager.getJiraServerr(serverId);
             if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
                 jiraServerModel.clear(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, true);
@@ -1171,7 +1171,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverNameChanged(final ServerId serverId) {
-            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
+            JiraServerData server = (JiraServerData)projectCfgManager.getJiraServerr(serverId);
             if (server != null) {
                 jiraServerModel.replace(server);
                 refreshFilterModel();
@@ -1181,7 +1181,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverDisabled(final ServerId serverId) {
-            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
+            JiraServerData server = (JiraServerData)projectCfgManager.getJiraServerr(serverId);
             if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
                 removeServer(serverId, recenltyViewedAffected(server));
             }
@@ -1206,7 +1206,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         private void addServer(final ServerData server, boolean refreshIssueList) {
             if (server != null && server.getServerType() == ServerType.JIRA_SERVER) {
-                JiraServerData jiraServer = projectCfgManager.getJiraServerr(server.getServerId());
+                JiraServerData jiraServer = (JiraServerData)projectCfgManager.getJiraServerr(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(jiraServer, refreshIssueList);
                 ProgressManager.getInstance().run(task);
 

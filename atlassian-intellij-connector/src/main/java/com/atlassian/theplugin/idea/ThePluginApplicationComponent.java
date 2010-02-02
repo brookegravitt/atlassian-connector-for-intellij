@@ -89,7 +89,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
         addActionToDiffToolbar();
         //FileContentCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
-        //ContentProviderCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
+        //providers.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
     }
 
     private void addActionToDiffToolbar() {

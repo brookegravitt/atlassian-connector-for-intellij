@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.cache;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
@@ -26,16 +27,9 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -44,10 +38,10 @@ public class RecentlyOpenIssuesCache {
 	// ordered map
 	private final LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter> items =
             new LinkedHashMap<IssueRecentlyOpenBean, JiraIssueAdapter>();
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private JiraWorkspaceConfiguration jiraWorkspaceConf;
 
-	public RecentlyOpenIssuesCache(final ProjectCfgManagerImpl cfgManager, final JiraWorkspaceConfiguration jiraConf) {
+	public RecentlyOpenIssuesCache(final ProjectCfgManager cfgManager, final JiraWorkspaceConfiguration jiraConf) {
 		this.projectCfgManager = cfgManager;
 		this.jiraWorkspaceConf = jiraConf;
 	}

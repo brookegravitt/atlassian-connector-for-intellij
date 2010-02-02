@@ -15,21 +15,14 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -152,7 +145,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
     private CrucibleServerCfg getCurrentCrucibleServerCfg() {
         ServerId serverId = projectConfiguration.getDefaultCrucibleServerId();
 		if (serverId == null) {
-            ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+            ProjectCfgManager cfgMgr = IdeaHelper.getProjectCfgManager(project);
             ServerData cruServer = cfgMgr.getDefaultCrucibleServer();
             if (cruServer != null) {
                 serverId = cruServer.getServerId();
@@ -229,7 +222,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		protected FishEyeServer getCurrentServer() {
             FishEyeServer server = projectConfiguration.getDefaultFishEyeServer();
             if (server == null) {
-                ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+                ProjectCfgManager cfgMgr = IdeaHelper.getProjectCfgManager(project);
                 ServerData fshServer = cfgMgr.getDefaultFishEyeServer();
                 if (fshServer != null) {
                     server = projectConfiguration.getServerCfg(fshServer.getServerId()).asFishEyeServer();

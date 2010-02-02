@@ -8,7 +8,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -22,10 +21,9 @@ import java.net.URLDecoder;
  */
 public abstract class AbstractCrucibleWebContentProvider extends IdeaReviewFileContentProvider {
 
-    protected AbstractCrucibleWebContentProvider(final Project project,
-                                                 VirtualFile virtualFile,
+    protected AbstractCrucibleWebContentProvider(VirtualFile virtualFile,
                                                  CrucibleFileInfo fileInfo) {
-        super(project, virtualFile, fileInfo);
+        super(virtualFile, fileInfo);
     }
 
     protected abstract void setContent(byte[] content);

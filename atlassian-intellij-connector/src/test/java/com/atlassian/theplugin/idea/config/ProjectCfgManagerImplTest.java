@@ -15,10 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
@@ -40,7 +41,7 @@ public class ProjectCfgManagerImplTest extends TestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		cfgManager = createCfgManager();
+		cfgManager = (ProjectCfgManagerImpl)createCfgManager();
 		populateServerCfgs();
 	}
 
@@ -100,12 +101,12 @@ public class ProjectCfgManagerImplTest extends TestCase {
 		assertHasOnlyElements(cfgManager.getAllEnabledServerss(), crucible1, bamboo1);
 	}
 
-	protected ProjectCfgManagerImpl createCfgManager() {
+	protected ProjectCfgManager createCfgManager() {
 		return new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
 	}
 
 	public void testAddServer() throws Exception {
-		final ProjectCfgManagerImpl myCfgManager = createCfgManager();
+		final ProjectCfgManagerImpl myCfgManager = (ProjectCfgManagerImpl)createCfgManager();
 		assertHasOnlyElements(myCfgManager.getAllServerss());
 
 		myCfgManager.addServer(crucible1.getServerr());
@@ -217,7 +218,7 @@ public class ProjectCfgManagerImplTest extends TestCase {
 		cfgManager.addServer(crucible1.getServerr());
 		// must be unique - so adding new server above should have no effect
 		assertHasOnlyElements(cfgManager.getAllServerss(), bamboo1, crucible1, jira1);
-		cfgManager = createCfgManager();
+		cfgManager = (ProjectCfgManagerImpl)createCfgManager();
 		assertHasOnlyElements(cfgManager.getAllServerss());
 
 	}

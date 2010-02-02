@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.fisheye.ChangeListUtil;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -42,7 +42,7 @@ public abstract class Crucible16RepositoryAction extends AnAction {
 			return false;
 		}
 
-		final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+		final ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
 		if (projectCfgManager == null) {
 			return false;
 		}

@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
@@ -29,8 +30,8 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -163,14 +164,14 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 
 		// PL-1617 - Ugly ugly. I am not sure why this is b0rked sometimes,
 		// but one of these seems to be null for apparent reason every once in a while
-		ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+		ProjectCfgManager cfgMgr = IdeaHelper.getProjectCfgManager(project);
 		if (cfgMgr == null) {
 			LoggerImpl.getInstance().warn("askDefaultCredentials() - cfgMgr is null");
 		}
 
 		final boolean alreadyExists =
 				cfgMgr != null
-						&& cfgMgr.getServer(selectedServer.getServerId()) != null;
+						&& cfgMgr.getServerr(selectedServer.getServerId()) != null;
 
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
@@ -192,7 +193,7 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 									"Set as default",
 									Messages.getQuestionIcon());
 
-							ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+							ProjectCfgManagerImpl cfgMgr = (ProjectCfgManagerImpl)IdeaHelper.getProjectCfgManager(project);
 
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
 								UserCfg credentials = new UserCfg(selectedServer.getUsername(),

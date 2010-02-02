@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -25,7 +26,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGeneratorImpl;
@@ -126,7 +126,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		Collection<ServerData> servers = new HashSet<ServerData>();
 
 		for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-			ProjectCfgManagerImpl cfg = IdeaHelper.getProjectCfgManager(project);
+			ProjectCfgManager cfg = IdeaHelper.getProjectCfgManager(project);
 			if (cfg != null) {
 				servers.addAll(cfg.getAllServerss());
 			}

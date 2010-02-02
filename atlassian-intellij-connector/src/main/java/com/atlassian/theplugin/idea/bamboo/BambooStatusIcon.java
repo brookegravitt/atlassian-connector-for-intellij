@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
 import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -43,7 +43,7 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 	 * @param cfgManager
 	 * @param pluginToolWindow
 	 */
-	public BambooStatusIcon(final Project project, ProjectCfgManagerImpl cfgManager, final PluginToolWindow pluginToolWindow) {
+	public BambooStatusIcon(final Project project, ProjectCfgManager cfgManager, final PluginToolWindow pluginToolWindow) {
 
 		super(project, cfgManager);
 

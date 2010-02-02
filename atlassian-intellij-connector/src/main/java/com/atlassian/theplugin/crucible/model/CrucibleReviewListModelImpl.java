@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
@@ -12,7 +13,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibl
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     private final Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
     //	private ReviewAdapter selectedReview;
     private final ReviewListModelBuilder reviewListModelBuilder;
-    private final ProjectCfgManagerImpl projectCfgManager;
+    private final ProjectCfgManager projectCfgManager;
     private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
     //private LocalConfigurationListenerAdapater configurationListenerAdapater = new LocalConfigurationListenerAdapater();
 
@@ -38,7 +38,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
     public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
                                        final WorkspaceConfigurationBean projectConfigurationBean,
-                                       final ProjectCfgManagerImpl projectCfgManager) {
+                                       final ProjectCfgManager projectCfgManager) {
 
         this.reviewListModelBuilder = reviewListModelBuilder;
         this.projectCfgManager = projectCfgManager;

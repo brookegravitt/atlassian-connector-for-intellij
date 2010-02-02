@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.connector.intellij.crucible.content.ContentDownloader;
 import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
@@ -33,63 +33,36 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
-import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.UpdateContext;
-import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleCustomFilterTreeNode;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.*;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.TreeSpeedSearch;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.ToolTipManager;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -112,7 +85,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
     private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
     private FilterTree filterTree;
     private final SearchingCrucibleReviewListModel searchingReviewListModel;
-    private final ProjectCfgManagerImpl projectCfgManager;
+    private final ProjectCfgManager projectCfgManager;
 
     private final UiTaskExecutor uiTaskExecutor;
     private final CrucibleReviewListModel reviewListModel;
@@ -125,7 +98,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
     public ReviewListToolWindowPanel(@NotNull final Project project,
                                      @NotNull final WorkspaceConfigurationBean projectConfiguration,
-                                     @NotNull final ProjectCfgManagerImpl projectCfgManager,
+                                     @NotNull final ProjectCfgManager projectCfgManager,
                                      @NotNull final CrucibleReviewListModel reviewListModel,
                                      @NotNull final UiTaskExecutor uiTaskExecutor) {
         super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
@@ -212,7 +185,12 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         CommentHighlighter.removeCommentsInEditors(project);
         reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
         IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review, retrieveDetails);
-        ContentDownloader.getInstance().downloadFilesContent(project, review);
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                FileContentExpiringCache.getInstance().initDownload(project, review);
+            }
+        });
+
     }
 
     public void closeReviewDetailsWindow(final AnActionEvent event) {

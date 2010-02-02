@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
@@ -56,8 +57,7 @@ import org.jetbrains.annotations.Nullable;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -87,11 +87,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private ServerData selectedServer;
 
 
-	public ProjectConfigurationComponent(final Project project, final ProjectCfgManagerImpl projectCfgManager,
+	public ProjectConfigurationComponent(final Project project, final ProjectCfgManager projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
 			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull WorkspaceConfigurationBean projectConfigurationBean) {
 		this.project = project;
-		this.projectCfgManager = projectCfgManager;
+		this.projectCfgManager = (ProjectCfgManagerImpl)projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
 		this.projectConfigurationBean = projectConfigurationBean;

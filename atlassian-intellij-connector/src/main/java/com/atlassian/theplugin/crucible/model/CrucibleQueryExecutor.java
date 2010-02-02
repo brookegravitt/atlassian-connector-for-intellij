@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
@@ -9,7 +10,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -19,13 +19,13 @@ import java.util.*;
 
 public class CrucibleQueryExecutor {
 	private final CrucibleServerFacade crucibleServerFacade;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final MissingPasswordHandler missingPasswordHandler;
 	private final CrucibleReviewListModel crucibleReviewListModel;
 
 	public CrucibleQueryExecutor(final CrucibleServerFacade crucibleServerFacade,
-			final ProjectCfgManagerImpl projectCfgManager,
+			final ProjectCfgManager projectCfgManager,
 			final Project project,
 			final MissingPasswordHandler missingPasswordHandler,
 			final CrucibleReviewListModel crucibleReviewListModel) {

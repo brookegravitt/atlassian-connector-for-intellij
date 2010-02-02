@@ -1,42 +1,296 @@
 package com.atlassian.connector.intellij.crucible.content;
 
+/**
+ * @auuthor pmaruszak
+ * @date Jan 26, 2010
+ */
+
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderFactory;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.intellij.openapi.project.Project;
+import org.apache.log4j.Category;
+import org.apache.log4j.NDC;
+
+import java.util.ConcurrentModificationException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+
 
 /**
- * @user pmaruszak
+ * Thread safe
+ *
  */
-public final class FileContentExpiringCache extends ExpiringCache<String, ReviewFileContent> {
-    private  static final FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
+public class FileContentExpiringCache {
+
+    private static Category logger = Category.getInstance(FileContentExpiringCache.class);
+
+    public static final long DEFAULT_TIME_TO_LIVE = 10 * 60 * 1000;
+    public static final long DEFAULT_ACCESS_TIMEOUT = 5 * 60 * 1000;
+    public static final long DEFAULT_TIMER_INTERVAL = 2 * 60 * 1000;
+    private static long DEFAULT_CACHE_SIZE_BYTES = 20 * 1024 * 1024;
+    private long ttl = DEFAULT_TIME_TO_LIVE;
+    private long ato = DEFAULT_ACCESS_TIMEOUT;
+    private long tiv = DEFAULT_TIMER_INTERVAL;
+
+    private static FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
+    private static AtomicLong NUMBER_OF_BYTES_DOWNLOADED = new AtomicLong(0);
+    private final ConcurrentMap<String, Future<CachedObject>> cacheMap
+            = new ConcurrentHashMap<String, Future<CachedObject>>();
+
+
+    private Timer cacheManager;
+    private static final int INITIAL_FILE_DOWNLOAD = 20;
+
+
+    protected void finalize() throws Throwable {
+        if (cacheManager != null) {
+            cacheManager.cancel();
+        }
+    }
 
     private FileContentExpiringCache() {
+        initialize();
     }
-
 
     public static FileContentExpiringCache getInstance() {
-        return INSTANCE;         
+        return INSTANCE;
     }
 
-    public ReviewFileContent recover(VersionedVirtualFile virtualFile) {
-        String key = ContentUtil.getKey(virtualFile);
-        return recover(key);
+    public static Category getLogger() {
+        return logger;
+    }
+
+// All times in millisecs
+
+    private FileContentExpiringCache(long timeToLive, long accessTimeout,
+                                     int maximumCachedQuantity, long timerInterval
+    ) throws InterruptedException {
+        ttl = timeToLive;
+        ato = accessTimeout;
+        tiv = timerInterval;
+        initialize();
     }
 
 
-    @Override
-    public ReviewFileContent recover(String key) {
-          if (ContentDownloader.getInstance().isDownloadInProgress(key)) {
-            Thread downloadingThread = ContentDownloader.getInstance().getDownloadingThread(key);
-            if (downloadingThread != null) {
-                try {
-                    //wait for thread to finish downloading
-                    downloadingThread.join();
-                } catch (InterruptedException e) {
-                    PluginUtil.getLogger().warn("Downloading file interrupted :" + key);
-                }
+    public void initialize() {
+        if (logger.isDebugEnabled()) {
+            logger.debug("initialize() started");
+        }
+
+        if (cacheManager != null) {
+            cacheManager.cancel();
+        }
+
+        cacheManager = new Timer(true);
+        cacheManager.schedule(
+                new TimerTask() {
+                    public void run() {
+                        NDC.push("TimerTask");
+                        long now = System.currentTimeMillis();
+                        try {
+                            
+                            for (String key : cacheMap.keySet()) {
+                                FutureTask task = (FutureTask) cacheMap.get(key);
+                                CachedObject cobj = (CachedObject) task.get();
+                                if (task == null || cobj.hasExpired(now)) {
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug(
+                                                "Removing " + key + ": Idle time="
+                                                        + (now - cobj.timeAccessedLast) + "; Stale time:"
+                                                        + (now - cobj.timeCached));
+                                    }
+                                    final Future<CachedObject> future = cacheMap.get(key);
+                                    decrementMemoryConsumed(future.get().cachedData.getContent().length);
+                                    cacheMap.remove(future);
+                                    Thread.yield();
+                                }
+                            }
+                        } catch (ConcurrentModificationException cme) {
+                            /*
+                            Ignorable.  This is just a timer cleaning up.
+                            It will catchup on cleaning next time it runs.
+                            */
+                            if (logger.isDebugEnabled()) {
+                                logger.debug(
+                                        "Ignorable ConcurrentModificationException");
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                        NDC.remove();
+                    }
+                },
+                0,
+                tiv
+        );
+    }
+
+    private void decrementMemoryConsumed(long numberOfBytes) {
+         final long  l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(-1L * numberOfBytes);
+        //PluginUtil.getLogger().error("Cache size: " + l);
+
+
+    }
+
+    private void incrementMemoryConsumed(long numberOfBytes) {
+        final long  l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(numberOfBytes);
+        //PluginUtil.getLogger().error("Cache size: " + l);
+
+    }
+
+    public void clear() {
+        cacheMap.clear();
+    }
+
+    public void initDownload(Project project, final ReviewAdapter review) {
+        int c = 0;
+        for (CrucibleFileInfo file : review.getFiles()) {            
+            VersionedVirtualFile versionedVirtualFile = file.getFileDescriptor();
+            ReviewFileContentProvider provider = null;
+            try {
+                provider = FileContentProviderFactory.getInstance().get(project, versionedVirtualFile, file, review);
+            } catch (InterruptedException e) {
+                continue;
+            }
+            downloadFile(versionedVirtualFile, provider, review);
+            c++;
+            
+            versionedVirtualFile = file.getOldFileDescriptor();
+            try {
+                provider = FileContentProviderFactory.getInstance().get(project, versionedVirtualFile, file, review);
+            } catch (InterruptedException e) {
+                continue;
+            }
+            downloadFile(versionedVirtualFile, provider, review);
+            c++;
+
+            if (c > INITIAL_FILE_DOWNLOAD) {
+                break;
             }
         }
-        return super.recover(key);
     }
+
+    private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile, final ReviewFileContentProvider provider,
+                                                  final ReviewAdapter review) {
+        String key = ContentUtil.getKey(versionedVirtualFile);
+        Callable<CachedObject> eval = new Callable<CachedObject>() {
+            public CachedObject call() throws InterruptedException {
+                ReviewFileContent fileContent = null;
+                try {
+                    fileContent = provider.getContent(review, versionedVirtualFile);
+                    incrementMemoryConsumed(fileContent.getContent().length);
+                } catch (ReviewFileContentException e) {
+                    throw new InterruptedException(e.getMessage());
+                }
+                return new CachedObject(fileContent);
+
+            }
+        };
+        FutureTask<CachedObject> ft = new FutureTask<CachedObject>(eval);
+        Future<CachedObject> f = cacheMap.putIfAbsent(key, ft);
+        if (f == null) {
+            f = ft;
+            ft.run();
+        }
+
+        return ft;
+    }
+
+    public ReviewFileContent get(final VersionedVirtualFile versionedVirtualFile, final ReviewFileContentProvider provider,
+                                 final ReviewAdapter review) throws InterruptedException {
+
+        while (true) {
+            String key = ContentUtil.getKey(versionedVirtualFile);
+            Future<CachedObject> f = cacheMap.get(key);
+            if (f == null) {
+                f = downloadFile(versionedVirtualFile, provider, review);
+            } else {
+                CachedObject cobj = null;
+                try {
+                    cobj = f.get();
+                } catch (ExecutionException e) {
+                }
+
+                cobj.timeAccessedLast = System.currentTimeMillis();
+                cobj.timeCached = cobj.timeAccessedLast;
+            }
+            try {
+
+                return f.get() != null ? f.get().getCachedData(key) : null;
+            } catch (CancellationException e) {
+                cacheMap.remove(key, f);
+            } catch (ExecutionException e) {
+                throw new InterruptedException(e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * A cached object, needed to store attributes such as the last time
+     * it was accessed.
+     */
+    protected class CachedObject {
+        private ReviewFileContent cachedData;
+        long timeCached;
+        long timeAccessedLast;
+        int numberOfAccesses;
+        long objectTTL;
+        long objectIdleTimeout;
+        boolean userTimeouts;
+
+
+        CachedObject(ReviewFileContent cachedData) {
+            long now = System.currentTimeMillis();
+            this.cachedData = cachedData;
+            timeCached = now;
+            timeAccessedLast = now;
+            ++numberOfAccesses;
+        }
+
+        CachedObject(ReviewFileContent cachedData, long timeToLive, long idleTimeout) {
+            long now = System.currentTimeMillis();
+            this.cachedData = cachedData;
+            objectTTL = timeToLive;
+            objectIdleTimeout = idleTimeout;
+            userTimeouts = true;
+            timeCached = now;
+            timeAccessedLast = now;
+            ++numberOfAccesses;
+        }
+
+
+        ReviewFileContent getCachedData(String key) {
+            long now = System.currentTimeMillis();
+            if (hasExpired(now)) {
+                cachedData = null;
+                cacheMap.remove(key);
+                return null;
+            }
+            timeAccessedLast = now;
+            ++numberOfAccesses;
+            return cachedData;
+        }
+
+        boolean hasExpired(long now) {
+            long usedTTL = userTimeouts ? objectTTL : ttl;
+            long usedATO = userTimeouts ? objectIdleTimeout : ato;
+
+            return now > timeAccessedLast + usedATO
+                    || now > timeCached + usedTTL;
+        }
+
+    }
+
+
 }
+
+
+
