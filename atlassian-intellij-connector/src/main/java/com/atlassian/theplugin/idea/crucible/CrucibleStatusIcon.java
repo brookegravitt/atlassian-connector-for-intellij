@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
 	private static final String ERROR_REVIEWS = "Some errors occured. Check connections to Crucible servers.";
 
-	public CrucibleStatusIcon(final Project project, ProjectCfgManagerImpl cfgManager,
+	public CrucibleStatusIcon(final Project project, ProjectCfgManager cfgManager,
 			@NotNull final PluginToolWindow pluginToolWindow) {
 		super(project, cfgManager);
 		resetIcon();

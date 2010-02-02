@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 /**
  * @author Jacek Jaroczynski
@@ -25,13 +25,13 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 public class BuildServerTreeNode extends BuildGroupTreeNode {
 	private ServerData server;
 
-    public BuildServerTreeNode(ProjectCfgManagerImpl projectCfgManager, BambooServerData server) {
+    public BuildServerTreeNode(ProjectCfgManager projectCfgManager, BambooServerData server) {
         super(determineName(projectCfgManager, server));
 
 		this.server = server;
 	}
 
-    private static String determineName(ProjectCfgManagerImpl projectCfgManager, BambooServerData server) {
+    private static String determineName(ProjectCfgManager projectCfgManager, BambooServerData server) {
         if (server != null && projectCfgManager != null && projectCfgManager.getServerr(server.getServerId()) != null) {
             ServerData s = projectCfgManager.getServerr(server.getServerId());
             if (s != null) {

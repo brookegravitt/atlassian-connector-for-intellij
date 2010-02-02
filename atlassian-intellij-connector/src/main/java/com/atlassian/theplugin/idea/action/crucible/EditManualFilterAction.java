@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleCustomFilterDialog;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
@@ -21,7 +21,7 @@ import javax.swing.tree.DefaultTreeModel;
 public class EditManualFilterAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         final Project project = IdeaHelper.getCurrentProject(event);
-        final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(project);
+        final ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(project);
         final ReviewListToolWindowPanel reviewListToolWindowPanel = IdeaHelper.getReviewListToolWindowPanel(project);
         final CrucibleWorkspaceConfiguration projectCrucibleCfg = reviewListToolWindowPanel.getCrucibleConfiguration();
         final CustomFilterBean filter = projectCrucibleCfg.getCrucibleFilters().getManualFilter();

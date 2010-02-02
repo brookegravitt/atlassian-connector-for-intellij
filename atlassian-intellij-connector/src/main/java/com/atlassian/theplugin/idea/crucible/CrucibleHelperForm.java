@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
@@ -36,7 +37,6 @@ import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -90,7 +90,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private ChangeList[] changes;
 	private final Project project;
 	private PermId permId;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private AddMode mode;
 	private ServerData server;
 	private Collection<Change> localChanges;
@@ -101,7 +101,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     public CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
                               CrucibleServerFacade crucibleServerFacade,
-			ChangeList[] changes, final ProjectCfgManagerImpl projectCfgManager) {
+			ChangeList[] changes, final ProjectCfgManager projectCfgManager) {
 		this(project, fisheyeServerFacade, crucibleServerFacade, projectCfgManager);
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
@@ -111,7 +111,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     public CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
                               IntelliJCrucibleServerFacade crucibleServerFacade,
-                              Collection<Change> changes, ProjectCfgManagerImpl projectCfgManager) {
+                              Collection<Change> changes, ProjectCfgManager projectCfgManager) {
 
 		this(project, fisheyeServerFacade, crucibleServerFacade, projectCfgManager);
 		localChanges = changes;
@@ -131,7 +131,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     private CrucibleHelperForm(Project project, FishEyeServerFacade fisheyeServerFacade,
                                CrucibleServerFacade crucibleServerFacade,
-                               final ProjectCfgManagerImpl projectCfgManager) {
+                               final ProjectCfgManager projectCfgManager) {
 
 		super(false);
         this.fisheyeServerFacade = fisheyeServerFacade;

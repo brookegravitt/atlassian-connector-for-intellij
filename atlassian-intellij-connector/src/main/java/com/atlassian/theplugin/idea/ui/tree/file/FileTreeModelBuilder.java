@@ -31,11 +31,13 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +168,7 @@ public final class FileTreeModelBuilder {
 
 				for (Comment reply : c.getReplies()) {
 					model.insertNode(
-							new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
+							new GeneralCommentTreeNode(review, reply, action), commentNode);
 				}
 			}
 		}

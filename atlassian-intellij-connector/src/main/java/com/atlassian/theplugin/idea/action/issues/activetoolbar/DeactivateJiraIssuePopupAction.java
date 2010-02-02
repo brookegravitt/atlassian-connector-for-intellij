@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -31,7 +31,7 @@ public class DeactivateJiraIssuePopupAction extends DeactivateJiraIssueAction {
 		final JiraIssueAdapter selectedJiraIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		ServerData selectedServer;
-		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+		ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
 
 		if (activeIssue != null && activeIssue.getIssueKey() != null && projectCfgManager != null) {
 			selectedServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());

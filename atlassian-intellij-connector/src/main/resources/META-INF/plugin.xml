@@ -110,7 +110,7 @@
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"
+		<projectService serviceInterface="com.atlassian.connector.cfg.ProjectCfgManager"
 						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"/>
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"

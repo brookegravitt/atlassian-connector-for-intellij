@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
@@ -27,11 +27,11 @@ import javax.swing.*;
 public abstract class StatusBarPluginIcon extends JLabel {
 	private StatusBar statusBar;
 	private Project project;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	private boolean isIconShown;
 
-	public StatusBarPluginIcon(Project aProject, ProjectCfgManagerImpl projectCfgManager) {
+	public StatusBarPluginIcon(Project aProject, ProjectCfgManager projectCfgManager) {
 		this.project = aProject;
 		this.projectCfgManager = projectCfgManager;
 	}

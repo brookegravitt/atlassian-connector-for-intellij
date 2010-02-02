@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.Project;
@@ -58,7 +58,7 @@ public class JiraURLTextRange {
 	}
 
 	private String getDefaultJiraServerUrl() {
-		final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(project);
+		final ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfgManager != null) {
 			final ServerData defaultServer = projectCfgManager.getDefaultJiraServer();
 			if (defaultServer != null && projectCfgManager.isDefaultJiraServerValid()) {

@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.cfg;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.net.MalformedURLException;
@@ -58,7 +58,7 @@ public final class CfgUtil {
 //		return null;
 //	}
 
-	public static ServerData getJiraServerCfgByUrl(final ProjectCfgManagerImpl projectCfgManager,
+	public static ServerData getJiraServerCfgByUrl(final ProjectCfgManager projectCfgManager,
 			final String serverUrl) {
 		for (ServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
 			if (server.getUrl().equals(serverUrl)) {

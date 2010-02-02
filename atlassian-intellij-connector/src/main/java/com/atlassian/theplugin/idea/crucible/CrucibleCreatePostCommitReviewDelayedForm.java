@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
@@ -24,8 +25,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -37,7 +36,9 @@ import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Consumer;
-import javax.swing.SwingUtilities;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
     public CrucibleCreatePostCommitReviewDelayedForm(
             final Project project,
             final CrucibleServerFacade crucibleServerFacade,
-            @NotNull final ProjectCfgManagerImpl projectCfgManager,
+            @NotNull final ProjectCfgManager projectCfgManager,
             CrucibleConfigurationBean cruciblePluginConfig,
             String title,
             Collection<VirtualFile> virtualFiles) {

@@ -15,28 +15,24 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class ServerBuildNodeManipulator extends BuildNodeManipulator {
-    private final ProjectCfgManagerImpl projectCfgManager;
+    private final ProjectCfgManager projectCfgManager;
 
 
-    public ServerBuildNodeManipulator(ProjectCfgManagerImpl projectCfgManager, final BuildListModel buildModel,
+    public ServerBuildNodeManipulator(ProjectCfgManager projectCfgManager, final BuildListModel buildModel,
                                       final DefaultMutableTreeNode root) {
 		super(buildModel, root);
         this.projectCfgManager = projectCfgManager;

@@ -31,7 +31,5 @@ public interface ReviewFileContentProvider {
 			final VersionedVirtualFile fileInfo)
 			throws ReviewFileContentException;
 
-	CrucibleFileInfo getFileInfo();
-
-	boolean isLocalFileDirty();
+	CrucibleFileInfo getFileInfo();	
 }

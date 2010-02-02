@@ -54,7 +54,7 @@ public final class TaskListenerProxy implements InvocationHandler {
         Object result;
         try {
             if (m.equals(taskActivatedMethod)) {
-               // System.out.println("prev:" + prevObj + " new:" + args[0]);
+               //System.out.println("prev:" + prevObj + " new:" + args[0]);
                 if (!PluginTaskManager.getInstance(project).isSilent()) {
                     if (isDifferentEvent(args[0])) {
                         final LocalTask lt = new LocalTaskImpl(args[0], classLoader);

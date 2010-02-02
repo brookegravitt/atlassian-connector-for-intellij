@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
@@ -33,17 +34,11 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -58,12 +53,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -82,7 +72,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private static final String COMPLETED_BUILDS = "Completed Builds";
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
 	private final BambooFilterList filterList;
 	private final SearchTextField searchField = new SearchTextField();
@@ -101,7 +91,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BuildListModelImpl bambooModel,
 			@NotNull final WorkspaceConfigurationBean projectConfiguration,
-			@NotNull final ProjectCfgManagerImpl projectCfgManager) {
+			@NotNull final ProjectCfgManager projectCfgManager) {
 
 		this.project = project;
 		this.bambooModel = bambooModel;

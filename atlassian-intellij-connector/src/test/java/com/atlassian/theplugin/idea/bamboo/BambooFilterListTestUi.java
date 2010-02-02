@@ -27,12 +27,12 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.project.Project;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;

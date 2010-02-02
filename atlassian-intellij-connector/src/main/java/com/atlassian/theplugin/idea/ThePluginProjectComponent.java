@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.*;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
@@ -34,7 +35,6 @@ import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -85,11 +85,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private final Project project;
 
-	public ProjectCfgManagerImpl getCfgManager() {
+	public ProjectCfgManager getCfgManager() {
 		return projectCfgManager;
 	}
 
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
@@ -131,7 +131,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
-			@NotNull final ProjectCfgManagerImpl projectCfgManager,
+			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;

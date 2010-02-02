@@ -15,15 +15,11 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import static javax.swing.Action.NAME;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -31,13 +27,9 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -49,34 +41,22 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ListSpeedSearch;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import static javax.swing.Action.NAME;
 
 
 public abstract class CrucibleReviewCreateForm extends DialogWrapper {
@@ -99,7 +79,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
     protected Project project;
     protected CrucibleServerFacade crucibleServerFacade;
-    private final ProjectCfgManagerImpl projectCfgManager;
+    private final ProjectCfgManager projectCfgManager;
     private int reviewCreationTimeout = -1;
     public static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
 
@@ -112,7 +92,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
     }
     //testing add revision to review
     public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-                                    @NotNull final ProjectCfgManagerImpl projectCfgManager, @NotNull String dialogTitle) {
+                                    @NotNull final ProjectCfgManager projectCfgManager, @NotNull String dialogTitle) {
         super(false);
         this.project = project;
         this.crucibleServerFacade = crucibleServerFacade;

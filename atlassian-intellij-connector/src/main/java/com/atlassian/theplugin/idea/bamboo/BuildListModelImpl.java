@@ -19,18 +19,13 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BuildListModelImpl implements BuildListModel {
@@ -47,7 +42,7 @@ public class BuildListModelImpl implements BuildListModel {
 	private final Project project;
 	private final ProjectCfgManager cfgManager;
 
-	public BuildListModelImpl(Project project, ProjectCfgManagerImpl cfgManager) {
+	public BuildListModelImpl(Project project, ProjectCfgManager cfgManager) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 

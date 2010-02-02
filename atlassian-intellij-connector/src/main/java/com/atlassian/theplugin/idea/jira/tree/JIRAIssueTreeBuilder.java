@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.cfg.CfgUtil;
@@ -8,7 +9,6 @@ import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
@@ -21,28 +21,17 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class JIRAIssueTreeBuilder {
 
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private JIRAServerModel jiraServerModel;
-	private ProjectCfgManagerImpl projectCfgManager;
+	private ProjectCfgManager projectCfgManager;
 	private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
@@ -142,7 +131,7 @@ public class JIRAIssueTreeBuilder {
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
 			JIRAServerModel jiraServerModel,
-			final ProjectCfgManagerImpl projectCfgManager) {
+			final ProjectCfgManager projectCfgManager) {
 		this.groupBy = groupBy;
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;

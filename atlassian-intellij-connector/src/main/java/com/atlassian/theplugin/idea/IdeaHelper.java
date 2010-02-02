@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
@@ -31,15 +31,16 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
-import javax.swing.JSpinner;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
@@ -107,13 +108,13 @@ public final class IdeaHelper {
 //		return null;
 //	}
 
-	public static ProjectCfgManagerImpl getProjectCfgManager(Project p) {
-		return getProjectComponent(p, ProjectCfgManagerImpl.class);
+	public static ProjectCfgManager getProjectCfgManager(Project p) {
+		return getProjectComponent(p, ProjectCfgManager.class);
 	}
 
 
-	public static ProjectCfgManagerImpl getProjectCfgManager(AnActionEvent e) {
-		return getProjectComponent(e, ProjectCfgManagerImpl.class);
+	public static ProjectCfgManager getProjectCfgManager(AnActionEvent e) {
+		return getProjectComponent(e, ProjectCfgManager.class);
 	}
 
 	public static IssueListToolWindowPanel getIssueListToolWindowPanel(AnActionEvent event) {

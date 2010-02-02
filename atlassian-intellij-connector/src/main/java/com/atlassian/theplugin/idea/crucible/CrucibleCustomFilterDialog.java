@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UiTask;
@@ -28,9 +29,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -38,18 +36,13 @@ import com.intellij.ui.components.panels.VerticalBox;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -86,7 +79,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 	};
 
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final CustomFilterBean filter;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleServerFacade crucibleServerFacade;
@@ -107,7 +100,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
     private final FilterActionClear clearFilterAction = new FilterActionClear();
 
-    public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
+    public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManager cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.projectCfgManager = cfgManager;

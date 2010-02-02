@@ -17,13 +17,12 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class CrucibleWebContentProvider extends AbstractCrucibleWebContentProvider {
 
-	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile, final Project project) {
-        super(project, virtualFile, fileInfo);
+	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
+        super(virtualFile, fileInfo);
     }
 
     protected void setContent(byte[] content) {

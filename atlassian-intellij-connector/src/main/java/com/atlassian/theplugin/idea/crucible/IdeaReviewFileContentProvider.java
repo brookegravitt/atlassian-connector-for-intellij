@@ -2,8 +2,6 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.IOException;
@@ -14,12 +12,10 @@ import java.util.Arrays;
  * Date: May 22, 2009
  */
 public abstract class IdeaReviewFileContentProvider implements ReviewFileContentProvider {
-    protected final Project project;
     protected final VirtualFile virtualFile;
     private CrucibleFileInfo fileInfo;
 
-    protected IdeaReviewFileContentProvider(final Project project, VirtualFile virtualFile, CrucibleFileInfo fileInfo) {
-        this.project = project;
+    protected IdeaReviewFileContentProvider(VirtualFile virtualFile, CrucibleFileInfo fileInfo) {
         this.virtualFile = virtualFile;
         this.fileInfo = fileInfo;
     }
@@ -28,9 +24,6 @@ public abstract class IdeaReviewFileContentProvider implements ReviewFileContent
         return virtualFile;
     }
     
-    public final boolean isLocalFileDirty() {
-        return VcsIdeaHelper.isFileDirty(project, virtualFile);
-    }
 
     public final boolean isContentIdentical(byte[] content) {
         try {

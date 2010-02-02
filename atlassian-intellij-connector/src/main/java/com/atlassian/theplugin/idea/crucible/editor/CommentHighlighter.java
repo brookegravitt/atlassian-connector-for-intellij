@@ -27,8 +27,6 @@ import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigati
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
@@ -37,23 +35,20 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.MarkupModel;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import java.awt.Color;
-import java.util.LinkedList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public final class CommentHighlighter {
 	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(0xf2, 0xd0, 0x55);
@@ -177,34 +172,49 @@ public final class CommentHighlighter {
 						}
 					}
 				} else {
+                    final Editor fEditor = editor;
+
 					Set<CrucibleFileInfo> files = review.getFiles();
 					if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
 						final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
 								virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
 						if (fileInfo != null) {
-							CrucibleHelper.openFileWithDiffs(project
+                            SwingUtilities.invokeLater(new Runnable() {
+
+                                public void run() {
+                        	CrucibleHelper.openFileWithDiffs(project
 									, false
 									, review
 									, fileInfo
 									, 1
 									, 1
 									,
-									new UpdateEditorWithContextActionImpl(project, editor, review,
+									new UpdateEditorWithContextActionImpl(project, fEditor, review,
 									fileInfo));
+                                }
+                            });
+
 						}
 					} else {
-						CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+						final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
 								virtualFile.getPath(), files);
 						if (fileInfo != null && fileInfo.getRepositoryType() != RepositoryType.PATCH) {
-							CrucibleHelper.openFileWithDiffs(project
+
+                            SwingUtilities.invokeLater(new Runnable(){
+
+                                public void run() {
+                    		CrucibleHelper.openFileWithDiffs(project
 									, false
 									, review
 									, fileInfo
 									, 1
 									, 1
 									,
-									new UpdateEditorCurrentContentActionImpl(project, editor, review,
+									new UpdateEditorCurrentContentActionImpl(project, fEditor, review,
 									fileInfo));
+                                }
+                            });
+
 						}
 					}
 				}
