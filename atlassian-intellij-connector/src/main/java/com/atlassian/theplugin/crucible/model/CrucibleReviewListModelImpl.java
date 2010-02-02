@@ -169,7 +169,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
      */
     public void openReview(final ReviewAdapter reviewAdapter, final UpdateReason updateReason) {
 
-        // start notifiaction;
+        // start notification;
         notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
         // todo remove that limitation when we handle multiple open reviews in IDE
@@ -191,7 +191,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     }
 
     public void clearOpenInIde(UpdateReason updateReason) {
-        // start notifiaction
+        // start notification
         notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
         clearOpenInIde();
