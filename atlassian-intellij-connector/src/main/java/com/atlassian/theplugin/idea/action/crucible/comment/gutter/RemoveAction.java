@@ -10,6 +10,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 public class RemoveAction extends AbstractGutterCommentAction {
 	@Override
@@ -19,9 +20,9 @@ public class RemoveAction extends AbstractGutterCommentAction {
 			Task.Backgroundable task = new Task.Backgroundable(project, "Removing File Comment", false) {
 
 				@Override
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
-						review.removeVersionedComment(comment, file);
+						review.removeComment(comment);
 					} catch (RemoteApiException e) {
 						IdeaHelper.handleRemoteApiException(project, e);
 					} catch (ServerPasswordNotProvidedException e) {

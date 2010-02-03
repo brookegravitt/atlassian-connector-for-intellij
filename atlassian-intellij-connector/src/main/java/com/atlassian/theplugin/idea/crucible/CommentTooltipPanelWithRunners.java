@@ -44,14 +44,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     private Comment createReplyBean(Comment parent, String text) {
-        final Comment reply;
-		if (parent instanceof VersionedComment) {
-			VersionedComment parentVersionedComment = (VersionedComment) parent;
-			reply = new VersionedComment(getReview().getReview(), parentVersionedComment.getCrucibleFileInfo());
-		} else {
-			reply = new GeneralComment(getReview().getReview(), parent);
-		}
-        reply.setMessage(text);
+		final Comment reply = new GeneralComment(getReview().getReview(), parent);
+		reply.setMessage(text);
         reply.setAuthor(new User(getReview().getServerData().getUsername()));
         reply.setDefectRaised(false);
         reply.setDefectApproved(false);
@@ -148,11 +142,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
             @Override
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
-                    if (comment instanceof VersionedComment) {
-                        getReview().removeVersionedComment((VersionedComment) comment, getFileInfo());
-                    } else {
-                        getReview().removeGeneralComment(comment);
-                    }
+					getReview().removeComment(comment);
                 } catch (Exception e) {
                     panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage(), true);
                 }
@@ -204,12 +194,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
             @Override
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
-                    if (parent instanceof VersionedComment) {
-                        getReview().addVersionedCommentReply(getFileInfo(), (VersionedComment) parent,
-                                (VersionedComment) reply);
-                    } else {
-                        getReview().addGeneralCommentReply(parent, (GeneralComment) reply);
-                    }
+					getReview().addReply(parent, reply);
                 } catch (Exception e) {
                     panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
                     panel.resumeAdding(reply);

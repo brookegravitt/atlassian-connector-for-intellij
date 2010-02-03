@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAdapter implements CrucibleServerFacade {
 
-    public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
+	public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
         private final Map<ConnectionCfg, Map<String, CrucibleProject>> serverMap
                 = new ConcurrentHashMap<ConnectionCfg, Map<String, CrucibleProject>>();
 
@@ -133,9 +133,9 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 		return facade.addGeneralComment(server.toHttpConnectionCfg(), review, comment);
     }
 
-	public Comment addGeneralCommentReply(ServerData server, Comment reply)
+	public Comment addReply(ServerData server, Comment reply)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addGeneralCommentReply(server.toHttpConnectionCfg(), reply);
+		return facade.addReply(server.toHttpConnectionCfg(), reply);
     }
 
     public ReviewAdapter addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items)
@@ -172,10 +172,6 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 		return facade.addVersionedComment(server.toHttpConnectionCfg(), review, riId, comment);
     }
 
-	public VersionedComment addVersionedCommentReply(ServerData server, Review review, PermId cId, VersionedComment comment)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addVersionedCommentReply(server.toHttpConnectionCfg(), review, cId, comment);
-    }
 
     public ReviewAdapter approveReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {

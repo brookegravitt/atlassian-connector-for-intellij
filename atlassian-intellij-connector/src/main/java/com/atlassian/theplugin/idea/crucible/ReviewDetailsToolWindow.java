@@ -287,15 +287,9 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 			return commentsPanel;
 		}
 
-		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId file,
-				final VersionedComment parentComment,
-				final
-				VersionedComment comment) {
+		public void createdOrEditedReply(final ReviewAdapter review, final PermId file,
+				final Comment parentComment, final Comment comment) {
 
-		}
-
-		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final Comment parentComment,
-				final Comment comment) {
 		}
 
 		public void createdOrEditedGeneralComment(final ReviewAdapter review, final Comment comment) {

@@ -299,36 +299,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 	/**
-	 * Blocking method. Should be called in the background thread.
-	 * If refreshDetails is true or review has no details (files and comments) data is retrieved from server.
-	 *
-	 * @param reviewItem	 review to open
+	 * @param review	 review to open
 	 * @param refreshDetails force to refresh review data
 	 */
-	public void showReview(ReviewAdapter reviewItem, boolean refreshDetails) {
-
-		setCrucibleReview(reviewItem);
-
-		boolean hasNoDetails = false;
-
-        
-			reviewItem.getGeneralComments();
-			reviewItem.getFiles();
-
-
-//		if (hasNoDetails || refreshDetails) {
-//			try {
-//				// @fixme wseliga this whole code should be now refactored
-//			IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(reviewItem);
-//			} catch (RemoteApiException e) {
-//				IdeaHelper.handleRemoteApiException(project, e);
-//				return;
-//			} catch (ServerPasswordNotProvidedException e) {
-//				IdeaHelper.handleMissingPassword(e);
-//				return;
-//			}
-//		}
-		EventQueue.invokeLater(new MyRunnable(reviewItem));
+	public void showReview(ReviewAdapter review, boolean refreshDetails) {
+		setCrucibleReview(review);
+		EventQueue.invokeLater(new MyRunnable(review));
 	}
 
 
@@ -499,21 +475,14 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final Comment parentComment,
-				final Comment comment) {
-			refreshView(review);
-		}
-
-		@Override
 		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
 				final VersionedComment comment) {
 			refreshView(review);
 		}
 
 		@Override
-		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
-				final VersionedComment parentComment,
-				final VersionedComment comment) {
+		public void createdOrEditedReply(final ReviewAdapter review, final PermId filePermId,
+				final Comment parentComment, final Comment comment) {
 			refreshView(review);
 		}
 
@@ -566,6 +535,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
                 }
             });
         }
-    }
+	}
 
 }

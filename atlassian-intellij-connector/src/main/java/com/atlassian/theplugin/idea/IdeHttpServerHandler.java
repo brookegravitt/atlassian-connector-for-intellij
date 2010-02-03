@@ -403,7 +403,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				indicator.setIndeterminate(true);
 
 				// open review
@@ -427,18 +427,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				}
 
 				if ((isDefined(filePath) || isDefined(commentId))) {
-					// @fixme wseliga refactoring in progress
-//					try {
-//						// get details for review (files and comments)
-//						IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);
-//					} catch (RemoteApiException e) {
-//						PluginUtil.getLogger().warn("Error when retrieving review details", e);
-//						return;
-//					} catch (ServerPasswordNotProvidedException e) {
-//						PluginUtil.getLogger().warn("Missing password exception caught when retrieving review details", e);
-//						return;
-//					}
-
 					CrucibleFileInfo file = null;
 
 					// find file

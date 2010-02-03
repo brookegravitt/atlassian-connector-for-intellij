@@ -1,12 +1,15 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
+import com.atlassian.connector.commons.crucible.api.model.ReviewModelUtil;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.commons.misc.IntRanges;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -14,7 +17,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.tree.TreeNode;
 import java.util.Map;
 
 public class CrucibleVersionedCommentClickAction implements AtlassianClickAction {
@@ -24,10 +29,22 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 		this.project = project;
 	}
 
+	@Nullable
+	private static VersionedCommentTreeNode getParentVersionedCommentNode(TreeNode commentNode) {
+		while (commentNode != null && !(commentNode instanceof VersionedCommentTreeNode)) {
+			commentNode = commentNode.getParent();
+		}
+		return (VersionedCommentTreeNode) commentNode;
+	}
+
 	public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-		VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+		final VersionedCommentTreeNode anode = getParentVersionedCommentNode(node);
+		if (anode == null) {
+			return;
+		}
 
 		ReviewAdapter review = anode.getReview();
+
 		CrucibleFileInfo file = anode.getFile();
 		Editor editor = CrucibleHelper.getEditorForCrucibleFile(project, review, file);
 		VersionedComment comment = anode.getComment();

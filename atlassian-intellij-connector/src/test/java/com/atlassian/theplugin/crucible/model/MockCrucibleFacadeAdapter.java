@@ -215,7 +215,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public Comment addGeneralCommentReply(ServerData server, Comment reply)
+	public Comment addReply(ServerData server, Comment reply)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
