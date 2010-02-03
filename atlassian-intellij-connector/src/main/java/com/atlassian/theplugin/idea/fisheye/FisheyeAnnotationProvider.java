@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.TextAnnotationGutterProvider;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.colors.EditorFontType;
 
+import java.awt.*;
 import java.util.List;
 
 public class FisheyeAnnotationProvider implements TextAnnotationGutterProvider {
@@ -36,5 +37,9 @@ public class FisheyeAnnotationProvider implements TextAnnotationGutterProvider {
 
     public ColorKey getColor(int i, Editor editor) {
         return null;
+    }
+
+    public Color getBgColor(int i, Editor editor) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

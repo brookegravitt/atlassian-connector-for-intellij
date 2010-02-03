@@ -25,20 +25,20 @@ import java.util.concurrent.atomic.AtomicLong;
  * Thread safe
  *
  */
-public class FileContentExpiringCache {
+public final class FileContentExpiringCache {
 
     private static Category logger = Category.getInstance(FileContentExpiringCache.class);
 
     public static final long DEFAULT_TIME_TO_LIVE = 10 * 60 * 1000;
     public static final long DEFAULT_ACCESS_TIMEOUT = 5 * 60 * 1000;
     public static final long DEFAULT_TIMER_INTERVAL = 2 * 60 * 1000;
-    private static long DEFAULT_CACHE_SIZE_BYTES = 20 * 1024 * 1024;
+    private static final long DEFAULT_CACHE_SIZE_BYTES = 20 * 1024 * 1024;
     private long ttl = DEFAULT_TIME_TO_LIVE;
     private long ato = DEFAULT_ACCESS_TIMEOUT;
     private long tiv = DEFAULT_TIMER_INTERVAL;
 
-    private static FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
-    private static AtomicLong NUMBER_OF_BYTES_DOWNLOADED = new AtomicLong(0);
+    private static final FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
+    private static final AtomicLong NUMBER_OF_BYTES_DOWNLOADED = new AtomicLong(0);
     private final ConcurrentMap<String, Future<CachedObject>> cacheMap
             = new ConcurrentHashMap<String, Future<CachedObject>>();
 
@@ -177,7 +177,8 @@ public class FileContentExpiringCache {
         }
     }
 
-    private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile, final ReviewFileContentProvider provider,
+    private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile,
+                                                  final ReviewFileContentProvider provider,
                                                   final ReviewAdapter review) {
         String key = ContentUtil.getKey(versionedVirtualFile);
         Callable<CachedObject> eval = new Callable<CachedObject>() {
@@ -239,12 +240,12 @@ public class FileContentExpiringCache {
      */
     protected class CachedObject {
         private ReviewFileContent cachedData;
-        long timeCached;
-        long timeAccessedLast;
-        int numberOfAccesses;
-        long objectTTL;
-        long objectIdleTimeout;
-        boolean userTimeouts;
+        private long timeCached;
+        private long timeAccessedLast;
+        private int numberOfAccesses;
+        private long objectTTL;
+        private long objectIdleTimeout;
+        private boolean userTimeouts;
 
 
         CachedObject(ReviewFileContent cachedData) {
@@ -287,6 +288,61 @@ public class FileContentExpiringCache {
                     || now > timeCached + usedTTL;
         }
 
+        public ReviewFileContent getCachedData() {
+            return cachedData;
+        }
+
+        public void setCachedData(ReviewFileContent cachedData) {
+            this.cachedData = cachedData;
+        }
+
+        public long getTimeCached() {
+            return timeCached;
+        }
+
+        public void setTimeCached(long timeCached) {
+            this.timeCached = timeCached;
+        }
+
+        public long getTimeAccessedLast() {
+            return timeAccessedLast;
+        }
+
+        public void setTimeAccessedLast(long timeAccessedLast) {
+            this.timeAccessedLast = timeAccessedLast;
+        }
+
+        public int getNumberOfAccesses() {
+            return numberOfAccesses;
+        }
+
+        public void setNumberOfAccesses(int numberOfAccesses) {
+            this.numberOfAccesses = numberOfAccesses;
+        }
+
+        public long getObjectTTL() {
+            return objectTTL;
+        }
+
+        public void setObjectTTL(long objectTTL) {
+            this.objectTTL = objectTTL;
+        }
+
+        public long getObjectIdleTimeout() {
+            return objectIdleTimeout;
+        }
+
+        public void setObjectIdleTimeout(long objectIdleTimeout) {
+            this.objectIdleTimeout = objectIdleTimeout;
+        }
+
+        public boolean isUserTimeouts() {
+            return userTimeouts;
+        }
+
+        public void setUserTimeouts(boolean userTimeouts) {
+            this.userTimeouts = userTimeouts;
+        }
     }
 
 
