@@ -48,7 +48,7 @@ public class FooterPanel extends JPanel {
 		final HyperlinkLabel openJiraHyperlinkBugLabel = new HyperlinkLabel("Report Bug");
 		openJiraHyperlinkBugLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser(BugReporting.getBugUrl(ApplicationInfo.getInstance().getBuildNumber()));
+				BrowserUtil.launchBrowser(BugReporting.getBugUrl(ApplicationInfo.getInstance().getBuild().asString()));
 			}
 		});
 
