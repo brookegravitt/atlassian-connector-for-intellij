@@ -217,6 +217,7 @@ public final class FileContentExpiringCache {
                 try {
                     cobj = f.get();
                 } catch (ExecutionException e) {
+                    throw new InterruptedException(e.getMessage());
                 }
 
                 cobj.timeAccessedLast = System.currentTimeMillis();

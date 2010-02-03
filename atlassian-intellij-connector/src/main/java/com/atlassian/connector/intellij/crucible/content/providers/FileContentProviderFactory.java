@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 public final class FileContentProviderFactory {
     private final ConcurrentMap<String, Future<ReviewFileContentProvider>> cache
         = new ConcurrentHashMap<String, Future<ReviewFileContentProvider>>();
-    private static FileContentProviderFactory INSTANCE = new FileContentProviderFactory();
+    private static final FileContentProviderFactory INSTANCE = new FileContentProviderFactory();
 
     private FileContentProviderFactory() {
     }
@@ -35,7 +35,8 @@ public final class FileContentProviderFactory {
     }
 
      public ReviewFileContentProvider get(final Project project, final VersionedVirtualFile versionedVirtualFile,
-                                                 final CrucibleFileInfo reviewItem, final ReviewAdapter review) throws InterruptedException {
+                                                 final CrucibleFileInfo reviewItem,
+                                                 final ReviewAdapter review) throws InterruptedException {
         while (true) {
             String key = ContentUtil.getKey(versionedVirtualFile);
             Future<ReviewFileContentProvider> f = cache.get(key);
@@ -60,7 +61,8 @@ public final class FileContentProviderFactory {
     }
     @Nullable
     private ReviewFileContentProvider getContentProvider(Project project, VersionedVirtualFile versionedVirtualFile,
-                                                 CrucibleFileInfo reviewItem, ReviewAdapter review) throws InterruptedException {
+                                                 CrucibleFileInfo reviewItem,
+                                                 ReviewAdapter review) throws InterruptedException {
 
         final PsiFile psiFile =  CodeNavigationUtil
                 .guessCorrespondingPsiFile(project, versionedVirtualFile.getAbsoluteUrl());
