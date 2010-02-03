@@ -193,7 +193,7 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 									"Set as default",
 									Messages.getQuestionIcon());
 
-							ProjectCfgManagerImpl cfgMgr = (ProjectCfgManagerImpl)IdeaHelper.getProjectCfgManager(project);
+							ProjectCfgManagerImpl cfgMgr = (ProjectCfgManagerImpl) IdeaHelper.getProjectCfgManager(project);
 
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
 								UserCfg credentials = new UserCfg(selectedServer.getUsername(),

@@ -91,7 +91,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			final UiTaskExecutor uiTaskExecutor,
 			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull WorkspaceConfigurationBean projectConfigurationBean) {
 		this.project = project;
-		this.projectCfgManager = (ProjectCfgManagerImpl)projectCfgManager;
+		this.projectCfgManager = (ProjectCfgManagerImpl) projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
 		this.projectConfigurationBean = projectConfigurationBean;
