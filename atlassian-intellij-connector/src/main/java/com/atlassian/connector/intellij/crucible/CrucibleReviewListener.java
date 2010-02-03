@@ -23,25 +23,17 @@ import java.util.List;
 
 public interface CrucibleReviewListener {
 
-	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
-			VersionedComment parentComment, VersionedComment comment);
-
-	void createdOrEditedGeneralCommentReply(ReviewAdapter review, Comment parentComment,
-			Comment comment);
-
+	void createdOrEditedReply(ReviewAdapter review, PermId file, Comment parentComment, Comment comment);
 
 	void createdOrEditedGeneralComment(ReviewAdapter review, Comment comment);
 
-	void createdOrEditedVersionedComment(ReviewAdapter review,
-			PermId file,
-			VersionedComment comment);
+	void createdOrEditedVersionedComment(ReviewAdapter review, PermId file, VersionedComment comment);
 
 	void removedComment(ReviewAdapter review, Comment comment);
 
 	void publishedGeneralComment(ReviewAdapter review, Comment comment);
 
-	void publishedVersionedComment(ReviewAdapter review, PermId filePermId,
-			VersionedComment comment);
+	void publishedVersionedComment(ReviewAdapter review, PermId filePermId, VersionedComment comment);
 
 	/**
 	 * Notifies that something has been changed in the review
@@ -49,8 +41,7 @@ public interface CrucibleReviewListener {
 	 * @param reviewAdapter changed review
 	 * @param notifications list of changes in review
 	 */
-	void reviewChanged(final ReviewAdapter reviewAdapter,
-			final List<CrucibleNotification> notifications);
+	void reviewChanged(final ReviewAdapter reviewAdapter, final List<CrucibleNotification> notifications);
 
     void commentReadStateChanged(ReviewAdapter review, Comment comment);
 }

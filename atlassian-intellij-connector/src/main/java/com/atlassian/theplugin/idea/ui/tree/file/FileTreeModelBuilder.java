@@ -31,6 +31,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
@@ -143,6 +144,16 @@ public final class FileTreeModelBuilder {
 		return model;
 	}
 
+	private static void fillReplies(Comment comment, AtlassianTreeModel model, CommentTreeNode parentNode,
+			ReviewAdapter review, AtlassianClickAction action) {
+		for (Comment reply : comment.getReplies()) {
+			final GeneralCommentTreeNode node = new GeneralCommentTreeNode(review, reply, action);
+			model.insertNode(node, parentNode);
+// not handling replies to replies at the moment, as in many other places we need to fix it			
+//			fillReplies(reply, model, node, review);
+		}
+	}
+
 	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
 			ReviewAdapter review, CrucibleFileInfo file, Project project) {
 		List<VersionedComment> fileComments = getFileVersionedComments(file);
@@ -152,11 +163,7 @@ public final class FileTreeModelBuilder {
 			if (!c.isDeleted()) {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
 				model.insertNode(commentNode, node);
-
-				for (Comment reply : c.getReplies()) {
-					model.insertNode(
-							new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
-				}
+				fillReplies(c, model, commentNode, review, action);
 			}
 		}
 
@@ -165,11 +172,8 @@ public final class FileTreeModelBuilder {
 			if (!c.isDeleted()) {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
 				model.insertNode(commentNode, node);
+				fillReplies(c, model, commentNode, review, action);
 
-				for (Comment reply : c.getReplies()) {
-					model.insertNode(
-							new GeneralCommentTreeNode(review, reply, action), commentNode);
-				}
 			}
 		}
 	}

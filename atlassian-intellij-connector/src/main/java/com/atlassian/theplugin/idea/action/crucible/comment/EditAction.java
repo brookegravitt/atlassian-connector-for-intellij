@@ -58,15 +58,12 @@ public class EditAction extends AbstractCommentAction {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			Comment comment = node.getComment();
-            Comment parent =
-                    comment.isReply() ? ((GeneralCommentTreeNode) node.getParent()).getComment() : null;
+            Comment parent = comment.getParentComment();
 			editGeneralComment(event, node.getReview(), comment, parent);
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			VersionedComment comment = node.getComment();
-            VersionedComment parent =
-                    comment.isReply() ? ((VersionedCommentTreeNode) node.getParent()).getComment() : null;
-			editVersionedComment(event, node.getReview(), node.getFile(), comment, parent);
+			editVersionedComment(event, node.getReview(), node.getFile(), comment, comment.getParentComment());
 		}
 	}
 
@@ -80,7 +77,7 @@ public class EditAction extends AbstractCommentAction {
 	}
 
 	private void editVersionedComment(AnActionEvent event, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment, final VersionedComment parent) {
+			final CrucibleFileInfo file, final VersionedComment comment, final Comment parent) {
 
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,

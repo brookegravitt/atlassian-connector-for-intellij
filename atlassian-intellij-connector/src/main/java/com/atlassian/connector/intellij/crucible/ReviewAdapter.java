@@ -42,7 +42,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 public class ReviewAdapter {
@@ -245,21 +247,18 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void addGeneralCommentReply(final Comment parentComment, final GeneralComment replyComment)
+	public void addReply(final Comment parentComment, final Comment replyComment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		Comment newReply = facade.addGeneralCommentReply(getServerData(), replyComment);
+		Comment newReply = facade.addReply(getServerData(), replyComment);
 
 		if (newReply != null) {
-			for (Comment comment : review.getGeneralComments()) {
-				if (comment.equals(parentComment)) {
-					comment.getReplies().add(newReply);
-					break;
-				}
-			}
-
+			// if newReply.getParentComment() is null, I am for NPE here, as normally it should not happen, and
+			// I would like not add extra guard here, but know it!
+			//noinspection ConstantConditions
+			newReply.getParentComment().addReply(newReply);
 			// notify listeners
 			for (CrucibleReviewListener listener : getListeners()) {
-				listener.createdOrEditedGeneralCommentReply(this, parentComment, newReply);
+				listener.createdOrEditedReply(this, null, parentComment, newReply);
 			}
 		}
 	}
@@ -268,24 +267,34 @@ public class ReviewAdapter {
 	 * Removes general review comment from the server and model. It SHOULD NOT be called from the EVENT DISPATCH THREAD
 	 * as it calls facade method.
 	 *
-	 * @param generalComment Comment to be removed
+	 * @param comment Comment to be removed
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
 	 *          in case password is missing
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException
 	 *          in case of communication problem
 	 */
-	public synchronized void removeGeneralComment(final Comment generalComment) throws RemoteApiException,
+	public synchronized void removeComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-
+		final Comment parentComment = comment.getParentComment();
 		// remove comment from the server
-		facade.removeComment(getServerData(), review.getPermId(), generalComment);
+		facade.removeComment(getServerData(), review.getPermId(), comment);
 
 		// remove comment from the model
-		this.review.removeGeneralComment(generalComment);
+		if (parentComment != null) {
+			parentComment.removeReply(comment);
+		} else {
+			if (comment instanceof GeneralComment) {
+				review.removeGeneralComment(comment);
+			} else if (comment instanceof VersionedComment) {
+				final VersionedComment versionedComment = (VersionedComment) comment;
+				review.removeVersionedComment(versionedComment, versionedComment.getCrucibleFileInfo());
+
+			}
+		}
 
 		// notify listeners
 		for (CrucibleReviewListener listener : getListeners()) {
-			listener.removedComment(this, generalComment);
+			listener.removedComment(this, comment);
 		}
 	}
 
@@ -311,56 +320,32 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void addVersionedCommentReply(final CrucibleFileInfo file, final VersionedComment parentComment,
-			final VersionedComment nComment) throws RemoteApiException, ServerPasswordNotProvidedException {
-		VersionedComment newComment =
-				facade.addVersionedCommentReply(getServerData(), review,
-				parentComment.getPermId(), nComment);
-
-		if (newComment != null) {
-			parentComment.getReplies().add(newComment);
-
-			// notify listeners
-			for (CrucibleReviewListener listener : getListeners()) {
-				listener.createdOrEditedVersionedCommentReply(this, file.getPermId(), parentComment, newComment);
+	// this method does not support yet nested replies
+	private <T extends Comment> void replaceComment(List<T> comments, T comment) {
+		final ListIterator<T> it = comments.listIterator();
+		while (it.hasNext()) {
+			Comment reply = it.next();
+			if (comment.getPermId().equals(reply.getPermId())) {
+				it.set(comment);
+				return;
 			}
 		}
-	}
 
-	/**
-	 * Removes file comment from the server and model. It SHOULD NOT be called from the EVENT DISPATCH THREAD as it
-	 * calls facade method.
-	 *
-	 * @param versionedComment Comment to be removed
-	 * @param file			 file containing the comment
-	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
-	 *          in case password is missing
-	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException
-	 *          in case of communication problem
-	 * @throws com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized
-	 *
-	 */
-	public void removeVersionedComment(final VersionedComment versionedComment, final CrucibleFileInfo file)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		// remove comment from the server
-		facade.removeComment(getServerData(), review.getPermId(), versionedComment);
-
-		// remove comment from the model
-		review.removeVersionedComment(versionedComment, file);
-
-		// notify listeners
-		for (CrucibleReviewListener listener : getListeners()) {
-			listener.removedComment(this, versionedComment);
-		}
 	}
 
 	public void editGeneralComment(final Comment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.updateComment(getServerData(), getPermId(), comment);
-		for (int i = 0; i < getGeneralComments().size(); i++) {
-			if (comment.getPermId().equals(getGeneralComments().get(i).getPermId())) {
-				getGeneralComments().set(i, new GeneralComment(comment));
-				break;
+		final Comment parentComment = comment.getParentComment();
+		if (parentComment != null) {
+			replaceComment(parentComment.getReplies(), comment);
+		} else {
+			// it's either versioned comment or a top level general comment
+			if (comment instanceof VersionedComment) {
+				final VersionedComment versionedComment = (VersionedComment) comment;
+				replaceComment(versionedComment.getCrucibleFileInfo().getVersionedComments(), versionedComment);
+			} else if (comment instanceof GeneralComment) {
+				replaceComment(review.getGeneralComments(), comment);
 			}
 		}
 		// notify listeners
@@ -371,19 +356,7 @@ public class ReviewAdapter {
 
 	public void editVersionedComment(final CrucibleFileInfo file, final VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		facade.updateComment(getServerData(), getPermId(), comment);
-		for (CrucibleFileInfo fileInfo : getFiles()) {
-			for (int i = 0; i < fileInfo.getVersionedComments().size(); i++) {
-				if (comment.getPermId().equals(fileInfo.getVersionedComments().get(i).getPermId())) {
-					fileInfo.getVersionedComments().set(i, new VersionedComment(comment));
-					break;
-				}
-			}
-		}
-		// notify listeners
-		for (CrucibleReviewListener listener : getListeners()) {
-			listener.createdOrEditedVersionedComment(this, file.getPermId(), comment);
-		}
+		editGeneralComment(comment);
 	}
 
 	public void markCommentRead(final Comment comment)
@@ -456,7 +429,7 @@ public class ReviewAdapter {
 			ServerPasswordNotProvidedException {
 		facade.publishComment(getServerData(), getPermId(), comment.getPermId());
 
-		((GeneralComment) comment).setDraft(false);
+		comment.setDraft(false);
 
 //dirty hack - probably remote api should return new comment info
 //				if (comment instanceof VersionedCommentBean) {
@@ -552,7 +525,6 @@ public class ReviewAdapter {
 
 	/**
 	 * @return total number of versioned comments including replies (for all files)
-	 * @throws com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized
 	 *
 	 */
 	public int getNumberOfVersionedComments() {

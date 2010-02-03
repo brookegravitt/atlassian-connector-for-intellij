@@ -24,11 +24,7 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class CrucibleReviewListenerAdapter implements CrucibleReviewListener {
-	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
-			VersionedComment parentComment, VersionedComment comment) {
-	}
-
-	public void createdOrEditedGeneralCommentReply(ReviewAdapter review,
+	public void createdOrEditedReply(ReviewAdapter review, PermId file,
 			Comment parentComment, Comment comment) {
 	}
 

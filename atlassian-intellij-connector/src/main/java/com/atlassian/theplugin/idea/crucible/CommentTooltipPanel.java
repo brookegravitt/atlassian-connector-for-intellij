@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.commons.crucible.api.model.ReviewModelUtil;
 import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
@@ -1045,32 +1046,23 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 
-        @Override
-        public void createdOrEditedGeneralCommentReply(ReviewAdapter rev, Comment parentComment,
-                                                       Comment comment) {
-            createdOrEditedCommentReply(rev, null, parentComment, comment);
+        public void createdOrEditedReply(final ReviewAdapter rev, final PermId file,
+				final Comment parentComment, final Comment comment) {
+            createdOrEditedCommentReply(rev, parentComment, comment);
         }
 
-        public void createdOrEditedVersionedCommentReply(final ReviewAdapter rev, final PermId file,
-				final VersionedComment parentComment, final VersionedComment comment) {
-            createdOrEditedCommentReply(rev, file, parentComment, comment);
-        }
-
-        private void createdOrEditedCommentReply(final ReviewAdapter rev,
-            final PermId file,
-            final Comment parentComment,
-            final Comment comment) {
+        private void createdOrEditedCommentReply(final ReviewAdapter rev, final Comment parentComment, final Comment comment) {
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
-                    if (file != null && fileInfo != null) {
-					    if (!file.equals(fileInfo.getPermId())) {
-						    return;
-					    }
-                    }
+
+					if (regardsDifferentFile(comment)) {
+						return;
+					}
+
 					if (!isTheSameComment(rootComment, parentComment)) {
 						return;
 					}
@@ -1119,26 +1111,25 @@ public abstract class CommentTooltipPanel extends JPanel {
 
         @Override
         public void createdOrEditedGeneralComment(ReviewAdapter rev, Comment comment) {
-            createdOrEditedComment(rev, null, comment);
+            createdOrEditedComment(rev, comment);
         }
 
         public void createdOrEditedVersionedComment(final ReviewAdapter rev, final PermId file,
                                                     final VersionedComment comment) {
-            createdOrEditedComment(rev, file, comment);
+            createdOrEditedComment(rev, comment);
         }
 
-        private void createdOrEditedComment(final ReviewAdapter rev, final PermId file, final Comment comment) {
+        private void createdOrEditedComment(final ReviewAdapter rev, final Comment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
 
-                    if (file != null && fileInfo != null) {
-					    if (!file.equals(fileInfo.getPermId())) {
-						    return;
-					    }
-                    }
+					if (regardsDifferentFile(comment)) {
+						return;
+					}
+
 
 					if (!comment.isReply() && commentPanelList.size() > 0) {
                         if (mode == Mode.ADD) {
@@ -1162,10 +1153,20 @@ public abstract class CommentTooltipPanel extends JPanel {
                         }
                         closePopup();
 					} else {
-                        createdOrEditedCommentReply(rev, file, rootComment, comment);
+                        createdOrEditedCommentReply(rev, rootComment, comment);
 					}
 				}
 			});
+		}
+
+		private boolean regardsDifferentFile(Comment comment) {
+			final VersionedComment versionedComment = ReviewModelUtil.getParentVersionedComment(comment);
+			if (versionedComment != null && fileInfo != null) {
+				if (!versionedComment.getCrucibleFileInfo().getPermId().equals(fileInfo.getPermId())) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public void removedComment(final ReviewAdapter rev, final Comment comment) {

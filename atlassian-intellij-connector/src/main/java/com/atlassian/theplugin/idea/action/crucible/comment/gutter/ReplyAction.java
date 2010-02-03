@@ -46,12 +46,12 @@ public class ReplyAction extends AbstractGutterCommentAction {
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment Reply", false) {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding Reply", false) {
 
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
-						review.addVersionedCommentReply(file, comment, newComment);
+						review.addReply(comment, newComment);
 					} catch (final Exception e) {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
