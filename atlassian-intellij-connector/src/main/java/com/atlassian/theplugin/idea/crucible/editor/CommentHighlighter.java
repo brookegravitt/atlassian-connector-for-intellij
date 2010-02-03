@@ -200,7 +200,7 @@ public final class CommentHighlighter {
 								virtualFile.getPath(), files);
 						if (fileInfo != null && fileInfo.getRepositoryType() != RepositoryType.PATCH) {
 
-                            SwingUtilities.invokeLater(new Runnable(){
+                            SwingUtilities.invokeLater(new Runnable() {
 
                                 public void run() {
                     		CrucibleHelper.openFileWithDiffs(project

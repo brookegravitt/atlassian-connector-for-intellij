@@ -497,7 +497,7 @@ public final class CrucibleHelper {
                 return virtualFile;
             }
 
-            IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider)review.getContentProvider(fileInfo);
+            IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
             IdeaReviewFileContent content = null;
             try {
                 if (provider == null) {
