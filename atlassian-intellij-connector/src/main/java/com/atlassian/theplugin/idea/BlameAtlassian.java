@@ -40,7 +40,7 @@ public class BlameAtlassian extends ErrorReportSubmitter {
 		}
 
 		
-		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(ApplicationInfo.getInstance().getBuildNumber(),
+		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(ApplicationInfo.getInstance().getBuild().asString(),
                 description.toString()));
 		return new SubmittedReportInfo(null, "JIRA ticket", SubmittedReportInfo.SubmissionStatus.NEW_ISSUE);
 	}
