@@ -48,7 +48,11 @@ public class FooterPanel extends JPanel {
 		final HyperlinkLabel openJiraHyperlinkBugLabel = new HyperlinkLabel("Report Bug");
 		openJiraHyperlinkBugLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser(BugReporting.getBugUrl(ApplicationInfo.getInstance().getBuild().asString()));
+				// there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
+				// deprecated getBuildNumber() method here...
+				@SuppressWarnings("deprecation")
+				String buildNumber = ApplicationInfo.getInstance().getBuildNumber();
+				BrowserUtil.launchBrowser(BugReporting.getBugUrl(buildNumber));
 			}
 		});
 

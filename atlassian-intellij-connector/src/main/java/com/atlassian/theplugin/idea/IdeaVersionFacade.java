@@ -64,7 +64,10 @@ public final class IdeaVersionFacade {
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
     private IdeaVersionFacade() {
-		String ver = ApplicationInfo.getInstance().getBuild().asString();
+		// there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
+		// deprecated getBuildNumber() method here...
+		@SuppressWarnings("deprecation")
+		String ver = ApplicationInfo.getInstance().getBuildNumber();
         Matcher m = IDEA_9_REGEX.matcher(ver);
         if (m.matches()) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
@@ -163,7 +166,10 @@ public final class IdeaVersionFacade {
 			}
 			int v = 0;
             if (!isIdea9) {
-                String ver = ApplicationInfo.getInstance().getBuild().asString();
+				// there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
+				// deprecated getBuildNumber() method here...
+				@SuppressWarnings("deprecation")
+                String ver = ApplicationInfo.getInstance().getBuildNumber();
                 v = Integer.parseInt(ver);
             }
 			Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
