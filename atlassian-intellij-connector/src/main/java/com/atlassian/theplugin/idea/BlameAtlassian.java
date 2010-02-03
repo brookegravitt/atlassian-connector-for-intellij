@@ -39,9 +39,12 @@ public class BlameAtlassian extends ErrorReportSubmitter {
 			description.append("\n");
 		}
 
-		
-		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(ApplicationInfo.getInstance().getBuild().asString(),
-                description.toString()));
+		// there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
+		// deprecated getBuildNumber() method here...
+		@SuppressWarnings("deprecation")
+		String buildNumber = ApplicationInfo.getInstance().getBuildNumber();
+		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(buildNumber, description.toString()));
+
 		return new SubmittedReportInfo(null, "JIRA ticket", SubmittedReportInfo.SubmissionStatus.NEW_ISSUE);
 	}
 }
