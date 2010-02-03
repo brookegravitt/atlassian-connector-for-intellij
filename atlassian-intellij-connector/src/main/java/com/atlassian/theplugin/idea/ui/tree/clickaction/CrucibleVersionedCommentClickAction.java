@@ -1,15 +1,12 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
-import com.atlassian.connector.commons.crucible.api.model.ReviewModelUtil;
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.commons.misc.IntRanges;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
