@@ -180,20 +180,24 @@ public final class ActiveIssueUtils {
 
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
+                    PluginTaskManagerFacade.silentDeactivateIssue(project);
+                    setActiveJiraIssue(project, null, null);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
                                     new ActiveIssueResultHandler() {
                                         public void success() {
+
                                         }
                                         public void failure(Throwable problem) {
-                                            PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
+                                            setActiveJiraIssue(project, null, null);
                                         }
 
                                         public void cancel(String problem) {
-                                             PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+
+                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
+                                            setActiveJiraIssue(project, null, null);
                                         }
                                     });
                         }
@@ -224,6 +228,7 @@ public final class ActiveIssueUtils {
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
                                     new ActiveIssueResultHandler() {
                                         public void success() {
+                                            
                                         }
                                         public void failure(Throwable problem) {
                                             PluginTaskManagerFacade.silentActivateIssue(project,
@@ -490,6 +495,8 @@ public final class ActiveIssueUtils {
                         activeIssueResultHandler.failure(e);
 
                     }
+                } else {
+                    activeIssueResultHandler.cancel("User cancelled issue assignee change");
                 }
             }
         }
