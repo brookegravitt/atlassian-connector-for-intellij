@@ -15,8 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.connector.intellij.tasks.PluginTaskManager;
-import com.atlassian.connector.intellij.tasks.TaskHelper;
+
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.DeactivateIssueRunnable;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
@@ -41,11 +40,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
         } else {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-
-                    final PluginTaskManager pluginTaskManager = TaskHelper.getPluginTaskManager(currentProject);
-                    if (pluginTaskManager != null) {
-                        pluginTaskManager.deactivateToDefaultTask();
-                    }
+                        PluginTaskManagerFacade.deactivateToDefaultTask(currentProject);
                 }
             });
         }

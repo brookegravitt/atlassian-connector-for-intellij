@@ -83,4 +83,29 @@ public class PluginTaskManagerFacade {
         }
         return null;
     }
+
+    public static void deactivateToDefaultTask(final Project project) {
+        try {
+                   final Class ptmClass = Class.forName("com.atlassian.connector.intellij.tasks.PluginTaskManager");
+                   final Method deactivateToDefaultTaskMethod = ptmClass.getMethod("deactivateToDefaultTask");
+                   final Object ptmObj = project.getPicoContainer().getComponentInstanceOfType(ptmClass);
+
+                   SwingUtilities.invokeLater(new Runnable() {
+
+                       public void run() {
+                           try {
+                               deactivateToDefaultTaskMethod.invoke(ptmObj);
+                           } catch (Exception e) {
+
+                           }
+                       }
+                   });
+
+
+               } catch (Exception e) {
+
+               }
+
+
+    }
 }
