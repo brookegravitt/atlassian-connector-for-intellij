@@ -231,13 +231,13 @@ public final class ActiveIssueUtils {
                                             
                                         }
                                         public void failure(Throwable problem) {
-                                            PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
+                                            setActiveJiraIssue(project, null, null);
                                         }
 
                                         public void cancel(String problem) {
-                                             PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                             PluginTaskManagerFacade.silentDeactivateIssue(project);
+                                            setActiveJiraIssue(project, null, null);
                                         }
                                     });
                         }
@@ -470,6 +470,12 @@ public final class ActiveIssueUtils {
                 }
                 isOk = false;
             }
+        }
+
+        @Override
+        public void onCancel() {
+
+
         }
 
         public void onSuccess() {
