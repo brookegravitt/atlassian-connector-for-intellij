@@ -485,9 +485,10 @@ public class ReviewAdapter {
 		review.setDescription(newReview.getDescription());
 		review.setSummary(newReview.getSummary());
 		review.setReviewers(newReview.getReviewers());
-		if (!reviewDifferenceProducer.isShortEqual()) {
+		if (reviewDifferenceProducer.getCommentChangesCount() > 0) {
 			setGeneralComments(newReview.getGeneralComments());
-
+		}
+		if (!reviewDifferenceProducer.isShortEqual()) {
 			review.setActions(newReview.getActions());
 			review.setAllowReviewerToJoin(newReview.isAllowReviewerToJoin());
 			review.setCloseDate(newReview.getCloseDate());
