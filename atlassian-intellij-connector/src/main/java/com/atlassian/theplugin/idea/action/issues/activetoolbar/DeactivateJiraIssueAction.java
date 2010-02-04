@@ -15,11 +15,12 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.connector.intellij.tasks.PluginTaskManager;
+import com.atlassian.connector.intellij.tasks.TaskHelper;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.DeactivateIssueRunnable;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
@@ -35,18 +36,20 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
     public static void runDeactivateTask(final AnActionEvent event) {
         final Project currentProject = IdeaHelper.getCurrentProject(event);
 
-        if (!PluginTaskManager.isValidIdeaVersion()) {
+        if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
             SwingUtilities.invokeLater(new DeactivateIssueRunnable(currentProject));
         } else {
-            ApplicationManager.getApplication().invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
 
-                    PluginTaskManager.getInstance(currentProject).deactivateToDefaultTask();
+                    final PluginTaskManager pluginTaskManager = TaskHelper.getPluginTaskManager(currentProject);
+                    if (pluginTaskManager != null) {
+                        pluginTaskManager.deactivateToDefaultTask();
+                    }
                 }
             });
         }
     }
-
 
 
     public void onUpdate(final AnActionEvent event) {

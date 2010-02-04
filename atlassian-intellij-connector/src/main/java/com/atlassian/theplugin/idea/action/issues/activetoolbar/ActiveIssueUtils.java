@@ -25,8 +25,12 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
-import com.atlassian.theplugin.idea.jira.*;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
+import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -171,6 +175,7 @@ public final class ActiveIssueUtils {
         final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
         final boolean isOtherIssueActive = activeIssue != null && newActiveIssue != activeIssue;
 
+
         if (isOtherIssueActive) {
 
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
@@ -182,12 +187,12 @@ public final class ActiveIssueUtils {
                                         public void success() {
                                         }
                                         public void failure(Throwable problem) {
-                                            PluginTaskManager.getInstance(project).activateLocalTask(
+                                            PluginTaskManagerFacade.silentActivateIssue(project,
                                                     ActiveIssueUtils.getActiveJiraIssue(project));
                                         }
 
                                         public void cancel(String problem) {
-                                            PluginTaskManager.getInstance(project).activateLocalTask(
+                                             PluginTaskManagerFacade.silentActivateIssue(project,
                                                     ActiveIssueUtils.getActiveJiraIssue(project));
                                         }
                                     });
@@ -198,8 +203,8 @@ public final class ActiveIssueUtils {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                             PluginTaskManager.getInstance(project).silentActivateLocalTask(
-                                     ActiveIssueUtils.getActiveJiraIssue(project));
+                             PluginTaskManagerFacade.silentActivateIssue(project,
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
                         }
                     });
                 }
@@ -207,18 +212,37 @@ public final class ActiveIssueUtils {
                       SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                             PluginTaskManager.getInstance(project).silentActivateLocalTask(
-                                     ActiveIssueUtils.getActiveJiraIssue(project));
+                              PluginTaskManagerFacade.silentActivateIssue(project,
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
                         }
                     });
                 }
             });
         } else {
-             ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, null);
+             SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
+                                    new ActiveIssueResultHandler() {
+                                        public void success() {
+                                        }
+                                        public void failure(Throwable problem) {
+                                            PluginTaskManagerFacade.silentActivateIssue(project,
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                        }
+
+                                        public void cancel(String problem) {
+                                             PluginTaskManagerFacade.silentActivateIssue(project,
+                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                                        }
+                                    });
+                        }
+                    });
         }
 
 
     }
+
+
 
     /**
      * Bloking method. Refills cache if necessary.

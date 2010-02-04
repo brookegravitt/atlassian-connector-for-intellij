@@ -31,20 +31,27 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
     private boolean paused = false;
 
 	public ActiveJiraIssueBean() {
+        super(null, "", "");
 	}
 
-	public ActiveJiraIssueBean(final ServerId serverId, final String issueKey, DateTime lastStartTime, long secondsSpent) {
-		super(serverId, issueKey);
+
+	public ActiveJiraIssueBean(final ServerId serverId, final String issueUrl, final String issueKey, DateTime lastStartTime, long secondsSpent) {
+		super(serverId, issueKey, issueUrl);
 		this.lastStartTime = lastStartTime;
 		this.secondsSpent = secondsSpent;
 	}
 
-	public ActiveJiraIssueBean(final ServerId serverId, final String issueKey, DateTime lastStartTime) {
-		this(serverId, issueKey, lastStartTime, 0);
+	public ActiveJiraIssueBean(final ServerId serverId, final String issueUrl, final String issueKey, DateTime lastStartTime) {
+		this(serverId, issueUrl, issueKey, lastStartTime, 0);
 
 	}
 
-	public void resetTimeSpent() {
+    public ActiveJiraIssueBean(final ServerId serverId, final String issueKey, String issueUrl) {
+        super(serverId, issueKey, issueUrl);
+    }
+   
+
+    public void resetTimeSpent() {
 		lastStartTime = new DateTime();
 		secondsSpent = 0;
 	}
@@ -60,7 +67,11 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 		return secondsSpent;
 	}
 
-	public long getSecondsSpent() {
+    public String getIssueUrl() {
+        return issueUrl;
+    }
+
+    public long getSecondsSpent() {
 		recalculateTimeSpent();
 		return this.secondsSpent;
 	}
@@ -86,4 +97,6 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
         recalculateTimeSpent();
         this.paused = paused;
     }
+
+
 }

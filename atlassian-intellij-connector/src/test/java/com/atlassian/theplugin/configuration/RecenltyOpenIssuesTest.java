@@ -84,6 +84,6 @@ public class RecenltyOpenIssuesTest extends TestCase {
 	}
 
 	private IssueRecentlyOpenBean getRecenltyOpenIssueBean(final JiraIssueAdapter issue) {
-		return new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey());
+		return new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey(), issue.getIssueUrl());
 	}
 }

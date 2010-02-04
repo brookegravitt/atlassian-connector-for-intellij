@@ -1,0 +1,27 @@
+<idea-plugin version="2">
+  <name>Atlassian Connector for IntelliJ Task Integrator</name>
+  <description>Integrates IDea 9.x active task with Atlassian IntelliJ Connector active tasks</description>
+  <version>1.0</version>
+  <vendor>Atlassian</vendor>
+  <idea-version since-build="8000"/>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+		<component>
+			<implementation-class>com.atlassian.connector.intellij.tasks.PluginTaskManager</implementation-class>
+            <headless-implementation-class/>
+		</component>
+  </project-components>
+
+  <actions>
+  </actions>
+
+
+  <extensions defaultExtensionNs="com">
+
+     <!--errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/-->
+  </extensions>
+</idea-plugin>

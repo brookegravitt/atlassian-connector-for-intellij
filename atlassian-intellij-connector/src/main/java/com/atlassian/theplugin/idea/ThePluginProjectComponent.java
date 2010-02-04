@@ -17,7 +17,14 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.bamboo.*;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
+import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
+import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
+import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
+import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
@@ -28,7 +35,8 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.TaskActionOrganizer;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -199,7 +207,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 
 		if (!created) {
-            PluginTaskManager.organizeTaskActionsInToolbar();
+            TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
 
 			ChangeListManager.getInstance(project).registerCommitExecutor(
@@ -347,7 +355,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
     private void informAboutIdea9TaskIntegrationAsExperimental() {
       if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
-              && PluginTaskManager.isValidIdeaVersion()) {
+              && PluginTaskManagerFacade.isValidIdeaVersion()) {
 
           final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
                   PluginUtil.PRODUCT_NAME,
