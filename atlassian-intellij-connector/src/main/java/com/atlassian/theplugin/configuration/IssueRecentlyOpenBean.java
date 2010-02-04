@@ -23,36 +23,42 @@ import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
  */
 public class IssueRecentlyOpenBean {
 
-	protected ServerIdImpl serverId;
-	protected String issueKey;
+	protected  ServerIdImpl serverId;
+	protected  String issueKey;
+    protected  String issueUrl;
 
 	public IssueRecentlyOpenBean() {
 	}
 
-	public IssueRecentlyOpenBean(final ServerId serverId, final String issueKey) {
-		if (serverId instanceof ServerId) {
+
+	public IssueRecentlyOpenBean(final ServerId serverId, final String issueKey, String issueUrl) {
+
+        if (serverId instanceof ServerId) {
 			this.serverId = (ServerIdImpl) serverId;
 		}
+        
 		this.issueKey = issueKey;
+        this.issueUrl = issueUrl;
 	}
 
 	public ServerIdImpl getServerId() {
 		return serverId;
 	}
 
-	public void setServerId(final ServerIdImpl serverId) {
-		this.serverId = serverId;
-	}
 
 	public String getIssueKey() {
 		return issueKey;
 	}
 
-	public void setIssueKey(final String issueKey) {
-		this.issueKey = issueKey;
-	}
+    public void setServerId(ServerIdImpl serverId) {
+        this.serverId = serverId;
+    }
 
-	public boolean equals(final Object o) {
+    public String getIssueUrl() {
+        return issueUrl;
+    }
+
+    public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -69,13 +75,20 @@ public class IssueRecentlyOpenBean {
 			return false;
 		}
 
+         if (issueUrl != null ? !issueUrl.equals(that.issueUrl) : that.issueUrl != null) {
+			return false;
+		}
+
 		return true;
 	}
+
+
 
 	public int hashCode() {
 		int result;
 		result = (serverId != null ? serverId.hashCode() : 0);
 		result = 31 * result + (issueKey != null ? issueKey.hashCode() : 0);
+        result = 31 * result + (issueUrl != null ? issueUrl.hashCode() : 0);
 		return result;
 	}
 }

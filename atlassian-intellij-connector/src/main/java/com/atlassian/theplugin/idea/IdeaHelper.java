@@ -70,6 +70,8 @@ public final class IdeaHelper {
 		return value;
 	}
 
+
+
 	@Nullable
 	public static Project getCurrentProject(DataContext dataContext) {
 		return DataKeys.PROJECT.getData(dataContext);

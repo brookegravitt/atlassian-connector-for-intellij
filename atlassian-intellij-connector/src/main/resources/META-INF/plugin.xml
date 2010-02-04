@@ -103,6 +103,7 @@
 
 	<depends>JUnit</depends>
     <depends>Subversion</depends>
+    <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
 
 	<extensions defaultExtensionNs="com.intellij">		
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>

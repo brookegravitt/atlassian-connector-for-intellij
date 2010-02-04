@@ -69,12 +69,14 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 	}
 
 	public void testGetLoadedRecenltyOpenIssue() throws Exception {
-		assertNull(cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getJiraServerData().getServerId()));
+		assertNull(cache.getLoadedRecenltyOpenIssue(issue1.getKey(),
+                issue1.getJiraServerData().getServerId(), issue1.getIssueUrl()));
 
 		cache.addIssue(issue1);
 		cache.addIssue(issue2);
 
-		assertEquals(issue1, cache.getLoadedRecenltyOpenIssue(issue1.getKey(), issue1.getJiraServerData().getServerId()));
+		assertEquals(issue1, cache.getLoadedRecenltyOpenIssue(issue1.getKey(),
+                issue1.getJiraServerData().getServerId(), issue1.getIssueUrl()));
 	}
 
 	public void testAddIssue() {

@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
  */
 public interface ActiveJiraIssue {
 	String getIssueKey();
+    String getIssueUrl();
 
 	long getSecondsSpent();
 

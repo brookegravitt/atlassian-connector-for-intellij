@@ -29,7 +29,13 @@ import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: pmaruszak
@@ -91,10 +97,11 @@ public class RecentlyOpenIssuesCache {
 	 *
 	 * @param issueKey issue key to look for
 	 * @param serverId server to search
-	 * @return recently viewed issue from the local cache or null in case issue was not found in the cache
+	 * @param issueUrl
+     * @return recently viewed issue from the local cache or null in case issue was not found in the cache
 	 */
-	public JiraIssueAdapter getLoadedRecenltyOpenIssue(final String issueKey, final ServerId serverId) {
-		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
+	public JiraIssueAdapter getLoadedRecenltyOpenIssue(final String issueKey, final ServerId serverId, String issueUrl) {
+		return items.get(new IssueRecentlyOpenBean(serverId, issueKey, issueUrl));
 	}
 
 	/**
@@ -105,7 +112,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void addIssue(final JiraIssueAdapter issue) {
 		final IssueRecentlyOpenBean recenltyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey(), issue.getIssueUrl());
 
 		items.remove(recenltyOpenIssueBean);
 		items.put(recenltyOpenIssueBean, issue);
@@ -134,7 +141,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void updateIssue(final JiraIssueAdapter issue) {
 		final IssueRecentlyOpenBean recentlyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getJiraServerData().getServerId(), issue.getKey(), issue.getIssueUrl());
 		if (items.containsKey(recentlyOpenIssueBean)) {
 			// old value is replaced
 			items.put(recentlyOpenIssueBean, issue);

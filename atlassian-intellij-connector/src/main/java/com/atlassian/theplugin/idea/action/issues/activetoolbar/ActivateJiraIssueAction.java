@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManager;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -40,9 +40,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 			if (!isSelectedIssueActive(event, selectedIssue)) {
 				if (selectedIssue.getJiraServerData() != null) {
 					final ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
-							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getKey(), new DateTime());
+							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getIssueUrl(),
+                            selectedIssue.getKey(), new DateTime());
                     final Project project = IdeaHelper.getCurrentProject(event);
-					if (!PluginTaskManager.isValidIdeaVersion()) {
+					if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 ActiveIssueUtils.activateIssue(project, event, newActiveIssue,
@@ -53,9 +54,9 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                     } else {
                         ApplicationManager.getApplication().invokeLater(new Runnable() {
                             public void run() {
-                                PluginTaskManager.getInstance(IdeaHelper.getCurrentProject(event)).activateLocalTask(
-                                        newActiveIssue);
-                            }
+                                PluginTaskManagerFacade.activateIssue(
+                                        IdeaHelper.getCurrentProject(event), newActiveIssue);
+				}
                         });
 
                     }

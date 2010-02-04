@@ -43,7 +43,7 @@ public class ActiveIssueDropDownAction extends ComboBoxAction {
             for (JiraIssueAdapter issue : cache.getLoadedRecenltyOpenIssues()) {
                 if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
                     ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getJiraServerData().getServerId(),
-                            issue.getKey(), new DateTime());
+                            issue.getIssueUrl(), issue.getKey(), new DateTime());
                     group.add(new ActivateIssueItemAction(newActiveIsse, project));
                 }
             }

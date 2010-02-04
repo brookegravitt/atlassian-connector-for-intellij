@@ -12,10 +12,10 @@ public class IssueRecentlyOpenBeanTest extends TestCase {
 
 	public void setUp() throws Exception {
 		final ServerIdImpl serverId = new ServerIdImpl();
-		issue11 = new IssueRecentlyOpenBean(serverId, "1");
-		issue11copy = new IssueRecentlyOpenBean(serverId, "1");
-		issue12 = new IssueRecentlyOpenBean(serverId, "2");
-		issue21 = new IssueRecentlyOpenBean(new ServerIdImpl(), "1");
+		issue11 = new IssueRecentlyOpenBean(serverId, "1", "issueUrl");
+		issue11copy = new IssueRecentlyOpenBean(serverId, "1", "issueUrl");
+		issue12 = new IssueRecentlyOpenBean(serverId, "2", "issueUrl");
+		issue21 = new IssueRecentlyOpenBean(new ServerIdImpl(), "1", "issueUrl");
 	}
 
 	public void testEquals() throws Exception {
