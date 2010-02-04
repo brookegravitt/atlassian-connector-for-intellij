@@ -511,12 +511,14 @@ public class CrucibleHelperForm extends DialogWrapper {
                                         String path = getPathFromRevision(contentRevision);
                                         if (path != null) {
                                             String svnRepoPath = svnRepo.getPath();
-                                            if (!path.startsWith("/" + svnRepoPath + "/")) {
-                                                throw new IllegalArgumentException(
-                                                        "Selected files do not seem to be\n"
-                                                        + "present in the selected Crucible repository");
+                                            if (svnRepoPath != null && svnRepoPath.length() > 0
+													&& !path.startsWith("/" + svnRepoPath + "/")) {
+                                                throw new IllegalArgumentException("Selected files do not seem to be\n"
+														+ "present in the selected Crucible repository");
                                             }
-                                            path = path.substring(svnRepoPath.length() + 2);
+											if (svnRepoPath != null && svnRepoPath.length() > 0) {
+                                            	path = path.substring(svnRepoPath.length() + 2);
+											}
 
                                             pathsAndRevisions.add(new PathAndRevision(path, revList));
                                         } else {
