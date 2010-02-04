@@ -112,4 +112,27 @@ public final class PluginTaskManagerFacade {
 
 
     }
+
+      public static void silentDeactivateIssue(final Project project) {
+        try {
+                   final Class ptmClass = Class.forName("com.atlassian.connector.intellij.tasks.PluginTaskManager");
+                   final Method silentDeactivateIssue = ptmClass.getMethod("silentDeactivateIssue");
+                   final Object ptmObj = project.getPicoContainer().getComponentInstanceOfType(ptmClass);
+
+                   SwingUtilities.invokeLater(new Runnable() {
+
+                       public void run() {
+                           try {
+                               silentDeactivateIssue.invoke(ptmObj);
+                           } catch (Exception e) {
+                                PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
+                           }
+                       }
+                   });
+               } catch (Exception e) {
+                  PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
+               }
+
+
+    }
 }
