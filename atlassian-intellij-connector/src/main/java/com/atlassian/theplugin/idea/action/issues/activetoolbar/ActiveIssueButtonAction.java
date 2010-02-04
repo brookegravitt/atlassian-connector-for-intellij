@@ -77,7 +77,9 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
                 text = text + " (paused)";
             }
             if (cache != null) {
-                issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId(), activeIssue.getIssueUrl());
+                issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(),
+                        activeIssue.getServerId(),
+                        activeIssue.getIssueUrl());
 
                 if (issue != null) {
                     tooltip = issue.getSummary();

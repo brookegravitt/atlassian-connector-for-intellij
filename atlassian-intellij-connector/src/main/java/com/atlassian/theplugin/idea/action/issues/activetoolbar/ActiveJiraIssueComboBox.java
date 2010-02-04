@@ -53,7 +53,9 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 			text = activeIssue.getIssueKey();
 
 			if (cache != null) {
-				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId(), activeIssue.getIssueUrl());
+				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(),
+                        activeIssue.getServerId(),
+                        activeIssue.getIssueUrl());
 
 				if (issue != null) {
 					tooltip = issue.getSummary();

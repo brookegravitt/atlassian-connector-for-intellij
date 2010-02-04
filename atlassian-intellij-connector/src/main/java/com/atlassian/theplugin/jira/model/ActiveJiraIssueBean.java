@@ -35,7 +35,8 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 	}
 
 
-	public ActiveJiraIssueBean(final ServerId serverId, final String issueUrl, final String issueKey, DateTime lastStartTime, long secondsSpent) {
+	public ActiveJiraIssueBean(final ServerId serverId, final String issueUrl, final String issueKey,
+                               DateTime lastStartTime, long secondsSpent) {
 		super(serverId, issueKey, issueUrl);
 		this.lastStartTime = lastStartTime;
 		this.secondsSpent = secondsSpent;

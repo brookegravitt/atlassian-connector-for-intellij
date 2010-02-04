@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.openapi.application.ApplicationManager;
@@ -15,6 +16,8 @@ import java.lang.reflect.Method;
  * @date Feb 2, 2010
  */
 public class PluginTaskManagerFacade {
+    private PluginTaskManagerFacade() {
+    }
 
     public static void activateIssue(final Project project, final ActiveJiraIssue issue) {
         try {
@@ -28,14 +31,14 @@ public class PluginTaskManagerFacade {
                     try {
                         activateIssueMethod.invoke(ptmObj, issue);
                     } catch (Exception e) {
-
+                        PluginUtil.getLogger().error("Cannot activate issue.", e);
                     }
                 }
             });
 
 
         } catch (Exception e) {
-
+            PluginUtil.getLogger().error("Cannot activate issue.", e);
         }
 
     }
@@ -53,13 +56,14 @@ public class PluginTaskManagerFacade {
                     try {
                         silentActivateIssue.invoke(ptmObj, issue);
                     } catch (Exception e) {
+                         PluginUtil.getLogger().error("Cannot silent activate issue.", e);
                     }
                 }
             });
 
 
         } catch (Exception e) {
-
+           PluginUtil.getLogger().error("Cannot silent activate issue.", e);
         }
 
     }  
@@ -72,7 +76,7 @@ public class PluginTaskManagerFacade {
 
     private static boolean isTaskPluginEnabled() {
        IdeaPluginDescriptor descriptor = getTaskManagerDescriptor();
-        return descriptor != null && ((IdeaPluginDescriptorImpl)descriptor).isEnabled();
+        return descriptor != null && ((IdeaPluginDescriptorImpl) descriptor).isEnabled();
     }
 
     public static IdeaPluginDescriptor getTaskManagerDescriptor() {
@@ -96,14 +100,14 @@ public class PluginTaskManagerFacade {
                            try {
                                deactivateToDefaultTaskMethod.invoke(ptmObj);
                            } catch (Exception e) {
-
+                                PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
                            }
                        }
                    });
 
 
                } catch (Exception e) {
-
+                  PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
                }
 
 

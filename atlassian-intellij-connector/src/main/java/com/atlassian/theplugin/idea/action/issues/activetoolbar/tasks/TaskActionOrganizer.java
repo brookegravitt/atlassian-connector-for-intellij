@@ -14,6 +14,8 @@ import java.lang.reflect.Method;
  * @date: Feb 2, 2010
  */
 public final class TaskActionOrganizer {
+    private TaskActionOrganizer() {
+    }
 
     public static void organizeTaskActionsInToolbar() {
 
