@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  * @author pmaruszak
  * @date Feb 2, 2010
  */
-public class PluginTaskManagerFacade {
+public final class PluginTaskManagerFacade {
     private PluginTaskManagerFacade() {
     }
 
