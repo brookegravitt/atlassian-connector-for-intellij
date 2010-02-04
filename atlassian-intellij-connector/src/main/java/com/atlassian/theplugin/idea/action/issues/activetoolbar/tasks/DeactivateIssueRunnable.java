@@ -50,7 +50,7 @@ public class DeactivateIssueRunnable  implements Runnable {
                 }
 
                 public void cancel(String problem) {
-                    //deactivation cancelled
+                    PluginTaskManagerFacade.silentActivateIssue(project, conf.getActiveJiraIssuee());
                 }
             });
 
