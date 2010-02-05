@@ -224,13 +224,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		@Override
 		public void run(@NotNull ProgressIndicator progressIndicator) {
 			progressIndicator.setIndeterminate(true);
-            SwingUtilities.invokeLater(new Runnable() {
-
-                public void run() {
-                    fileCache.initDownload(review);
-                }
-            });
-
+            fileCache.initDownload(review);
 		}
 	}
 

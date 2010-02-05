@@ -19,6 +19,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.NDC;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ConcurrentModificationException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -144,45 +145,50 @@ public final class FileContentExpiringCache implements ProjectComponent {
     }
 
     public void initDownload(final ReviewAdapter review) {
-        ProgressManager.getInstance().run(
-                new Task.Backgroundable(project, "Prefetching files for review " + review.getPermId()) {
+        SwingUtilities.invokeLater(new Runnable() {
 
-                    @Override
-                    public void run(@NotNull ProgressIndicator progressIndicator) {
-                        progressIndicator.cancel();
-                        int c = 0;
-                        for (CrucibleFileInfo file : review.getFiles()) {
-                            VersionedVirtualFile versionedVirtualFile = file.getFileDescriptor();
-                            ReviewFileContentProvider provider = null;
-                            if (versionedVirtualFile != null) {
-                                try {
-                                    provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
-                                } catch (InterruptedException e) {
-                                    continue;
+            public void run() {
+                ProgressManager.getInstance().run(
+                        new Task.Backgroundable(project, "Prefetching files for review " + review.getPermId()) {
+
+                            @Override
+                            public void run(@NotNull ProgressIndicator progressIndicator) {                                
+                                int c = 0;
+                                for (CrucibleFileInfo file : review.getFiles()) {
+                                    VersionedVirtualFile versionedVirtualFile = file.getFileDescriptor();
+                                    ReviewFileContentProvider provider = null;
+                                    if (versionedVirtualFile != null) {
+                                        try {
+                                            provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                        } catch (InterruptedException e) {
+                                            continue;
+                                        }
+                                        downloadFile(versionedVirtualFile, provider, review);
+                                        c++;
+                                    }
+                                    versionedVirtualFile = file.getOldFileDescriptor();
+                                    if (versionedVirtualFile != null) {
+                                        try {
+                                            provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                        } catch (InterruptedException e) {
+                                            continue;
+                                        }
+                                        downloadFile(versionedVirtualFile, provider, review);
+                                        c++;
+                                    }
+                                    if (c > INITIAL_FILE_DOWNLOAD) {
+                                        break;
+                                    }
                                 }
-                                downloadFile(versionedVirtualFile, provider, review);
-                                c++;
                             }
-                            versionedVirtualFile = file.getOldFileDescriptor();
-                            if (versionedVirtualFile != null) {
-                                try {
-                                    provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
-                                } catch (InterruptedException e) {
-                                    continue;
-                                }
-                                downloadFile(versionedVirtualFile, provider, review);
-                                c++;
-                            }
-                            if (c > INITIAL_FILE_DOWNLOAD) {
-                                break;
-                            }
-                        }
-                    }
-                });
+                        });
+
+            }
+        });
 
     }
 
-    
+
     private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile,
                                                   final ReviewFileContentProvider provider,
                                                   final ReviewAdapter review) {
