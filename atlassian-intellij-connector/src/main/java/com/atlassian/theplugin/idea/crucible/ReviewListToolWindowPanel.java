@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
 import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -33,19 +32,37 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.crucible.model.*;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.UpdateContext;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
-import com.atlassian.theplugin.idea.crucible.tree.*;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleCustomFilterTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -62,7 +79,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -88,6 +110,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
     private final ProjectCfgManager projectCfgManager;
 
     private final UiTaskExecutor uiTaskExecutor;
+    private final FileContentExpiringCache fileCache;
     private final CrucibleReviewListModel reviewListModel;
     private Timer timer;
 
@@ -100,10 +123,12 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
                                      @NotNull final WorkspaceConfigurationBean projectConfiguration,
                                      @NotNull final ProjectCfgManager projectCfgManager,
                                      @NotNull final CrucibleReviewListModel reviewListModel,
-                                     @NotNull final UiTaskExecutor uiTaskExecutor) {
+                                     @NotNull final UiTaskExecutor uiTaskExecutor,
+                                     @NotNull final FileContentExpiringCache fileCache) {
         super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
         this.projectCfgManager = projectCfgManager;
         this.uiTaskExecutor = uiTaskExecutor;
+        this.fileCache = fileCache;
 
         crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
@@ -199,7 +224,13 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		@Override
 		public void run(@NotNull ProgressIndicator progressIndicator) {
 			progressIndicator.setIndeterminate(true);
-			FileContentExpiringCache.getInstance().initDownload(project, review);
+            SwingUtilities.invokeLater(new Runnable() {
+
+                public void run() {
+                    fileCache.initDownload(review);
+                }
+            });
+
 		}
 	}
 
@@ -447,8 +478,9 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
-                FileContentExpiringCache.getInstance().clear();
-                ContentProviderCache.getInstance().clear();
+                fileCache.clear();
+                IdeaHelper.getFileContentProviderProxy(project).clear();
+                IdeaHelper.getFileContentExpiringCache(project).clear();
                 reviewListModel.rebuildModel(reason);
             }
         };

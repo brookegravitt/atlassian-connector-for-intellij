@@ -16,10 +16,6 @@
 
 package com.atlassian.connector.intellij.crucible;
 
-import com.atlassian.connector.intellij.crucible.content.ContentProviderCache;
-import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
-import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
-import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -38,6 +34,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
@@ -587,24 +584,6 @@ public class ReviewAdapter {
 	public String toString() {
 		return review.getPermId().getId() + ": " + review.getName() + " (" + server.getName() + ')';
 	}
-
-	public void addContentProvider(final ReviewFileContentProvider contentProvider) {
-        ContentProviderCache.getInstance().addContentProvider(contentProvider);
-	}
-
-	public ReviewFileContentProvider getContentProvider(VersionedVirtualFile fileInfo) {
-		if (ContentProviderCache.getInstance().containsProvider(fileInfo)) {
-			return ContentProviderCache.getInstance().getContentProvider(fileInfo);
-		}
-		return null;
-	}
-
-
-	public void clearContentCache() {
-		FileContentExpiringCache.getInstance().clear();
-		ContentProviderCache.getInstance().clear();
-	}
-
 
 
 	public ServerData getServerData() {

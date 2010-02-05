@@ -22,6 +22,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,7 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import junit.framework.TestCase;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModelImplAdapter model;
@@ -578,7 +579,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Map<CrucibleFilter, ReviewNotificationBean> updatedReviews = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
 		public CrucibleReviewListModelImplAdapter() {
-			super(null, new WorkspaceConfigurationBean(), null);
+			super(null, new WorkspaceConfigurationBean(), null, null);
 			final ReviewNotificationBean bean = new ReviewNotificationBean();
 			updatedReviews.put(PredefinedFilter.Open, bean);
 			bean.setReviews(new ArrayList<ReviewAdapter>());

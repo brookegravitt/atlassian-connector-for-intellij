@@ -149,6 +149,11 @@ public final class CodeNavigationUtil {
 		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
 	}
 
+	@Nullable
+	public static PsiFile guessCorrespondingPsiFile(PsiFile[] psifiles, final Project project, final String filepath) {
+		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
+	}
+
 	/**
 	 * Note: must be run from event dispatch thread or inside read-action only!
 	 *
