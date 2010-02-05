@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
+import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderProxy;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -109,6 +111,14 @@ public final class IdeaHelper {
 //
 //		return null;
 //	}
+
+    public static FileContentExpiringCache getFileContentExpiringCache(Project p) {
+        return getProjectComponent(p, FileContentExpiringCache.class);
+    }
+
+    public static FileContentProviderProxy getFileContentProviderProxy(Project p) {
+        return getProjectComponent(p, FileContentProviderProxy.class);
+    }
 
 	public static ProjectCfgManager getProjectCfgManager(Project p) {
 		return getProjectComponent(p, ProjectCfgManager.class);

@@ -215,6 +215,12 @@
 		<component>
 			<implementation-class>com.atlassian.theplugin.idea.config.ProjectConfigurationComponent</implementation-class>
 		</component>
+        <component>
+            <implementation-class>com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderProxy</implementation-class>
+        </component>
 	</project-components>
 
 	<actions>

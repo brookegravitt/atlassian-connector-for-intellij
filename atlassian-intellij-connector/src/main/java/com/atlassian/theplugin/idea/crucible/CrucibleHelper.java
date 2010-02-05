@@ -18,9 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
-import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderFactory;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
@@ -323,11 +321,6 @@ public final class CrucibleHelper {
                 break;
         }
 
-        if (contentUrlAvailable) {
-            review.addContentProvider(new CrucibleWebContentProvider(crucibleFileInfo, virtualFile));
-        } else {
-            review.addContentProvider(new CrucibleVcsContentProvider(project, crucibleFileInfo, virtualFile));
-        }
 
         new FetchingTwoFilesTask(project, modal, niceFileMessage, review, crucibleFileInfo, line, column, action)
                 .queue();
@@ -382,9 +375,7 @@ public final class CrucibleHelper {
                 break;
         }
 
-        if (contentUrlAvailable) {
-            review.addContentProvider(new CrucibleWebContentProviderForAddedAndDeletedFiles(reviewItem));
-        } else {
+        if (!contentUrlAvailable) {            
             throw new VcsException("This Crucible version does not support retrieving uploaded files");
         }
 
@@ -467,15 +458,15 @@ public final class CrucibleHelper {
                     case Moved:
                     case Copied:
                         if (!StringUtils.isEmpty(oldFile.getRevision())) {
-                            referenceVirtualFile = getVirtualFile(oldFile);
+                            referenceVirtualFile = getVirtualFile(project, oldFile, crucibleFileInfo);
                         }
-                        displayVirtualFile = getVirtualFile(newFile);
+                        displayVirtualFile = getVirtualFile(project, newFile, crucibleFileInfo);
                         break;
                     case Added:
-                        displayVirtualFile = getVirtualFile(newFile);
+                        displayVirtualFile = getVirtualFile(project, newFile, crucibleFileInfo);
                         break;
                     case Deleted:
-                        referenceVirtualFile = getVirtualFile(oldFile);
+                        referenceVirtualFile = getVirtualFile(project, oldFile, crucibleFileInfo);
                         break;
                     default:
                         break;
@@ -488,28 +479,28 @@ public final class CrucibleHelper {
             }
         }
 
-        private VirtualFile getVirtualFile(VersionedVirtualFile fileInfo) throws ReviewFileContentException {
+        private VirtualFile getVirtualFile(final Project project, VersionedVirtualFile versionedVirtualFile,
+                                           CrucibleFileInfo crucibleFileInfo) throws ReviewFileContentException {
 
             // check if requested file is already opened
             // doesn't haeve to be in cache :)
-            VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
+            VirtualFile virtualFile = getEditorForRevisionFile(versionedVirtualFile);
             if (virtualFile != null) {
                 return virtualFile;
             }
 
-            IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
+            IdeaReviewFileContentProvider provider = null;
             IdeaReviewFileContent content = null;
             try {
-                if (provider == null) {
-                    provider = (IdeaReviewFileContentProvider) FileContentProviderFactory.getInstance().
-                            get(project, fileInfo, crucibleFileInfo, review);
-                }
-
+                provider = (IdeaReviewFileContentProvider) IdeaHelper.getFileContentProviderProxy(project)
+                        .get(versionedVirtualFile, crucibleFileInfo, review);
                 content =
-                        (IdeaReviewFileContent) FileContentExpiringCache.getInstance().get(fileInfo, provider, review);
+                        (IdeaReviewFileContent) IdeaHelper.getFileContentExpiringCache(project)
+                                .get(versionedVirtualFile, provider, review);
 
-            } catch (Exception e) {
-                throw new ReviewFileContentException(e);
+            } catch (InterruptedException e) {
+                throw new ReviewFileContentException("Cannot determine content provider.", e);
+
             }
 
 
@@ -517,15 +508,15 @@ public final class CrucibleHelper {
             if (provider != null && content != null /*&& !provider.isLocalFileDirty()*/
                     && provider.isContentIdentical(content.getContent())) {
                 VirtualFile providerVirtualFile = provider.getVirtualFile();
-                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
-                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
+                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, versionedVirtualFile.getAbsoluteUrl());
+                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, versionedVirtualFile.getRevision());
                 return providerVirtualFile;
             }
 
             if (content != null) {
                 virtualFile = content.getVirtualFile();
-                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
-                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
+                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, versionedVirtualFile.getAbsoluteUrl());
+                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, versionedVirtualFile.getRevision());
 
                 return virtualFile;
             } else {
@@ -635,7 +626,7 @@ public final class CrucibleHelper {
         if (review != null && file != null && file.getPermId() != null) {
             return review.getServerData().getUrl() + "/cru/"
                     + review.getPermId().getId() + "/viewfile/" + file.getPermId().getId();
-		}
-		return null;
-	}
+        }
+        return null;
+    }
 }

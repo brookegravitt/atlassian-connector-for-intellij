@@ -4,6 +4,7 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
@@ -17,7 +18,15 @@ import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -31,6 +40,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     //	private ReviewAdapter selectedReview;
     private final ReviewListModelBuilder reviewListModelBuilder;
     private final ProjectCfgManager projectCfgManager;
+    private final FileContentExpiringCache fileContentCache;
     private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
     //private LocalConfigurationListenerAdapater configurationListenerAdapater = new LocalConfigurationListenerAdapater();
 
@@ -38,10 +48,12 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
     public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
                                        final WorkspaceConfigurationBean projectConfigurationBean,
-                                       final ProjectCfgManager projectCfgManager) {
+                                       final ProjectCfgManager projectCfgManager,
+                                       final FileContentExpiringCache fileContentCache) {
 
         this.reviewListModelBuilder = reviewListModelBuilder;
         this.projectCfgManager = projectCfgManager;
+        this.fileContentCache = fileContentCache;
         this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
         reviews.put(PredefinedFilter.OpenInIde, new HashSet<ReviewAdapter>());
 
@@ -215,7 +227,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
                 }
             }
 
-            r.clearContentCache();
+            if (fileContentCache != null) {
+                fileContentCache.clear();
+            }
+                        
             getOpenInIdeReviews().remove(r);
 
             if (!found) {

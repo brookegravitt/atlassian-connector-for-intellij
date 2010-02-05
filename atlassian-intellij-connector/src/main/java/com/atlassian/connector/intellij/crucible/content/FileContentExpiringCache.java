@@ -6,26 +6,36 @@ package com.atlassian.connector.intellij.crucible.content;
  */
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderFactory;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.apache.log4j.Category;
 import org.apache.log4j.NDC;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ConcurrentModificationException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
  * Thread safe
- *
  */
-public final class FileContentExpiringCache {
+public final class FileContentExpiringCache implements ProjectComponent {
 
     private static Category logger = Category.getInstance(FileContentExpiringCache.class);
 
@@ -37,7 +47,6 @@ public final class FileContentExpiringCache {
     private long ato = DEFAULT_ACCESS_TIMEOUT;
     private long tiv = DEFAULT_TIMER_INTERVAL;
 
-    private static final FileContentExpiringCache INSTANCE = new FileContentExpiringCache();
     private static final AtomicLong NUMBER_OF_BYTES_DOWNLOADED = new AtomicLong(0);
     private final ConcurrentMap<String, Future<CachedObject>> cacheMap
             = new ConcurrentHashMap<String, Future<CachedObject>>();
@@ -45,6 +54,7 @@ public final class FileContentExpiringCache {
 
     private Timer cacheManager;
     private static final int INITIAL_FILE_DOWNLOAD = 20;
+    private final Project project;
 
 
     protected void finalize() throws Throwable {
@@ -53,29 +63,15 @@ public final class FileContentExpiringCache {
         }
     }
 
-    private FileContentExpiringCache() {
+    private FileContentExpiringCache(final Project project) {
+        this.project = project;
         initialize();
     }
 
-    public static FileContentExpiringCache getInstance() {
-        return INSTANCE;
-    }
 
     public static Category getLogger() {
         return logger;
     }
-
-// All times in millisecs
-
-    private FileContentExpiringCache(long timeToLive, long accessTimeout,
-                                     int maximumCachedQuantity, long timerInterval
-    ) throws InterruptedException {
-        ttl = timeToLive;
-        ato = accessTimeout;
-        tiv = timerInterval;
-        initialize();
-    }
-
 
     public void initialize() {
         if (logger.isDebugEnabled()) {
@@ -93,7 +89,7 @@ public final class FileContentExpiringCache {
                         NDC.push("TimerTask");
                         long now = System.currentTimeMillis();
                         try {
-                            
+
                             for (String key : cacheMap.keySet()) {
                                 FutureTask task = (FutureTask) cacheMap.get(key);
                                 CachedObject cobj = (CachedObject) task.get();
@@ -133,15 +129,13 @@ public final class FileContentExpiringCache {
     }
 
     private void decrementMemoryConsumed(long numberOfBytes) {
-         final long  l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(-1L * numberOfBytes);
-        //PluginUtil.getLogger().error("Cache size: " + l);
+        final long l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(-1L * numberOfBytes);
 
 
     }
 
     private void incrementMemoryConsumed(long numberOfBytes) {
-        final long  l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(numberOfBytes);
-        //PluginUtil.getLogger().error("Cache size: " + l);
+        final long l = NUMBER_OF_BYTES_DOWNLOADED.addAndGet(numberOfBytes);
 
     }
 
@@ -149,34 +143,46 @@ public final class FileContentExpiringCache {
         cacheMap.clear();
     }
 
-    public void initDownload(Project project, final ReviewAdapter review) {
-        int c = 0;
-        for (CrucibleFileInfo file : review.getFiles()) {            
-            VersionedVirtualFile versionedVirtualFile = file.getFileDescriptor();
-            ReviewFileContentProvider provider = null;
-            try {
-                provider = FileContentProviderFactory.getInstance().get(project, versionedVirtualFile, file, review);
-            } catch (InterruptedException e) {
-                continue;
-            }
-            downloadFile(versionedVirtualFile, provider, review);
-            c++;
-            
-            versionedVirtualFile = file.getOldFileDescriptor();
-            try {
-                provider = FileContentProviderFactory.getInstance().get(project, versionedVirtualFile, file, review);
-            } catch (InterruptedException e) {
-                continue;
-            }
-            downloadFile(versionedVirtualFile, provider, review);
-            c++;
+    public void initDownload(final ReviewAdapter review) {
+        ProgressManager.getInstance().run(
+                new Task.Backgroundable(project, "Prefetching files for review " + review.getPermId()) {
 
-            if (c > INITIAL_FILE_DOWNLOAD) {
-                break;
-            }
-        }
+                    @Override
+                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                        progressIndicator.cancel();
+                        int c = 0;
+                        for (CrucibleFileInfo file : review.getFiles()) {
+                            VersionedVirtualFile versionedVirtualFile = file.getFileDescriptor();
+                            ReviewFileContentProvider provider = null;
+                            if (versionedVirtualFile != null) {
+                                try {
+                                    provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                } catch (InterruptedException e) {
+                                    continue;
+                                }
+                                downloadFile(versionedVirtualFile, provider, review);
+                                c++;
+                            }
+                            versionedVirtualFile = file.getOldFileDescriptor();
+                            if (versionedVirtualFile != null) {
+                                try {
+                                    provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                } catch (InterruptedException e) {
+                                    continue;
+                                }
+                                downloadFile(versionedVirtualFile, provider, review);
+                                c++;
+                            }
+                            if (c > INITIAL_FILE_DOWNLOAD) {
+                                break;
+                            }
+                        }
+                    }
+                });
+
     }
 
+    
     private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile,
                                                   final ReviewFileContentProvider provider,
                                                   final ReviewAdapter review) {
@@ -232,6 +238,26 @@ public final class FileContentExpiringCache {
                 throw new InterruptedException(e.getMessage());
             }
         }
+    }
+
+    public void projectOpened() {
+    }
+
+    public void projectClosed() {
+        for (String key : cacheMap.keySet()) {
+            cacheMap.get(key).cancel(true);
+        }
+    }
+
+    @NotNull
+    public String getComponentName() {
+        return FileContentExpiringCache.class.getName();
+    }
+
+    public void initComponent() {
+    }
+
+    public void disposeComponent() {
     }
 
 
