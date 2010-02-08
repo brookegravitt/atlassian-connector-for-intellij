@@ -24,7 +24,13 @@ import javax.swing.*;
 import java.util.ConcurrentModificationException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -50,7 +56,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
     private Timer cacheManager;
     private static final int INITIAL_FILE_DOWNLOAD = 20;
     private final Project project;
-    private static long CACHE_SIZE;
+    private static long cacheSize;
 
 
     protected void finalize() throws Throwable {
@@ -62,7 +68,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
     private FileContentExpiringCache(final Project project, final IdeaPluginConfigurationBean config) {
         this.project = project;
 
-        CACHE_SIZE = config.getCrucibleConfigurationData().getReviewFileCacheSize() * 1024 * 1024;
+        cacheSize = config.getCrucibleConfigurationData().getReviewFileCacheSize() * 1024 * 1024;
 
         initialize();
     }
@@ -160,7 +166,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                     ReviewFileContentProvider provider = null;
                                     if (versionedVirtualFile != null) {
                                         try {
-                                            provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                            provider = IdeaHelper.getFileContentProviderProxy(project)
+                                                            .get(versionedVirtualFile, file, review);
                                         } catch (InterruptedException e) {
                                             continue;
                                         }
@@ -190,7 +197,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
     }
 
     boolean cacheLimitReached() {
-        return NUMBER_OF_BYTES_DOWNLOADED.get() >= CACHE_SIZE;
+        return NUMBER_OF_BYTES_DOWNLOADED.get() >= cacheSize;
     }
     private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile,
                                                   final ReviewFileContentProvider provider,
@@ -382,13 +389,13 @@ public final class FileContentExpiringCache implements ProjectComponent {
 
 
         public int compareTo(CachedObject o) {
-            int diff = (int)(timeAccessedLast - o.timeAccessedLast);
+            int diff = (int) (timeAccessedLast - o.timeAccessedLast);
 
             if (diff != 0) {
                 return diff;
             }
 
-            return (int)(timeCached - o.timeCached);
+            return (int) (timeCached - o.timeCached);
         }
     }
 

@@ -134,7 +134,7 @@ public final class FileContentProviderProxy implements ProjectComponent {
     }
 
     class GuessFileRunnable implements Runnable {
-        PsiFile psiFile = null;
+        private PsiFile psiFile = null;
         private final Project project;
         private final VersionedVirtualFile versionedVirtualFile;
 
