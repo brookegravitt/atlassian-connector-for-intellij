@@ -29,6 +29,7 @@ public class DeactivateIssueRunnable  implements Runnable {
                 public void success() {
                     if (conf != null) {
                         conf.setActiveJiraIssuee(null);
+                        PluginTaskManagerFacade.silentDeactivateIssue(project);
 
                     }
                 }
@@ -36,6 +37,7 @@ public class DeactivateIssueRunnable  implements Runnable {
                 public void failure(final Throwable problem) {
                     if (conf != null) {
                         conf.setActiveJiraIssuee(null);
+                         PluginTaskManagerFacade.silentDeactivateIssue(project);
 
                     }
                     SwingUtilities.invokeLater(new Runnable() {

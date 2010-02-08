@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionManagerImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -14,17 +15,19 @@ import java.lang.reflect.Method;
  * @date: Feb 2, 2010
  */
 public final class TaskActionOrganizer {
+    private static boolean isInitialized = false;
     private TaskActionOrganizer() {
     }
 
     public static void organizeTaskActionsInToolbar() {
 
             DefaultActionGroup tasksGroup = getTaskActionGroup();
-            if (tasksGroup != null) {
+            if (tasksGroup != null && !isInitialized/*&&  (ActionManagerImpl.getInstance().getAction("ThePlugin.TasksToolbar")) != null*/) {
                 DefaultActionGroup pluginTaskActions =
                         (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
                 if (pluginTaskActions != null) {
                     tasksGroup.add(pluginTaskActions);
+                    isInitialized = true;
                     removePluginTaskCombo();
                 }
             }
@@ -80,5 +83,18 @@ public final class TaskActionOrganizer {
         if (mainToolBar != null && pluginTaskActions != null) {
             mainToolBar.remove(pluginTaskActions);
         }
+    }
+
+    @NotNull
+    public String getComponentName() {
+        return TaskActionOrganizer.class.getName();
+    }
+
+    public void initComponent() {
+        organizeTaskActionsInToolbar();
+    }
+
+    public void disposeComponent() {
+
     }
 }
