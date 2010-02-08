@@ -210,6 +210,7 @@ public final class ActiveIssueUtils {
                         }
                     });
                 }
+
                 public void cancel(String problem) {
                       SwingUtilities.invokeLater(new Runnable() {
 
