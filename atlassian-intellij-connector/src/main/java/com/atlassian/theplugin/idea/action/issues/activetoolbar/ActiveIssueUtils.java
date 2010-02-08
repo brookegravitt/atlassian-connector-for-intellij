@@ -187,13 +187,11 @@ public final class ActiveIssueUtils {
                             ActiveIssueUtils.activate(project, event, newActiveIssue, jiraServerCfg, newDefaultList,
                                     new ActiveIssueResultHandler() {
                                         public void success() {
-
                                         }
                                         public void failure(Throwable problem) {
                                             PluginTaskManagerFacade.silentDeactivateIssue(project);
                                             setActiveJiraIssue(project, null, null);
                                         }
-
                                         public void cancel(String problem) {
 
                                             PluginTaskManagerFacade.silentDeactivateIssue(project);
