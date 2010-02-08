@@ -47,21 +47,21 @@
         </dependency>
 	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>**/*.xml</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*.xml</include>
-				</includes>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+		<!--<resources>-->
+			<!--<resource>-->
+				<!--<directory>src/main/resources</directory>-->
+				<!--<excludes>-->
+					<!--<exclude>**/*.xml</exclude>-->
+				<!--</excludes>-->
+			<!--</resource>-->
+			<!--<resource>-->
+				<!--<directory>src/main/resources</directory>-->
+				<!--<includes>-->
+					<!--<include>**/*.xml</include>-->
+				<!--</includes>-->
+				<!--<filtering>true</filtering>-->
+			<!--</resource>-->
+		<!--</resources>-->
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -83,37 +83,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-idea-plugin</artifactId>-->
-				<!--<version>2.1</version>-->
-				<!--<configuration>-->
-					<!--<ideaPlugin>true</ideaPlugin>-->
-					<!--<jdkName>IDEA 7590</jdkName>-->
-					<!--<jdkLevel>${jdkLevel}</jdkLevel>-->
-					<!--<wildcardResourcePatterns>!?*.java</wildcardResourcePatterns>-->
-					<!--<downloadSources>true</downloadSources>-->
-					<!--<libraries>-->
-						<!--<library>-->
-							<!--<name>jdom</name>-->
-							<!--<exclude>true</exclude>-->
-						<!--</library>-->
-						<!--<library>-->
-							<!--<name>openapi</name>-->
-							<!--<exclude>true</exclude>-->
-						<!--</library>-->
-						<!--<library>-->
-							<!--<name>idea</name>-->
-							<!--<exclude>true</exclude>-->
-						<!--</library>-->
-						<!--<library>-->
-							<!--<name>idea-junit</name>-->
-							<!--<exclude>true</exclude>-->
-						<!--</library>-->
-					<!--</libraries>-->
-				<!--</configuration>-->
-			<!--</plugin>			-->
+			</plugin>	
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
