@@ -94,9 +94,6 @@ public final class FileContentExpiringCache implements ProjectComponent {
                         NDC.push("TimerTask");
                         long now = System.currentTimeMillis();
                         try {
-
-                            
-
                             for (String key : cacheMap.keySet()) {
                                 FutureTask task = (FutureTask) cacheMap.get(key);
                                 CachedObject cobj = (CachedObject) task.get();
@@ -113,7 +110,6 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                     Thread.yield();
                                 }
                             }
-
                         } catch (ConcurrentModificationException cme) {
                             /*
                             Ignorable.  This is just a timer cleaning up.
@@ -153,11 +149,9 @@ public final class FileContentExpiringCache implements ProjectComponent {
 
     public void initDownload(final ReviewAdapter review) {
         SwingUtilities.invokeLater(new Runnable() {
-
             public void run() {
                 ProgressManager.getInstance().run(
                         new Task.Backgroundable(project, "Prefetching files for review " + review.getPermId()) {
-
                             @Override
                             public void run(@NotNull ProgressIndicator progressIndicator) {                                
                                 int c = 0;
@@ -177,7 +171,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                     versionedVirtualFile = file.getOldFileDescriptor();
                                     if (versionedVirtualFile != null) {
                                         try {
-                                            provider = IdeaHelper.getFileContentProviderProxy(project).get(versionedVirtualFile, file, review);
+                                            provider = IdeaHelper.getFileContentProviderProxy(project)
+                                                    .get(versionedVirtualFile, file, review);
                                         } catch (InterruptedException e) {
                                             continue;
                                         }
