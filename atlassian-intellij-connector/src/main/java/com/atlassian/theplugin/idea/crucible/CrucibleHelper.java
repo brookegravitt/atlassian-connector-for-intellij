@@ -479,8 +479,8 @@ public final class CrucibleHelper {
             }
         }
 
-        private VirtualFile getVirtualFile(final Project project, VersionedVirtualFile versionedVirtualFile,
-                                           CrucibleFileInfo crucibleFileInfo) throws ReviewFileContentException {
+        private VirtualFile getVirtualFile(final Project p, VersionedVirtualFile versionedVirtualFile,
+                                           CrucibleFileInfo crucibleFile) throws ReviewFileContentException {
 
             // check if requested file is already opened
             // doesn't haeve to be in cache :)
@@ -492,10 +492,10 @@ public final class CrucibleHelper {
             IdeaReviewFileContentProvider provider = null;
             IdeaReviewFileContent content = null;
             try {
-                provider = (IdeaReviewFileContentProvider) IdeaHelper.getFileContentProviderProxy(project)
-                        .get(versionedVirtualFile, crucibleFileInfo, review);
+                provider = (IdeaReviewFileContentProvider) IdeaHelper.getFileContentProviderProxy(p)
+                        .get(versionedVirtualFile, crucibleFile, review);
                 content =
-                        (IdeaReviewFileContent) IdeaHelper.getFileContentExpiringCache(project)
+                        (IdeaReviewFileContent) IdeaHelper.getFileContentExpiringCache(p)
                                 .get(versionedVirtualFile, provider, review);
 
             } catch (InterruptedException e) {
