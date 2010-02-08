@@ -9,6 +9,7 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -23,13 +24,7 @@ import javax.swing.*;
 import java.util.ConcurrentModificationException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -52,10 +47,10 @@ public final class FileContentExpiringCache implements ProjectComponent {
     private final ConcurrentMap<String, Future<CachedObject>> cacheMap
             = new ConcurrentHashMap<String, Future<CachedObject>>();
 
-
     private Timer cacheManager;
     private static final int INITIAL_FILE_DOWNLOAD = 20;
     private final Project project;
+    private static long CACHE_SIZE;
 
 
     protected void finalize() throws Throwable {
@@ -64,8 +59,11 @@ public final class FileContentExpiringCache implements ProjectComponent {
         }
     }
 
-    private FileContentExpiringCache(final Project project) {
+    private FileContentExpiringCache(final Project project, final IdeaPluginConfigurationBean config) {
         this.project = project;
+
+        CACHE_SIZE = config.getCrucibleConfigurationData().getReviewFileCacheSize() * 1024 * 1024;
+
         initialize();
     }
 
@@ -91,6 +89,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
                         long now = System.currentTimeMillis();
                         try {
 
+                            
+
                             for (String key : cacheMap.keySet()) {
                                 FutureTask task = (FutureTask) cacheMap.get(key);
                                 CachedObject cobj = (CachedObject) task.get();
@@ -107,6 +107,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                     Thread.yield();
                                 }
                             }
+
                         } catch (ConcurrentModificationException cme) {
                             /*
                             Ignorable.  This is just a timer cleaning up.
@@ -188,7 +189,9 @@ public final class FileContentExpiringCache implements ProjectComponent {
 
     }
 
-
+    boolean cacheLimitReached() {
+        return NUMBER_OF_BYTES_DOWNLOADED.get() >= CACHE_SIZE;
+    }
     private FutureTask<CachedObject> downloadFile(final VersionedVirtualFile versionedVirtualFile,
                                                   final ReviewFileContentProvider provider,
                                                   final ReviewAdapter review) {
@@ -271,7 +274,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
      * A cached object, needed to store attributes such as the last time
      * it was accessed.
      */
-    protected class CachedObject {
+    protected class CachedObject implements Comparable<CachedObject> {
         private ReviewFileContent cachedData;
         private long timeCached;
         private long timeAccessedLast;
@@ -318,7 +321,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
             long usedATO = userTimeouts ? objectIdleTimeout : ato;
 
             return now > timeAccessedLast + usedATO
-                    || now > timeCached + usedTTL;
+                    || now > timeCached + usedTTL || cacheLimitReached();
         }
 
         public ReviewFileContent getCachedData() {
@@ -375,6 +378,17 @@ public final class FileContentExpiringCache implements ProjectComponent {
 
         public void setUserTimeouts(boolean userTimeouts) {
             this.userTimeouts = userTimeouts;
+        }
+
+
+        public int compareTo(CachedObject o) {
+            int diff = (int)(timeAccessedLast - o.timeAccessedLast);
+
+            if (diff != 0) {
+                return diff;
+            }
+
+            return (int)(timeCached - o.timeCached);
         }
     }
 
