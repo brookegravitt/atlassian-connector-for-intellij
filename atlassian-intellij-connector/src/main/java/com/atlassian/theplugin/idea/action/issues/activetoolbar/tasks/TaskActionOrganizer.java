@@ -22,7 +22,7 @@ public final class TaskActionOrganizer {
     public static void organizeTaskActionsInToolbar() {
 
             DefaultActionGroup tasksGroup = getTaskActionGroup();
-            if (tasksGroup != null && !isInitialized/*&&  (ActionManagerImpl.getInstance().getAction("ThePlugin.TasksToolbar")) != null*/) {
+            if (tasksGroup != null && !isInitialized) {
                 DefaultActionGroup pluginTaskActions =
                         (DefaultActionGroup) ActionManager.getInstance().getAction("ThePlugin.TasksToolbar");
                 if (pluginTaskActions != null) {
