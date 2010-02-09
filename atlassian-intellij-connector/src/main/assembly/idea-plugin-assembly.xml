@@ -41,10 +41,6 @@
             <source>./LICENSE</source>
             <outputDirectory>${pom.project.artifactId}/</outputDirectory>
         </file>
-        <file>
-            <source>${basedir}/lib/atlassian-idea-plugin-integration-0.1-SNAPSHOT.jar</source>
-            <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
-        </file>
     </files>
     <dependencySets>
         <dependencySet>
@@ -65,6 +61,7 @@
                 <include>wsdl4j:wsdl4j:jar</include>
                 <include>com.toedter:jcalendar:jar</include>
                 <include>com.thoughtworks.xstream:xstream:jar</include>
+                <include>com.atlassian.connector.tasks:atlassian-idea9-integration:jar</include>                                            
             </includes>
         </dependencySet>
     </dependencySets>
