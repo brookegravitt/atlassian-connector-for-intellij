@@ -11,6 +11,7 @@ import com.atlassian.theplugin.commons.crucible.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -19,6 +20,7 @@ import com.intellij.openapi.project.Project;
 import org.apache.log4j.Category;
 import org.apache.log4j.NDC;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.ConcurrentModificationException;
@@ -120,9 +122,9 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                         "Ignorable ConcurrentModificationException");
                             }
                         } catch (InterruptedException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            PluginUtil.getLogger().error("Interrupoted download:" + e.getMessage());
                         } catch (ExecutionException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            PluginUtil.getLogger().error("Execution problem:" + e.getMessage());
                         }
                         NDC.remove();
                     }
@@ -167,18 +169,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                         }
                                         downloadFile(versionedVirtualFile, provider, review);
                                         c++;
-                                    }
-                                    versionedVirtualFile = file.getOldFileDescriptor();
-                                    if (versionedVirtualFile != null) {
-                                        try {
-                                            provider = IdeaHelper.getFileContentProviderProxy(project)
-                                                    .get(versionedVirtualFile, file, review);
-                                        } catch (InterruptedException e) {
-                                            continue;
-                                        }
-                                        downloadFile(versionedVirtualFile, provider, review);
-                                        c++;
-                                    }
+                                    }                             
                                     if (c > INITIAL_FILE_DOWNLOAD) {
                                         break;
                                     }
@@ -202,7 +193,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
             public CachedObject call() throws InterruptedException {
                 ReviewFileContent fileContent = null;
                 try {
-                    System.out.println("Downloading file:" + versionedVirtualFile.getAbsoluteUrl());
+                    //System.out.println("Downloading file:" + versionedVirtualFile.getAbsoluteUrl());
                     fileContent = provider.getContent(review, versionedVirtualFile);
                     incrementMemoryConsumed(fileContent.getContent().length);
                 } catch (ReviewFileContentException e) {
@@ -217,11 +208,22 @@ public final class FileContentExpiringCache implements ProjectComponent {
         if (f == null) {
             f = ft;
             ft.run();
+
+            try {
+                if (ft.get().getCachedData().getContent() == null) {
+                   cacheMap.remove(key);
+                   return null;
+                }
+            } catch (Exception e) {
+                PluginUtil.getLogger().error("Cannot download file:" + key, e);
+                return null;
+            }
         }
 
         return ft;
     }
-
+    
+    @Nullable
     public ReviewFileContent get(final VersionedVirtualFile versionedVirtualFile, final ReviewFileContentProvider provider,
                                  final ReviewAdapter review) throws InterruptedException {
 
@@ -230,6 +232,7 @@ public final class FileContentExpiringCache implements ProjectComponent {
             Future<CachedObject> f = cacheMap.get(key);
             if (f == null) {
                 f = downloadFile(versionedVirtualFile, provider, review);
+
             } else {
                 CachedObject cobj = null;
                 try {
@@ -243,7 +246,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
             }
             try {
 
-                return f.get() != null ? f.get().getCachedData(key) : null;
+                return f != null && f.get() != null && f.get().getCachedData(key).getContent() != null
+                        ? f.get().getCachedData(key) : null;
             } catch (CancellationException e) {
                 cacheMap.remove(key, f);
             } catch (ExecutionException e) {
@@ -390,11 +394,39 @@ public final class FileContentExpiringCache implements ProjectComponent {
             if (diff != 0) {
                 return diff;
             }
-
             return (int) (timeCached - o.timeCached);
         }
     }
 
+
+//      private List<CrucibleFileInfo> sortFilesToCache(final ReviewAdapter review) {
+//        ArrayList<CrucibleFileInfoComparable> list = new ArrayList<CrucibleFileInfoComparable>();
+//        for (CrucibleFileInfo fileInfo : review.getFiles()) {
+//            list.add(new CrucibleFileInfoComparable(fileInfo));
+//        }
+//
+//        Collections.sort(list);
+//        return new ArrayList<CrucibleFileInfo>(list);
+//
+//    }
+//    class CrucibleFileInfoComparable extends CrucibleFileInfo implements Comparable<CrucibleFileInfo> {
+//        CrucibleFileInfoComparable(CrucibleFileInfo fileInfo) {
+//            super(fileInfo.getFileDescriptor(), fileInfo.getOldFileDescriptor(), fileInfo.getPermId());
+//        }
+//
+//        public int compareTo(CrucibleFileInfo crucibleFileInfo) {
+//            if (getFileDescriptor() != null && crucibleFileInfo.getFileDescriptor() != null) {
+//                return crucibleFileInfo.getFileDescriptor().getContentUrl().compareTo(getFileDescriptor().getContentUrl());
+//            } else if (crucibleFileInfo.getOldFileDescriptor() != null) {
+//                return crucibleFileInfo.getFileDescriptor().getContentUrl().compareTo(getOldFileDescriptor().getContentUrl());
+//            }
+//
+//            if (getOldFileDescriptor() != null && crucibleFileInfo.getOldFileDescriptor() != null) {
+//                return crucibleFileInfo.getFileDescriptor().getContentUrl().compareTo(getFileDescriptor().getContentUrl());
+//            }
+//            return 0;
+//        }
+//    }
 
 }
 
