@@ -16,6 +16,7 @@ Example poms:
   <version>9.0.2</version>
 </project>
 
+ mvn -o install:install-file -Dfile=jira-connector.jar -DgroupId=com.intellij.idea -DartifactId=jira-connector -Dversion=9.0.2  -Dpackaging=jar
 
 .m2/repository/com/intellij/idea/tasks-core/9.0.2
 
@@ -25,3 +26,7 @@ Example poms:
   <artifactId>tasks-core</artifactId>
   <version>9.0.2</version>
 </project>
+
+mvn -o install:install-file -Dfile=tasks-core.jar -DgroupId=com.intellij.idea -DartifactId=tasks-core -Dversion=9.0.2 -Dpackaging=jar
+mvn -o install:install-file -Dfile=jira-connector.jar -DgroupId=com.intellij.idea -DartifactId=jira-connector -Dversion=9.0.2  -Dpackaging=jar
+
