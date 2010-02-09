@@ -8,8 +8,8 @@
 	</parent>
 	<name>Atlassian Intellij IDEA Plugin Task Integration</name>
 	<description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
-	<groupId>com.atlassian.connector</groupId>
-	<artifactId>atlassian-idea-plugin-integration</artifactId>
+	<groupId>com.atlassian.connector.tasks</groupId>
+	<artifactId>atlassian-idea9-integration</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<scm>
 		<connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/task-integration-module-idea9</connection>
