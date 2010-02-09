@@ -39,12 +39,14 @@ public abstract class AbstractCrucibleWebContentProvider extends IdeaReviewFileC
             String contentUrl = versionedVirtualFile.getContentUrl();
 
             // PL-1776
-            contentUrl = URLDecoder.decode(contentUrl, "UTF-8");
+
+
 
             if (contentUrl == null) {
                 return null;
             }
 
+            contentUrl = URLDecoder.decode(contentUrl, "UTF-8");
             contentUrl = UrlUtil.adjustUrlPath(contentUrl, serverUrl);
 
             byte[] content = IntelliJCrucibleServerFacade.getInstance().getFileContent(review.getServerData(), contentUrl);
