@@ -1281,7 +1281,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     @Override
-    public JTree createRightTree() {
+    protected JTree createRightTree() {
         JiraIssueListTree issueTree = new JiraIssueListTree();
 
         new TreeSpeedSearch(issueTree) {

@@ -240,17 +240,23 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public JTree getRightTree() {
+        JTree rTree = rightTree;
+
 		if (rightTree == null) {
-			rightTree = createRightTree();
+			rTree = createRightTree();
+            rightTree = rTree;
 		}
-		return rightTree;
+		return rTree;
 	}
 
 	public JTree getLeftTree() {
+        JTree lTree  = leftTree;
+        
 		if (leftTree == null) {
-			leftTree = createLeftTree();
+			lTree = createLeftTree();
+            leftTree = lTree;
 		}
-		return leftTree;
+		return lTree;
 	}
 
 	public void expandAllRightTreeNodes() {
@@ -279,7 +285,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 	protected abstract void addSearchBoxListener();
 
-	public abstract JTree createRightTree();
+	protected abstract JTree createRightTree();
 
 	public abstract JTree createLeftTree();
 
