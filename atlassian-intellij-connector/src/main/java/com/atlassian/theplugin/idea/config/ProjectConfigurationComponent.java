@@ -26,10 +26,7 @@ import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -54,12 +51,9 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -409,7 +403,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	// pstefaniak, 21 jan 2010: this should probably go outside of this class... to some kind of helper class... dunno
 	public static void fireDirectClickedServerPopup(final Project project, final String serverUrl, final ServerType serverType,
 			final Runnable runnable) {
-		final Color BACKGROUND_COLOR = new Color(255, 255, 200);
+/*		final Color BACKGROUND_COLOR = new Color(255, 255, 200);
 
 		StringBuilder sb = new StringBuilder("Server <i>" + serverUrl + "</i> not found in configuration<br>");
 		sb.append("<br>Click on this notification to open configuration panel and add this server");
@@ -437,7 +431,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				content.getText(),
 				"/icons/crucible-blue-16.png",
 				IdeaVersionFacade.OperationStatus.INFO,
-				BACKGROUND_COLOR);
+				BACKGROUND_COLOR);*/
+
+		if (Messages.showYesNoDialog("Server " + serverUrl + " not found in configuration,\ndo you want to " +
+				"open configuration panel and add this server?",
+				"Server not found",
+				Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE) {
+			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, serverType)) {
+				EventQueue.invokeLater(runnable);
+			}
+		}
 	}
 
 	/*
