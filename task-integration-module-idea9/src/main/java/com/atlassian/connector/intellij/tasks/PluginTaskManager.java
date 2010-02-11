@@ -4,7 +4,6 @@ package com.atlassian.connector.intellij.tasks;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -29,15 +28,15 @@ public class PluginTaskManager implements ProjectComponent {
 
     private final Project project;
     private final ProjectCfgManager projectCfgManager;
-    private final TaskManagerImpl taskManager;
+    private TaskManagerImpl taskManager;
     private TaskListenerImpl listener;
 
 
-    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager) {
+    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager, TaskManager taskManager) {
         this.project = project;
         this.projectCfgManager = projectCfgManager;
-        this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
         this.listener = new TaskListenerImpl(project, this);
+        this.taskManager = (TaskManagerImpl)taskManager;
     }
 
     public void silentActivateIssue(ActiveJiraIssue issue) {
@@ -52,12 +51,13 @@ public class PluginTaskManager implements ProjectComponent {
         deactivateToDefaultTask();
         taskManager.addTaskListener(listener);
     }
+
     public void activateIssue(ActiveJiraIssue issue) {
 
         Task foundTask;
 
         ServerData server = projectCfgManager.getServerr(issue.getServerId());
-        foundTask = findLocalTaskByUrl(issue.getIssueUrl());        
+        foundTask = findLocalTaskByUrl(issue.getIssueUrl());
 
         //ADD or GET JiraRepository
         BaseRepository jiraRepository = getJiraRepository(server);
@@ -74,12 +74,14 @@ public class PluginTaskManager implements ProjectComponent {
                     if (fFoundTask != null) {
                         taskManager.activateTask(fFoundTask, true, true);
                     }
-                } catch (Exception e) {                   
+                } catch (Exception e) {
                 }
 
             }
         } else {
-            Task newTask = (Task)TaskHelper.findJiraTask((JiraRepository)jiraRepository, issue.getIssueKey());
+            Task newTask = (Task) TaskHelper.findJiraTask((JiraRepository) jiraRepository, issue.getIssueKey());
+
+
             if (newTask != null) {
                 taskManager.activateTask(newTask, true, true);
             }
@@ -93,7 +95,7 @@ public class PluginTaskManager implements ProjectComponent {
             for (TaskRepository r : repos) {
                 if (r.getRepositoryType().getName().equalsIgnoreCase("JIRA")
                         && r.getUrl().equalsIgnoreCase(server.getUrl())) {
-                    return (BaseRepository)r;
+                    return (BaseRepository) r;
                 }
             }
         }
@@ -102,12 +104,12 @@ public class PluginTaskManager implements ProjectComponent {
     }
 
     @Nullable
-    private BaseRepository createJiraRepository(ServerData  server) {
-      BaseRepository repo = (BaseRepository) TaskHelper.createJiraRepository();
-      repo.setPassword(server.getPassword());
-      repo.setUrl(server.getUrl());
-      repo.setUsername(server.getUsername());
-      addJiraRepository(repo);
+    private BaseRepository createJiraRepository(ServerData server) {
+        BaseRepository repo = (BaseRepository) TaskHelper.createJiraRepository();
+        repo.setPassword(server.getPassword());
+        repo.setUrl(server.getUrl());
+        repo.setUsername(server.getUsername());
+        addJiraRepository(repo);
 
         return null;
     }
@@ -116,7 +118,7 @@ public class PluginTaskManager implements ProjectComponent {
         TaskRepository[] repos = taskManager.getAllRepositories();
         List<TaskRepository> reposList = new ArrayList<TaskRepository>();
         if (repos != null) {
-            for (TaskRepository r: repos) {
+            for (TaskRepository r : repos) {
                 reposList.add(r);
             }
         }
@@ -156,10 +158,20 @@ public class PluginTaskManager implements ProjectComponent {
         return null;
     }
 
-
     public void projectOpened() {
-        taskManager.addTaskListener(listener);
+//        StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
+//            public void run() {
+//                initializePlugin();
+//            }
+//        });
     }
+
+
+//    private void initializePlugin() {
+//        this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+//        taskManager.addTaskListener(listener);
+//
+//    }
 
     public void projectClosed() {
         taskManager.removeTaskListener(listener);
