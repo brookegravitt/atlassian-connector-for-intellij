@@ -433,8 +433,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				IdeaVersionFacade.OperationStatus.INFO,
 				BACKGROUND_COLOR);*/
 
-		if (Messages.showYesNoDialog("Server " + serverUrl + " not found in configuration,\ndo you want to " +
-				"open configuration panel and add this server?",
+		if (Messages.showYesNoDialog("Server " + serverUrl + " not found in configuration,\ndo you want to "
+				+ "open configuration panel and add this server?",
 				"Server not found",
 				Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE) {
 			if (ProjectConfigurationComponent.addDirectClickedServer(project, serverUrl, serverType)) {
