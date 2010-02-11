@@ -19,7 +19,6 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -605,7 +604,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
      * @return review
      */
     public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
-        final ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
+        final ServerData server = projectCfgManager.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
 
         if (server != null) {
             // todo uncomment that if local review contains details

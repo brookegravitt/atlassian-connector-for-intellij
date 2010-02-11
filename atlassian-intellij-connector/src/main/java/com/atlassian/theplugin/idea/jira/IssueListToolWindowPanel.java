@@ -5,7 +5,6 @@ import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -583,7 +582,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
      */
     public void openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
-        JiraServerData server = (JiraServerData) CfgUtil.findServer(serverUrl, projectCfgManager.getAllJiraServerss());
+        JiraServerData server = (JiraServerData) projectCfgManager.findServer(serverUrl, 
+				projectCfgManager.getAllJiraServerss());
 
         if (server != null) {
             openIssue(issueKey, server, true);

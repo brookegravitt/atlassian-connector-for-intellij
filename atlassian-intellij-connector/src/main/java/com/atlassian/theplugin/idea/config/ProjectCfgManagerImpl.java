@@ -34,9 +34,12 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
+import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -591,6 +594,89 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	public String getFishEyeProjectPath() {
 		return getProjectConfiguration().getFishEyeProjectPath();
+	}
+
+	private static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {
+
+		ServerData enabledServer = null;
+		ServerData disabledServer = null;
+
+		// find matching server
+		for (ServerData server : servers) {
+
+			URL url;
+
+			try {
+				url = new URL(server.getUrl());
+			} catch (MalformedURLException e) {
+				// skip the server if url is broken
+				continue;
+			}
+
+			// compare urls (skip protocols and query string)
+			if (url.getHost().equalsIgnoreCase(serverUrl.getHost())
+					&& url.getPort() == serverUrl.getPort()
+					&& (((url.getPath() == null || url.getPath().equals("") || url.getPath().equals("/"))
+					&& (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
+					|| (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
+
+				if (server.isEnabled()) {
+					enabledServer = server;
+					break;
+				} else if (disabledServer == null) {
+					disabledServer = server;
+				}
+			}
+		}
+
+		if (enabledServer != null) {
+			return enabledServer;
+		}
+
+		return disabledServer;
+	}
+
+	public ServerData findServer(final String serverUrl, final Collection<ServerData> servers) {
+
+		ServerData enabledServer = null;
+		ServerData disabledServer = null;
+
+        String trimmedServerUrl;
+        if (serverUrl.endsWith("/")) {
+            trimmedServerUrl = serverUrl.substring(0, serverUrl.lastIndexOf("/"));
+        } else {
+            trimmedServerUrl = serverUrl;
+        }
+		// find matching server
+		for (ServerData server : servers) {
+			if (server.getUrl().trim().equals(trimmedServerUrl)) {
+				if (server.isEnabled()) {
+					enabledServer = server;
+					break;
+				} else if (disabledServer == null) {
+					disabledServer = server;
+				}
+			}
+		}
+
+		if (enabledServer != null) {
+			return enabledServer;
+		}
+
+		if (disabledServer != null) {
+			return disabledServer;
+		}
+
+		URL url;
+
+		try {
+			url = new URL(trimmedServerUrl);
+		} catch (MalformedURLException e) {
+			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + trimmedServerUrl + "]", e);
+			return null;
+		}
+
+		return findServer(url, servers);
 	}
 
 	//////////////////////////////////////////////////////////////////
