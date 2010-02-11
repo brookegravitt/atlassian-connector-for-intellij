@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
@@ -410,6 +411,11 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				review = IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(reviewKey, serverUrl);
 
 				if (review == null)	{
+					ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(project);
+					if (projectCfgManager.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss()) != null) {
+						return;
+					}					
+
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl,

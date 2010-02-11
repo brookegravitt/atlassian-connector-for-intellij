@@ -3,11 +3,11 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
@@ -427,12 +427,20 @@ public class JIRAIssueTreeBuilder {
 	}
 
 	private String getProjectName(JiraIssueAdapter issue) {
-		if (projectKeysToNames == null
-				|| !projectKeysToNames.containsKey(new Pair<String, ServerId>(issue.getProjectKey(),
-				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()))) {
-			return issue.getProjectKey();
+
+		ServerData serverData = null;
+		for (ServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
+			if (server.getUrl().equals(issue.getServerUrl())) {
+			serverData = server;
+			}
 		}
-		return projectKeysToNames.get(new Pair<String, ServerId>(issue.getProjectKey(),
-				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()));
+		
+		if (projectKeysToNames != null && serverData != null) {
+			Pair<String, ServerId> pair = new Pair<String, ServerId>(issue.getProjectKey(), serverData.getServerId());
+			if (projectKeysToNames.containsKey(pair)) {
+				return projectKeysToNames.get(pair);
+			}
+		}
+		return issue.getProjectKey();
 	}
 }

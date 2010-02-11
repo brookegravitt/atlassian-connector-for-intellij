@@ -19,7 +19,6 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -251,7 +250,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	public void openBuild(@NotNull final String buildKey, final int buildNumber, @NotNull final String serverUrl) {
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
 
-		ServerData server = CfgUtil.findServer(serverUrl, servers);
+		ServerData server = projectCfgManager.findServer(serverUrl, servers);
 
 		if (server != null && server instanceof BambooServerData) {
 			openBuild(buildKey, buildNumber, (BambooServerData) server);
@@ -279,17 +278,22 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
-	public void openBuildAndRunTest(@NotNull final String buildKey, int buildNumber, @NotNull final String serverUrl,
+	public void openBuildAndRunTest(@NotNull final String buildKey, final int buildNumber, @NotNull final String serverUrl,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
 
-		ServerData server = CfgUtil.findServer(serverUrl, servers);
+		ServerData server = projectCfgManager.findServer(serverUrl, servers);
 
 		if (server != null && server instanceof BambooServerData) {
 			openBuildAndRunTest(buildKey, buildNumber, (BambooServerData) server, testPackage, testClass, testName);
 		} else {
-			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
+			ProjectConfigurationComponent.fireDirectClickedServerPopup(project, serverUrl, ServerType.BAMBOO_SERVER,
+					new Runnable() {
+						public void run() {
+							openBuildAndRunTest(buildKey, buildNumber, serverUrl, testPackage, testClass, testName);
+						}
+					});
 		}
 	}
 
