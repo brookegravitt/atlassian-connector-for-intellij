@@ -10,13 +10,13 @@
   </application-components>
 
   <project-components>
-		<component>
-			<implementation-class>com.atlassian.connector.intellij.tasks.PluginTaskManager</implementation-class>
-            <headless-implementation-class/>
-		</component>
-      <component>
-          <implementation-class>com.atlassian.connector.intellij.tasks.ActivationProcessingManager</implementation-class>
-      </component>
+		<!--<component>-->
+			<!--<implementation-class>com.atlassian.connector.intellij.tasks.PluginTaskManager</implementation-class>-->
+            <!--<headless-implementation-class/>-->
+		<!--</component>-->
+      <!--<component>-->
+          <!--<implementation-class>com.atlassian.connector.intellij.tasks.ActivationProcessingManager</implementation-class>-->
+      <!--</component>-->
   </project-components>
 
   <actions>
