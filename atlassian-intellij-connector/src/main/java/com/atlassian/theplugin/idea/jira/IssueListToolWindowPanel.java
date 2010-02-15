@@ -737,9 +737,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			// todo: somewhere here (after adding attachment) we have to refresh attachment panel...
 			// todo: as a mock lets refresh all issues:
 			refreshIssues(true);
-
-		}
-		catch (final JIRAException e) {
+		} catch (final JIRAException e) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					setStatusErrorMessage("Error: " + e.getMessage(), e);

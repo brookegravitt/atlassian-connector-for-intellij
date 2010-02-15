@@ -32,10 +32,10 @@ public class AddAttachmentAction extends JIRAAbstractAction {
 	public void onUpdate(AnActionEvent event) {
 	}
 
-	static private byte[] getContents(final File file) {
+	private static byte[] getContents(final File file) {
 		try {
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-			byte buf[] = new byte[(int)file.length()];
+			byte[] buf = new byte[(int) file.length()];
 			bis.read(buf);
 			bis.close();
 			return buf;
