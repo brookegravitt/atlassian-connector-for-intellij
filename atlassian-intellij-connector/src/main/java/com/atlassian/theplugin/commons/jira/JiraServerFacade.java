@@ -73,6 +73,8 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     void addComment(JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException;
 
+	void addAttachment(JiraServerData jiraServerData, String issueKey, String name, byte[] content) throws JIRAException;
+
     JiraIssueAdapter createIssue(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 
     JiraIssueAdapter getIssue(JiraServerData jiraServerData, String key) throws JIRAException;

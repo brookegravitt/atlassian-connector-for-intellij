@@ -334,6 +334,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		public void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException {
 		}
 
+		public void addAttachment(JiraServerData jiraServerData, String issueKey, String name, byte[] contents)
+				throws JIRAException {
+		}
+
 		public JiraIssueAdapter createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}

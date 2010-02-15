@@ -261,6 +261,10 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		public void addComment(JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException {
 		}
 
+		public void addAttachment(JiraServerData jiraServerData, String issueKey, String name, byte[] contents)
+				throws JIRAException {
+		}
+
 		public JiraIssueAdapter createIssue(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
