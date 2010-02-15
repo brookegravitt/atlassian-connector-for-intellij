@@ -1019,6 +1019,10 @@
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
 				text="Add Comment"
 				icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.JiraIssues.AddAttachment"
+				class="com.atlassian.theplugin.idea.action.issues.AddAttachmentAction"
+				text="Add Attachment"
+				icon="/icons/icn_attachment.gif"/>
 		<action id="ThePlugin.JiraIssues.LogWork"
 				class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
 				icon="/general/todoDefault.png"
@@ -1044,6 +1048,10 @@
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
 				text="Add Comment"
 				icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.JiraIssues.EditorAddAttachment"
+				class="com.atlassian.theplugin.idea.action.issues.AddAttachmentAction"
+				text="Add Attachment"
+				icon="/icons/icn_attachment.gif"/>
 		<action id="ThePlugin.JiraIssues.EditorRefresh"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
 				text="Refresh"
@@ -1090,6 +1098,7 @@
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.AddComment"/>
+			<reference id="ThePlugin.JiraIssues.AddAttachment"/>
 			<reference id="ThePlugin.JiraIssues.LogWork"/>
 			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
 			<separator/>
@@ -1112,6 +1121,7 @@
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.EditorAddComment"/>
+			<reference id="ThePlugin.JiraIssues.EditorAddAttachment"/>
 			<reference id="ThePlugin.JiraIssues.LogWork"/>
 			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
 			<!--<separator/>-->

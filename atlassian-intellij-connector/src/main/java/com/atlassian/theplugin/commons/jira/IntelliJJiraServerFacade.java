@@ -134,6 +134,10 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         facade.addComment(jiraServerData.toHttpConnectionCfg(), issueKey, comment);
     }
 
+	public void addAttachment(final JiraServerData jiraServerData, final String issueKey, final String name,
+			final byte[] content) throws JIRAException {
+		facade.addAttachment(jiraServerData.toHttpConnectionCfg(), issueKey, name, content);
+	}
 
     public JiraIssueAdapter createIssue(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
         JIRAIssue newIssue =  facade.createIssue(jiraServerData.toHttpConnectionCfg(), issue);
