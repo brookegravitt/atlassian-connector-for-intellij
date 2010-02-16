@@ -95,6 +95,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -722,38 +723,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-	public void addAttachmentToSelectedIssue(final String name, final byte[] contents) {
+	public void addAttachmentToSelectedIssue(final File file)
+	{
 		// todo move getSelectedIssue from the model to the tree
 		final JiraIssueAdapter issue = getSelectedIssue();
 		if (issue != null) {
-			addAttachmentToIssue(issue.getKey(), issue.getJiraServerData(), name, contents);
+			IdeaHelper.getIssueDetailsToolWindow(project).addAttachment(issue, file);
 		}
 	}
-
-	public void addAttachmentToIssue(final String issueKey, final JiraServerData jiraServerData, final String name,
-			final byte[] contents) {
-		ProgressManager.getInstance().run(
-				new Task.Backgroundable(project, "Uploading attachment " + name) {
-					@Override
-					public void run(@NotNull ProgressIndicator progressIndicator) {
-						try {
-							jiraServerFacade.addAttachment(jiraServerData, issueKey, name, contents);
-							// todo: somewhere here (after adding attachment) we have to refresh attachment panel...
-							// todo: as a mock lets refresh all issues:
-							refreshIssues(true);
-						} catch (final JIRAException e) {
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
-									setStatusErrorMessage("Error: " + e.getMessage(), e);
-								}
-							});
-						}
-					}
-				}
-		);
-	}
-
-
 
     public void logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,
                                          final boolean deactivateIssue, ActiveIssueResultHandler resultHandler) {

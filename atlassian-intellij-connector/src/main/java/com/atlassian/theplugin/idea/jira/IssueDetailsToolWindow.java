@@ -59,8 +59,17 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -169,6 +178,50 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.descriptionAndCommentsPanel.addComment();
+		}
+	}
+
+	public void addAttachment(final JiraIssueAdapter issue, final File file)
+	{
+		final String name = file.getName();
+		final byte[] contents = getFileContentsAsBytes(file);
+		final String issueKey = issue.getKey();
+		final JiraServerData jiraServerData = issue.getJiraServerData();
+		ProgressManager.getInstance().run(
+				new Task.Backgroundable(project, "Uploading attachment " + name) {
+					@Override
+					public void run(@NotNull ProgressIndicator progressIndicator) {
+						try {
+							facade.addAttachment(jiraServerData, issueKey, name, contents);
+						} catch (final JIRAException e) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									IdeaHelper.getIssueListToolWindowPanel(project).setStatusErrorMessage(
+											"Error: " + e.getMessage(), e);
+								}
+							});
+						}
+					}
+					@Override
+					public void onSuccess() {
+						IssuePanel ip = getContentPanel(getContentKey(issue));
+						if (ip != null) {
+							ip.attachementsPanel.refresh();
+						}
+					}
+				}
+		);
+	}
+	
+	private static byte[] getFileContentsAsBytes(final File file) {
+		try {
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+			byte[] buf = new byte[(int) file.length()];
+			bis.read(buf);
+			bis.close();
+			return buf;
+		} catch (IOException ex) {
+			return null;
 		}
 	}
 
@@ -1219,7 +1272,60 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private AttachementsPanel(JTabbedPane tabs, int tabIndex) {
                 this.tabs = tabs;
                 this.tabIndex = tabIndex;
+				setTransferHandler(handler);
             }
+
+			private TransferHandler handler = new TransferHandler() {
+				public boolean canImport(TransferHandler.TransferSupport support) {
+					return true;
+				}
+
+				public boolean importData(TransferHandler.TransferSupport support) {
+					if (!canImport(support)) {
+						return false;
+					}
+
+					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+					if (panel == null) {
+						return false;
+					}
+
+					Transferable t = support.getTransferable();
+					for (DataFlavor flavor : t.getTransferDataFlavors()) {
+						try {
+							if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+								List l = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+								Iterator iter = l.iterator();
+								while (iter.hasNext()) {
+									File file = (File) iter.next();
+									panel.addAttachmentToSelectedIssue(file);
+								}
+								return true;
+							} else if (flavor.equals(DataFlavor.stringFlavor)) {
+								String str = (String) t.getTransferData(flavor);
+								String[] files = str.split("\r\n");
+								for(String fileOrURL : files) {
+									try {
+										URL url = new URL(fileOrURL);
+										File file = new File(url.toURI());
+										panel.addAttachmentToSelectedIssue(file);
+									} catch (MalformedURLException ex) {
+										continue;
+									} catch (URISyntaxException e) {
+										continue;
+									}
+								}
+								return true;
+							}
+						} catch (IOException ex) {
+							return false;
+						} catch (UnsupportedFlavorException e) {
+							return false;
+						}
+					}
+					return true;
+				}
+			};
 
             public void refresh() {
                 tabs.setTitleAt(tabIndex, "Refreshing attachments...");
