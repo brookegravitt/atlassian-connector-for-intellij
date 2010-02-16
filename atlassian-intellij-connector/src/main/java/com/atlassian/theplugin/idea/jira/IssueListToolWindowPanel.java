@@ -732,18 +732,25 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public void addAttachmentToIssue(final String issueKey, final JiraServerData jiraServerData, final String name,
 			final byte[] contents) {
-		try {
-			jiraServerFacade.addAttachment(jiraServerData, issueKey, name, contents);
-			// todo: somewhere here (after adding attachment) we have to refresh attachment panel...
-			// todo: as a mock lets refresh all issues:
-			refreshIssues(true);
-		} catch (final JIRAException e) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					setStatusErrorMessage("Error: " + e.getMessage(), e);
+		ProgressManager.getInstance().run(
+				new Task.Backgroundable(project, "Uploading attachment " + name) {
+					@Override
+					public void run(@NotNull ProgressIndicator progressIndicator) {
+						try {
+							jiraServerFacade.addAttachment(jiraServerData, issueKey, name, contents);
+							// todo: somewhere here (after adding attachment) we have to refresh attachment panel...
+							// todo: as a mock lets refresh all issues:
+							refreshIssues(true);
+						} catch (final JIRAException e) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									setStatusErrorMessage("Error: " + e.getMessage(), e);
+								}
+							});
+						}
+					}
 				}
-			});
-		}
+		);
 	}
 
 
