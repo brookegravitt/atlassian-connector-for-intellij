@@ -5,10 +5,7 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.JFileChooser;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 public class AddAttachmentAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent event) {
@@ -25,22 +22,10 @@ public class AddAttachmentAction extends JIRAAbstractAction {
 		}
 
 		File file = fc.getSelectedFile();
-		byte[] contents = getContents(file);
-		panel.addAttachmentToSelectedIssue(file.getName(), contents);
+		panel.addAttachmentToSelectedIssue(file);
 	}
 
 	public void onUpdate(AnActionEvent event) {
 	}
 
-	private static byte[] getContents(final File file) {
-		try {
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-			byte[] buf = new byte[(int) file.length()];
-			bis.read(buf);
-			bis.close();
-			return buf;
-		} catch (IOException ex) {
-			return null;
-		}
-	}
 }
