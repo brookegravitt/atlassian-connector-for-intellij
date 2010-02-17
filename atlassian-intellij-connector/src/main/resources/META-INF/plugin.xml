@@ -1049,7 +1049,7 @@
 				text="Add Comment"
 				icon="/icons/icn_comment.gif"/>
 		<action id="ThePlugin.JiraIssues.EditorAddAttachment"
-				class="com.atlassian.theplugin.idea.action.issues.AddAttachmentAction"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddAttachmentAction"
 				text="Add Attachment"
 				icon="/icons/icn_attachment.gif"/>
 		<action id="ThePlugin.JiraIssues.EditorRefresh"
