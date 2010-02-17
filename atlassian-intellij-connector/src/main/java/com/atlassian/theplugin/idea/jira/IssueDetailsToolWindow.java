@@ -181,8 +181,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	public void addAttachment(final JiraIssueAdapter issue, final File file)
-	{
+	public void addAttachment(final JiraIssueAdapter issue, final File file) {
 		final String name = file.getName();
 		final byte[] contents = getFileContentsAsBytes(file);
 		final String issueKey = issue.getKey();
@@ -1277,8 +1276,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 //			    cp.setTransferHandler(handler);
             }
 
-			private TransferHandler handler = new TransferHandler() {
+			private TransferHandler handler = new MyTransferHandler();
 
+			private class MyTransferHandler extends TransferHandler {
 // since java 1.6:
 //				public boolean canImport(TransferSupport support) {
 //					return true;
@@ -1319,7 +1319,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							} else if (flavor.equals(DataFlavor.stringFlavor)) {
 								String str = (String) t.getTransferData(flavor);
 								String[] files = str.split("\r\n");
-								for(String fileOrURL : files) {
+								for (String fileOrURL : files) {
 									try {
 										URL url = new URL(fileOrURL);
 										File file = new File(url.toURI());
