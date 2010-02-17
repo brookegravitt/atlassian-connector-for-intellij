@@ -473,7 +473,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    private JiraIssueAdapter getSelectedIssue() {
+    public JiraIssueAdapter getSelectedIssue() {
         return getRightTree().getSelectedIssue();
     }
 
@@ -723,12 +723,19 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-	public void addAttachmentToSelectedIssue(final File file) {
+	public void addAttachmentToIssue(final JiraIssueAdapter issue) {
 		// todo move getSelectedIssue from the model to the tree
-		final JiraIssueAdapter issue = getSelectedIssue();
-		if (issue != null) {
-			IdeaHelper.getIssueDetailsToolWindow(project).addAttachment(issue, file);
+		if (issue == null) {
+			return;
 		}
+		
+		JFileChooser fc = new JFileChooser();
+		if (fc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		File file = fc.getSelectedFile();
+
+		IdeaHelper.getIssueDetailsToolWindow(project).addAttachment(issue, file);
 	}
 
     public void logWorkOrDeactivateIssue(final JiraIssueAdapter issue, final JiraServerData jiraServer, String initialLog,

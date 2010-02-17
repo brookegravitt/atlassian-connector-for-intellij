@@ -1,11 +1,9 @@
 package com.atlassian.theplugin.idea.action.issues;
 
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-
-import javax.swing.JFileChooser;
-import java.io.File;
 
 public class AddAttachmentAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent event) {
@@ -13,16 +11,9 @@ public class AddAttachmentAction extends JIRAAbstractAction {
 		if (panel == null) {
 			return;
 		}
+		JiraIssueAdapter issue = panel.getSelectedIssue();
 
-		JFileChooser fc = new JFileChooser();
-		int ret = fc.showOpenDialog(null);
-
-		if (ret != JFileChooser.APPROVE_OPTION) {
-			return;
-		}
-
-		File file = fc.getSelectedFile();
-		panel.addAttachmentToSelectedIssue(file);
+		panel.addAttachmentToIssue(issue);
 	}
 
 	public void onUpdate(AnActionEvent event) {

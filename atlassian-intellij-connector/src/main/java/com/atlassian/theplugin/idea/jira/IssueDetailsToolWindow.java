@@ -181,6 +181,27 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
+	public void addAttachment(String key) {
+		IssuePanel ip = getContentPanel(key);
+		if (ip != null) {
+			JiraIssueAdapter issue = ip.params.issue;
+			IdeaHelper.getIssueListToolWindowPanel(project).addAttachmentToIssue(issue);
+		}
+	}
+
+	private void addAttachment(final File file) {
+		try {
+			IssuePanel ip = (IssuePanel) selectedContent;
+			if (ip != null) {
+				JiraIssueAdapter issue = ip.params.issue;
+				addAttachment(issue, file);
+			}
+		} catch (ClassCastException e) {
+			// oops
+			return;
+		}
+	}
+
 	public void addAttachment(final JiraIssueAdapter issue, final File file) {
 		final String name = file.getName();
 		final byte[] contents = getFileContentsAsBytes(file);
@@ -1262,6 +1283,55 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
+		class MyTransferHandler extends TransferHandler {
+
+			public boolean canImport(JComponent comp, DataFlavor[] flavors) {
+				return true;
+			}
+
+			public boolean importData(JComponent comp, Transferable t) {
+
+				IssueDetailsToolWindow panel = IdeaHelper.getIssueDetailsToolWindow(project);
+				if (panel == null) {
+					return false;
+				}
+
+				for (DataFlavor flavor : t.getTransferDataFlavors()) {
+					try {
+						if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+							List l = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+							Iterator iter = l.iterator();
+							while (iter.hasNext()) {
+								File file = (File) iter.next();
+								panel.addAttachment(file);
+							}
+							return true;
+						} else if (flavor.equals(DataFlavor.stringFlavor)) {
+							String str = (String) t.getTransferData(flavor);
+							String[] files = str.split("\r\n");
+							for (String fileOrURL : files) {
+								try {
+									URL url = new URL(fileOrURL);
+									File file = new File(url.toURI());
+									panel.addAttachment(file);
+								} catch (MalformedURLException ex) {
+									continue;
+								} catch (URISyntaxException e) {
+									continue;
+								}
+							}
+							return true;
+						}
+					} catch (IOException ex) {
+						return false;
+					} catch (UnsupportedFlavorException e) {
+						return false;
+					}
+				}
+				return true;
+			}
+		};
+
         private final class AttachementsPanel extends JPanel {
 
             private static final float SPLIT_RATIO = 0.6f;
@@ -1271,76 +1341,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private AttachementsPanel(JTabbedPane tabs, int tabIndex) {
                 this.tabs = tabs;
                 this.tabIndex = tabIndex;
-				setTransferHandler(handler);
-                tabs.setTransferHandler(handler);
-//			    cp.setTransferHandler(handler);
+				setTransferHandler(transferHandler);
             }
 
-			private TransferHandler handler = new MyTransferHandler();
-
-			private class MyTransferHandler extends TransferHandler {
-// since java 1.6:
-//				public boolean canImport(TransferSupport support) {
-//					return true;
-//				}
-//
-//				public boolean importData(TransferSupport support) {
-//					if (!canImport(support)) {
-//						return false;
-//					}
-//					return importData(null, support.getTransferable());
-//				}
-// older java:
-				public boolean canImport(JComponent comp, Transferable t) {
-					return true;
-				}
-
-				public boolean importData(JComponent comp, Transferable t) {
-					if (!canImport(comp, t)) {
-						return false;
-					}
-
-					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
-					if (panel == null) {
-						return false;
-					}
-
-// since java 1.6	Transferable t = support.getTransferable();
-					for (DataFlavor flavor : t.getTransferDataFlavors()) {
-						try {
-							if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-								List l = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-								Iterator iter = l.iterator();
-								while (iter.hasNext()) {
-									File file = (File) iter.next();
-									panel.addAttachmentToSelectedIssue(file);
-								}
-								return true;
-							} else if (flavor.equals(DataFlavor.stringFlavor)) {
-								String str = (String) t.getTransferData(flavor);
-								String[] files = str.split("\r\n");
-								for (String fileOrURL : files) {
-									try {
-										URL url = new URL(fileOrURL);
-										File file = new File(url.toURI());
-										panel.addAttachmentToSelectedIssue(file);
-									} catch (MalformedURLException ex) {
-										continue;
-									} catch (URISyntaxException e) {
-										continue;
-									}
-								}
-								return true;
-							}
-						} catch (IOException ex) {
-							return false;
-						} catch (UnsupportedFlavorException e) {
-							return false;
-						}
-					}
-					return true;
-				}
-			};
+			private TransferHandler transferHandler = new MyTransferHandler();
 
             public void refresh() {
                 tabs.setTitleAt(tabIndex, "Refreshing attachments...");
@@ -1386,7 +1390,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
             public void fillContent(Collection<JIRAAttachment> attachments) {
                 if (attachments == null || attachments.size() == 0) {
-                    add(new JLabel("No attachements in " + params.issue.getKey()));
+					JLabel label = new JLabel("No attachements in " + params.issue.getKey());
+                    add(label);
+					label.setTransferHandler(transferHandler);
                     tabs.setTitleAt(tabIndex, "Attachments(0)");
                     return;
                 }
