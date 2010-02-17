@@ -723,8 +723,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-	public void addAttachmentToSelectedIssue(final File file)
-	{
+	public void addAttachmentToSelectedIssue(final File file) {
 		// todo move getSelectedIssue from the model to the tree
 		final JiraIssueAdapter issue = getSelectedIssue();
 		if (issue != null) {
