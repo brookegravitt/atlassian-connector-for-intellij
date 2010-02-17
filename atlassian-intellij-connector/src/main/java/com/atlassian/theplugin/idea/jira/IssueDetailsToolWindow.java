@@ -1273,15 +1273,30 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 this.tabs = tabs;
                 this.tabIndex = tabIndex;
 				setTransferHandler(handler);
+                tabs.setTransferHandler(handler);
+//			    cp.setTransferHandler(handler);
             }
 
 			private TransferHandler handler = new TransferHandler() {
-				public boolean canImport(TransferHandler.TransferSupport support) {
+
+// since java 1.6:
+//				public boolean canImport(TransferSupport support) {
+//					return true;
+//				}
+//
+//				public boolean importData(TransferSupport support) {
+//					if (!canImport(support)) {
+//						return false;
+//					}
+//					return importData(null, support.getTransferable());
+//				}
+// older java:
+				public boolean canImport(JComponent comp, Transferable t) {
 					return true;
 				}
 
-				public boolean importData(TransferHandler.TransferSupport support) {
-					if (!canImport(support)) {
+				public boolean importData(JComponent comp, Transferable t) {
+					if (!canImport(comp, t)) {
 						return false;
 					}
 
@@ -1290,7 +1305,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						return false;
 					}
 
-					Transferable t = support.getTransferable();
+// since java 1.6	Transferable t = support.getTransferable();
 					for (DataFlavor flavor : t.getTransferDataFlavors()) {
 						try {
 							if (flavor.equals(DataFlavor.javaFileListFlavor)) {
