@@ -245,6 +245,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		commentPanel = new JPanel(new FormLayout("right:pref, fill:d:grow", "40dlu"));
 		commentPanel.add(new JLabel("Comment:"), cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
 		comment = new JTextArea();
+		comment.setLineWrap(true);
 		final JScrollPane scroll = new JScrollPane();
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setViewportView(comment);
