@@ -45,17 +45,24 @@ public class IssueRecentlyOpenBean {
 		return serverId;
 	}
 
+	public void setServerId(final ServerIdImpl serverId) {
+		this.serverId = serverId;
+	}
 
 	public String getIssueKey() {
 		return issueKey;
 	}
 
-    public void setServerId(ServerIdImpl serverId) {
-        this.serverId = serverId;
+	public void setIssueKey(final String issueKey) {
+		this.issueKey = issueKey;
     }
 
     public String getIssueUrl() {
         return issueUrl;
+    }
+
+    public void setIssueUrl(String issueUrl) {
+        this.issueUrl = issueUrl;
     }
 
     public boolean equals(final Object o) {
