@@ -68,9 +68,6 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 		return secondsSpent;
 	}
 
-    public String getIssueUrl() {
-        return issueUrl;
-    }
 
     public long getSecondsSpent() {
 		recalculateTimeSpent();
