@@ -142,7 +142,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
             String s = presentation.getText();
             FontMetrics fontmetrics = getFontMetrics(getFont());
             dimension.width += INSETS.left;
-            dimension.width += fontmetrics.stringWidth(s);
+            dimension.width += s != null ? fontmetrics.stringWidth(s) : 0;
             setPreferredSize(dimension);
             setSize(dimension);
             Component parent = getParent();
