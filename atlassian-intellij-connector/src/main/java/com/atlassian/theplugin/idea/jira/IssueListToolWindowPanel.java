@@ -1407,8 +1407,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 if (jiraServerData != null) {
                     if (!deactivateIssue) {
                         logWork();
-						if (resultHandler != null)
+						if (resultHandler != null) {
 							resultHandler.success();
+						}
                     } else {
 
                         // 1.
