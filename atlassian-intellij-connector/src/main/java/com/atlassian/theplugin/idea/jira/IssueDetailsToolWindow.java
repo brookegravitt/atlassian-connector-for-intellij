@@ -1390,8 +1390,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
             public void fillContent(Collection<JIRAAttachment> attachments) {
                 if (attachments == null || attachments.size() == 0) {
+					setLayout(new BorderLayout());
 					JLabel label = new JLabel("No attachements in " + params.issue.getKey());
-                    add(label);
+					label.setHorizontalAlignment(SwingConstants.CENTER);
+                    add(label, BorderLayout.PAGE_START);
+					label.setTransferHandler(transferHandler);
+					label = new JLabel("Drag files here to attach them");
+					label.setHorizontalAlignment(SwingConstants.CENTER);
+					add(label, BorderLayout.CENTER);
 					label.setTransferHandler(transferHandler);
                     tabs.setTitleAt(tabIndex, "Attachments(0)");
                     return;
