@@ -76,27 +76,24 @@ public class ActivateIssueItemAction extends AnAction {
     }
 
     public void actionPerformed(final AnActionEvent event) {
-        ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
-        if (projectCfgManager != null) {
-            final JiraServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
-            if (jiraServer != null) {
-                activeIssue.resetTimeSpent();
+		ProjectCfgManager projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+		if (projectCfgManager != null) {
+			final JiraServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
+			if (jiraServer != null) {
+				activeIssue.resetTimeSpent();
 				if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
 
-                ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event),
-                        event, activeIssue, jiraServer, null);
+					ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event),
+							event, activeIssue, jiraServer, null);
 
-
-                } else {
-                    ApplicationManager.getApplication().invokeLater(new Runnable() {
-                        public void run() {
-                            PluginTaskManagerFacade.activateIssue(IdeaHelper.getCurrentProject(event), activeIssue);
-            }
-                    });
-
-        }
-    }
-
-}
+				} else {
+					ApplicationManager.getApplication().invokeLater(new Runnable() {
+						public void run() {
+							PluginTaskManagerFacade.activateIssue(IdeaHelper.getCurrentProject(event), activeIssue);
+						}
+					});
+				}
+			}
+		}
 	}
 }
