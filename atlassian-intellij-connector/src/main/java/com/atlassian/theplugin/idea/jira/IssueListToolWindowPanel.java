@@ -153,7 +153,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                     @NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
                                     @NotNull final RecentlyOpenIssuesCache recentlyOpenIssuesCache,
                                     @NotNull final JIRAFilterListBuilder filterListBuilder,
-                                    @NotNull final JIRAServerModel jiraServerModel) {
+                                    @NotNull final JIRAServerModelIdea jiraServerModel) {
         super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
         this.projectCfgManager = projectCfgManager;

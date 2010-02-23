@@ -26,7 +26,6 @@ import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
 import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
-import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.connector.commons.jira.cache.CachedIconLoader;
@@ -35,14 +34,13 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.intellij.openapi.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JIRAServerCache {
 	private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
@@ -63,7 +61,7 @@ public class JIRAServerCache {
 	private final Map<String, List<JIRAConstant>> subtaskIssueTypesCache;
 	private final Map<String, List<JIRAVersionBean>> serverVersionsCache;
 	private final Map<String, List<JIRAComponentBean>> componentsCache;
-    private final Set<JIRAUserBean> usersSet;
+    private final HashMap<String, String> usersMap;
 
 	private final JiraServerFacade jiraServerFacade;
 
@@ -74,7 +72,7 @@ public class JIRAServerCache {
 		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
 		this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
 		this.jiraServerData = jiraServerData;
-        this.usersSet = new HashSet<JIRAUserBean>();
+        this.usersMap = new HashMap<String, String>();
 	}
 
 	public JiraServerData getJiraServerData() {
@@ -96,17 +94,13 @@ public class JIRAServerCache {
 		return validServer;
 	}
 
-    public List<JIRAUserBean> getUsers() {
-        List<JIRAUserBean> list = new ArrayList<JIRAUserBean>();
-        for (JIRAUserBean user : usersSet) {
-            list.add(user);
+    public List<Pair<String, String>> getUsers() {
+        List<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+        for (String userId : usersMap.keySet()) {
+            list.add(new Pair(userId, usersMap.get(userId)));
         }
 
         return list;
-    }
-
-    public void addUser(JIRAUserBean user) {
-        usersSet.add(user);
     }
 
 	public List<JIRAProject> getProjects() throws JIRAException {
@@ -420,5 +414,9 @@ public class JIRAServerCache {
 	public String getErrorMessage() {
 		return errorMessage;
 	}
+
+    public void addUser(String userId, String userName) {
+         usersMap.put(userId, userName);
+    }
 }
 

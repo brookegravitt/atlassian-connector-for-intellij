@@ -42,10 +42,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		this.model = model;
 	}
 
-	public JIRAIssueListModel getModel() {
-		return model;
-	}
-
 
     public synchronized  void addIssuesToModel(final JIRAQueryFragment savedFilter,
                                               final JiraServerData jiraServerCfg, int size,

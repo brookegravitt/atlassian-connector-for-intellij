@@ -120,9 +120,6 @@
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.commons.jira.cache.JIRAServerModel"
-						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAServerModelIdea"/>
-
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
 
@@ -206,6 +203,10 @@
 		<component>
 			<implementation-class>com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean</implementation-class>
 		</component>
+        <component>
+            <implementation-class>com.atlassian.theplugin.jira.model.JIRAServerModelIdea</implementation-class>            		
+        </component>
+
 	</application-components>
 	<project-components>
 		<component>
