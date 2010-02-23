@@ -254,7 +254,7 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 			return;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);
-		if (srv!=null) {
+		if (srv != null) {
             srv.addUser(userId, userName);
         }
     }

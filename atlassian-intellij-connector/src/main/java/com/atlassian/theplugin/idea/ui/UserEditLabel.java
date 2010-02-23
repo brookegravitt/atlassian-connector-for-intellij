@@ -42,7 +42,7 @@ import java.beans.PropertyChangeListener;
  * @date Feb 23, 2010
  */
 public abstract class UserEditLabel extends JPanel {
-    EditIssueFieldButton button;
+    private EditIssueFieldButton button;
     private JComponent label;
     private final Project project;
     private final String dialogTitle;
@@ -195,32 +195,24 @@ public abstract class UserEditLabel extends JPanel {
                 public Object getValue(String s) {
                     return UserListDialog.super.getOKAction().getValue(s);
                 }
-
                 public void putValue(String s, Object o) {
                     UserListDialog.super.getOKAction().putValue(s, 0);
                 }
-
                 public void setEnabled(boolean b) {
                     UserListDialog.super.getOKAction().setEnabled(b);
                 }
-
                 public boolean isEnabled() {
                     return UserListDialog.super.getOKAction().isEnabled();
                 }
-
                 public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
                     UserListDialog.super.getOKAction().addPropertyChangeListener(propertyChangeListener);
                 }
-
                 public void removePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
                     UserListDialog.super.getOKAction().removePropertyChangeListener(propertyChangeListener);
                 }
-
                 public void actionPerformed(ActionEvent actionEvent) {
-
                     ProgressManager.getInstance().run(new Task.Backgroundable(project,
                             "Updating issue " + jiraIssue.getKey(), false) {
-
                         @Override
                         public void run(@NotNull ProgressIndicator progressIndicator) {
                             try {
@@ -246,7 +238,6 @@ public abstract class UserEditLabel extends JPanel {
                             }
                         }
                     });
-
                     UserListDialog.super.getOKAction().actionPerformed(actionEvent);
                 }
             };
