@@ -173,7 +173,7 @@ public abstract class UserEditLabel extends JPanel {
         private JPanel rootPanel = new JPanel();
 
         protected UserListDialog(Project project) {
-            super(project);
+            super(project, false);
             fillComboModel();
             setOKButtonText("Change");
             setModal(true);
