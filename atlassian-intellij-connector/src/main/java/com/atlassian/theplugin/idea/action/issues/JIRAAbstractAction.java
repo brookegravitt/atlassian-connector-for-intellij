@@ -43,7 +43,7 @@ public abstract class JIRAAbstractAction extends AnAction {
 
         IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
-		enabled = server != null && server.isEnabled() && panel.isRefreshing();
+		enabled = server != null && server.isEnabled() && panel != null && panel.isRefreshing();
 
 		event.getPresentation().setEnabled(enabled);
 
