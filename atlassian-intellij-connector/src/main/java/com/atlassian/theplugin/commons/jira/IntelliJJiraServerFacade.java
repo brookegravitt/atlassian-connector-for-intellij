@@ -2,12 +2,27 @@ package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.api.HttpConnectionCfg;
-import com.atlassian.connector.commons.jira.*;
-import com.atlassian.connector.commons.jira.beans.*;
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAIssue;
+import com.atlassian.connector.commons.jira.JIRAIssueBean;
+import com.atlassian.connector.commons.jira.JIRAServerFacade2;
+import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
+import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
+import com.atlassian.connector.commons.jira.beans.JIRAComment;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
 import java.util.ArrayList;
@@ -21,6 +36,7 @@ import java.util.List;
 public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private final JIRAServerFacade2 facade;
 	private static IntelliJJiraServerFacade instance;
+    private static JIRAServerModel serverModel;
 
     private IntelliJJiraServerFacade() {
 		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallback()));
@@ -35,6 +51,10 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 
     public JIRAServerFacade2 getFacade() {
         return facade;
+    }
+
+    public static void setServerModel(JIRAServerModel serverModel) {
+        IntelliJJiraServerFacade.serverModel = serverModel;
     }
 
     private IntelliJJiraServerFacade(JIRAServerFacade2Impl facade) {
@@ -197,7 +217,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {
         List<JiraIssueAdapter> adapterList = new ArrayList<JiraIssueAdapter>(list.size());
         for (JIRAIssue issue : list) {
-            adapterList.add(new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData));
+            adapterList.add(new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData));            
         }
         return adapterList;
     }

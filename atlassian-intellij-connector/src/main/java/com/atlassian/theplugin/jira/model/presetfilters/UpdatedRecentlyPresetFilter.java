@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  * User: kalamon
@@ -17,12 +20,22 @@ public class UpdatedRecentlyPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
+    public String getQueryStringFragment() {
+        return "updated:previous=-1w";
+    }
+
     public String getName() {
         return "Updated recently";
     }
 
-    public String getQueryString() {
-        return "updated:previous=-1w";
+    public HashMap<String, String> getMap() {
+           HashMap<String, String> map = new HashMap<String, String>();
+		map.put("updated:previous", "-1w");
+		return map;
+    }
+
+    public JIRAQueryFragment getClone() {
+        return new UpdatedRecentlyPresetFilter(projectCfgManager, getJiraServer());
     }
 
     public String getSortBy() {
