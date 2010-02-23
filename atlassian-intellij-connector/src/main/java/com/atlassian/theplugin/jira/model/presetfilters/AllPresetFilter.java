@@ -22,7 +22,7 @@ public class AllPresetFilter extends JiraPresetFilter {
 
 
     public String getQueryStringFragment() {
-        return"";
+        return "";
     }
 
     public long getId() {

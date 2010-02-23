@@ -24,20 +24,30 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
-import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
+import com.atlassian.theplugin.idea.ui.ShowHideButton;
+import com.atlassian.theplugin.idea.ui.UserEditLabel;
+import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -62,7 +72,12 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,8 +87,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -91,19 +111,23 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;
 	private ProjectCfgManager projectCfgManager;
+    private final JIRAServerModelIdea jiraCache;
 
-	private ContentPanel selectedContent = null;
+
+    private ContentPanel selectedContent = null;
 
     public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final PluginConfiguration pluginConfiguration,
-			@NotNull ProjectCfgManager projectCfgManager) {
+			@NotNull ProjectCfgManager projectCfgManager,
+            @NotNull JIRAServerModelIdea jiraCache) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectCfgManager = projectCfgManager;
-	}
+        this.jiraCache = jiraCache;
+    }
 
     public boolean setStatusErrorMessage(String key, String message, JIRAException e) {
         IssuePanel panel = getContentPanel(key);
@@ -311,7 +335,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	private class IssuePanel extends ContentPanel implements DataProvider, IssueActionProvider {
+	public class IssuePanel extends ContentPanel implements DataProvider, IssueActionProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -550,6 +574,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueType;
 			private JLabel issueStatus;
 			private JLabel issuePriority;
+            private UserEditLabel issueAssigneeEditLabel;
+            private UserEditLabel issueReporterEditLabel;
 			private JComponent issueAssignee;
 			private JComponent issueReporter;
 			private JLabel issueResolution;
@@ -561,10 +587,31 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public DetailsPanel() {
 				super(new BorderLayout());
+                issueAssigneeEditLabel = new UserEditLabel(project, "Change Assignee", issueAssignee,
+                        jiraCache, params.issue) {
 
+                    @Override
+                    public void doOkAction(String selectedUserLogin) throws JIRAException {
+                        facade.setAssignee(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
+                        jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
+
+                    }
+                };
+
+                issueReporterEditLabel = new UserEditLabel(project, "Change Reporter", issueReporter,
+                        jiraCache, params.issue) {
+
+                    @Override
+                    public void doOkAction(String selectedUserLogin) throws JIRAException {
+                        facade.setReporter(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
+                        jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
+
+                    }
+                };
 				subtaskListModel = new DefaultListModel();
 
 				add(createBody(), BorderLayout.CENTER);
+
 			}
 
 			private JPanel createBody() {
@@ -761,11 +808,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Assignee"), gbc1);
-				panel.add(issueAssignee, gbc2);
+				panel.add(issueAssigneeEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Reporter"), gbc1);
-				panel.add(issueReporter, gbc2);
+				panel.add(issueReporterEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Resolution"), gbc1);
@@ -829,7 +876,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (!params.issue.getAssigneeId().equals("-1")) {
 					issueAssignee = new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
-							params.issue.getAssigneeId(), true);
+							params.issue.getAssigneeId(), true, false);
 				} else {
 					issueAssignee = new JLabel("Unassigned");
 				}
@@ -837,8 +884,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					issueReporter = new JLabel("Anonymous");
 				} else {
 					issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-							params.issue.getReporterId(), true);
+							params.issue.getReporterId(), true, false);
 				}
+                issueAssigneeEditLabel.setLabel(issueAssignee);
+                issueReporterEditLabel.setLabel(issueReporter);
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
@@ -1581,11 +1630,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class UserLabel extends JPanel {
-			private JLabel label;
-
-			UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
-				setOpaque(true);
+		public class UserLabel extends JPanel {
+			private JLabel label;            
+             UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
+                 this(serverUrl, userName, userNameId, useLink, true);
+             }
+            UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink, boolean fill) {
+                setOpaque(true);
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 
@@ -1608,7 +1659,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
 				add(label, gbc);
-				addFillerPanel(this, gbc, true);
+                if (fill) {
+				    addFillerPanel(this, gbc, true);
+                }
 			}
 
 			private void addListener(final String serverUrl, final String userNameId) {

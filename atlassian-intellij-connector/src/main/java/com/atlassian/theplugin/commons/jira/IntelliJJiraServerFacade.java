@@ -166,11 +166,15 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 
     public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, String key) throws JIRAException {
         JIRAIssue issue =  facade.getIssue(jiraServerData.toHttpConnectionCfg(), key);
+        serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
+        serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData);
     }
 
     public JiraIssueAdapter getIssueDetails(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
          JIRAIssue i = facade.getIssueDetails(jiraServerData.toHttpConnectionCfg(), issue);
+        serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
+        serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) i, jiraServerData);
     }
 
@@ -214,10 +218,17 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return facade.getServerType();
     }
 
+    public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
+         facade.setReporter(jiraServerData.toHttpConnectionCfg(), issue, reporter);
+    }
+
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {
         List<JiraIssueAdapter> adapterList = new ArrayList<JiraIssueAdapter>(list.size());
         for (JIRAIssue issue : list) {
-            adapterList.add(new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData));            
+            adapterList.add(new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData));
+            serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
+            serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
+
         }
         return adapterList;
     }

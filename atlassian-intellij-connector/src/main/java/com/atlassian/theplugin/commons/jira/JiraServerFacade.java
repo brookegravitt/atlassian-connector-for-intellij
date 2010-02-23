@@ -97,4 +97,6 @@ public interface JiraServerFacade extends ProductServerFacade {
     void testServerConnection(JiraServerData jiraServerData) throws RemoteApiException;
 
     ServerType getServerType();
+
+    void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException;
 }

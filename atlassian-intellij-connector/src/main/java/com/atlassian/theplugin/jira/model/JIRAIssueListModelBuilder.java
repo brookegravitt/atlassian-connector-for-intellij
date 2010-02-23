@@ -10,9 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 public interface JIRAIssueListModelBuilder extends FrozenModel {
-	void setModel(JIRAIssueListModel model);
-
-	JIRAIssueListModel getModel();
+	void setModel(JIRAIssueListModel model);	
 
 	void reloadIssue(String issueKey, JiraServerData jiraServerData) throws JIRAException;
 

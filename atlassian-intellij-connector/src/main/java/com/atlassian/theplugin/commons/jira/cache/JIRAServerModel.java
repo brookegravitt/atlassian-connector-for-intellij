@@ -12,6 +12,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.intellij.openapi.util.Pair;
 
 import java.util.Collection;
 import java.util.List;
@@ -60,4 +61,8 @@ public interface JIRAServerModel {
 
 	void replace(final JiraServerData jiraServerData);
     boolean isChanged();
+
+    List<Pair<String,String>> getUsers(JiraServerData jiraServerData);
+
+    void addUser(JiraServerData jiraServerData, String userId, String userName);
 }

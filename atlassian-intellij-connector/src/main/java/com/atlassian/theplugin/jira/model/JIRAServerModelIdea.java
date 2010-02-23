@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class JIRAServerModelIdea extends JIRAServerModelImpl implements FrozenMo
     
     public JIRAServerModelIdea() {
         super(null);
+        IntelliJJiraServerFacade.setServerModel(this);
     }
 
 	public boolean isModelFrozen() {
