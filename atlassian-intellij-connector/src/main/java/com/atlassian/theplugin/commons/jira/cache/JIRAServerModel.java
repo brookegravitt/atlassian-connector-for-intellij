@@ -62,7 +62,7 @@ public interface JIRAServerModel {
 	void replace(final JiraServerData jiraServerData);
     boolean isChanged();
 
-    List<Pair<String,String>> getUsers(JiraServerData jiraServerData);
+    List<Pair<String, String>> getUsers(JiraServerData jiraServerData);
 
     void addUser(JiraServerData jiraServerData, String userId, String userName);
 }
