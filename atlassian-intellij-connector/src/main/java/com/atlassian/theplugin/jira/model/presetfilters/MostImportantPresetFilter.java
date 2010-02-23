@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  * User: kalamon
@@ -17,13 +20,24 @@ public class MostImportantPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
+    public String getQueryStringFragment() {
+        return "resolution=-1";
+    }
+
     public String getName() {
         return "Most important";
     }
 
-    public String getQueryString() {
-        return "resolution=-1";
+    public HashMap<String, String> getMap() {
+        HashMap<String,  String> map = new  HashMap<String,  String>();
+        map.put("resolution", "-1");
+        return map;
     }
+
+    public JIRAQueryFragment getClone() {
+        return new MostImportantPresetFilter(projectCfgManager, getJiraServer());
+    }
+
 
     public String getSortBy() {
         return "priority";

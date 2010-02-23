@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  * User: kalamon
@@ -20,12 +23,22 @@ public class ReportedByMePresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
+    public String getQueryStringFragment() {
+        return "reporterSelect=issue_current_user";
+    }
+
     public String getName() {
         return "Reported by me";
     }
 
-    public String getQueryString() {
-        return "reporterSelect=issue_current_user";
+    public HashMap<String, String> getMap() {
+        HashMap<String,  String> map = new  HashMap<String,  String>();
+        map.put("reporterSelect", "issue_current_user");
+        return map;
+    }
+
+    public JIRAQueryFragment getClone() {
+        return new ReportedByMePresetFilter(projectCfgManager, getJiraServer());
     }
 
     public String getSortBy() {

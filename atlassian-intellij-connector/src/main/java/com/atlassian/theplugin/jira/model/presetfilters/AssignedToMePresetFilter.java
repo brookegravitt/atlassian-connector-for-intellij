@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 
 /**
@@ -18,13 +21,25 @@ public class AssignedToMePresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
+    public String getQueryStringFragment() {
+        return "assigneeSelect=issue_current_user&resolution=-1";
+    }
+
     public String getName() {
         return "Assigned to me";
     }
 
-    public String getQueryString() {
-        return "assigneeSelect=issue_current_user&resolution=-1";
+    public HashMap<String, String> getMap() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("assigneeSelect", "issue_current_user");
+        map.put("resolution", "-1");
+        return map;
     }
+
+    public JIRAQueryFragment getClone() {
+        return new AssignedToMePresetFilter(projectCfgManager, getJiraServer());
+    }
+
 
     public String getSortBy() {
         return "priority";

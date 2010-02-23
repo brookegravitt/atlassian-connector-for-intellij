@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.jira.model.presetfilters;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  * User: kalamon
@@ -17,12 +20,25 @@ public class AllPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
+
+    public String getQueryStringFragment() {
+        return"";
+    }
+
+    public long getId() {
+        return 0;
+    }
+
     public String getName() {
         return "All";
     }
 
-    public String getQueryString() {
-        return "";
+    public HashMap<String, String> getMap() {
+        return new HashMap<String, String>();
+    }
+
+    public JIRAQueryFragment getClone() {
+        return new AllPresetFilter(super.projectCfgManager, getJiraServer());
     }
 
     public String getSortBy() {

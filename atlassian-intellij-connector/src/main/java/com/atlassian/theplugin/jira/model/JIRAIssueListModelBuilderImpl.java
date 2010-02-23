@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
@@ -48,13 +47,20 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	}
 
 
-	public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter,
+    public synchronized  void addIssuesToModel(final JIRAQueryFragment savedFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
-		List<JiraIssueAdapter> l = null;
+        		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+			    query.add(savedFilter);
+                addIssuesToModel(query, jiraServerCfg, size, reload);
+    }
+    public synchronized void addIssuesToModel(final List<JIRAQueryFragment> queryFragments,
+                                              final JiraServerData jiraServerCfg, int size,
+                                              boolean reload) throws JIRAException {
+        	List<JiraIssueAdapter> l = null;
 		try {
 			model.setModelFrozen(true);
-			if (jiraServerCfg == null || model == null || manualFilter == null) {
+			if (jiraServerCfg == null || model == null || queryFragments == null) {
 				if (model != null) {
 					model.clear();
 					model.fireModelChanged();
@@ -71,8 +77,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
 			}
 
-			if (manualFilter.getQueryFragment().size() > 0) {
-				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
+			if (queryFragments.size() > 0) {
+				l = facade.getIssues(jiraServerCfg, queryFragments, SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
 				startFrom += l != null ? l.size() : 0;
 //				checkActiveIssue(l);
@@ -84,85 +90,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.setModelFrozen(false);
 			}
 		}
-	}
 
-    public void addIssuesToModel(final JiraPresetFilter presetFilter,
-                                 final JiraServerData jiraServerData, int size,
-                                 boolean reload) throws JIRAException {
-
-        List<JiraIssueAdapter> l = null;
-        try {
-            model.setModelFrozen(true);
-            if (jiraServerData == null || model == null || presetFilter == null) {
-                if (model != null) {
-                    model.clear();
-                    model.fireModelChanged();
-                }
-                return;
-            }
-
-            if (reload) {
-                startFrom = 0;
-                model.clear();
-            }
-
-            if (recentlyOpenIssuesCache != null) {
-                recentlyOpenIssuesCache.loadRecenltyOpenIssues();
-            }
-
-            l = facade.getIssues(
-                    jiraServerData, presetFilter.getQueryString(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
-            model.addIssues(l);
-
-            startFrom += l != null ? l.size() : 0;
-//			checkActiveIssue(l);
-        } finally {
-            if (model != null) {
-                model.fireModelChanged();
-                model.fireIssuesLoaded(l != null ? l.size() : 0);
-                model.setModelFrozen(false);
-            }
-        }
     }
 
-    public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
-                                              final JiraServerData jiraServerCfg, int size,
-                                              boolean reload) throws JIRAException {
-		List<JiraIssueAdapter> l = null;
-		try {
-			model.setModelFrozen(true);
-			if (jiraServerCfg == null || model == null || savedFilter == null) {
-				if (model != null) {
-					model.clear();
-					model.fireModelChanged();
-				}
-				return;
-			}
-
-			if (reload) {
-				startFrom = 0;
-				model.clear();
-			}
-
-			if (recentlyOpenIssuesCache != null) {
-				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
-			}
-
-			List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-			query.add(savedFilter);
-			l = facade.getSavedFilterIssues(jiraServerCfg, query, SORT_BY, SORT_ORDER, startFrom, size);
-			model.addIssues(l);
-
-			startFrom += l != null ? l.size() : 0;
-//			checkActiveIssue(l);
-		} finally {
-			if (model != null) {
-				model.fireModelChanged();
-				model.fireIssuesLoaded(l != null ? l.size() : 0);
-				model.setModelFrozen(false);
-			}
-		}
-	}
 
 	public synchronized void addRecenltyOpenIssuesToModel(boolean reload) {
 
