@@ -6,7 +6,6 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -40,12 +39,14 @@ public abstract class JIRAAbstractAction extends AnAction {
 		if (server == null && event.getData(Constants.SERVER_KEY) != null) {
 			server = (JiraServerData) event.getData(Constants.SERVER_KEY);
 		}
-
-        IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-
-		enabled = server != null && server.isEnabled() && panel != null && panel.isRefreshing();
-
+		if (server != null && server.isEnabled()) {
+			if (ModelFreezeUpdater.getState(event)) {
+				enabled = true;
+			}
+		}
 		event.getPresentation().setEnabled(enabled);
+
+//		enabled = ModelFreezeUpdater.getState(event);
 
 		if (enabled) {
 			onUpdate(event);
