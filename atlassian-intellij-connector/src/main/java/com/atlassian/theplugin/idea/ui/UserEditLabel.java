@@ -188,7 +188,7 @@ public abstract class UserEditLabel extends JPanel {
 
             return rootPanel;
         }
-
+//CHECKSTYLE:MAGIC:OFF
         @Override
         protected Action getOKAction() {
             return new Action() {
@@ -242,7 +242,7 @@ public abstract class UserEditLabel extends JPanel {
                 }
             };
         }
-
+//CHECKSTYLE:MAGIC:ON
         private String getSelectedUserName() {
             if (comboBox.getSelectedItem() instanceof UserComboBoxItem) {
                 return ((UserComboBoxItem) comboBox.getSelectedItem()).getUser().getUsername();
