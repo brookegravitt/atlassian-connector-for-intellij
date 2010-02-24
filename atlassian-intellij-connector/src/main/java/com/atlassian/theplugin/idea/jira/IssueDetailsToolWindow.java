@@ -240,6 +240,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	public void addAttachment(final JiraIssueAdapter issue, final File file, final AttachmentAddedFrom fromWindow) {
 		final String name = file.getName();
 		final byte[] contents = getFileContentsAsBytes(file);
+		if (contents == null) {
+			Messages.showErrorDialog("Unable to open file " + file.getName(), "Error");
+			return;
+		}
 		final String issueKey = issue.getKey();
 		final JiraServerData jiraServerData = issue.getJiraServerData();
 		ProgressManager.getInstance().run(
@@ -263,6 +267,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 										case ISSUE_DETAILS_WINDOW:
 											setStatusErrorMessage(getContentKey(issue), "Error: " + e.getMessage(), e);
 											break;
+										default:
+											throw new RuntimeException("AttachmentAddedFrom not handled");
 									}
 								}
 							});
