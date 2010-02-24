@@ -32,15 +32,15 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 		this.comment = comment;
 	}
 
-	private String getPadding(int indentation) {
+	static private String getPadding(int indentation) {
 		StringBuilder s = new StringBuilder();
-		for (int i = 0; i < indentation ; i++) {
+		for (int i = 0; i < indentation; i++) {
 			s.append("&nbsp;&nbsp;&nbsp;&nbsp;");
 		}
 		return s.toString();
 	}
 
-	private String getReplyText(Comment comment, int indentation) {
+	static private String getReplyText(Comment comment, int indentation) {
 		StringBuilder s = new StringBuilder();
 		for (Comment versionedComment : comment.getReplies()) {
 			s.append("<br>" + getPadding(indentation) + "<b>")
@@ -71,7 +71,7 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 		return s.toString();
 	}
 
-    private void renderCommentBody(StringBuilder s, Comment cmt, int indentation) {
+    static private void renderCommentBody(StringBuilder s, Comment cmt, int indentation) {
         boolean boldify =
                 cmt.getReadState() == Comment.ReadState.UNREAD
                 || cmt.getReadState() == Comment.ReadState.LEAVE_UNREAD;
