@@ -35,7 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * @author pmaruszak
@@ -126,7 +125,7 @@ public abstract class UserEditLabel extends JPanel {
 
         public EditIssueFieldButton() {
             super();
-            setIcon(editIcon);                        
+            setIcon(editIcon);
             this.setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
             this.setBorder(BorderFactory.createEmptyBorder());
             this.addActionListener(new ActionListener() {
@@ -173,61 +172,39 @@ public abstract class UserEditLabel extends JPanel {
 
             return rootPanel;
         }
-//CHECKSTYLE:MAGIC:OFF
-        @Override
-        protected Action getOKAction() {
-            return new Action() {
-                public Object getValue(String s) {
-                    return UserListDialog.super.getOKAction().getValue(s);
-                }
-                public void putValue(String s, Object o) {
-                    UserListDialog.super.getOKAction().putValue(s, 0);
-                }
-                public void setEnabled(boolean b) {
-                    UserListDialog.super.getOKAction().setEnabled(b);
-                }
-                public boolean isEnabled() {
-                    return UserListDialog.super.getOKAction().isEnabled();
-                }
-                public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
-                    UserListDialog.super.getOKAction().addPropertyChangeListener(propertyChangeListener);
-                }
-                public void removePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
-                    UserListDialog.super.getOKAction().removePropertyChangeListener(propertyChangeListener);
-                }
-                public void actionPerformed(ActionEvent actionEvent) {
-                    ProgressManager.getInstance().run(new Task.Backgroundable(project,
-                            "Updating issue " + jiraIssue.getKey(), false) {
-                        @Override
-                        public void run(@NotNull ProgressIndicator progressIndicator) {
-                            try {
-                                String selectedUserName = getSelectedUserName();
-                                if (selectedUserName != null && selectedUserName.length() > 0) {
-                                    UserEditLabel.this.doOkAction(selectedUserName);
-                                } else {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            Messages.showInfoMessage(project,
-                                                    "Please select non empty user name", "Updating issue stopped");
-                                        }
-                                    });
-                                }
-                            } catch (final JIRAException e) {
-                                SwingUtilities.invokeLater(new Runnable() {
 
-                                    public void run() {
-                                        DialogWithDetails.showExceptionDialog(project,
-                                                "Updating issue " + jiraIssue.getKey() + " has failed", e);
-                                    }
-                                });
-                            }
+        @Override
+        protected void doOKAction() {
+            ProgressManager.getInstance().run(new Task.Backgroundable(project,
+                    "Updating issue " + jiraIssue.getKey(), false) {
+                @Override
+                public void run(@NotNull ProgressIndicator progressIndicator) {
+                    try {
+                        String selectedUserName = getSelectedUserName();
+                        if (selectedUserName != null && selectedUserName.length() > 0) {
+                            UserEditLabel.this.doOkAction(selectedUserName);
+                        } else {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    Messages.showInfoMessage(project,
+                                            "Please select non empty user name", "Updating issue stopped");
+                                }
+                            });
                         }
-                    });
-                    UserListDialog.super.getOKAction().actionPerformed(actionEvent);
+                    } catch (final JIRAException e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                            public void run() {
+                                DialogWithDetails.showExceptionDialog(project,
+                                        "Updating issue " + jiraIssue.getKey() + " has failed", e);
+                            }
+                        });
+                    }
                 }
-            };
+            });
+            super.doOKAction();
         }
-//CHECKSTYLE:MAGIC:ON
+
         private String getSelectedUserName() {
             if (comboBox.getSelectedItem() instanceof UserComboBoxItem) {
                 return ((UserComboBoxItem) comboBox.getSelectedItem()).getUser().getUsername();
