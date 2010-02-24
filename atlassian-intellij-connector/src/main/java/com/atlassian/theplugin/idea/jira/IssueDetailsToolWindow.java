@@ -1299,6 +1299,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private void resetStackTraces() {
 				stackTraceCounter = 0;
 
+                int selectedIndex = tabs.getSelectedIndex();
 				while (tabs.getTabCount() > 3) {
 					tabs.remove(3);
 				}
@@ -1307,6 +1308,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				if (StackTraceDetector.containsStackTrace(stack)) {
 					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
 				}
+                if (selectedIndex < tabs.getTabCount()){
+                    tabs.setSelectedIndex(selectedIndex);
+                }
 			}
 
 			private class RefreshDescriptionAndCommentsRunnable implements Runnable {
