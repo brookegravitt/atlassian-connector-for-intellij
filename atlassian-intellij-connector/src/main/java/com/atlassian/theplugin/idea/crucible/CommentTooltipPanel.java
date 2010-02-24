@@ -51,6 +51,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -256,26 +257,55 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 		final CommentPanel cmtPanel = new CommentPanel(review, rootComment, false,
                 parent == null && mode != Mode.SHOW,
-                parent == null && mode == Mode.ADD);
+                parent == null && mode == Mode.ADD, null);
         CommentPanel selectedPanel = parent == null && mode != Mode.SHOW ? cmtPanel : null;
 		commentsPanel.add(cmtPanel);
 		commentPanelList.add(cmtPanel);
-		java.util.List<Comment> replies = rootComment != null ? rootComment.getReplies() : null;
-		if (replies != null) {
-			for (Comment reply : replies) {
-                boolean sel = mode != Mode.SHOW && reply.getPermId().equals(comment.getPermId());
-				CommentPanel replyPanel = new CommentPanel(review, reply, true, sel, false);
-                if (sel) {
-                    selectedPanel = replyPanel;
-                }
 
-                if (reply.getReadState() == Comment.ReadState.UNREAD) {
-                    commentsToMarkRead.add(reply);
-                }
-				commentsPanel.add(replyPanel);
-				commentPanelList.add(replyPanel);
-			}
+		java.util.LinkedList<Comment> queue = new LinkedList<Comment>();
+		for (Comment reply : rootComment.getReplies()) {
+			queue.addLast(reply);
 		}
+
+		while (!queue.isEmpty()) {
+			Comment currentComment = queue.removeFirst();
+			java.util.List<Comment> replies = currentComment.getReplies();
+			if (replies != null) {
+				for (Comment reply : replies) {
+					queue.addFirst(reply);
+				}
+			}
+
+			boolean sel = mode != Mode.SHOW && currentComment.getPermId().equals(comment.getPermId());
+			CommentPanel replyPanel = new CommentPanel(review, currentComment, true, sel, false,
+					currentComment.getParentComment());
+			if (sel) {
+				selectedPanel = replyPanel;
+			}
+
+			if (currentComment.getReadState() == Comment.ReadState.UNREAD) {
+				commentsToMarkRead.add(currentComment);
+			}
+			commentsPanel.add(replyPanel);
+			commentPanelList.add(replyPanel);
+		}
+
+//		java.util.List<Comment> replies = rootComment != null ? rootComment.getReplies() : null;
+//		if (replies != null) {
+//			for (Comment reply : replies) {
+//                boolean sel = mode != Mode.SHOW && reply.getPermId().equals(comment.getPermId());
+//				CommentPanel replyPanel = new CommentPanel(review, reply, true, sel, false);
+//                if (sel) {
+//                    selectedPanel = replyPanel;
+//                }
+//
+//                if (reply.getReadState() == Comment.ReadState.UNREAD) {
+//                    commentsToMarkRead.add(reply);
+//                }
+//				commentsPanel.add(replyPanel);
+//				commentPanelList.add(replyPanel);
+//			}
+//		}
 
         markCommentsRead(commentsToMarkRead);
 
@@ -306,7 +336,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     }
 
     private void addCommentPanel(ReviewAdapter aReview, Comment comment) {
-        CommentPanel cmt = new CommentPanel(aReview, comment, false, false, false);
+        CommentPanel cmt = new CommentPanel(aReview, comment, false, false, false, null);
         commentsPanel.add(cmt, 0);
         commentPanelList.add(0, cmt);
         rootComment = comment;
@@ -314,8 +344,8 @@ public abstract class CommentTooltipPanel extends JPanel {
         scrollUp();
     }
 
-	private void addCommentReplyPanel(ReviewAdapter aReview, Comment reply, boolean panelForNewComment) {
-		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null, panelForNewComment);
+	private void addCommentReplyPanel(ReviewAdapter aReview, Comment reply, boolean panelForNewComment, Comment parentOfReply) {
+		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null, panelForNewComment, parentOfReply);
 		commentsPanel.add(cmt);
 		commentPanelList.add(cmt);
 		validate();
@@ -388,6 +418,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         private static final String MARK_READ = "Mark Read";
 
 		private Comment comment;
+		private Comment parentComment = null;
         private boolean selectedPanel;
         private ReviewAdapter review;
         private boolean replyPanel;
@@ -427,6 +458,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private static final int WIDTH_ALL = 16;
         private JLabel underConstruction;
         private boolean indent;
+		private int indentation;
         private static final String POST_COMMENT_TOOLTIP_TEXT = "Post Comment (Alt-Enter)";
         private static final int SET_FOCUS_DELAY = 100;
 
@@ -436,19 +468,33 @@ public abstract class CommentTooltipPanel extends JPanel {
 			}
 		}
 
+		// pstefaniak: tutaj trzeba bedzie posprzatac, bo sie za gesto robi :)
 		private CommentPanel(final ReviewAdapter review, final Comment comment,
-                             boolean replyPanel, boolean selectedPanel, boolean panelForNewComment) {
+                             boolean replyPanel, boolean selectedPanel, boolean panelForNewComment,
+							 final Comment parentComment) {
 			this.review = review;
             this.replyPanel = replyPanel;
             this.panelForNewComment = panelForNewComment;
             this.comment = comment != null ? comment : (replyPanel ? null : commentTemplate);
+			this.parentComment = parentComment;
             this.selectedPanel = selectedPanel;
             setOpaque(true);
 			setBackground(Color.WHITE);
-            indent = comment == null || comment.isReply();
 
+			{
+				indentation = -1;
+				Comment tmpComment = comment;
+				while (tmpComment != null) {
+					indentation++;
+					tmpComment = tmpComment.getParentComment();
+				}
+//                indent = comment == null || comment.isReply();
+				indent = true;//indentation > 0;
+			}
+
+			String spanStr = Integer.toString(8 * indentation);
 			setLayout(new FormLayout(
-					"max(8dlu;p), max(8dlu;d), d, 2dlu, d, 2dlu, d, 2dlu, d, 2dlu, d,"
+					"max(" + spanStr + "dlu;p), 8dlu, d, 2dlu, d, 2dlu, d, 2dlu, d, 2dlu, d,"
                             + " r:p:g, r:p, r:p, r:p, r:p, r:p, r:p, r:p",
 					"p, p:g, p"
 			));
@@ -482,7 +528,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				add(underConstruction, cc.xy(3, 1));
 			}
 
-			if (comment != null && !comment.isReply()) {
+			if (comment != null /*&& !comment.isReply()*/) {
 				btnReply = new HyperlinkLabel("Reply");
 				btnReply.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -577,7 +623,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             if (btnEdit != null) {
                 btnEdit.setVisible(false);
             }
-            addCommentReplyPanel(rev, null, true);
+            addCommentReplyPanel(rev, null, true, comment);
             setStatusText(" ", false);
         }
 
@@ -836,9 +882,15 @@ public abstract class CommentTooltipPanel extends JPanel {
 				if (comment != null) {
 					((Comment) comment).setDraft(false);
 				}
-				addOrUpdateCommentForReview(this, comment, commentBody.getText(),
-						comment != null && comment.isDraft(),
-						boxIsDefect != null && boxIsDefect.isSelected());
+				if (panelForNewComment) {
+					addCommentForReview(this, parentComment, commentBody.getText(),
+							comment != null && comment.isDraft(),
+							boxIsDefect != null && boxIsDefect.isSelected());
+				} else {
+					updateCommentForReview(this, comment, commentBody.getText(),
+							comment != null && comment.isDraft(),
+							boxIsDefect != null && boxIsDefect.isSelected());
+				}
 				btnEdit.setHyperlinkText(EDIT);
                 btnEdit.setToolTipText(null);
 				if (btnSaveDraft != null) {
@@ -989,32 +1041,49 @@ public abstract class CommentTooltipPanel extends JPanel {
 		statusLabel.setPreferredSize(new Dimension(0, statusLabel.getHeight()));
 	}
 
+	// for backward compatibility:
+	private void addOrUpdateCommentForReview(CommentPanel panel, Comment comment,
+											 String text, boolean draft, boolean defect) {
+		if (comment != null) {
+			updateCommentForReview(panel, comment, text, draft, defect);
+		} else {
+			addCommentForReview(panel, null, text, draft, defect);
+		}
+	}
+
 	/**
 	 * @param panel   - panel that this invocation came from
-	 * @param comment - null to create new reply
+	 * @param comment - comment to update
 	 * @param text	- new comment body
 	 * @param draft   - is the comment a draft?
 	 * @param defect  - is this comment a defect?
 	 */
-	private void addOrUpdateCommentForReview(CommentPanel panel, Comment comment,
+	private void updateCommentForReview(CommentPanel panel, Comment comment,
 			String text, boolean draft, boolean defect) {
+		setStatusText("Updating comment...", false);
+		updateDefectFields(comment, defect);
+		updateComment(comment, text);
+	}
 
-		if (panel.panelForNewComment) {
-			setCommentPanelEditable(panel, false);
+	/**
+	 * @param panel   - panel that this invocation came from
+	 * @param parentComment - comment, that will be parent of newly created comment
+	 * @param text	- new comment body
+	 * @param draft   - is the comment a draft?
+	 * @param defect  - is this comment a defect?
+	 */
+	private void addCommentForReview(CommentPanel panel, Comment parentComment,
+			String text, boolean draft, boolean defect) {
+		setCommentPanelEditable(panel, false);
 
-            if (panel.replyPanel) {
-                setStatusText("Adding new reply...", false);
-                addNewReply(rootComment, text, draft);
-            } else {
-                setStatusText("Adding new comment...", false);
-                ((Comment) commentTemplate).setMessage(text);
-                updateDefectFields(commentTemplate, defect);
-                addNewComment(commentTemplate, draft);
-            }
+		if (panel.replyPanel) {
+			setStatusText("Adding new reply...", false);
+			addNewReply(parentComment, text, draft);
 		} else {
-            setStatusText("Updating comment...", false);
-            updateDefectFields(comment, defect);
-            updateComment(comment, text);
+			setStatusText("Adding new comment...", false);
+			((Comment) commentTemplate).setMessage(text);
+			updateDefectFields(commentTemplate, defect);
+			addNewComment(commentTemplate, draft);
 		}
 	}
 
@@ -1080,7 +1149,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                     removeUnderConstructionPanel();
 					setStatusText("Comment reply added", false);
 					setAllButtonsVisible();
-					addCommentReplyPanel(review, comment, false);
+					addCommentReplyPanel(review, comment, false, parentComment);
                     closePopup();
 				}
 			});

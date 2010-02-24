@@ -149,8 +149,7 @@ public final class FileTreeModelBuilder {
 		for (Comment reply : comment.getReplies()) {
 			final GeneralCommentTreeNode node = new GeneralCommentTreeNode(review, reply, action);
 			model.insertNode(node, parentNode);
-// not handling replies to replies at the moment, as in many other places we need to fix it			
-//			fillReplies(reply, model, node, review);
+			fillReplies(reply, model, node, review, action);
 		}
 	}
 
