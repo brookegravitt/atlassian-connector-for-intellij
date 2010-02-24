@@ -209,7 +209,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			JiraIssueAdapter issue = ip.params.issue;
-			IdeaHelper.getIssueListToolWindowPanel(project).addAttachmentToIssue(issue);
+			JFileChooser fc = new JFileChooser();
+			if (fc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+				return;
+			}
+			File file = fc.getSelectedFile();
+
+			addAttachment(issue, file, IssueDetailsToolWindow.AttachmentAddedFrom.ISSUE_DETAILS_WINDOW);
 		}
 	}
 
@@ -218,15 +224,20 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			IssuePanel ip = (IssuePanel) selectedContent;
 			if (ip != null) {
 				JiraIssueAdapter issue = ip.params.issue;
-				addAttachment(issue, file);
+				addAttachment(issue, file, AttachmentAddedFrom.ISSUE_DETAILS_WINDOW);
 			}
 		} catch (ClassCastException e) {
 			// oops
-			return;
+			e.printStackTrace();
 		}
 	}
 
-	public void addAttachment(final JiraIssueAdapter issue, final File file) {
+	// used to determine where to show errors caused by adding attachment failures:
+	public enum AttachmentAddedFrom {
+		ISSUE_DETAILS_WINDOW, ISSUE_LIST_WINDOW
+	}
+
+	public void addAttachment(final JiraIssueAdapter issue, final File file, final AttachmentAddedFrom fromWindow) {
 		final String name = file.getName();
 		final byte[] contents = getFileContentsAsBytes(file);
 		final String issueKey = issue.getKey();
@@ -240,8 +251,19 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						} catch (final JIRAException e) {
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
-									IdeaHelper.getIssueListToolWindowPanel(project).setStatusErrorMessage(
-											"Error: " + e.getMessage(), e);
+									switch (fromWindow) {
+										case ISSUE_LIST_WINDOW :
+											try {
+												IdeaHelper.getIssueListToolWindowPanel(project).setStatusErrorMessage(
+														"Error: " + e.getMessage(), e);
+											} catch (NullPointerException npe) {
+												npe.printStackTrace();
+											}
+											break;
+										case ISSUE_DETAILS_WINDOW:
+											setStatusErrorMessage(getContentKey(issue), "Error: " + e.getMessage(), e);
+											break;
+									}
 								}
 							});
 						}
