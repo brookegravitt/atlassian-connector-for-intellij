@@ -489,7 +489,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 					tmpComment = tmpComment.getParentComment();
 				}
 //                indent = comment == null || comment.isReply();
-				indent = true;//indentation > 0;
+				indent = true; //indentation > 0;
 			}
 
 			String spanStr = Integer.toString(8 * indentation);
