@@ -122,27 +122,12 @@ public abstract class UserEditLabel extends JPanel {
 
 
     private class EditIssueFieldButton extends JRadioButton {
-        private final Icon editIcon = IconLoader.getIcon("/objectBrowser/showEditorHighlighting.png");
+        private final Icon editIcon = IconLoader.getIcon("/icons/edit.png");
 
         public EditIssueFieldButton() {
             super();
-            //setIcon(editIcon);
-            // setSize(new Dimension(editIcon.getIconHeight(), editIcon.getIconWidth()));
-            setText("...");
+            setIcon(editIcon);                        
             this.setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
-            setIcon(new Icon() {
-
-                public void paintIcon(Component component, Graphics graphics, int i, int i1) {
-                }
-
-                public int getIconWidth() {
-                    return 0;
-                }
-
-                public int getIconHeight() {
-                    return 0;
-                }
-            });
             this.setBorder(BorderFactory.createEmptyBorder());
             this.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent actionEvent) {
@@ -169,7 +154,7 @@ public abstract class UserEditLabel extends JPanel {
 
     private class UserListDialog extends DialogWrapper {
         private JComboBox comboBox = new JComboBox();
-        private JLabel label = new JLabel("Type in or select user from list");
+        private JLabel label = new JLabel("Select user from the list or type in user login name");
         private JPanel rootPanel = new JPanel();
 
         protected UserListDialog(Project project) {
