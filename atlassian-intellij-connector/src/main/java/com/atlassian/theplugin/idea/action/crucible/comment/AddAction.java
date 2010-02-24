@@ -57,18 +57,18 @@ public class AddAction extends AbstractCommentAction {
                 text = FILE_COMMENT_TEXT;
 			} else if (node instanceof VersionedCommentTreeNode) {
 				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
-				if (vcNode.getComment().isReply()) {
-					enabled = false;
-				} else {
+//				if (vcNode.getComment().isReply()) {
+//					enabled = false;
+//				} else {
 					text = REPLY_TEXT;
-				}
+//				}
 			} else if (node instanceof GeneralCommentTreeNode) {
 				final GeneralCommentTreeNode gcNode = (GeneralCommentTreeNode) node;
-				if (gcNode.getComment().isReply()) {
-					enabled = false;
-				} else {
+//				if (gcNode.getComment().isReply()) {
+//					enabled = false;
+//				} else {
 					text = REPLY_TEXT;
-				}
+//				}
 			}
 		}
 		e.getPresentation().setEnabled(enabled);

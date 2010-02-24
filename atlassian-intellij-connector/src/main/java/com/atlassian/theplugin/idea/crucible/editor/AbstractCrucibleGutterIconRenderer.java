@@ -32,6 +32,29 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 		this.comment = comment;
 	}
 
+	private String getPadding(int indentation) {
+		StringBuilder s = new StringBuilder();
+		for (int i = 0; i < indentation ; i++) {
+			s.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+		}
+		return s.toString();
+	}
+
+	private String getReplyText(Comment comment, int indentation) {
+		StringBuilder s = new StringBuilder();
+		for (Comment versionedComment : comment.getReplies()) {
+			s.append("<br>" + getPadding(indentation) + "<b>")
+					.append(versionedComment.getAuthor().getDisplayName())
+					.append("</b> replied <i> on ")
+					.append(CommentDateUtil.getDateText(versionedComment.getCreateDate()))
+					.append("</i>:<br>" + getPadding(indentation));
+            renderCommentBody(s, versionedComment, indentation);
+
+			s.append(getReplyText(versionedComment, indentation + 1));
+		}
+		return s.toString();
+	}
+
     @Override
 	public String getTooltipText() {
 		StringBuilder s = new StringBuilder();
@@ -40,28 +63,22 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 				.append("</b> said <i>on ")
 				.append(CommentDateUtil.getDateText(comment.getCreateDate()))
 				.append("</i>:<br>");
-		renderCommentBody(s, comment);
+		renderCommentBody(s, comment, 1);
+
+		s.append(getReplyText(comment, 1));
         
-		for (Comment versionedComment : comment.getReplies()) {
-			s.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>")
-					.append(versionedComment.getAuthor().getDisplayName())
-					.append("</b> replied <i> on ")
-					.append(CommentDateUtil.getDateText(versionedComment.getCreateDate()))
-					.append("</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;");
-            renderCommentBody(s, versionedComment);
-		}
 		s.append("</html>");
 		return s.toString();
 	}
 
-    private void renderCommentBody(StringBuilder s, Comment cmt) {
+    private void renderCommentBody(StringBuilder s, Comment cmt, int indentation) {
         boolean boldify =
                 cmt.getReadState() == Comment.ReadState.UNREAD
                 || cmt.getReadState() == Comment.ReadState.LEAVE_UNREAD;
         if (boldify) {
             s.append("<b>");
         }
-        s.append(cmt.getMessage().replace("\n", "<br>"));
+        s.append(cmt.getMessage().replace("\n", "<br>" + getPadding(indentation)));
         if (boldify) {
             s.append("</b>");
         }
