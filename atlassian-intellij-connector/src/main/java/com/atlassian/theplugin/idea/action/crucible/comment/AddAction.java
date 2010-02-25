@@ -55,7 +55,7 @@ public class AddAction extends AbstractCommentAction {
 		if (enabled) {
 			if (node instanceof CrucibleFileNode) {
                 text = FILE_COMMENT_TEXT;
-			} else if (node instanceof VersionedCommentTreeNode || node instanceof GeneralCommentTreeNode ) {
+			} else if (node instanceof VersionedCommentTreeNode || node instanceof GeneralCommentTreeNode) {
 				text = REPLY_TEXT;
 			}
 		}
