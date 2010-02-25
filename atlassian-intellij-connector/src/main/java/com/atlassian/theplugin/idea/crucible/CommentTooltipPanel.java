@@ -215,7 +215,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     }
 
 	public CommentTooltipPanel(AnActionEvent event, final ReviewAdapter review, CrucibleFileInfo file,
-                               Comment comment, Comment parent, Mode mode, boolean useTextTwixie) {
+                               Comment comment, Comment parent, final Mode mode, boolean useTextTwixie) {
 		super(new BorderLayout());
 
         project = IdeaHelper.getCurrentProject(event);
@@ -257,28 +257,23 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 		final CommentPanel cmtPanel = new CommentPanel(review, rootComment, false,
                 parent == null && mode != Mode.SHOW,
-                parent == null && mode == Mode.ADD, null);
+                parent == null && mode == Mode.ADD, null, mode);
         CommentPanel selectedPanel = parent == null && mode != Mode.SHOW ? cmtPanel : null;
 		commentsPanel.add(cmtPanel);
 		commentPanelList.add(cmtPanel);
 
 		java.util.LinkedList<Comment> queue = new LinkedList<Comment>();
-		for (Comment reply : rootComment.getReplies()) {
-			queue.addLast(reply);
+		if (rootComment != null && mode != Mode.ADD) {
+			queue.addAll(rootComment.getReplies());
 		}
 
 		while (!queue.isEmpty()) {
 			Comment currentComment = queue.removeFirst();
-			java.util.List<Comment> replies = currentComment.getReplies();
-			if (replies != null) {
-				for (Comment reply : replies) {
-					queue.addFirst(reply);
-				}
-			}
+			queue.addAll(0, currentComment.getReplies());
 
 			boolean sel = mode != Mode.SHOW && currentComment.getPermId().equals(comment.getPermId());
 			CommentPanel replyPanel = new CommentPanel(review, currentComment, true, sel, false,
-					currentComment.getParentComment());
+					currentComment.getParentComment(), mode);
 			if (sel) {
 				selectedPanel = replyPanel;
 			}
@@ -312,7 +307,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         if (parent != null && mode == Mode.ADD) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    cmtPanel.addEmptyReplyPanelAndSetupButtons(review);
+                    cmtPanel.addEmptyReplyPanelAndSetupButtons(review, mode);
                 }
             });
         }
@@ -336,7 +331,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     }
 
     private void addCommentPanel(ReviewAdapter aReview, Comment comment) {
-        CommentPanel cmt = new CommentPanel(aReview, comment, false, false, false, null);
+        CommentPanel cmt = new CommentPanel(aReview, comment, false, false, false, null, Mode.SHOW);
         commentsPanel.add(cmt, 0);
         commentPanelList.add(0, cmt);
         rootComment = comment;
@@ -344,9 +339,33 @@ public abstract class CommentTooltipPanel extends JPanel {
         scrollUp();
     }
 
-	private void addCommentReplyPanel(ReviewAdapter aReview, Comment reply, boolean panelForNewComment, Comment parentOfReply) {
-		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null, panelForNewComment, parentOfReply);
-		commentsPanel.add(cmt);
+	private void addCommentReplyPanel(ReviewAdapter aReview, Comment reply, boolean panelForNewComment, Comment parentOfReply,
+			final Mode mode) {
+		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null, panelForNewComment, parentOfReply, mode);
+
+		if (parentOfReply != null) {
+			boolean foundParentComponent = false;
+			for (CommentPanel panel : commentPanelList) {
+				if (panel.getComment() == parentOfReply) {
+					int index = 0;
+					for (Component component : commentsPanel.getComponents()) {
+						if (component == panel) {
+							commentsPanel.add(cmt, index + 1);
+							validate();
+							if (index + 2 >= commentsPanel.getComponentCount()) {
+								scrollDown();
+							}
+							return;
+						}
+						index++;
+					}
+				}
+			}
+			//something went wrong... parent component was not found, fallbacking:
+			commentsPanel.add(cmt);
+		} else {
+			commentsPanel.add(cmt);
+		}
 		commentPanelList.add(cmt);
 		validate();
 		scrollDown();
@@ -468,10 +487,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 			}
 		}
 
-		// pstefaniak: tutaj trzeba bedzie posprzatac, bo sie za gesto robi :)
+		// pstefaniak: a good candidate to start "The Mighty Series of Cleanups" :)
 		private CommentPanel(final ReviewAdapter review, final Comment comment,
                              boolean replyPanel, boolean selectedPanel, boolean panelForNewComment,
-							 final Comment parentComment) {
+							 final Comment parentComment, final Mode mode) {
 			this.review = review;
             this.replyPanel = replyPanel;
             this.panelForNewComment = panelForNewComment;
@@ -482,13 +501,19 @@ public abstract class CommentTooltipPanel extends JPanel {
 			setBackground(Color.WHITE);
 
 			{
-				indentation = -1;
-				Comment tmpComment = comment;
-				while (tmpComment != null) {
-					indentation++;
-					tmpComment = tmpComment.getParentComment();
+				if (mode == Mode.ADD) {
+					indentation = 0;
+				} else {
+					indentation = -1;
+					Comment tmpComment = comment != null ? comment : parentComment;
+					while (tmpComment != null) {
+						indentation++;
+						tmpComment = tmpComment.getParentComment();
+					}
+					if (panelForNewComment) {
+						indentation++;
+					}
 				}
-//                indent = comment == null || comment.isReply();
 				indent = true; //indentation > 0;
 			}
 
@@ -532,7 +557,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				btnReply = new HyperlinkLabel("Reply");
 				btnReply.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
-                        addEmptyReplyPanelAndSetupButtons(review);
+                        addEmptyReplyPanelAndSetupButtons(review, mode);
 					}
 				});
 				btnReply.setOpaque(false);
@@ -618,12 +643,12 @@ public abstract class CommentTooltipPanel extends JPanel {
             updateDefectField();
         }
 
-        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter rev) {
+        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter rev, final Mode mode) {
             setButtonsVisible(false);
             if (btnEdit != null) {
                 btnEdit.setVisible(false);
             }
-            addCommentReplyPanel(rev, null, true, comment);
+            addCommentReplyPanel(rev, null, true, comment, mode);
             setStatusText(" ", false);
         }
 
@@ -1132,9 +1157,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 						return;
 					}
 
-					if (!isTheSameComment(rootComment, parentComment)) {
-						return;
-					}
+//					if (!isTheSameComment(rootComment, parentComment)) {
+//						return;
+//					}
 
 					for (CommentPanel panel : commentPanelList) {
 						Comment reply = panel.getComment();
@@ -1149,7 +1174,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                     removeUnderConstructionPanel();
 					setStatusText("Comment reply added", false);
 					setAllButtonsVisible();
-					addCommentReplyPanel(review, comment, false, parentComment);
+					addCommentReplyPanel(review, comment, false, parentComment, Mode.SHOW);
                     closePopup();
 				}
 			});
