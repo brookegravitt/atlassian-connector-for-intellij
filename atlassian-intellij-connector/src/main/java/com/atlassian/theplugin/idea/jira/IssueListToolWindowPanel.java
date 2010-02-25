@@ -926,7 +926,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
                                 pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
                     } else if (manualFilter != null) {
-                        jiraIssueListModelBuilder.addIssuesToModel(manualFilter.getQueryFragment(), jiraServerData,
+                        jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerData,
                                 pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
                     } else if (jiraFilterTree.isRecentlyOpenSelected()) {
                         jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);

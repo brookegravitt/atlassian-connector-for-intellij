@@ -69,7 +69,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		try {
 			builder.addIssuesToModel(
-                    new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query).getQueryFragment(), server, 2, true);
+                    new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query), server, 2, true);
 			assertEquals(0, model.getIssues().size());
 //			builder.setHttpConnectionCfg(server);
 			assertEquals(0, model.getIssues().size());
@@ -120,8 +120,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		query.add(new JIRAProjectBean());
 		JiraCustomFilter manualFilter = new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query);
 		try {
-			builder.addIssuesToModel(manualFilter.getQueryFragment(), server, 25, true);
-			builder.addIssuesToModel(manualFilter.getQueryFragment(), server, 25, false);
+			builder.addIssuesToModel(manualFilter, server, 25, true);
+			builder.addIssuesToModel(manualFilter, server, 25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -154,7 +154,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		});
 		try {
 			builder.addIssuesToModel(
-                    new JiraCustomFilter(UUID.randomUUID().toString(), "manula filter", query).getQueryFragment(), server, 25, true);
+                    new JiraCustomFilter(UUID.randomUUID().toString(), "manula filter", query), server, 25, true);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
