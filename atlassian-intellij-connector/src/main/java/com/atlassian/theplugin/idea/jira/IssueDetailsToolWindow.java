@@ -1308,7 +1308,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				if (StackTraceDetector.containsStackTrace(stack)) {
 					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
 				}
-                if (selectedIndex < tabs.getTabCount()){
+                if (selectedIndex < tabs.getTabCount()) {
                     tabs.setSelectedIndex(selectedIndex);
                 }
 			}
