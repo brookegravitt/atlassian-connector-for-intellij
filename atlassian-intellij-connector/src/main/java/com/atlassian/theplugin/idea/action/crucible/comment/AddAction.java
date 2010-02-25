@@ -55,20 +55,8 @@ public class AddAction extends AbstractCommentAction {
 		if (enabled) {
 			if (node instanceof CrucibleFileNode) {
                 text = FILE_COMMENT_TEXT;
-			} else if (node instanceof VersionedCommentTreeNode) {
-				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
-//				if (vcNode.getComment().isReply()) {
-//					enabled = false;
-//				} else {
-					text = REPLY_TEXT;
-//				}
-			} else if (node instanceof GeneralCommentTreeNode) {
-				final GeneralCommentTreeNode gcNode = (GeneralCommentTreeNode) node;
-//				if (gcNode.getComment().isReply()) {
-//					enabled = false;
-//				} else {
-					text = REPLY_TEXT;
-//				}
+			} else if (node instanceof VersionedCommentTreeNode || node instanceof GeneralCommentTreeNode ) {
+				text = REPLY_TEXT;
 			}
 		}
 		e.getPresentation().setEnabled(enabled);
@@ -127,9 +115,7 @@ public class AddAction extends AbstractCommentAction {
             addCommentToFile(event, node.getReview(), node.getFile());
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-            if (!node.getComment().isReply()) {
-			    addReplyToVersionedComment(event, node.getReview(), node.getFile(), node.getComment());
-            }
+			addReplyToGeneralComment(event, node.getReview(), node.getComment());
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
             addCommentToFile(event, node.getReview(), node.getFile());
@@ -146,6 +132,8 @@ public class AddAction extends AbstractCommentAction {
                 null);
 	}
 
+	// pstefaniak: wseliga has told me something about obsolete routines regarding VersionedComment,
+	// i suppose that must be one of those...
 	private void addReplyToVersionedComment(final AnActionEvent event, final ReviewAdapter review,
                                             final CrucibleFileInfo file, final VersionedComment comment) {
 		final VersionedComment newComment = new VersionedComment(review.getReview(), file);
