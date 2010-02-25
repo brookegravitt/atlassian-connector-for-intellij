@@ -14,6 +14,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,7 +23,7 @@ import java.util.UUID;
 /**
  * User: pmaruszak
  */
-public final class JiraCustomFilter {
+public final class JiraCustomFilter implements JIRAQueryFragment {
 	private static final int HASH_NUMBER = 31;
 
     public enum QueryElement {
@@ -69,11 +70,27 @@ public final class JiraCustomFilter {
 		this.queryFragment = queryFragment;
 	}
 
-	public String getName() {
+    public String getQueryStringFragment() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public long getId() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getName() {
 		return name;
 	}
 
-	public void setName(final String name) {
+    public HashMap<String, String> getMap() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public JIRAQueryFragment getClone() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setName(final String name) {
 		this.name = name;
 	}
 
