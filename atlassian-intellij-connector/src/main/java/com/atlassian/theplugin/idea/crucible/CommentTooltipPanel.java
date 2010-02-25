@@ -340,8 +340,9 @@ public abstract class CommentTooltipPanel extends JPanel {
     }
 
 	private void addCommentReplyPanel(ReviewAdapter aReview, Comment reply, boolean panelForNewComment, Comment parentOfReply,
-			final Mode mode) {
-		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null, panelForNewComment, parentOfReply, mode);
+			final Mode commentMode) {
+		CommentPanel cmt = new CommentPanel(aReview, reply, true, reply == null,
+				panelForNewComment, parentOfReply, commentMode);
 
 		if (parentOfReply != null) {
 			boolean foundParentComponent = false;
@@ -643,12 +644,12 @@ public abstract class CommentTooltipPanel extends JPanel {
             updateDefectField();
         }
 
-        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter rev, final Mode mode) {
+        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter rev, final Mode commentMode) {
             setButtonsVisible(false);
             if (btnEdit != null) {
                 btnEdit.setVisible(false);
             }
-            addCommentReplyPanel(rev, null, true, comment, mode);
+            addCommentReplyPanel(rev, null, true, comment, commentMode);
             setStatusText(" ", false);
         }
 
