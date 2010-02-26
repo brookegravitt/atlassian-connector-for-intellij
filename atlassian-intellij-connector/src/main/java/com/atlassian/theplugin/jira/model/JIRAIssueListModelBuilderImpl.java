@@ -111,7 +111,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
             }
 
             l = facade.getIssues(
-                    jiraServerData, presetFilter.getQueryStringFragment(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
+                    jiraServerData,
+                    presetFilter.getQueryStringFragment(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
             model.addIssues(l);
 
             startFrom += l != null ? l.size() : 0;
