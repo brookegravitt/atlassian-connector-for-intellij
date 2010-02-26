@@ -816,7 +816,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			add(btnDelete, cc.xy(DELETE_POS, 1));
 		}
 
-		private void startEditingComment(Comment comment) {
+		private void startEditingComment() {
 			setStatusText(" ", false);
 			setButtonsVisible(false);
 			btnEdit.setHyperlinkText(APPLY);
@@ -850,13 +850,13 @@ public abstract class CommentTooltipPanel extends JPanel {
 					if (commentBody.isEditable() && postComment()) {
 						return;
 					} else {
-						startEditingComment(comment);
+						startEditingComment();
 					}
 				}
 			});
 
 			if (mode == Mode.EDIT) {
-				startEditingComment(comment);
+				startEditingComment();
 			}
 
 			btnEdit.setOpaque(false);
