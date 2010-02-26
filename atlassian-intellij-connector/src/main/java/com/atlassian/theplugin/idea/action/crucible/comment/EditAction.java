@@ -17,16 +17,13 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 //PL-123
@@ -55,15 +52,11 @@ public class EditAction extends AbstractCommentAction {
 
 
 	private void editComment(AnActionEvent event, AtlassianTreeNode treeNode) {
-		if (treeNode instanceof GeneralCommentTreeNode) {
-			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
+		if (treeNode instanceof CommentTreeNode) {
+			CommentTreeNode node = (CommentTreeNode) treeNode;
 			Comment comment = node.getComment();
             Comment parent = comment.getParentComment();
 			editGeneralComment(event, node.getReview(), comment, parent);
-		} else if (treeNode instanceof VersionedCommentTreeNode) {
-			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-			VersionedComment comment = node.getComment();
-			editVersionedComment(event, node.getReview(), node.getFile(), comment, comment.getParentComment());
 		}
 	}
 
@@ -73,15 +66,6 @@ public class EditAction extends AbstractCommentAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, null, comment, parent, CommentTooltipPanel.Mode.EDIT),
-                null);
-	}
-
-	private void editVersionedComment(AnActionEvent event, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment, final Comment parent) {
-
-        CommentTooltipPanel.showCommentTooltipPopup(
-                event,
-                new CommentTooltipPanelWithRunners(event, review, file, comment, parent, CommentTooltipPanel.Mode.EDIT),
                 null);
 	}
 }

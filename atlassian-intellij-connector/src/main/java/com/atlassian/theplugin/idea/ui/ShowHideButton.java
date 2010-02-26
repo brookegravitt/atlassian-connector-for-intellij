@@ -62,10 +62,12 @@ public class ShowHideButton extends JLabel {
 	protected void setComponentVisible(boolean visible) {
 		body.setVisible(visible);
 		container.validate();
-		container.getParent().validate();
+		if (container.getParent() != null) {
+			container.getParent().validate();
+		}
 	}
 
-	protected String getTooltip() {
-		return "Collapse/Expand";
-	}
+//	protected String getTooltip() {
+//		return "Collapse/Expand";
+//	}
 }
