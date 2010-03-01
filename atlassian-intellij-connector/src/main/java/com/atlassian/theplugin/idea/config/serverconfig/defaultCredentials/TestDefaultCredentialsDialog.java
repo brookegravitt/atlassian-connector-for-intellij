@@ -199,7 +199,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	}
 
 	private void changeCancelActionName() {
-		if (progress.get() == servers.size()) {
+		if (isShowing() && progress.get() == servers.size()) {
 			setCancelButtonText("Close");
 
 		}
