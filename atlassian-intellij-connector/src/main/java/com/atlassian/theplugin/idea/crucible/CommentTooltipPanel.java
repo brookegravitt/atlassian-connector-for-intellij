@@ -868,7 +868,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnCancel = new HyperlinkLabel("Cancel");
 			btnCancel.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-                    cancelEditing(mode);
+                    cancelEditing();
 				}
 			});
 			btnCancel.setOpaque(false);
@@ -880,7 +880,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			}
 		}
 
-        private void cancelEditing(Mode mode) {
+        private void cancelEditing() {
             btnCancel.setVisible(false);
             btnEdit.setHyperlinkText(EDIT);
 
@@ -945,7 +945,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                 setCommentPanelText(this, false, cmt.getMessage());
                 setCommentDate();
                 updateDefectField();
-                cancelEditing(mode);
+                cancelEditing();
 
                 commentBody.setBackground(Color.WHITE);
                 commentBody.setEnabled(true);
