@@ -143,6 +143,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
 					getReview().removeComment(comment);
+					panel.setAllButtonsVisible();
                 } catch (Exception e) {
                     panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage(), true);
                 }

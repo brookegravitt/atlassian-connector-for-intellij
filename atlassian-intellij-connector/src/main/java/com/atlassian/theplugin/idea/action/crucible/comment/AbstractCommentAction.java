@@ -23,6 +23,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -103,6 +104,20 @@ public abstract class AbstractCommentAction extends AnAction {
 			}
 		}
 		return result;
+	}
+
+	protected boolean hasReplies(final AtlassianTreeNode node) {
+		if (node == null) {
+			return false;
+		}
+		if (node instanceof CommentTreeNode) {
+			CommentTreeNode anode = (CommentTreeNode) node;
+			Comment comment = anode.getComment();
+			if (comment != null) {
+				return (!comment.getReplies().isEmpty());
+			}
+		}
+		return false;
 	}
 
 	protected boolean checkIfDraftAndAuthor(final AtlassianTreeNode node) {

@@ -64,7 +64,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private MyReviewListener listener;
 	private final CrucibleFileInfo fileInfo;
     private Comment rootComment;
-	private final boolean useTextTwixie;
 
 	private ScrollablePanel commentsPanel = new ScrollablePanel();
 	private JScrollPane scroll = new JScrollPane();
@@ -209,13 +208,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 		this(event, review, file, comment, parent, Mode.SHOW);
 	}
 
-    public CommentTooltipPanel(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo file,
-                               Comment comment, Comment parent, Mode mode) {
-        this(event, review, file, comment, parent, mode, false);
-    }
-
 	public CommentTooltipPanel(AnActionEvent event, final ReviewAdapter review, CrucibleFileInfo file,
-                               Comment comment, Comment parent, final Mode mode, boolean useTextTwixie) {
+                               Comment comment, Comment parent, final Mode mode) {
 		super(new BorderLayout());
 
         project = IdeaHelper.getCurrentProject(event);
@@ -229,7 +223,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
         commentTemplate = mode == Mode.ADD ? comment : null;
 
-		this.useTextTwixie = useTextTwixie;
 		listener = new MyReviewListener();
 		this.review = review;
 
@@ -288,23 +281,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 			commentsPanel.add(replyPanel);
 			commentPanelList.add(replyPanel);
 		}
-
-//		java.util.List<Comment> replies = rootComment != null ? rootComment.getReplies() : null;
-//		if (replies != null) {
-//			for (Comment reply : replies) {
-//                boolean sel = mode != Mode.SHOW && reply.getPermId().equals(comment.getPermId());
-//				CommentPanel replyPanel = new CommentPanel(review, reply, true, sel, false);
-//                if (sel) {
-//                    selectedPanel = replyPanel;
-//                }
-//
-//                if (reply.getReadState() == Comment.ReadState.UNREAD) {
-//                    commentsToMarkRead.add(reply);
-//                }
-//				commentsPanel.add(replyPanel);
-//				commentPanelList.add(replyPanel);
-//			}
-//		}
 
         markCommentsRead(commentsToMarkRead);
 
@@ -462,7 +438,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private JCheckBox boxIsDefect;
 		private JLabel defectLabel;
 
-		private static final int TWIXIE_1_POS = 1;
+//		private static final int TWIXIE_1_POS = 1;
 		private static final int TWIXIE_2_POS = 2;
 		private static final int USER_POS = 3;
 		private static final int HYPHEN_POS = 5;
@@ -480,7 +456,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private static final int WIDTH_INDENTED = 15;
 		private static final int WIDTH_ALL = 16;
         private JLabel underConstruction;
-        private boolean indent;
 		private int indentation;
         private static final String POST_COMMENT_TOOLTIP_TEXT = "Post Comment (Alt-Enter)";
         private static final int SET_FOCUS_DELAY = 100;
@@ -518,7 +493,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 						indentation++;
 					}
 				}
-				indent = true; //indentation > 0;
 			}
 
 			String spanStr = Integer.toString(8 * indentation);
@@ -544,10 +518,10 @@ public abstract class CommentTooltipPanel extends JPanel {
             if (comment != null && comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
                 commentBody.setFont(commentBody.getFont().deriveFont(Font.BOLD));
             }
-			btnShowHide = new ShowHideButton(commentBody, this, useTextTwixie);
+			btnShowHide = new ShowHideButton(commentBody, this);
 			HeaderListener headerListener = new HeaderListener();
 
-			add(btnShowHide, cc.xy(indent ? TWIXIE_2_POS : TWIXIE_1_POS, 1));
+			add(btnShowHide, cc.xy(TWIXIE_2_POS, 1));
 
 			if (comment != null) {
                 createCommentInfoComponents(comment);
@@ -557,24 +531,28 @@ public abstract class CommentTooltipPanel extends JPanel {
 				add(underConstruction, cc.xy(3, 1));
 			}
 
-			if (comment != null /*&& !comment.isReply()*/) {
-				btnReply = new HyperlinkLabel("Reply");
-				btnReply.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-                        addEmptyReplyPanelAndSetupButtons(review, mode);
-					}
-				});
-				btnReply.setOpaque(false);
-				add(btnReply, cc.xy(REPLY_POS, 1));
-			}
-			if (comment == null || isOwner(comment)) {
-				createCommentEditButtons(cc);
-			}
-			if (comment != null && isOwner(comment)) {
-				if (comment.isDraft()) {
-					createPublishButtons(cc);
+			if (mode != Mode.EDIT) {
+				if (comment != null) {
+					btnReply = new HyperlinkLabel("Reply");
+					btnReply.addHyperlinkListener(new HyperlinkListener() {
+						public void hyperlinkUpdate(HyperlinkEvent e) {
+							addEmptyReplyPanelAndSetupButtons(review, mode);
+						}
+					});
+					btnReply.setOpaque(false);
+					add(btnReply, cc.xy(REPLY_POS, 1));
 				}
-				createDeleteButton(cc);
+				if (comment == null || isOwner(comment)) {
+					createCommentEditButtons(cc);
+				}
+				if (comment != null && isOwner(comment)) {
+					if (comment.isDraft()) {
+						createPublishButtons(cc);
+					}
+					createDeleteButton(cc);
+				}
+			} else {
+				createCommentEditButtons(cc);				
 			}
 
             if (comment != null && !isOwner(comment)) {
@@ -617,7 +595,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             JLabel user = new JLabel(cmt.getAuthor().getDisplayName());
             user.setFont(user.getFont().deriveFont(Font.BOLD));
             user.setMinimumSize(new Dimension(0, 0));
-            add(user, cc.xy(indent ? USER_POS : TWIXIE_2_POS, 1));
+            add(user, cc.xy(USER_POS, 1));
 
             final JLabel hyphen = new WhiteLabel();
             hyphen.setText("-");
@@ -687,7 +665,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                     }                    
 				}
 			});
-			add(commentBody, cc.xyw(indent ? USER_POS : TWIXIE_2_POS, TWIXIE_2_POS, indent ? WIDTH_INDENTED : WIDTH_ALL));
+			add(commentBody, cc.xyw(USER_POS, TWIXIE_2_POS, WIDTH_INDENTED));
 		}
 
 		private void createDefectClassificationPanel(CellConstraints cc) {
@@ -737,7 +715,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
         public void updateReadUnreadButtonState(Comment cmt) {
             final Comment.ReadState state = cmt.getReadState();
-            ((Comment) comment).setReadState(state);
+            comment.setReadState(state);
             if (btnMarkUnread != null && btnMarkRead != null
                     && (state == Comment.ReadState.READ || state == Comment.ReadState.LEAVE_UNREAD)) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -814,6 +792,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 				}
 			});
 			add(btnDelete, cc.xy(DELETE_POS, 1));
+
+			if (comment != null && !comment.getReplies().isEmpty()) {
+				btnDelete.setVisible(false);
+			}
 		}
 
 		private void startEditingComment() {
@@ -821,7 +803,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			setButtonsVisible(false);
 			btnEdit.setHyperlinkText(APPLY);
 			btnEdit.setToolTipText(POST_COMMENT_TOOLTIP_TEXT);
-			if (comment.getParentComment() != null && comment.getParentComment().isDraft()) {
+			if (comment != null && comment.getParentComment() != null && comment.getParentComment().isDraft()) {
 				btnEdit.setVisible(false);
 			} else {
 				btnEdit.setVisible(true);
@@ -844,23 +826,17 @@ public abstract class CommentTooltipPanel extends JPanel {
 				btnEdit.setVisible(editOrApply);
 			}
 
-			btnCancel = new HyperlinkLabel("Cancel");
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-					if (commentBody.isEditable() && postComment()) {
-						return;
-					} else {
+					if (!(commentBody.isEditable() && postComment())) {
 						startEditingComment();
 					}
 				}
 			});
 
-			if (mode == Mode.EDIT) {
-				startEditingComment();
-			}
-
 			btnEdit.setOpaque(false);
 			add(btnEdit, cc.xy(EDIT_POS, 1));
+
 			if (panelForNewComment || comment.isDraft()) {
 				btnSaveDraft = new HyperlinkLabel(APPLY_DRAFT);
 				btnSaveDraft.addHyperlinkListener(new HyperlinkListener() {
@@ -873,11 +849,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 							commentBody.setEnabled(false);
 							btnSaveDraft.setVisible(false);
 							boolean isDefect = boxIsDefect != null && boxIsDefect.isSelected();
-							if (CommentPanel.this.comment != null) {
-								updateCommentForReview(CommentPanel.this, CommentPanel.this.comment, commentBody.getText(),
-										true, isDefect);
-							} else {
+							if (panelForNewComment) {
 								addCommentForReview(CommentPanel.this, parentComment, commentBody.getText(), true, isDefect);
+							} else {
+								updateCommentForReview(CommentPanel.this.comment, commentBody.getText(), isDefect);
 							}
 							btnCancel.setVisible(false);
 							setCommentPanelEditable(CommentPanel.this, false);
@@ -889,17 +864,23 @@ public abstract class CommentTooltipPanel extends JPanel {
 				add(btnSaveDraft, cc.xy(SAVE_DRAFT_POS, 1));
 				btnSaveDraft.setVisible(comment == null || comment == commentTemplate);
 			}
+
+			btnCancel = new HyperlinkLabel("Cancel");
 			btnCancel.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-                    cancelEditing();
+                    cancelEditing(mode);
 				}
 			});
 			btnCancel.setOpaque(false);
 			btnCancel.setVisible(panelForNewComment || selectedPanel);
 			add(btnCancel, cc.xy(CANCEL_POS, 1));
+
+			if (mode == Mode.EDIT) {
+				startEditingComment();
+			}
 		}
 
-        private void cancelEditing() {
+        private void cancelEditing(Mode mode) {
             btnCancel.setVisible(false);
             btnEdit.setHyperlinkText(EDIT);
 
@@ -915,9 +896,9 @@ public abstract class CommentTooltipPanel extends JPanel {
                 setCommentPanelEditable(this, false);
             } else {
                 removeCommentPanel(this);
-                if (commentPanelList.size() == 0 && project != null) {
-                    closePopup();
-                }
+			}
+			if (mode == Mode.EDIT || mode == Mode.ADD) {
+				closePopup();
             }
             setStatusText(" ", false);
         }
@@ -932,16 +913,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 				btnEdit.setVisible(false);
 				btnCancel.setVisible(false);
 				if (comment != null) {
-					((Comment) comment).setDraft(false);
+					comment.setDraft(false);
 				}
 				if (panelForNewComment) {
 					addCommentForReview(this, parentComment, commentBody.getText(),
 							comment != null && comment.isDraft(),
 							boxIsDefect != null && boxIsDefect.isSelected());
 				} else {
-					updateCommentForReview(this, comment, commentBody.getText(),
-							comment != null && comment.isDraft(),
-							boxIsDefect != null && boxIsDefect.isSelected());
+					updateCommentForReview(comment, commentBody.getText(), boxIsDefect != null && boxIsDefect.isSelected());
 				}
 				btnEdit.setHyperlinkText(EDIT);
                 btnEdit.setToolTipText(null);
@@ -966,7 +945,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                 setCommentPanelText(this, false, cmt.getMessage());
                 setCommentDate();
                 updateDefectField();
-                cancelEditing();
+                cancelEditing(mode);
 
                 commentBody.setBackground(Color.WHITE);
                 commentBody.setEnabled(true);
@@ -1005,7 +984,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			return btnShowHide;
 		}
 
-		private void setButtonsVisible(boolean visible) {
+		public void setButtonsVisible(boolean visible) {
 			for (CommentPanel panel : commentPanelList) {
 				if (panel != this || visible) {
 					JComponent edit = panel.getBtnEdit();
@@ -1019,7 +998,11 @@ public abstract class CommentTooltipPanel extends JPanel {
 				}
 				JComponent delete = panel.getBtnDelete();
 				if (delete != null) {
-					delete.setVisible(visible);
+					if (panel.comment != null && panel.comment.getReplies().isEmpty() == false) {
+						delete.setVisible(false);
+					} else { 					
+						delete.setVisible(visible);
+					}
 				}
 				JComponent publish = panel.getBtnPublish();
 				if (publish != null) {
@@ -1070,14 +1053,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 			boolean editable) {
 		commentPanel.commentBody.setEnabled(editable);
 		commentPanel.btnEdit.setHyperlinkText(CommentPanel.APPLY);
-		if (comment.getParentComment() != null && comment.getParentComment().isDraft()) {
+		if (comment != null && comment.getParentComment() != null && comment.getParentComment().isDraft()) {
 			commentPanel.btnEdit.setVisible(false);
 		} else {
 			commentPanel.btnEdit.setVisible(editable);
 		}
 		commentPanel.btnCancel.setVisible(editable);
 		if (commentPanel.btnSaveDraft != null) {
-			commentPanel.btnSaveDraft.setVisible(comment.isDraft());
+			commentPanel.btnSaveDraft.setVisible(comment != null && comment.isDraft());
 		}
 		setCommentPanelEditable(commentPanel, editable);
 	}
@@ -1098,14 +1081,12 @@ public abstract class CommentTooltipPanel extends JPanel {
 	}
 
 	/**
-	 * @param panel   - panel that this invocation came from
 	 * @param comment - comment to update
 	 * @param text	- new comment body
-	 * @param draft   - is the comment a draft?
 	 * @param defect  - is this comment a defect?
 	 */
-	private void updateCommentForReview(CommentPanel panel, Comment comment,
-			String text, boolean draft, boolean defect) {
+	private void updateCommentForReview(Comment comment,
+			String text, boolean defect) {
 		setStatusText("Updating comment...", false);
 		updateDefectFields(comment, defect);
 		updateComment(comment, text);
@@ -1134,10 +1115,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 	}
 
     private void updateDefectFields(Comment comment, boolean defect) {
-        Comment bean = (Comment) comment;
-        bean.setDefectRaised(defect);
+        comment.setDefectRaised(defect);
         if (!defect) {
-            bean.getCustomFields().clear();
+            comment.getCustomFields().clear();
         }
     }
 
@@ -1336,7 +1316,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 						Comment cmt = panel.getComment();
 						if (isTheSameComment(cmt, comment)) {
 							setStatusText("Comment published", false);
-							((Comment) cmt).setDraft(false);
+							cmt.setDraft(false);
 							panel.setComment(cmt);
 							return;
 						}
