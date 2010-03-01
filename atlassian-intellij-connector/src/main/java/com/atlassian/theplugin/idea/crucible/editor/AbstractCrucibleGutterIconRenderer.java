@@ -43,11 +43,11 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 	private static String getReplyText(Comment comment, int indentation) {
 		StringBuilder s = new StringBuilder();
 		for (Comment versionedComment : comment.getReplies()) {
-			s.append("<br>" + getPadding(indentation) + "<b>")
+			s.append("<br>").append(getPadding(indentation)).append("<b>")
 					.append(versionedComment.getAuthor().getDisplayName())
 					.append("</b> replied <i> on ")
 					.append(CommentDateUtil.getDateText(versionedComment.getCreateDate()))
-					.append("</i>:<br>" + getPadding(indentation));
+					.append("</i>:<br>").append(getPadding(indentation));
             renderCommentBody(s, versionedComment, indentation);
 
 			s.append(getReplyText(versionedComment, indentation + 1));

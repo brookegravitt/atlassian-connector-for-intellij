@@ -42,7 +42,7 @@ public class RemoveAction extends AbstractCommentAction {
 	public void update(AnActionEvent e) {
 		AtlassianTreeNode node = getSelectedNode(e);
 		String text = REMOVE_TEXT;
-		boolean enabled = node != null && checkIfAuthor(node);
+		boolean enabled = node != null && checkIfAuthor(node) && !hasReplies(node);
 		e.getPresentation().setEnabled(enabled);
 		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);

@@ -145,8 +145,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
 			final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
 
-			AnAction[] actions = group.getChildren(null);
-			for (AnAction a : actions) {
+			for (AnAction a : group.getChildren(null)) {
 				if (a instanceof NextDiffAction) {
 					a.copyShortcutFrom(globalShowNextAction);
 					a.registerCustomShortcutSet(a.getShortcutSet(), reviewFilesAndCommentsTree);
