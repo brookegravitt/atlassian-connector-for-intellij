@@ -109,13 +109,13 @@ public class AddAction extends AbstractCommentAction {
 	private void addComment(AnActionEvent event, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			addReplyToGeneralComment(event, node.getReview(), node.getComment());
+			addReplyToComment(event, node.getReview(), node.getComment());
 		} else if (treeNode instanceof FileNameNode) {
 			FileNameNode node = (FileNameNode) treeNode;
             addCommentToFile(event, node.getReview(), node.getFile());
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-			addReplyToGeneralComment(event, node.getReview(), node.getComment());
+			addReplyToComment(event, node.getReview(), node.getComment());
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
             addCommentToFile(event, node.getReview(), node.getFile());
@@ -132,31 +132,7 @@ public class AddAction extends AbstractCommentAction {
                 null);
 	}
 
-	// pstefaniak: wseliga has told me something about obsolete routines regarding VersionedComment,
-	// i suppose that must be one of those...
-	private void addReplyToVersionedComment(final AnActionEvent event, final ReviewAdapter review,
-                                            final CrucibleFileInfo file, final VersionedComment comment) {
-		final VersionedComment newComment = new VersionedComment(review.getReview(), file);
-        newComment.setReply(true);
-        newComment.setFromLineInfo(comment.isFromLineInfo());
-        newComment.setFromStartLine(comment.getFromStartLine());
-        newComment.setFromEndLine(comment.getFromEndLine());
-        newComment.setToLineInfo(comment.isToLineInfo());
-        newComment.setToStartLine(comment.getToStartLine());
-        newComment.setToEndLine(comment.getToEndLine());
-        newComment.setLineRanges(comment.getLineRanges());
-        newComment.setCreateDate(new Date());
-        newComment.setReviewItemId(review.getPermId());
-        newComment.setAuthor(new User(review.getServerData().getUsername()));
-
-        CommentTooltipPanel.showCommentTooltipPopup(
-                event,
-                new CommentTooltipPanelWithRunners(event, review, file, newComment, comment, CommentTooltipPanel.Mode.ADD),
-                null);
-	}
-
-	private void addReplyToGeneralComment(final AnActionEvent event, final ReviewAdapter review,
-                                          final Comment parentComment) {
+	private void addReplyToComment(final AnActionEvent event, final ReviewAdapter review, final Comment parentComment) {
 
 		final GeneralComment newComment = new GeneralComment(review.getReview(), parentComment);
 		newComment.setReply(true);
