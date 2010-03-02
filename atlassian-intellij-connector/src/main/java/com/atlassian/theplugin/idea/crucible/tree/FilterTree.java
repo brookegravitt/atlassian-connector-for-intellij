@@ -5,6 +5,9 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,21 +15,34 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
-import java.util.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User: pmaruszak
  */
 public class FilterTree extends JTree {
 	private CrucibleWorkspaceConfiguration crucibleConfiguration;
-	private Collection<CrucibleFilterSelectionListener> listeners = new ArrayList<CrucibleFilterSelectionListener>();
+    private final CrucibleReviewListModel crucibleReviewListModel;
+    private Collection<CrucibleFilterSelectionListener> listeners = new ArrayList<CrucibleFilterSelectionListener>();
 	private FilterTree.LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
+    private LocalCrucibleReviewListModelListener localModelListener = new LocalCrucibleReviewListModelListener();
 
-	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleWorkspaceConfiguration crucibleConfiguration) {
+	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleWorkspaceConfiguration crucibleConfiguration, 
+                      CrucibleReviewListModel crucibleReviewListModel) {
 		super(filterTreeModel);
 
 		this.crucibleConfiguration = crucibleConfiguration;
+        this.crucibleReviewListModel = crucibleReviewListModel;
+        crucibleReviewListModel.addListener(localModelListener);
 
 		init();
 	}
@@ -56,6 +72,8 @@ public class FilterTree extends JTree {
 	public void redrawNodes() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+                FilterTree.this.invalidate();
+                FilterTree.this.repaint();
 				DefaultTreeModel model = (DefaultTreeModel) getModel();
 				redrawChildren(model, (TreeNode) model.getRoot());
 			}
@@ -183,6 +201,7 @@ public class FilterTree extends JTree {
 
 		// select nodes
 		selectNodes(selectedPredefinedFilters, customFilter, recenltyOpenFilter);
+
 	}
 
 	private void selectNodes(Collection<PredefinedFilter> predefinedFilters,
@@ -368,7 +387,7 @@ public class FilterTree extends JTree {
 			// selection changed general notification
 			fireSelectionChanged();
 
-			redrawNodes();
+			//redrawNodes();
 		}
 
 	}
@@ -382,5 +401,21 @@ public class FilterTree extends JTree {
 
          return null;
      }
+
+
+    /*
+        * @note : Please be aware of implementing body of methods because fo cyclic dependency of selection
+     */
+    private class  LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+        public void reviewListUpdateFinished(UpdateContext updateContext) {
+           redrawNodes();
+        }
+
+        @Override
+        public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
+            redrawNodes();
+        }
+    }
+
         
 }

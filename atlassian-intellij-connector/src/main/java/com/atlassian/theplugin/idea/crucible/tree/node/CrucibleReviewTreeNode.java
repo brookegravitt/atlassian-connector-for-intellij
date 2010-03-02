@@ -97,6 +97,13 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
             keyAndSummary =
                     new SelectableLabel(true, true, review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
 
+            state = new SelectableLabel(true, true, review.getState().value() + "    ", null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
+            author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
+
+            created = new SelectableLabel(true, true, "", null, SwingConstants.LEADING, ICON_HEIGHT);
+
             otherDetails = createPanelForOtherReviewDetails();
 
             addComponents();
@@ -127,8 +134,12 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
             gbc.weightx = 1.0;
             gbc.insets = new Insets(0, 0, 0, 0);
             gbc.fill = GridBagConstraints.HORIZONTAL;
-            state = new SelectableLabel(true, true, review.getState().value() + "    ", null,
-                    SwingConstants.LEADING, ICON_HEIGHT);
+            state.setSelected(true);
+            state.setEnabled(true);
+            state.setText(review.getState().value() + "    ");
+//            state = new SelectableLabel(true, true, review.getState().value() + "    ", null,
+//                    SwingConstants.LEADING, ICON_HEIGHT);
+
             state.setHorizontalAlignment(SwingConstants.RIGHT);
             setFixedComponentSize(state, Double.valueOf(statusWidth).intValue() + 2 * GAP + LABEL_PADDING, ICON_HEIGHT);
             rest.add(state, gbc);
@@ -136,8 +147,12 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
             gbc.gridx++;
             gbc.weightx = 0.0;
             gbc.fill = GridBagConstraints.NONE;
-            author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
-                    SwingConstants.LEADING, ICON_HEIGHT);
+            author.setSelected(true);
+            author.setEnabled(true);
+            author.setText(review.getAuthor().getDisplayName());
+//            author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
+//                    SwingConstants.LEADING, ICON_HEIGHT);
+
             setFixedComponentSize(author, Double.valueOf(nameWidth).intValue() + GAP + LABEL_PADDING, ICON_HEIGHT);
             rest.add(author, gbc);
 
@@ -145,7 +160,11 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
             String t = dfo.format(review.getCreateDate());
             gbc.gridx++;
             gbc.weightx = 0.0;
-            created = new SelectableLabel(true, true, t, null, SwingConstants.LEADING, ICON_HEIGHT);
+            created.setSelected(true);
+            created.setEnabled(true);
+            created.setText(t);
+//            created = new SelectableLabel(true, true, t, null, SwingConstants.LEADING, ICON_HEIGHT);
+
             created.setHorizontalAlignment(SwingConstants.RIGHT);
             Dimension minDimension = created.getPreferredSize();
             minDimension.setSize(
@@ -171,8 +190,12 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
                 removeAll();
                 validate();
 
-                keyAndSummary = new SelectableLabel(true, true,
-                        review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
+                keyAndSummary.setSelected(true);
+                keyAndSummary.setEnabled(true);
+                keyAndSummary.setText(review.getPermId().getId() + ": " + review.getName());
+//                keyAndSummary = new SelectableLabel(true, true,
+//                        review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
+
                 otherDetails = createPanelForOtherReviewDetails();
 
                 addComponents();

@@ -27,6 +27,7 @@ import javax.swing.*;
 public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
 	private static final String NAME = "All My Reviews";
 	private final CrucibleReviewListModel reviewListModel;
+    private final static SelectableLabel selectableLabel = new SelectableLabel(false, true, null, "", ICON_HEIGHT);
 
 	public CrucibleMyReviewsTreeNode(CrucibleReviewListModel reviewListModel) {
 		super(NAME, null, null);
@@ -43,8 +44,13 @@ public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		String txt = selected ? "<html>" + toString() : NAME;
-		return new SelectableLabel(selected, c.isEnabled(), c.getFont(), txt, ICON_HEIGHT);
+		String txt = selected ? toString() : NAME;
+        selectableLabel.setSelected(selected);
+        selectableLabel.setEnabled(c.isEnabled());
+        selectableLabel.setFont(c.getFont());
+        selectableLabel.setText(txt);
+        selectableLabel.setPreferredSize(UIManager.getUI(selectableLabel).getPreferredSize(selectableLabel));
+		return selectableLabel;
 	}
 
 	public void onSelect() {

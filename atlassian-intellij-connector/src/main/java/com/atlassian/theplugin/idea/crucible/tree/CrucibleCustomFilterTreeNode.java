@@ -14,7 +14,8 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.Entry;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-import javax.swing.JComponent;
+
+import javax.swing.*;
 import java.util.Collection;
 
 /**
@@ -24,7 +25,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
     private final ProjectCfgManager projectCfgManager;
     private final CustomFilter filter;
     private final CrucibleReviewListModel reviewListModel;
-
+    private final static SelectableLabel selectableLabel = new SelectableLabel(false, true, null, "", ICON_HEIGHT);
     private static final String NAME = "Custom Filter";
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
             + "color: 'black'; width: '100%'\">"
@@ -36,6 +37,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
         this.projectCfgManager = projectCfgManager;
         this.filter = filter;
         this.reviewListModel = reviewListModel;
+
 
     }
 
@@ -55,10 +57,14 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 
     @Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-
-        final SelectableLabel selectableLabel = new SelectableLabel(selected, c.isEnabled(), c.getFont(),
-                "<html>" + toString(), ICON_HEIGHT);
+        String txt = selected ? toString() : NAME;
         selectableLabel.setToolTipText(buildToolTipText());
+        selectableLabel.setSelected(selected);
+        selectableLabel.setEnabled(c.isEnabled());
+        selectableLabel.setFont(c.getFont());
+        selectableLabel.setText(txt);
+        selectableLabel.setPreferredSize(UIManager.getUI(selectableLabel).getPreferredSize(selectableLabel));
+
         return selectableLabel;
     }
 

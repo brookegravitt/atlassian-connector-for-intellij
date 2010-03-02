@@ -32,7 +32,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
@@ -148,8 +147,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         init(Constants.DIALOG_MARGIN / 2);
         this.reviewListModel.addListener(new LocalCrucibleReviewListModelListener());
         addFilterTreeListeners();
-        filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
         ToolTipManager.sharedInstance().registerComponent(filterTree);
+        IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
     }
 
 
@@ -178,18 +177,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
         addSearchBoxListener();
 
-        CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListenerAdapter() {
-
-            @Override
-            public void selectedCustomFilter(CustomFilter customFilter) {
-                refresh(UpdateReason.REFRESH);
-            }
-        };
-
-        filterTree.addSelectionListener(listener);
         getSplitLeftPane().setSecondComponent(null);
         getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
-
     }
 
     private void setupReviewTree() {
@@ -209,23 +198,23 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         CommentHighlighter.removeCommentsInEditors(project);
         reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
         IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review, retrieveDetails);
-		new FetchingReviewDetailsTask(review).queue();
+        new FetchingReviewDetailsTask(review).queue();
     }
 
-	private class FetchingReviewDetailsTask extends Task.Modal {
-		private final ReviewAdapter review;
+    private class FetchingReviewDetailsTask extends Task.Modal {
+        private final ReviewAdapter review;
 
-		public FetchingReviewDetailsTask(final ReviewAdapter review) {
-			super(project, "Fetching review details", false);
-			this.review = review;
-		}
+        public FetchingReviewDetailsTask(final ReviewAdapter review) {
+            super(project, "Fetching review details", false);
+            this.review = review;
+        }
 
-		@Override
-		public void run(@NotNull ProgressIndicator progressIndicator) {
-			progressIndicator.setIndeterminate(true);
+        @Override
+        public void run(@NotNull ProgressIndicator progressIndicator) {
+            progressIndicator.setIndeterminate(true);
             fileCache.initDownload(review);
-		}
-	}
+        }
+    }
 
     public void closeReviewDetailsWindow(final AnActionEvent event) {
         reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
@@ -427,7 +416,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
     @Override
     public JTree createLeftTree() {
         if (filterTree == null && filterTreeModel != null) {
-            filterTree = new FilterTree(filterTreeModel, crucibleProjectConfiguration);
+            filterTree = new FilterTree(filterTreeModel, crucibleProjectConfiguration, reviewListModel);
         }
 
         return filterTree;
@@ -471,9 +460,11 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
-                fileCache.clear();
-                IdeaHelper.getFileContentProviderProxy(project).clear();
-                IdeaHelper.getFileContentExpiringCache(project).clear();
+                if (reason == UpdateReason.REFRESH) {
+                    fileCache.clear();
+                    IdeaHelper.getFileContentProviderProxy(project).clear();
+                    IdeaHelper.getFileContentExpiringCache(project).clear();
+                }
                 reviewListModel.rebuildModel(reason);
             }
         };
@@ -625,8 +616,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
                 });
 
                 return ra;
-			}
-		}
+            }
+        }
         return null;
     }
 
@@ -647,8 +638,9 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
             exception = null;
             if (updateContext.getUpdateReason() != UpdateReason.TIMER_FIRED) {
                 setPanelEnabled(false);
-                setStatusInfoMessage("Loading reviews...");
             }
+            setStatusInfoMessage("Loading reviews...");
+
         }
 
         @Override
