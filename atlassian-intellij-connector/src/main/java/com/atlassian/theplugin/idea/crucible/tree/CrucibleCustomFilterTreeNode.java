@@ -25,7 +25,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
     private final ProjectCfgManager projectCfgManager;
     private final CustomFilter filter;
     private final CrucibleReviewListModel reviewListModel;
-    private final static SelectableLabel selectableLabel = new SelectableLabel(false, true, null, "", ICON_HEIGHT);
+    private static final SelectableLabel SELECTABLE_LABEL = new SelectableLabel(false, true, null, "", ICON_HEIGHT);
     private static final String NAME = "Custom Filter";
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
             + "color: 'black'; width: '100%'\">"
@@ -58,14 +58,14 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
     @Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
         String txt = selected ? toString() : NAME;
-        selectableLabel.setToolTipText(buildToolTipText());
-        selectableLabel.setSelected(selected);
-        selectableLabel.setEnabled(c.isEnabled());
-        selectableLabel.setFont(c.getFont());
-        selectableLabel.setText(txt);
-        selectableLabel.setPreferredSize(UIManager.getUI(selectableLabel).getPreferredSize(selectableLabel));
+        SELECTABLE_LABEL.setToolTipText(buildToolTipText());
+        SELECTABLE_LABEL.setSelected(selected);
+        SELECTABLE_LABEL.setEnabled(c.isEnabled());
+        SELECTABLE_LABEL.setFont(c.getFont());
+        SELECTABLE_LABEL.setText(txt);
+        SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
 
-        return selectableLabel;
+        return SELECTABLE_LABEL;
     }
 
     public CustomFilter getFilter() {
