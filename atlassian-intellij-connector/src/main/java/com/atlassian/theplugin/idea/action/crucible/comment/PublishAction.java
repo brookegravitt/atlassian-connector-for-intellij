@@ -26,6 +26,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,6 +35,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,11 +48,20 @@ public class PublishAction extends AbstractCommentAction {
 	@Override
 	public void update(AnActionEvent e) {
 		AtlassianTreeNode node = getSelectedNode(e);
-		boolean enabled = node != null && checkIfDraftAndAuthor(node);
+		boolean enabled = node != null && checkIfDraftAndAuthor(node) && isPublishable(node);
 		e.getPresentation().setEnabled(enabled);
 		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
+	}
+
+	protected boolean isPublishable(@NotNull final AtlassianTreeNode node) {
+		if (node instanceof CommentTreeNode) {
+			CommentTreeNode anode = (CommentTreeNode) node;
+			Comment comment = anode.getComment();
+			return !(comment.getParentComment() != null && comment.getParentComment().isDraft());
+		}
+		return false;
 	}
 
 	public void actionPerformed(AnActionEvent e) {
