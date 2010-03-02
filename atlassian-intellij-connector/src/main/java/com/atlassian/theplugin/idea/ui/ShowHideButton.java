@@ -67,7 +67,4 @@ public class ShowHideButton extends JLabel {
 		}
 	}
 
-//	protected String getTooltip() {
-//		return "Collapse/Expand";
-//	}
 }
