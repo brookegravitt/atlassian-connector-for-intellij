@@ -1016,7 +1016,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 	}
 
-	static private boolean isParentDraft(final Comment comment) {
+	private static boolean isParentDraft(final Comment comment) {
 		return (comment != null && comment.getParentComment() != null && comment.getParentComment().isDraft());
 	}
 
