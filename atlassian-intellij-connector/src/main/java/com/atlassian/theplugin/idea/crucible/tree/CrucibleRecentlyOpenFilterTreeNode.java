@@ -29,7 +29,7 @@ public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 	private static final String NAME = "Recently Viewed Reviews";
 	private final CrucibleReviewListModel reviewListModel;
 	private RecentlyOpenReviewsFilter recenltyOpenFilter;
-    private final static SelectableLabel selectableLabel = new SelectableLabel(false, true, null, "", ICON_HEIGHT);;
+    private static final SelectableLabel SELECTABLE_LABEL = new SelectableLabel(false, true, null, "", ICON_HEIGHT);;
 
     public CrucibleRecentlyOpenFilterTreeNode(final RecentlyOpenReviewsFilter recentlyOpenReviewsFilter,
 			CrucibleReviewListModel reviewListModel) {
@@ -49,13 +49,13 @@ public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		String txt = selected ? "<html>" + toString() + "</html>" : NAME;
-        selectableLabel.setSelected(selected);
-        selectableLabel.setEnabled(c.isEnabled());
-        selectableLabel.setFont(c.getFont());
-        selectableLabel.setText(txt);
-        selectableLabel.setPreferredSize(UIManager.getUI(selectableLabel).getPreferredSize(selectableLabel));
-        selectableLabel.revalidate();
-		return selectableLabel;
+        SELECTABLE_LABEL.setSelected(selected);
+        SELECTABLE_LABEL.setEnabled(c.isEnabled());
+        SELECTABLE_LABEL.setFont(c.getFont());
+        SELECTABLE_LABEL.setText(txt);
+        SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
+        SELECTABLE_LABEL.revalidate();
+		return SELECTABLE_LABEL;
 //        return new SelectableLabel(selected, c.isEnabled(), c.getFont(), txt, ICON_HEIGHT);
 	}
 

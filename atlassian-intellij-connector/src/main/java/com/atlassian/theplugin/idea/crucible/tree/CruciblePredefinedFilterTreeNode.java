@@ -13,7 +13,7 @@ import javax.swing.*;
 public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 	private PredefinedFilter filter;
 	private final CrucibleReviewListModel reviewListModel;
-    private static final SelectableLabel selectableLabel = new SelectableLabel(false, true, null , "a", ICON_HEIGHT);;
+    private static final SelectableLabel SELECTABLE_LABEL = new SelectableLabel(false, true, null , "a", ICON_HEIGHT);;
 
     CruciblePredefinedFilterTreeNode(PredefinedFilter filter, CrucibleReviewListModel reviewListModel) {
 		super(filter.getFilterName(), null, null);
@@ -33,13 +33,13 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
         String txt = selected ? toString() : filter.getFilterName();
-        selectableLabel.setSelected(selected);
-        selectableLabel.setEnabled(c.isEnabled());
-        selectableLabel.setFont(c.getFont());
-        selectableLabel.setText(txt);
+        SELECTABLE_LABEL.setSelected(selected);
+        SELECTABLE_LABEL.setEnabled(c.isEnabled());
+        SELECTABLE_LABEL.setFont(c.getFont());
+        SELECTABLE_LABEL.setText(txt);
 
-        selectableLabel.setPreferredSize(UIManager.getUI(selectableLabel).getPreferredSize(selectableLabel));        
-		return selectableLabel;
+        SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
+		return SELECTABLE_LABEL;
 //        return new SelectableLabel(selected, c.isEnabled(), c.getFont(), "<html>" + toString(), ICON_HEIGHT);
 	}
 
