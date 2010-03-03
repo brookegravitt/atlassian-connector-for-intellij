@@ -49,7 +49,9 @@ public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
         SELECTABLE_LABEL.setEnabled(c.isEnabled());
         SELECTABLE_LABEL.setFont(c.getFont());
         SELECTABLE_LABEL.setText(txt);
-        SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
+        if (UIManager.getUI(SELECTABLE_LABEL) != null) {
+            SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
+        }
 		return SELECTABLE_LABEL;
 	}
 
