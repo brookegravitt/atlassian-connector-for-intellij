@@ -125,6 +125,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
                             PluginUtil.getLogger().error("Interrupoted download:" + e.getMessage());
                         } catch (ExecutionException e) {
                             PluginUtil.getLogger().error("Execution problem:" + e.getMessage());
+                        } catch (CancellationException e) {
+                            PluginUtil.getLogger().error("Cancelled task:" + e.getMessage());
                         }
                         NDC.remove();
                     }
