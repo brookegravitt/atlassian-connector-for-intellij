@@ -98,8 +98,8 @@ public final class FileContentExpiringCache implements ProjectComponent {
                         try {
                             for (String key : cacheMap.keySet()) {
                                 FutureTask task = (FutureTask) cacheMap.get(key);
-                                CachedObject cobj = (CachedObject) task.get();
-                                if (task == null || cobj.hasExpired(now)) {
+                                CachedObject cobj = task != null ? (CachedObject) task.get() : null;
+                                if (task == null || cobj != null && cobj.hasExpired(now)) {
                                     if (logger.isDebugEnabled()) {
                                         logger.debug(
                                                 "Removing " + key + ": Idle time="
@@ -162,6 +162,9 @@ public final class FileContentExpiringCache implements ProjectComponent {
                                     ReviewFileContentProvider provider = null;
                                     if (versionedVirtualFile != null) {
                                         try {
+                                            if (IdeaHelper.getFileContentProviderProxy(project) == null) {
+                                                continue;
+                                            }
                                             provider = IdeaHelper.getFileContentProviderProxy(project)
                                                             .get(versionedVirtualFile, file, review);
                                         } catch (InterruptedException e) {

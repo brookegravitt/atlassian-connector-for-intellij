@@ -29,7 +29,7 @@ public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 	private static final String NAME = "Recently Viewed Reviews";
 	private final CrucibleReviewListModel reviewListModel;
 	private RecentlyOpenReviewsFilter recenltyOpenFilter;
-    private static final SelectableLabel SELECTABLE_LABEL = new SelectableLabel(false, true, null, "", ICON_HEIGHT);;
+    private static final SelectableLabel SELECTABLE_LABEL = new SelectableLabel(false, true, null, "", ICON_HEIGHT);
 
     public CrucibleRecentlyOpenFilterTreeNode(final RecentlyOpenReviewsFilter recentlyOpenReviewsFilter,
 			CrucibleReviewListModel reviewListModel) {
