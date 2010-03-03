@@ -48,7 +48,7 @@ public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		String txt = selected ? "<html>" + toString() + "</html>" : NAME;
+		String txt = selected ? toString() : NAME;
         SELECTABLE_LABEL.setSelected(selected);
         SELECTABLE_LABEL.setEnabled(c.isEnabled());
         SELECTABLE_LABEL.setFont(c.getFont());
