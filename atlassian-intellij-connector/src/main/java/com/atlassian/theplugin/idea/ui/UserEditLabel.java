@@ -57,7 +57,7 @@ public abstract class UserEditLabel extends JPanel {
         this.jiraIssue = jiraIssue;
         button = new EditIssueFieldButton();
         this.label = label;
-        setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
+		setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder());
         rebuild();
     }
@@ -154,7 +154,7 @@ public abstract class UserEditLabel extends JPanel {
     private class UserListDialog extends DialogWrapper {
         private JComboBox comboBox = new JComboBox();
         private JLabel label = new JLabel("Select user from the list or type in user login name");
-        private JPanel rootPanel = new JPanel();
+        private JPanel rootPanel = new JPanel(new BorderLayout());
 
         protected UserListDialog(Project project) {
             super(project, false);
@@ -162,8 +162,10 @@ public abstract class UserEditLabel extends JPanel {
             setOKButtonText("Change");
             setModal(true);
             comboBox.setEditable(true);
-            rootPanel.add(comboBox);
-            rootPanel.add(label);
+			label.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+			rootPanel.add(label, BorderLayout.PAGE_START);
+            rootPanel.add(comboBox, BorderLayout.PAGE_END);
+			rootPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
             init();
         }
 
