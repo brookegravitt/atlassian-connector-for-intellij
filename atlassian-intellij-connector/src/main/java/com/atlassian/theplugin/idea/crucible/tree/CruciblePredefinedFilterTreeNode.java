@@ -38,8 +38,12 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
         SELECTABLE_LABEL.setFont(c.getFont());
         SELECTABLE_LABEL.setText(txt);
 
-        if (UIManager.getUI(SELECTABLE_LABEL) != null) {
-            SELECTABLE_LABEL.setPreferredSize(UIManager.getUI(SELECTABLE_LABEL).getPreferredSize(SELECTABLE_LABEL));
+        if (UIManager.getDimension(SELECTABLE_LABEL) != null) {
+            SELECTABLE_LABEL.setPreferredSize(UIManager.getDimension(SELECTABLE_LABEL));
+        } else {
+            SelectableLabel tmp = new SelectableLabel(selected, c.isEnabled(), c.getFont(), txt, ICON_HEIGHT);
+            SELECTABLE_LABEL.setPreferredSize(tmp.getPreferredSize());
+            tmp = null;
         }
 		return SELECTABLE_LABEL;
 //        return new SelectableLabel(selected, c.isEnabled(), c.getFont(), "<html>" + toString(), ICON_HEIGHT);
