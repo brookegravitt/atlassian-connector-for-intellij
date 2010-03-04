@@ -312,14 +312,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-//	public JIRAIssue getIssue(String key) {
-//		IssuePanel ip = getContentPanel(key);
-//		if (ip != null) {
-//			return ip.params.issue;
-//		}
-//		return null;
-//	}
-
 	public void refresh(String panelKey) {
 		IssuePanel ip = getContentPanel(panelKey);
 		if (ip != null) {
