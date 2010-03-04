@@ -902,14 +902,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
 						SwingConstants.LEFT);
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
-				if (!params.issue.getAssigneeId().equals("-1")) {
+				if (params.issue.getAssigneeId().equals("-1")) {
+					issueAssignee = new JLabel("Unassigned");
+					issueAssignee.setBackground(Color.WHITE);
+				} else {
 					issueAssignee = new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
 							params.issue.getAssigneeId(), true, false);
-				} else {
-					issueAssignee = new JLabel("Unassigned");
 				}
 				if (params.issue.getReporterId().equals("-1")) {
 					issueReporter = new JLabel("Anonymous");
+					issueReporter.setBackground(Color.WHITE);
 				} else {
 					issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
 							params.issue.getReporterId(), true, false);
@@ -1012,7 +1014,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 							params.issue.setFixVersions(issueDetails.getFixVersions());
 							params.issue.setComponents(issueDetails.getComponents());
-                            
+
 						}
 					} catch (JIRAException e) {
 						errorString = new String[]{"Unable to retrieve"};
