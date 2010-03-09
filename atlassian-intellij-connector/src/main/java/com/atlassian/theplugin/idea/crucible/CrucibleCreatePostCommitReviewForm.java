@@ -28,6 +28,7 @@ import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -137,7 +138,14 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 				ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
 				RepositoryLocation repositoryLocation = committedChangesProvider
 						.getLocationFor(VcsUtil.getFilePath(baseDir.getPath()));
-				list = committedChangesProvider.getCommittedChanges(changeBrowserSettings, repositoryLocation, revisionsNumber);
+				try {
+					list = committedChangesProvider.getCommittedChanges(changeBrowserSettings, repositoryLocation,
+							revisionsNumber);
+				} catch (ClassCastException e) {
+					// PL-2074 - not supporting perforce
+					e.printStackTrace();
+					Messages.showErrorDialog(project, "Cannot fetch VCS commits (is it provider supported?)", "Error");
+				}
 			}
 		}
 
