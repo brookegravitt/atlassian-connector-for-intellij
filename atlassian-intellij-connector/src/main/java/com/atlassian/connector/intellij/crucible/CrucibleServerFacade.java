@@ -183,7 +183,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<Repository> getRepositories(ServerData server) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-	SvnRepository getRepository(ServerData server, String repoName) throws RemoteApiException,
+	Repository getRepository(ServerData server, String repoName) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
 	List<CustomFieldDef> getMetrics(ServerData server, int version) throws RemoteApiException,

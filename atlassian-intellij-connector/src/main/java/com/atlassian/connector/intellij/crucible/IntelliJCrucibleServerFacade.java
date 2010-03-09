@@ -269,7 +269,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return facade.getRepositories(server.toHttpConnectionCfg());
     }
 
-    public SvnRepository getRepository(ServerData server, String repoName) throws RemoteApiException,
+    public Repository getRepository(ServerData server, String repoName) throws RemoteApiException,
             ServerPasswordNotProvidedException {
         return facade.getRepository(server.toHttpConnectionCfg(), repoName);
     }

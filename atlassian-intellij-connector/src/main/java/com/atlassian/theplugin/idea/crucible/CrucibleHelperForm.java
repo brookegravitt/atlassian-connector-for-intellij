@@ -466,7 +466,11 @@ public class CrucibleHelperForm extends DialogWrapper {
                                         "Crucible server must contain FishEye instance for this action to be possible");
                             }
 
-                            SvnRepository svnRepo = crucibleServerFacade.getRepository(server, repoName);
+                            Repository repo = crucibleServerFacade.getRepository(server, repoName);
+							SvnRepository svnRepo = null;
+							if (repo instanceof SvnRepository) {
+							    svnRepo = (SvnRepository) repo;
+							}
                             if (svnRepo == null) {
                                 throw new IllegalArgumentException("Selected repository is not an SVN repository");
                             }
