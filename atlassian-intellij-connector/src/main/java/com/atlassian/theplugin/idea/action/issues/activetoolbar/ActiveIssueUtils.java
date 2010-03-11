@@ -368,7 +368,7 @@ public final class ActiveIssueUtils {
         boolean isOk = true;
         if (conf != null) {
             ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
-            if (activeIssue != null) {
+            if (activeIssue != null && activeIssue.getIssueKey() != null) {
                 final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
                 try {
                     final JiraIssueAdapter jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
@@ -392,10 +392,10 @@ public final class ActiveIssueUtils {
                     }
                 }
             }
-//            if (resultHandler != null) {
-//                resultHandler.success();
-//                return;
-//            }
+            if (resultHandler != null) {
+                resultHandler.success();
+                return;
+            }
         }
 
         //always allow to activate issue even if remote de-activation fails
