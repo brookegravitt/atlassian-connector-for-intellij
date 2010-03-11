@@ -58,6 +58,7 @@ public abstract class UserEditLabel extends JPanel {
         button = new EditIssueFieldButton();
         this.label = label;
 		setBackground(Color.WHITE);
+		button.setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder());
         rebuild();
     }
