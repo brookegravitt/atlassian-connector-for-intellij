@@ -217,7 +217,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					case NEW_COMMENT:
 					case REMOVED_COMMENT:
 						AbstractCommentNotification commentNotification = (AbstractCommentNotification) notification;
-						if (!commentNotification.isDraft()) {
+						if (!commentNotification.getComment().isDraft()) {
 							changesCount++;
 							notificationCount++;
 							changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
@@ -229,8 +229,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					case UPDATED_COMMENT:
 						AbstractUpdatedCommentNotification updatedCommentNotification
 								= (AbstractUpdatedCommentNotification) notification;
-						if (!updatedCommentNotification.isDraft()
-								&& (!updatedCommentNotification.isDraft() && !updatedCommentNotification.wasDraft())) {
+						if (!updatedCommentNotification.getComment().isDraft()
+								&& (!updatedCommentNotification.getComment().isDraft() && !updatedCommentNotification.wasDraft())) {
 							changesCount++;
 							notificationCount++;
 							changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
