@@ -157,20 +157,20 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     @Nullable
     private ReviewAdapter getExistingReview(CrucibleFilter crucibleFilter,
                                                 ReviewAdapter review) {
-         ReviewAdapter existingReview = null;
-        for (CrucibleFilter filter : reviews.keySet()) {
-            if (reviews.get(filter).contains(review)) {
-                for (ReviewAdapter reviewAdapter : reviews.get(filter)) {
-                    if (reviewAdapter.equals(review)) {
-                        existingReview = reviewAdapter;
-                        return existingReview;
-                    }
-                }
-            }
-        }
+		ReviewAdapter existingReview = null;
+		for (CrucibleFilter filter : reviews.keySet()) {
+			if (reviews.get(filter).contains(review)) {
+				for (ReviewAdapter reviewAdapter : reviews.get(filter)) {
+					if (reviewAdapter.equals(review)) {
+						existingReview = reviewAdapter;
+						return existingReview;
+					}
+				}
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
     /**
      * Add review to the model and fires start/finish update model notifications.
      * For params description see {@link #addReview(com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter,
