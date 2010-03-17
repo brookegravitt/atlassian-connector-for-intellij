@@ -230,7 +230,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						AbstractUpdatedCommentNotification updatedCommentNotification
 								= (AbstractUpdatedCommentNotification) notification;
 						if (!updatedCommentNotification.getComment().isDraft()
-								&& (!updatedCommentNotification.getComment().isDraft() && !updatedCommentNotification.wasDraft())) {
+								&& (!updatedCommentNotification.getComment().isDraft()
+								&& !updatedCommentNotification.wasDraft())) {
 							changesCount++;
 							notificationCount++;
 							changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
