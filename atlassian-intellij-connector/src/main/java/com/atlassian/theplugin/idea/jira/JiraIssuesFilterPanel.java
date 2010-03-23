@@ -587,7 +587,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                 final List<JIRAResolutionBean> resolutions = jiraServerModel.getResolutions(jiraServerCfg, true);
                 final List<JIRAFixForVersionBean> fixForVersions = jiraServerModel.getFixForVersions(jiraServerCfg,
                         currentJiraProject, true);
-                final List<JIRAComponentBean> jiraComponentBeanList = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, false);
+                final List<JIRAComponentBean> jiraComponentBeanList = jiraServerModel.getComponents(jiraServerCfg,
+                        currentJiraProject, false);
                 final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg,
                         currentJiraProject, true);
 
