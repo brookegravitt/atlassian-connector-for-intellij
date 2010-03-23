@@ -213,8 +213,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final MyModel<GenericComboBoxItemWrapper<String>, String, FishEyeServer> fishRepositoryModel
 			= new MyModel<GenericComboBoxItemWrapper<String>, String, FishEyeServer>(FISHEYE_REPO_FETCHING, FISHEYE_REPO_NONE,
 			"repositories", "FishEye") {
-
-
 		@Override
 		protected GenericComboBoxItemWrapper<String> toT(final String element) {
 			return new GenericComboBoxItemWrapper<String>(element);

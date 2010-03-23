@@ -31,7 +31,7 @@ import java.rmi.Remote;
 public class IntelliJAxisSessionCallback implements AxisSessionCallback {
     public void configureRemoteService(Remote remote, ConnectionCfg connectionCfg) {
                if (connectionCfg instanceof ServerData && ((ServerData) connectionCfg).isUseBasicUser()) {
-            UserCfg basicUser = ((ServerData)connectionCfg).getBasicUser();
+            UserCfg basicUser = ((ServerData) connectionCfg).getBasicUser();
             if (basicUser != null) {
                 ((Stub) remote)._setProperty(Call.USERNAME_PROPERTY, basicUser.getUsername());
                 ((Stub) remote)._setProperty(Call.PASSWORD_PROPERTY, basicUser.getPassword());
