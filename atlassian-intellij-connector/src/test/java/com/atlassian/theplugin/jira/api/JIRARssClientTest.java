@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
@@ -103,8 +104,21 @@ public class JIRARssClientTest extends TestCase {
             public ServerType getServerType() {
                 return ServerType.JIRA_SERVER;
             }
+
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
-        JIRARssClientPublic mockRssClient = new JIRARssClientPublic(new JiraServerData(srv, "userName", "password", true), new HttpSessionCallback() {
+
+        final JiraServerData.Builder builder = new JiraServerData.Builder(srv);
+        builder.useBasicUser(false);
+        builder.defaultUser(new UserCfg("userName", "password"));
+
+        JIRARssClientPublic mockRssClient = new JIRARssClientPublic(builder.build(), new HttpSessionCallback() {
             public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
                 return new HttpClient();
             }
@@ -124,8 +138,7 @@ public class JIRARssClientTest extends TestCase {
     }
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final JiraServerData server =
-                new JiraServerData(new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
+        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -133,9 +146,11 @@ public class JIRARssClientTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		};
 
-		JIRARssClient c = new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
+		final JiraServerData server = new JiraServerData(serverCfg);
+
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -167,9 +182,9 @@ public class JIRARssClientTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		});
 
-		JIRARssClient c = new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -196,7 +211,7 @@ public class JIRARssClientTest extends TestCase {
 	// make a simple mock rss client that overrides URL loading with loading from a file
 	private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file)
 			throws RemoteApiMalformedUrlException {
-		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", url, new ServerIdImpl(), true) {
+        final JiraServerCfg jiraCfg = new JiraServerCfg(true, "jira", url, new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -204,8 +219,13 @@ public class JIRARssClientTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, userName, password, true);
-		return new JIRARssClient(server.toHttpConnectionCfg(), new IntelliJHttpSessionCallback()) {
+		};
+
+		final JiraServerData.Builder builder = new JiraServerData.Builder(jiraCfg);
+
+        builder.useDefaultUser(false);
+        builder.defaultUser(new UserCfg(userName, password));
+		return new JIRARssClient(builder.build(), new IntelliJHttpSessionCallback()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {
 				mostRecentUrl = url;
@@ -218,7 +238,7 @@ public class JIRARssClientTest extends TestCase {
     private class JIRARssClientPublic extends JIRARssClient {
 
         public JIRARssClientPublic(final JiraServerData server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
-            super(server.toHttpConnectionCfg(), callback);
+            super(server, callback);
 }
 
         @Override

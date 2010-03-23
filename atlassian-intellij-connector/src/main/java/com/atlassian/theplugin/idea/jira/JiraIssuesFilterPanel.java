@@ -20,10 +20,12 @@ import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
 import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
 import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
@@ -579,29 +581,37 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                 } else {
                     currentJiraProject = null;
                 }
+                final List<JIRAConstant> issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject, true);
+                final List<JIRAConstant> statuses = jiraServerModel.getStatuses(jiraServerCfg);
+                final List<JIRAPriorityBean> priorities = jiraServerModel.getPriorities(jiraServerCfg, true);
+                final List<JIRAResolutionBean> resolutions = jiraServerModel.getResolutions(jiraServerCfg, true);
+                final List<JIRAFixForVersionBean> fixForVersions = jiraServerModel.getFixForVersions(jiraServerCfg,
+                        currentJiraProject, true);
+                final List<JIRAComponentBean> jiraComponentBeanList = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, false);
+                final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg,
+                        currentJiraProject, true);
 
-                issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg,
-                        currentJiraProject, true).toArray());
-                statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
-                prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg, true).toArray());
-                resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg, true).toArray());
-                fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg,
-                        currentJiraProject, true).toArray());
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        issueTypeList.setListData(issueTypes.toArray());
+                        statusList.setListData(statuses.toArray());
+                        prioritiesList.setListData(priorities.toArray());
+                        resolutionsList.setListData(resolutions.toArray());
+                        fixForList.setListData(fixForVersions.toArray());
+                        JiraIssuesFilterPanel.this.componentsList.setListData(
+                                jiraComponentBeanList.toArray());
+                        affectsVersionsList.setListData(versions.toArray());
 
-                JiraIssuesFilterPanel.this.componentsList.setListData(
-                        jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, false).toArray());
+                        reporterComboBox.removeAllItems();
+                        reporterComboBox.addItem(new JIRAReporterBean(CacheConstants.ANY_ID, "Any User", null));
+                        reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
-                affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg,
-                        currentJiraProject, true).toArray());
-
-                reporterComboBox.removeAllItems();
-                reporterComboBox.addItem(new JIRAReporterBean(CacheConstants.ANY_ID, "Any User", null));
-                reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
-
-                assigneeComboBox.removeAllItems();
-                assigneeComboBox.addItem(new JIRAAssigneeBean(CacheConstants.ANY_ID, "Any User", ""));
-                assigneeComboBox.addItem(new JIRAAssigneeBean("Unassigned", "unassigned"));
-                assigneeComboBox.addItem(new JIRAAssigneeBean("Current User", jiraServerCfg.getUsername()));
+                        assigneeComboBox.removeAllItems();
+                        assigneeComboBox.addItem(new JIRAAssigneeBean(CacheConstants.ANY_ID, "Any User", ""));
+                        assigneeComboBox.addItem(new JIRAAssigneeBean("Unassigned", "unassigned"));
+                        assigneeComboBox.addItem(new JIRAAssigneeBean("Current User", jiraServerCfg.getUsername()));
+                    }
+                });
 
 
                 if (!isWindowClosed()) {

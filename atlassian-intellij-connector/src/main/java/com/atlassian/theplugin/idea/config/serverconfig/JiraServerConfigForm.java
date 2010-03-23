@@ -27,6 +27,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 /**
@@ -38,6 +40,9 @@ public class JiraServerConfigForm {
 
     private transient GenericServerConfigForm genericServerConfigForm;
     private JCheckBox cbUseBasicAuthentication;
+    private JTextField tfBasicUserName;
+    private JTextField tfBasicPassword;
+    private JPanel panelBasic;
     private final Project project;
     private final UserCfg defaultUser;
     private final transient JiraServerFacade jiraServerFacade;
@@ -52,13 +57,26 @@ public class JiraServerConfigForm {
         this.project = project;
         this.defaultUser = defaultUser;
         this.jiraServerFacade = jiraServerFacade;
-         $$$setupUI$$$();
+        $$$setupUI$$$();
+        cbUseBasicAuthentication.addChangeListener(new ChangeListener() {
+
+            public void stateChanged(ChangeEvent changeEvent) {
+                AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
+                ButtonModel buttonModel = abstractButton.getModel();
+                tfBasicUserName.setEnabled(buttonModel.isSelected());
+                tfBasicPassword.setEnabled(buttonModel.isSelected());
+            }
+        });
     }
 
     public void setData(@NotNull final JiraServerCfg serverCfg) {
         jiraServerCfg = serverCfg;
-        cbUseBasicAuthentication.setSelected(serverCfg.isDontUseBasicAuth());
+        cbUseBasicAuthentication.setSelected(!serverCfg.isDontUseBasicAuth());
         genericServerConfigForm.setData(serverCfg);
+        if (serverCfg.getBasicHttpUser() != null) {
+            tfBasicUserName.setText(serverCfg.getBasicHttpUser().getUsername());
+            tfBasicPassword.setText(serverCfg.getBasicHttpUser().getPassword());
+        }
     }
 
     public void finalizeData() {
@@ -68,8 +86,11 @@ public class JiraServerConfigForm {
     public void saveData() {
         genericServerConfigForm.saveData();
         if (jiraServerCfg != null) {
-            jiraServerCfg.setDontUseBasicAuth(cbUseBasicAuthentication.isSelected());
+            jiraServerCfg.setDontUseBasicAuth(!cbUseBasicAuthentication.isSelected());
+            if (cbUseBasicAuthentication.isSelected()) {
+                jiraServerCfg.setBasicHttpUser(new UserCfg(tfBasicUserName.getText(), tfBasicPassword.getText(), true));                
         }
+    }
     }
 
     public JComponent getRootComponent() {
@@ -95,7 +116,6 @@ public class JiraServerConfigForm {
     public GenericServerConfigForm getGenericServerConfigForm() {
         return genericServerConfigForm;
     }
-
 
 
     /**

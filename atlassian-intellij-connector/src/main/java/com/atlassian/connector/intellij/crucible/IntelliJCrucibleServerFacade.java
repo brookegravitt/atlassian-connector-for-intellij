@@ -1,7 +1,6 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -30,6 +29,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -119,7 +119,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter abandonReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.abandonReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.abandonReview(server, permId), server);
     }
 
     private ReviewAdapter toReviewAdapter(@NotNull Review review, ServerData serverData)
@@ -129,32 +129,32 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
 	public Comment addGeneralComment(ServerData server, Review review, Comment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addGeneralComment(server.toHttpConnectionCfg(), review, comment);
+		return facade.addGeneralComment(server, review, comment);
     }
 
 	public Comment addReply(ServerData server, Comment reply)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addReply(server.toHttpConnectionCfg(), reply);
+		return facade.addReply(server, reply);
     }
 
     public ReviewAdapter addItemsToReview(ServerData server, PermId permId, Collection<UploadItem> items)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.addItemsToReview(server.toHttpConnectionCfg(), permId, items), server);
+        return toReviewAdapter(facade.addItemsToReview(server, permId, items), server);
     }
 
     public ReviewAdapter addPatchToReview(ServerData server, PermId permId, String repository, String patch)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.addPatchToReview(server.toHttpConnectionCfg(), permId, repository, patch), server);
+        return toReviewAdapter(facade.addPatchToReview(server, permId, repository, patch), server);
     }
 
     public void addReviewers(ServerData server, PermId permId, Set<String> userName) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.addReviewers(server.toHttpConnectionCfg(), permId, userName);
+        facade.addReviewers(server, permId, userName);
     }
 
     public ReviewAdapter addRevisionsToReview(ServerData server, PermId permId, String repository, List<String> revisions)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.addRevisionsToReview(server.toHttpConnectionCfg(), permId, repository, revisions),
+        return toReviewAdapter(facade.addRevisionsToReview(server, permId, repository, revisions),
                 server);
     }
 
@@ -162,87 +162,87 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
                                                  List<PathAndRevision> pathsAndRevisions)
             throws RemoteApiException, ServerPasswordNotProvidedException {
 
-        return toReviewAdapter(facade.addFileRevisionsToReview(server.toHttpConnectionCfg(),
+        return toReviewAdapter(facade.addFileRevisionsToReview(server,
                 permId, repoName, pathsAndRevisions), server);
     }
 
 	public VersionedComment addVersionedComment(ServerData server, Review review, PermId riId, VersionedComment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.addVersionedComment(server.toHttpConnectionCfg(), review, riId, comment);
+		return facade.addVersionedComment(server, review, riId, comment);
     }
 
 
     public ReviewAdapter approveReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.approveReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.approveReview(server, permId), server);
     }
 
     public boolean checkContentUrlAvailable(ServerData server)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.checkContentUrlAvailable(server.toHttpConnectionCfg());
+        return facade.checkContentUrlAvailable(server);
     }
 
     public ReviewAdapter closeReview(ServerData server, PermId permId, String summary) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.closeReview(server.toHttpConnectionCfg(), permId, summary), server);
+        return toReviewAdapter(facade.closeReview(server, permId, summary), server);
     }
 
     public void completeReview(ServerData server, PermId permId, boolean complete) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.completeReview(server.toHttpConnectionCfg(), permId, complete);
+        facade.completeReview(server, permId, complete);
     }
 
     public ReviewAdapter createReview(ServerData server, Review review)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.createReview(server.toHttpConnectionCfg(), review), server);
+        return toReviewAdapter(facade.createReview(server, review), server);
     }
 
     public ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.createReviewFromPatch(server.toHttpConnectionCfg(), review, patch), server);
+        return toReviewAdapter(facade.createReviewFromPatch(server, review, patch), server);
     }
 
     public ReviewAdapter createReviewFromRevision(ServerData server, Review review, List<String> revisions)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.createReviewFromRevision(server.toHttpConnectionCfg(), review, revisions), server);
+        return toReviewAdapter(facade.createReviewFromRevision(server, review, revisions), server);
     }
 
     public ReviewAdapter createReviewFromUpload(ServerData server, Review review, Collection<UploadItem> uploadItems)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.createReviewFromUpload(server.toHttpConnectionCfg(), review, uploadItems), server);
+        return toReviewAdapter(facade.createReviewFromUpload(server, review, uploadItems), server);
     }
 
     public String getDisplayName(@NotNull ServerData server, @NotNull String username) {
-        return facade.getDisplayName(server.toHttpConnectionCfg(), username);
+        return facade.getDisplayName(server, username);
     }
 
     public byte[] getFileContent(@NotNull ServerData server, String contentUrl) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return facade.getFileContent(server.toHttpConnectionCfg(), contentUrl);
+        return facade.getFileContent(server, contentUrl);
     }
 
 //    public Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
 //            ServerPasswordNotProvidedException {
-//        return facade.getFiles(server.toHttpConnectionCfg(), permId);
+//        return facade.getFiles(server, permId);
 //    }
 
 	// public List<Comment> getGeneralComments(ServerData server, PermId permId) throws RemoteApiException,
 	// ServerPasswordNotProvidedException {
-	// return facade.getGeneralComments(server.toHttpConnectionCfg(), permId);
+	// return facade.getGeneralComments(server, permId);
 	// }
 
     public List<CustomFieldDef> getMetrics(ServerData server, int version) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return facade.getMetrics(server.toHttpConnectionCfg(), version);
+        return facade.getMetrics(server, version);
     }
 
     @Nullable
     public CrucibleProject getProject(@NotNull ServerData server, @NotNull String projectKey) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        final Map<String, CrucibleProject> projectsByKey = projectCache.getProjects(server.toHttpConnectionCfg());
+        final Map<String, CrucibleProject> projectsByKey = projectCache.getProjects(server);
         final CrucibleProject crucibleProject = projectsByKey.get(projectKey);
         if (crucibleProject == null) {
-            return projectCache.refreshProjectsFromServer(server.toHttpConnectionCfg()).get(projectKey);
+            return projectCache.refreshProjectsFromServer(server).get(projectKey);
         }
         return crucibleProject;
     }
@@ -251,7 +251,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
             throws RemoteApiException, ServerPasswordNotProvidedException {
         final ArrayList<ReviewAdapter> res = MiscUtil.buildArrayList(reviews.size());
 		for (BasicReview basicReview : reviews) {
-			Review review = facade.getReview(server.toHttpConnectionCfg(), basicReview.getPermId());
+			Review review = facade.getReview(server, basicReview.getPermId());
             res.add(toReviewAdapter(review, server));
         }
         return res;
@@ -261,111 +261,108 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
      * Does caching, as IntelliJ Connector does not have its own meta-data cache
      */
     public List<CrucibleProject> getProjects(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-        return MiscUtil.buildArrayList(projectCache.getProjects(server.toHttpConnectionCfg()).values());
+        return MiscUtil.buildArrayList(projectCache.getProjects(server).values());
     }
 
     public List<Repository> getRepositories(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.getRepositories(server.toHttpConnectionCfg());
+        return facade.getRepositories(server);
     }
 
     public Repository getRepository(ServerData server, String repoName) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return facade.getRepository(server.toHttpConnectionCfg(), repoName);
+        return facade.getRepository(server, repoName);
     }
 
     public ReviewAdapter getReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.getReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.getReview(server, permId), server);
     }
 
     public List<Reviewer> getReviewers(ServerData server, PermId permId) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return facade.getReviewers(server.toHttpConnectionCfg(), permId);
+        return facade.getReviewers(server, permId);
     }
 
 	// @todo performance is crappy here: N + 1 remote calls. This method should return List<BasicReviewAdapter>
     public List<ReviewAdapter> getReviewsForCustomFilter(ServerData server, CustomFilter filter) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return toReviewAdapterList(facade.getReviewsForCustomFilter(server.toHttpConnectionCfg(), filter), server);
+        return toReviewAdapterList(facade.getReviewsForCustomFilter(server, filter), server);
     }
 
 	// @todo performance is crappy here: N + 1 remote calls. This method should return List<BasicReviewAdapter>
     public List<ReviewAdapter> getReviewsForFilter(ServerData server, PredefinedFilter filter) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return toReviewAdapterList(facade.getReviewsForFilter(server.toHttpConnectionCfg(), filter), server);
+        return toReviewAdapterList(facade.getReviewsForFilter(server, filter), server);
     }
 
     public List<User> getUsers(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
-        return facade.getUsers(server.toHttpConnectionCfg());
+        return facade.getUsers(server);
     }
 
 //	public List<VersionedComment> getVersionedComments(ServerData server, Review review) throws RemoteApiException,
 //            ServerPasswordNotProvidedException {
-//		return facade.getVersionedComments(server.toHttpConnectionCfg(), review);
+//		return facade.getVersionedComments(server, review);
 //    }
 
 	public List<VersionedComment> getVersionedComments(ServerData server, Review review, CrucibleFileInfo reviewItem)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-		return facade.getVersionedComments(server.toHttpConnectionCfg(), review, reviewItem);
+		return facade.getVersionedComments(server, review, reviewItem);
     }
 
     public void publishAllCommentsForReview(ServerData server, PermId reviewId) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.publishAllCommentsForReview(server.toHttpConnectionCfg(), reviewId);
+        facade.publishAllCommentsForReview(server, reviewId);
     }
 
     public void publishComment(ServerData server, PermId reviewId, PermId commentId) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.publishComment(server.toHttpConnectionCfg(), reviewId, commentId);
+        facade.publishComment(server, reviewId, commentId);
     }
 
     public ReviewAdapter recoverReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.recoverReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.recoverReview(server, permId), server);
     }
 
     public void removeComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.removeComment(server.toHttpConnectionCfg(), id, comment);
+        facade.removeComment(server, id, comment);
     }
 
     public void removeReviewer(ServerData server, PermId permId, String userName) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.removeReviewer(server.toHttpConnectionCfg(), permId, userName);
+        facade.removeReviewer(server, permId, userName);
     }
 
     public ReviewAdapter reopenReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.reopenReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.reopenReview(server, permId), server);
     }
 
     public void setReviewers(@NotNull ServerData server, @NotNull PermId permId, @NotNull Collection<String> usernames)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.setReviewers(server.toHttpConnectionCfg(), permId, usernames);
+        facade.setReviewers(server, permId, usernames);
     }
 
     public ReviewAdapter submitReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.submitReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.submitReview(server, permId), server);
     }
 
     public ReviewAdapter summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.summarizeReview(server.toHttpConnectionCfg(), permId), server);
+        return toReviewAdapter(facade.summarizeReview(server, permId), server);
     }
 
     public void updateComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        facade.updateComment(server.toHttpConnectionCfg(), id, comment);
+        facade.updateComment(server, id, comment);
     }
 
     public ServerType getServerType() {
         return facade.getServerType();
     }
 
-    public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-        facade.testServerConnection(httpConnectionCfg);
-    }
 
     public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
         facade.testServerConnection(connectionCfg);
@@ -373,17 +370,17 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public void markCommentRead(ServerData server, PermId reviewId, PermId commentId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markCommentRead(server.toHttpConnectionCfg(), reviewId, commentId);
+        facade.markCommentRead(server, reviewId, commentId);
     }
 
     public void markCommentLeaveUnread(ServerData server, PermId reviewId, PermId commentId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markCommentLeaveUnread(server.toHttpConnectionCfg(), reviewId, commentId);
+        facade.markCommentLeaveUnread(server, reviewId, commentId);
     }
 
     public void markAllCommentsRead(ServerData server, PermId reviewId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        facade.markAllCommentsRead(server.toHttpConnectionCfg(), reviewId);
+        facade.markAllCommentsRead(server, reviewId);
     }
 
     @Nullable
@@ -396,12 +393,12 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         }
         final Collection<String> allowedReviewersStr = project.getAllowedReviewers();
         // this by the way will populate the cache so that subsequent getUser() have a chance to work
-        final List<User> allUsers = facade.getUsers(server.toHttpConnectionCfg());
+        final List<User> allUsers = facade.getUsers(server);
         if (allowedReviewersStr != null) {
 
             List<User> allowedReviewers = new ArrayList<User>();
             for (String userName : allowedReviewersStr) {
-                final User user = facade.getUser(server.toHttpConnectionCfg(), userName);
+                final User user = facade.getUser(server, userName);
                 if (user != null) {
                     allowedReviewers.add(user);
                 }

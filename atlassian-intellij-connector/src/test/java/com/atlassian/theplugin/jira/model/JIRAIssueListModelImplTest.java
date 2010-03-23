@@ -65,7 +65,15 @@ public class JIRAIssueListModelImplTest extends TestCase {
             public ServerType getServerType() {
                 return ServerType.JIRA_SERVER;
             }
-        }, new UserCfg(), true);
+
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 	}
 
 	public void tearDown() throws Exception {

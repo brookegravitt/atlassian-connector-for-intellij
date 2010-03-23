@@ -8,7 +8,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
@@ -19,7 +19,6 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +35,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
 
 /**
  * User: kalamon
@@ -173,9 +174,11 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     }
 
     private void testJiraConnection(final TestConnectionProcessor processor) {
+        JiraServerData.Builder builder = new JiraServerData.Builder(generateJiraServerCfg());
+        builder.defaultUser(defaultUser);
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
                 new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
-                new ServerData(generateJiraServerCfg(), defaultUser),
+                builder.build(),
                 processor, "Testing JIRA Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");
         SwingUtilities.invokeLater(new Runnable() {
@@ -186,9 +189,11 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     }
 
     private void testCrucibleConnection(final TestConnectionProcessor processor) {
+        JiraServerData.Builder builder = new JiraServerData.Builder(generateJiraServerCfg());
+        builder.defaultUser(defaultUser);
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
                 new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
-                new ServerData(generateCrucibleServerCfg(), defaultUser),
+                builder.build(),
                 processor, "Testing Crucible Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");
         SwingUtilities.invokeLater(new Runnable() {

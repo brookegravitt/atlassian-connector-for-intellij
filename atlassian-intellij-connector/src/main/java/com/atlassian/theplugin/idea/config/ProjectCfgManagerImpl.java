@@ -710,15 +710,23 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	@NotNull
 	private ServerData getServerData(@NotNull Server serverCfg) {
-		return new ServerData(serverCfg, getDefaultCredentials());
+        ServerData.Builder builder = new ServerData.Builder(serverCfg);
+
+        builder.defaultUser(getDefaultCredentials());
+		return builder.build();
 	}
 
 	private BambooServerData getServerData(@NotNull BambooServerCfg serverCfg) {
-		return new BambooServerData(serverCfg, getDefaultCredentials());
+        BambooServerData.Builder builder = new BambooServerData.Builder(serverCfg);
+        builder.defaultUser(getDefaultCredentials());
+		return builder.build();
+
 	}
 
     private JiraServerData getServerData(@NotNull JiraServerCfg serverCfg) {
-        return new JiraServerData(serverCfg, getDefaultCredentials(), serverCfg.isDontUseBasicAuth());
+        JiraServerData.Builder builder = new JiraServerData.Builder(serverCfg);
+        builder.defaultUser(getDefaultCredentials());
+		return builder.build();        
     }
 
 	//////////////////////////////////////////////////////////////////

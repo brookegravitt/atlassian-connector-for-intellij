@@ -27,7 +27,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class PasswordDialog extends JDialog implements TestConnectionListener.ServerDataProvider {
 
@@ -79,7 +83,10 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	}
 
 	public ServerData getServer() {
-		return new ServerData(server, getUserName(), getPasswordString());
+        //@todo server change might not be good
+        server.setUsername(getUserName());
+        server.setPassword(getPasswordString());
+		return new ServerData(server);
 	}
 
 	public JPanel getPasswordPanel() {

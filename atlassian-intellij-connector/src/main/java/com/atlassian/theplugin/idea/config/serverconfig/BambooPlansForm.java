@@ -39,13 +39,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import static java.lang.System.arraycopy;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.System.arraycopy;
 
 
 public class BambooPlansForm extends JPanel {
@@ -134,10 +133,11 @@ public class BambooPlansForm extends JPanel {
     private void refreshServerPlans() {
         serverPlans.remove(bambooServerCfg.getServerId());
         serverPanel.saveData();
-        BambooServerData serverData = new BambooServerData(bambooServerCfg, defaultCredentials);
-        bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(serverData));
-        bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(serverData));
-        bambooServerCfg.setIsBamboo24(bambooServerFacade.isBamboo24(serverData));
+        BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
+        builder.defaultUser(defaultCredentials);
+        bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(builder.build()));
+        bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(builder.build()));
+        bambooServerCfg.setIsBamboo24(bambooServerFacade.isBamboo24(builder.build()));
         retrievePlans(bambooServerCfg);
     }
 
@@ -232,12 +232,13 @@ public class BambooPlansForm extends JPanel {
         new Thread(new Runnable() {
             public void run() {
                 progressAnimation.startProgressAnimation();
-
+                BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
+                builder.defaultUser(defaultCredentials);
                 bambooServerCfg.setIsBamboo2(
-                        bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
+                        bambooServerFacade.isBamboo2(builder.build()));
 
                 bambooServerCfg.setIsBamboo2M9(
-                        bambooServerFacade.isBamboo2M9(new BambooServerData(bambooServerCfg, defaultCredentials)));
+                        bambooServerFacade.isBamboo2M9(builder.build()));
 
                 final StringBuilder msg = new StringBuilder();
                 try {
@@ -245,7 +246,9 @@ public class BambooPlansForm extends JPanel {
                     if (!serverPlans.containsKey(key)) {
                         Collection<BambooPlan> plans;
                         try {
-                            plans = bambooServerFacade.getPlanList(new BambooServerData(queryServer, defaultCredentials));
+                            BambooServerData.Builder b = new BambooServerData.Builder(queryServer);
+                            b.defaultUser(defaultCredentials);
+                            plans = bambooServerFacade.getPlanList(b.build());
                         } catch (ServerPasswordNotProvidedException e) {
                             msg.append("Unable to connect: password for server not provided\n");
                             return;

@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.cache;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
@@ -167,8 +166,8 @@ public class RecentlyOpenIssuesCache {
 
     public static final class JIRAUserNameCache {
 
-        private Map<HttpConnectionCfg, Map<String, JIRAUserBean>> serverMap =
-                new HashMap<HttpConnectionCfg, Map<String, JIRAUserBean>>();
+        private Map<JiraServerData, Map<String, JIRAUserBean>> serverMap =
+                new HashMap<JiraServerData, Map<String, JIRAUserBean>>();
         private JiraServerFacade facade;
 
         private JIRAUserNameCache() {
@@ -186,7 +185,7 @@ public class RecentlyOpenIssuesCache {
             Map<String, JIRAUserBean> userMap = serverMap.get(jiraServerData);
             if (userMap == null) {
                 userMap = new HashMap<String, JIRAUserBean>();
-                serverMap.put(jiraServerData.toHttpConnectionCfg(), userMap);
+                serverMap.put(jiraServerData, userMap);
             }
             JIRAUserBean user = userMap.get(userId);
             if (user == null) {

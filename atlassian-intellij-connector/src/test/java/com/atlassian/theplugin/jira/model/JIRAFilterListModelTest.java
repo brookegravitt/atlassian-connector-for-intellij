@@ -29,7 +29,7 @@ public class JIRAFilterListModelTest extends TestCase {
 		public JiraServerCfg getClone() {
 			return null;
 		}
-	}, "", "", true);
+	});
 	private int notifiedServerRemoved;
 	private int notifiedServerAdded;
 	private int notifiedServerNameChanged;

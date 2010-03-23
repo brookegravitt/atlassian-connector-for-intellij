@@ -13,7 +13,6 @@ package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.connector.commons.api.BambooServerFacade2;
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
@@ -53,7 +52,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities,
 				final int timezoneOffset) throws ServerPasswordNotProvidedException, RemoteApiLoginException {
 			return convertToBambooBuildAdapters(bambooServer,
-					facade.getSubscribedPlansResultsNew(bambooServer.toHttpConnectionCfg(),
+					facade.getSubscribedPlansResultsNew(bambooServer,
 							plans, isUseFavourities, timezoneOffset));
 		}
 	};
@@ -64,7 +63,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
 				throws ServerPasswordNotProvidedException, RemoteApiException {
 			return convertToBambooBuildAdapters(bambooServer, facade.getSubscribedPlansResults(
-					bambooServer.toHttpConnectionCfg(), plans, isUseFavourities, timezoneOffset));
+					bambooServer, plans, isUseFavourities, timezoneOffset));
 		}
 	};
 
@@ -83,49 +82,49 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	public void addCommentToBuild(BambooServerData bambooServer, @NotNull String planKey, int buildNumber, String buildComment)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
-		facade.addCommentToBuild(bambooServer.toHttpConnectionCfg(), planKey, buildNumber, buildComment);
+		facade.addCommentToBuild(bambooServer, planKey, buildNumber, buildComment);
 	}
 
 	public void addLabelToBuild(BambooServerData bambooServer, @NotNull String planKey, int buildNumber, String buildComment)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
-		facade.addLabelToBuild(bambooServer.toHttpConnectionCfg(), planKey, buildNumber, buildComment);
+		facade.addLabelToBuild(bambooServer, planKey, buildNumber, buildComment);
 	}
 
 	public void executeBuild(BambooServerData bambooServer, @NotNull String planKey) throws ServerPasswordNotProvidedException,
 			RemoteApiException {
-		facade.executeBuild(bambooServer.toHttpConnectionCfg(), planKey);
+		facade.executeBuild(bambooServer, planKey);
 	}
 
 	public BuildDetails getBuildDetails(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
-		return facade.getBuildDetails(bambooServer.toHttpConnectionCfg(), planKey, buildNumber);
+		return facade.getBuildDetails(bambooServer, planKey, buildNumber);
 	}
 
 	public BambooBuildAdapter getBuildForPlanAndNumber(BambooServerData bambooServer, @NotNull String planKey, int buildNumber,
 			int timezoneOffset) throws ServerPasswordNotProvidedException, RemoteApiException {
-		return new BambooBuildAdapter(facade.getBuildForPlanAndNumber(bambooServer.toHttpConnectionCfg(), planKey, buildNumber,
+		return new BambooBuildAdapter(facade.getBuildForPlanAndNumber(bambooServer, planKey, buildNumber,
 				timezoneOffset), bambooServer);
 	}
 
 	public String getBuildLogs(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
-		return facade.getBuildLogs(bambooServer.toHttpConnectionCfg(), planKey, buildNumber);
+		return facade.getBuildLogs(bambooServer, planKey, buildNumber);
 	}
 
 	public Collection<BambooPlan> getPlanList(BambooServerData bambooServer) throws ServerPasswordNotProvidedException,
 			RemoteApiException {
-		return facade.getPlanList(bambooServer.toHttpConnectionCfg());
+		return facade.getPlanList(bambooServer);
 	}
 
 	public Collection<BambooProject> getProjectList(BambooServerData bambooServer) throws ServerPasswordNotProvidedException,
 			RemoteApiException {
-		return facade.getProjectList(bambooServer.toHttpConnectionCfg());
+		return facade.getProjectList(bambooServer);
 	}
 
 	public Collection<BambooBuildAdapter> getRecentBuildsForPlans(BambooServerData bambooServer, String planKey,
 			int timezoneOffset) throws ServerPasswordNotProvidedException {
 		final Collection<BambooBuild> builds =
-				facade.getRecentBuildsForPlans(bambooServer.toHttpConnectionCfg(), planKey, timezoneOffset);
+				facade.getRecentBuildsForPlans(bambooServer, planKey, timezoneOffset);
 		return convertToBambooBuildAdapters(bambooServer, builds);
 	}
 
@@ -140,7 +139,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	public Collection<BambooBuildAdapter> getRecentBuildsForUser(BambooServerData bambooServer, int timezoneOffset)
 			throws ServerPasswordNotProvidedException {
-		return convertToBambooBuildAdapters(bambooServer, facade.getRecentBuildsForUser(bambooServer.toHttpConnectionCfg(),
+		return convertToBambooBuildAdapters(bambooServer, facade.getRecentBuildsForUser(bambooServer,
 				timezoneOffset));
 	}
 
@@ -155,7 +154,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		} catch (RemoteApiLoginException e) {
 			Collection<BambooBuildAdapter> res = MiscUtil.buildArrayList(plans.size());
 			for (SubscribedPlan plan : plans) {
-				res.add(new BambooBuildAdapter(constructBuildErrorInfo(bambooServer.toHttpConnectionCfg(), plan.getKey(),
+				res.add(new BambooBuildAdapter(constructBuildErrorInfo(bambooServer, plan.getKey(),
 						null, e.getMessage() == null ? "" : e.getMessage(), e), bambooServer));
 
 			}
@@ -166,7 +165,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
     public Collection<BuildIssue> getIssuesForBuild(BambooServerData bambooServer,
                                                     @NotNull String planKey, int buildNumber)
             throws ServerPasswordNotProvidedException, RemoteApiException {
-        return facade.getIssuesForBuild(bambooServer.toHttpConnectionCfg(), planKey, buildNumber);
+        return facade.getIssuesForBuild(bambooServer, planKey, buildNumber);
     }
 
     private BambooBuild constructBuildErrorInfo(ConnectionCfg server, @NotNull String planKey, String planName,
@@ -177,23 +176,19 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 
 	public boolean isBamboo2(BambooServerData serverData) {
-		return facade.isBamboo2(serverData.toHttpConnectionCfg());
+		return facade.isBamboo2(serverData);
 	}
 
 	public boolean isBamboo2M9(BambooServerData bambooServerData) {
-		return facade.isBamboo2M9(bambooServerData.toHttpConnectionCfg());
+		return facade.isBamboo2M9(bambooServerData);
 	}
 
     public boolean isBamboo24(BambooServerData bambooServerData) {
-        return facade.isBamboo24(bambooServerData.toHttpConnectionCfg());
+        return facade.isBamboo24(bambooServerData);
     }
 
     public ServerType getServerType() {
 		return facade.getServerType();
-	}
-
-	public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-		facade.testServerConnection(httpConnectionCfg);
 	}
 
     public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {

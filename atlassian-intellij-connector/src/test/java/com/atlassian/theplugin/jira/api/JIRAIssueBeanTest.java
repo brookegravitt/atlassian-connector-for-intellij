@@ -41,7 +41,7 @@ public class JIRAIssueBeanTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		});
 		issue = new JIRAIssueBean(server.getUrl(), doc.getRootElement());
 	}
 

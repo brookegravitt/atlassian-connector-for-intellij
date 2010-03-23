@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -58,7 +59,15 @@ public class GenericServerConfigurationFormTest extends TestCase {
 				return null;
 			}
 
-			@Override
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
 			public ServerCfg getClone() {
 				throw new UnsupportedOperationException("not yet implemented");
 			}
