@@ -209,11 +209,11 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 
 	private static ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
+		return new ServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
 	}
 
     private static JiraServerData getServerData(@NotNull final JiraServerCfg serverCfg) {
-        return new JiraServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword(), true);
+        return new JiraServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
     }
 
 }

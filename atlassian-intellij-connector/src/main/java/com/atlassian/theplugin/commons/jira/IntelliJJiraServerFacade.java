@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
@@ -19,6 +18,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
+import com.atlassian.connector.intellij.remoteapi.IntelliJAxisSessionCallback;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
@@ -39,7 +39,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private static JIRAServerModel serverModel;
 
     private IntelliJJiraServerFacade() {
-		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallback()));
+		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallback(), new IntelliJAxisSessionCallback()));
 	}
 
     public static synchronized IntelliJJiraServerFacade getInstance() {
@@ -64,14 +64,14 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
                                             String sort, String sortOrder, int start, int size) throws JIRAException {
         List<JIRAIssue> list =
-                facade.getIssues(jiraServerData.toHttpConnectionCfg(), queryString, sort, sortOrder, start, size);
+                facade.getIssues(jiraServerData, queryString, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
     }
 
     public List<JiraIssueAdapter> getIssues(final JiraServerData jiraServerData, List<JIRAQueryFragment> query,
                                            String sort, String sortOrder, int start, int size) throws JIRAException {
         List<JIRAIssue> list =
-                facade.getIssues(jiraServerData.toHttpConnectionCfg(), query, sort, sortOrder, start, size);
+                facade.getIssues(jiraServerData, query, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
     }
 
@@ -80,99 +80,99 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                                                        List<JIRAQueryFragment> query, String sort, String sortOrder,
                                                        int start, int size) throws JIRAException {
         List<JIRAIssue> list =
-                facade.getSavedFilterIssues(jiraServerData.toHttpConnectionCfg(), query, sort, sortOrder, start, size);
+                facade.getSavedFilterIssues(jiraServerData, query, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
     }
 
     public List<JIRAProject> getProjects(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getProjects(jiraServerData.toHttpConnectionCfg());
+        return facade.getProjects(jiraServerData);
     }
 
     public List<JIRAConstant> getStatuses(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getStatuses(jiraServerData.toHttpConnectionCfg());
+        return facade.getStatuses(jiraServerData);
     }
 
     public List<JIRAConstant> getIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getIssueTypes(jiraServerData.toHttpConnectionCfg());
+        return facade.getIssueTypes(jiraServerData);
     }
 
     public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, String project)
             throws JIRAException {
-        return facade.getIssueTypesForProject(jiraServerData.toHttpConnectionCfg(), project);
+        return facade.getIssueTypesForProject(jiraServerData, project);
     }
 
     public List<JIRAConstant> getSubtaskIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getSubtaskIssueTypes(jiraServerData.toHttpConnectionCfg());
+        return facade.getSubtaskIssueTypes(jiraServerData);
     }
 
     public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, String project)
             throws JIRAException {
-        return facade.getSubtaskIssueTypesForProject(jiraServerData.toHttpConnectionCfg(), project);
+        return facade.getSubtaskIssueTypesForProject(jiraServerData, project);
     }
 
     public List<JIRAQueryFragment> getSavedFilters(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getSavedFilters(jiraServerData.toHttpConnectionCfg());
+        return facade.getSavedFilters(jiraServerData);
     }
 
     public List<JIRAComponentBean> getComponents(final JiraServerData jiraServerData, String projectKey) throws JIRAException {
-        return facade.getComponents(jiraServerData.toHttpConnectionCfg(), projectKey);
+        return facade.getComponents(jiraServerData, projectKey);
     }
 
     public List<JIRAVersionBean> getVersions(final JiraServerData jiraServerData, String projectKey) throws JIRAException {
-        return facade.getVersions(jiraServerData.toHttpConnectionCfg(), projectKey);
+        return facade.getVersions(jiraServerData, projectKey);
     }
 
     public List<JIRAPriorityBean> getPriorities(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getPriorities(jiraServerData.toHttpConnectionCfg());
+        return facade.getPriorities(jiraServerData);
     }
 
     public List<JIRAResolutionBean> getResolutions(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getResolutions(jiraServerData.toHttpConnectionCfg());
+        return facade.getResolutions(jiraServerData);
     }
 
     public List<JIRAAction> getAvailableActions(final JiraServerData jiraServerData, JIRAIssue issue)
             throws JIRAException {
-        return facade.getAvailableActions(jiraServerData.toHttpConnectionCfg(), issue);
+        return facade.getAvailableActions(jiraServerData, issue);
     }
 
     public List<JIRAActionField> getFieldsForAction(final JiraServerData jiraServerData, JIRAIssue issue,
                                                     JIRAAction action) throws JIRAException {
-        return facade.getFieldsForAction(jiraServerData.toHttpConnectionCfg(), issue, action);
+        return facade.getFieldsForAction(jiraServerData, issue, action);
     }
 
     public void progressWorkflowAction(final JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action)
             throws JIRAException {
-        facade.progressWorkflowAction(jiraServerData.toHttpConnectionCfg(), issue, action);
+        facade.progressWorkflowAction(jiraServerData, issue, action);
     }
 
     public void progressWorkflowAction(final JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action,
                                        List<JIRAActionField> fields) throws JIRAException {
-        facade.progressWorkflowAction(jiraServerData.toHttpConnectionCfg(), issue, action, fields);
+        facade.progressWorkflowAction(jiraServerData, issue, action, fields);
     }
 
     public void addComment(final JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException {
-        facade.addComment(jiraServerData.toHttpConnectionCfg(), issueKey, comment);
+        facade.addComment(jiraServerData, issueKey, comment);
     }
 
 	public void addAttachment(final JiraServerData jiraServerData, final String issueKey, final String name,
 			final byte[] content) throws JIRAException {
-		facade.addAttachment(jiraServerData.toHttpConnectionCfg(), issueKey, name, content);
+		facade.addAttachment(jiraServerData, issueKey, name, content);
 	}
 
     public JiraIssueAdapter createIssue(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-        JIRAIssue newIssue =  facade.createIssue(jiraServerData.toHttpConnectionCfg(), issue);
+        JIRAIssue newIssue =  facade.createIssue(jiraServerData, issue);
         return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
     }
 
     public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, String key) throws JIRAException {
-        JIRAIssue issue =  facade.getIssue(jiraServerData.toHttpConnectionCfg(), key);
+        JIRAIssue issue =  facade.getIssue(jiraServerData, key);
         serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
         serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData);
     }
 
     public JiraIssueAdapter getIssueDetails(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-         JIRAIssue i = facade.getIssueDetails(jiraServerData.toHttpConnectionCfg(), issue);
+         JIRAIssue i = facade.getIssueDetails(jiraServerData, issue);
         serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
         serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) i, jiraServerData);
@@ -180,34 +180,30 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 
     public void logWork(final JiraServerData jiraServerData, JIRAIssue issue, String timeSpent, Calendar startDate,
                         String comment, boolean updateEstimate, String newEstimate) throws JIRAException {
-        facade.logWork(jiraServerData.toHttpConnectionCfg(), issue, timeSpent, startDate, comment, updateEstimate,
+        facade.logWork(jiraServerData, issue, timeSpent, startDate, comment, updateEstimate,
                 newEstimate);
     }
 
     public void setAssignee(final JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException {
-        facade.setAssignee(jiraServerData.toHttpConnectionCfg(), issue, assignee);
+        facade.setAssignee(jiraServerData, issue, assignee);
     }
 
     public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
             throws JIRAException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
-        return facade.getUser(jiraServerData.toHttpConnectionCfg(), loginName);
+        return facade.getUser(jiraServerData, loginName);
     }
 
     public List<JIRAComment> getComments(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-        return facade.getComments(jiraServerData.toHttpConnectionCfg(), issue);
+        return facade.getComments(jiraServerData, issue);
     }
 
     public Collection<JIRAAttachment> getIssueAttachements(final JiraServerData jiraServerData, JIRAIssue issue)
             throws JIRAException {
-        return facade.getIssueAttachements(jiraServerData.toHttpConnectionCfg(), issue);
+        return facade.getIssueAttachements(jiraServerData, issue);
     }
 
     public void testServerConnection(JiraServerData jiraServerData) throws RemoteApiException {
-        facade.testServerConnection(jiraServerData.toHttpConnectionCfg());
-    }
-
-    public void testServerConnection(final HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-        facade.testServerConnection(httpConnectionCfg);
+        facade.testServerConnection(jiraServerData);
     }
 
     public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
@@ -219,7 +215,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     }
 
     public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
-         facade.setReporter(jiraServerData.toHttpConnectionCfg(), issue, reporter);
+         facade.setReporter(jiraServerData, issue, reporter);
     }
 
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {

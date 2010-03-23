@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.util.Connector;
@@ -55,7 +57,8 @@ public class TestConnectionThreadTest extends TestCase {
 		super.tearDown();
 	}
 
-	private final ServerData serverData = new ServerData(null, null, null);
+    private final JiraServerCfg server = new JiraServerCfg("server", new ServerIdImpl(), true);
+	private final ServerData serverData = new ServerData(server);
 
 	public void testRunInterupted() {
 		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverData,

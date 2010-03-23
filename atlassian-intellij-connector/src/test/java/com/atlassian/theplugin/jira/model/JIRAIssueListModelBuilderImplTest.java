@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
@@ -106,7 +105,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		});
 	}
 
 	public void testAddCustomFilterIssues() {
@@ -216,7 +215,15 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
             public ServerType getServerType() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
-        }, new UserCfg() {}, true);
+
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 
         private final JiraIssueAdapter proto = new JiraIssueAdapter(jiraServerData
         );
@@ -233,10 +240,6 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 		public void testServerConnection(JiraServerData server) throws RemoteApiException {
 		}
-
-        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-            
-        }
 
         public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
             //To change body of implemented methods use File | Settings | File Templates.

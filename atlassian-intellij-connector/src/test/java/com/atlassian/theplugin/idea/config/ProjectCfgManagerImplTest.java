@@ -18,7 +18,13 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -239,7 +245,7 @@ public class ProjectCfgManagerImplTest extends TestCase {
 
     private class LocalJiraServerData extends JiraServerData {
         public LocalJiraServerData(final ServerCfg serverCfg, final UserCfg userCfg) {
-            super(serverCfg, userCfg, true);
+            super(serverCfg, userCfg);
         }
 
         public JiraServerCfg getServerr() {

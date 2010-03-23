@@ -97,7 +97,9 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			final UserCfg defaultCredentials) {
 		for (ServerCfg server : serversToAdd) {
 			if (server.isEnabled() && server.isUseDefaultCredentials()) {
-				this.servers.add(new ServerDataExt(new ServerData(server, defaultCredentials), serverType));
+                ServerData.Builder builder = new ServerData.Builder(server);
+                builder.defaultUser(defaultCredentials);
+				this.servers.add(new ServerDataExt(builder.build(), serverType));
 			}
 		}
 	}

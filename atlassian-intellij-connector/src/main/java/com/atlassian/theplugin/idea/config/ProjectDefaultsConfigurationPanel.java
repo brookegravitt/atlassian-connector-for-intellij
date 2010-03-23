@@ -22,7 +22,15 @@ import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -112,7 +120,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return crucibleServerFacade.getProjects(new ServerData(serverCfg, defaultCredentials));
+            ServerData.Builder builder = new ServerData.Builder(serverCfg);
+            builder.defaultUser(defaultCredentials);
+			return crucibleServerFacade.getProjects(builder.build());
 		}
 
 		@Override
@@ -168,7 +178,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
-			return crucibleServerFacade.getRepositories(new ServerData(serverCfg, defaultCredentials));
+            ServerData.Builder builder = new ServerData.Builder(serverCfg);
+            builder.defaultUser(defaultCredentials);
+			return crucibleServerFacade.getRepositories(builder.build());
 		}
 
 		@Override
@@ -210,7 +222,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
-			return fishEyeServerFacade.getRepositories(new ServerData(serverCfg, defaultCredentials));
+            ServerData.Builder builder = new ServerData.Builder(serverCfg);
+            builder.defaultUser(defaultCredentials);
+			return fishEyeServerFacade.getRepositories(builder.build());
 		}
 
 		@Override
@@ -512,7 +526,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						data.add(new CrucibleServerCfgWrapper(new ServerData(serverCfg, defaultCredentials)));
+                        ServerData.Builder builder = new ServerData.Builder(serverCfg);
+                        builder.defaultUser(defaultCredentials);
+						data.add(new CrucibleServerCfgWrapper(builder.build()));
 					}
 				}
 			}

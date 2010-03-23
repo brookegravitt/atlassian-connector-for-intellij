@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
@@ -34,8 +35,8 @@ import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.ui.SimpleIconProvider;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Collections;
 
@@ -51,11 +52,19 @@ public final class ReviewCommentRendererTestUi {
 				return null;
 			}
 
-			@Override
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
 			public ServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		});
 		Review review = new Review("myReview", "prjkey", new User("myauthor"), null);
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc, null);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");

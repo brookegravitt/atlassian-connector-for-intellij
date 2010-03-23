@@ -26,7 +26,7 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		});
 
 		issue1 = new JiraIssueAdapter(server);
 		issue1.setKey("1");

@@ -34,7 +34,7 @@ public class JiraQueryUrlTest extends TestCase {
         assertTrue(queryUrl.buildIssueNavigatorUrl()
                 .equals("http://loft.spartez.com/secure/IssueNavigator.jspa?refreshFilter=false&"
                 + "reset=update&show=View+%3E%3E&priority=1&sorter/field=priority&sorter/order=DESC&"
-                + "pager/start=1&tempMax=100&os_authType=basic"));
+                + "pager/start=1&tempMax=100"));
 
     }
 
@@ -50,7 +50,7 @@ public class JiraQueryUrlTest extends TestCase {
 
          assertTrue(queryUrl.buildRssSearchUrl()
                  .equals("http://loft.spartez.com/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?"
-                 + "&priority=1&sorter/field=priority&sorter/order=DESC&pager/start=1&tempMax=100&os_authType=basic"));
+                 + "&priority=1&sorter/field=priority&sorter/order=DESC&pager/start=1&tempMax=100"));
 
      }
 
@@ -64,13 +64,14 @@ public class JiraQueryUrlTest extends TestCase {
                 .start(0)
                 .max(100)
                 .sortBy("priority")
+
                 .sortOrder("DESC")
                 .build();
 
 
         assertTrue(queryUrl.buildSavedFilterUrl().equals("http://loft.spartez.com/sr/jira.issueviews:"
                 + "searchrequest-xml/1000/SearchRequest-1000.xml?sorter/field=priority"
-                + "&sorter/order=DESC&pager/start=0&tempMax=100&os_authType=basic"));
+                + "&sorter/order=DESC&pager/start=0&tempMax=100"));
     }
 
 }

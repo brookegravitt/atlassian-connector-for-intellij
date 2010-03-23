@@ -72,7 +72,7 @@ public final class PluginTaskManagerFacade {
     }
 
     public static boolean isValidIdeaVersion() {
-        return false & IdeaVersionFacade.getInstance().isIdea9()
+        return false && IdeaVersionFacade.getInstance().isIdea9()
                 && !IdeaVersionFacade.getInstance().isCommunityEdition()
                 && isTaskPluginEnabled();
     }

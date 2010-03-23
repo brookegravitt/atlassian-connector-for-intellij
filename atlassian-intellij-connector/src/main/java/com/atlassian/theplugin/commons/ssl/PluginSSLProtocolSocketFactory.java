@@ -211,7 +211,7 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
              }
 
 		}
-
+        
 		((SSLSocket) sslSocket).startHandshake();
         if (logger != null) {
 		    logger.debug(Messages.getMessage("createdSSL00"));

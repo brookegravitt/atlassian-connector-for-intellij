@@ -21,7 +21,18 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
+import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -489,7 +500,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		configurationClone.getServers().add(serverCfg);
 		component.updateConfiguration(configurationClone);
-		component.setSelectedServer(new ServerData(serverCfg, new UserCfg()));
+		component.setSelectedServer(new ServerData(serverCfg));
 
 		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 		if (settingsUtil != null) {

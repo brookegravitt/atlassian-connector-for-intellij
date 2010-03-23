@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
@@ -41,6 +40,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -260,9 +260,6 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	}
 
 	public void setCallback(final HttpSessionCallback callback) {
-	}
-
-	public void testServerConnection(final HttpConnectionCfg serverCfg) throws RemoteApiException {
 	}
 
     public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {

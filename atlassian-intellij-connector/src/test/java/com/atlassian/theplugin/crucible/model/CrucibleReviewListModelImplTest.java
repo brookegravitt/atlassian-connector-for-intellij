@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -85,11 +86,19 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 				return null;
 			}
 
-			@Override
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
 			public ServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		});
 	}
 
 	public void testAddingSingleReview() throws Exception {
@@ -516,11 +525,19 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 				return null;
 			}
 
-			@Override
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
 			public ServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		});
 	}
 
 	private ReviewAdapter createReviewAdapter(int id, ServerData server) {

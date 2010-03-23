@@ -23,9 +23,13 @@ import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import org.easymock.EasyMock;
 import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.easymock.EasyMock;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,9 +37,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * StausIconBambooListener Tester.
@@ -73,7 +74,15 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 			return null;
 		}
 
-		@Override
+        public boolean isDontUseBasicAuth() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public UserCfg getBasicHttpUser() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
 		public ServerCfg getClone() {
 			return null;
 		}

@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
@@ -92,7 +91,7 @@ public class JIRAServerModelImplTest extends TestCase {
 			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "", true);
+		});
 	}
 
 	public void testGetProjectsNull() {
@@ -661,9 +660,6 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		public void testServerConnection(final JiraServerData server) throws RemoteApiException {
 		}
-
-        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-        }
 
         public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
             

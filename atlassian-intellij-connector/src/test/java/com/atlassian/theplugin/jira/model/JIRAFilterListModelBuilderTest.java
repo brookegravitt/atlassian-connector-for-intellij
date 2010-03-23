@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.commons.api.HttpConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
@@ -83,7 +82,15 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
             public ServerType getServerType() {
                 return ServerType.JIRA_SERVER;
             }
-        }, new UserCfg(), true);
+
+            public boolean isDontUseBasicAuth() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public UserCfg getBasicHttpUser() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 
 		final JIRATestServerFacade2 facade = new JIRATestServerFacade2();
@@ -154,9 +161,6 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 		public void testServerConnection(final JiraServerData jiraServerData) throws RemoteApiException {
 		}
-
-        public void testServerConnection(HttpConnectionCfg httpConnectionCfg) throws RemoteApiException {
-        }
 
         public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
             
@@ -307,11 +311,11 @@ final class ServerDataProvider {
 	}
 
 	public static ServerData getServerData(final Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
+		return new ServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
 	}
 
     public static JiraServerData getServerData(final JiraServerCfg serverCfg) {
-        return new JiraServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword(), true);
+        return new JiraServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
     }
 
 }
