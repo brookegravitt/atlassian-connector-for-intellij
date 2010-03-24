@@ -204,6 +204,10 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 		 facade.setField(jiraServerData, issue, "type", type);
 	}
 
+	public void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException {
+		 facade.setField(jiraServerData, issue, "priority", priority);
+	}
+
     public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
             throws JIRAException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
         return facade.getUser(jiraServerData, loginName);
