@@ -910,7 +910,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								SwingConstants.LEFT),
 						new TypeEditLabel.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
-								TypeEditDialog dialog = new TypeEditDialog(project, params.issue, jiraIssueListModelBuilder, jiraCache);
+								TypeEditDialog dialog = new TypeEditDialog(project, params.issue,
+										jiraIssueListModelBuilder, jiraCache);
 								dialog.setTitle("Change Issue Type");
 								dialog.show();
 					}
@@ -924,7 +925,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								SwingConstants.LEFT),
 						new TypeEditLabel.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
-								PriorityEditDialog dialog = new PriorityEditDialog(project, params.issue, jiraIssueListModelBuilder, jiraCache);
+								PriorityEditDialog dialog = new PriorityEditDialog(project, params.issue,
+										jiraIssueListModelBuilder, jiraCache);
 								dialog.setTitle("Change Issue Priority");
 								dialog.show();
 					}

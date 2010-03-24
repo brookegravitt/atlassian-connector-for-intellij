@@ -90,8 +90,9 @@ public class TypeEditLabel extends JPanel {
 			this.setBorder(BorderFactory.createEmptyBorder());
 			this.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
-					if (handler != null)
+					if (handler != null) {
 						handler.handleClickedEditButton();
+					}
 				}
 			});
 
@@ -108,7 +109,7 @@ public class TypeEditLabel extends JPanel {
 	}
 
 	public interface EditIssueFieldHandler {
-		public void handleClickedEditButton();
+		void handleClickedEditButton();
 	}
 }
 
