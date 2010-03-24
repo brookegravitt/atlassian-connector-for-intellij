@@ -31,7 +31,6 @@ import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -108,16 +107,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		typeComboBox.setRenderer(new JiraConstantCellRenderer());
 		typeComboBox.setEnabled(false);
 
-		priorityComboBox.setRenderer(new ColoredListCellRenderer() {
-			@Override
-			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				if (value != null) {
-					JIRAConstant priority = (JIRAConstant) value;
-					append(priority.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-					setIcon(CachedIconLoader.getIcon(priority.getIconUrl()));
-				}
-			}
-		});
+		priorityComboBox.setRenderer(new JiraConstantCellRenderer());
 
 		projectComboBox.addPopupMenuListener(new PopupMenuListener() {
 

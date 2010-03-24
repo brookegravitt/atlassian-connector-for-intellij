@@ -682,6 +682,9 @@ public class JIRAServerModelImplTest extends TestCase {
 		public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {			
 		}
 
+		public void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException {
+		}
+
 		public JiraIssueAdapter getIssue(JiraServerData server, String key) throws JIRAException {
 			return null;
 		}

@@ -27,9 +27,11 @@ import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPa
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.IssueFieldEditDialog;
+import com.atlassian.theplugin.idea.ui.PriorityEditDialog;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.TypeEditLabel;
+import com.atlassian.theplugin.idea.ui.TypeEditDialog;
 import com.atlassian.theplugin.idea.ui.UserEditLabel;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
@@ -617,7 +619,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel timeSpent = new JLabel("Fetching...");
 			private TypeEditLabel issueType;
 			private JLabel issueStatus;
-			private JLabel issuePriority;
+			private TypeEditLabel issuePriority;
             private UserEditLabel issueAssigneeEditLabel;
             private UserEditLabel issueReporterEditLabel;
 			private JComponent issueAssignee;
@@ -631,25 +633,19 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public DetailsPanel() {
 				super(new BorderLayout());
-                issueAssigneeEditLabel = new UserEditLabel(project, "Change Assignee", issueAssignee,
-                        jiraCache, params.issue) {
-
+                issueAssigneeEditLabel = new UserEditLabel(project, "Change Assignee", issueAssignee, jiraCache, params.issue) {
                     @Override
                     public void doOkAction(String selectedUserLogin) throws JIRAException {
                         facade.setAssignee(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
                         jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
-
                     }
                 };
 
-                issueReporterEditLabel = new UserEditLabel(project, "Change Reporter", issueReporter,
-                        jiraCache, params.issue) {
-
+                issueReporterEditLabel = new UserEditLabel(project, "Change Reporter", issueReporter, jiraCache, params.issue) {
                     @Override
                     public void doOkAction(String selectedUserLogin) throws JIRAException {
                         facade.setReporter(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
                         jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
-
                     }
                 };
 				subtaskListModel = new DefaultListModel();
@@ -908,13 +904,31 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private void fillBaseIssueDetails() {
-				issueType = new TypeEditLabel(project, jiraIssueListModelBuilder, jiraCache, params.issue);				
+				issueType = new TypeEditLabel(
+						new JLabel(params.issue.getType(),
+								CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
+								SwingConstants.LEFT),
+						new TypeEditLabel.EditIssueFieldHandler() {
+							public void handleClickedEditButton() {
+								TypeEditDialog dialog = new TypeEditDialog(project, params.issue, jiraIssueListModelBuilder, jiraCache);
+								dialog.setTitle("Change Issue Type");
+								dialog.show();
+					}
+				});
 				issueStatus = new JLabel(params.issue.getStatus(),
 						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
 						SwingConstants.LEFT);
-				issuePriority = new JLabel(params.issue.getPriority(),
-						CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
-						SwingConstants.LEFT);
+				issuePriority = new TypeEditLabel(
+						new JLabel(params.issue.getPriority(),
+								CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
+								SwingConstants.LEFT),
+						new TypeEditLabel.EditIssueFieldHandler() {
+							public void handleClickedEditButton() {
+								PriorityEditDialog dialog = new PriorityEditDialog(project, params.issue, jiraIssueListModelBuilder, jiraCache);
+								dialog.setTitle("Change Issue Priority");
+								dialog.show();
+					}
+				});
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (params.issue.getAssigneeId().equals("-1")) {
 					issueAssignee = new JLabel("Unassigned");
@@ -1144,7 +1158,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							if (e.getDescription().equals("edit")) {
 							  	IssueFieldEditDialog dialog = new IssueFieldEditDialog(project, params.issue,
 										params.issue.getSummary(), new IssueFieldEditDialog.ResultHandler() {
-											@Override
 											public void handleOK(String newFieldValue) {
 												try {
 													facade.setSummary(params.issue.getJiraServerData(), params.issue,

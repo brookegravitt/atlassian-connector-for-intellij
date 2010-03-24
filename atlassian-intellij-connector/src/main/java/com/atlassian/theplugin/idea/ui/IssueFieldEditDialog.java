@@ -64,7 +64,7 @@ public class IssueFieldEditDialog extends DialogWrapper {
 		super.doOKAction();
 	}
 
-	public static abstract class ResultHandler {
-		abstract public void handleOK(String newFieldValue);
+	public interface ResultHandler {
+		public void handleOK(String newFieldValue);
 	}
 }
