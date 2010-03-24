@@ -673,7 +673,16 @@ public class JIRAServerModelImplTest extends TestCase {
             
         }
 
-        public JiraIssueAdapter getIssue(JiraServerData server, String key) throws JIRAException {
+		public void setSummary(JiraServerData jiraServerData, JIRAIssue issue, String summary) throws JIRAException {
+		}
+
+		public void setDescription(JiraServerData jiraServerData, JIRAIssue issue, String description) throws JIRAException {
+		}
+
+		public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {			
+		}
+
+		public JiraIssueAdapter getIssue(JiraServerData server, String key) throws JIRAException {
 			return null;
 		}
 	}

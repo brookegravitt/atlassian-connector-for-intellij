@@ -86,6 +86,14 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     void setAssignee(JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException;
 
+	void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException;
+
+	void setSummary(JiraServerData jiraServerData, JIRAIssue issue, String summary) throws JIRAException;
+
+	void setDescription(JiraServerData jiraServerData, JIRAIssue issue, String description) throws JIRAException;
+
+	void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException;
+
     JIRAUserBean getUser(JiraServerData jiraServerData, String loginName)
             throws JIRAException, JiraUserNotFoundException;
 
@@ -98,5 +106,4 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     ServerType getServerType();
 
-    void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException;
 }

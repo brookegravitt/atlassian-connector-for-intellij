@@ -185,8 +185,24 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     }
 
     public void setAssignee(final JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException {
-        facade.setAssignee(jiraServerData, issue, assignee);
+        facade.setField(jiraServerData, issue, "assignee", assignee);
     }
+
+	public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
+		 facade.setField(jiraServerData, issue, "reporter", reporter);
+	}
+
+	public void setSummary(JiraServerData jiraServerData, JIRAIssue issue, String summary) throws JIRAException {
+		 facade.setField(jiraServerData, issue, "summary", summary);
+	}
+
+	public void setDescription(JiraServerData jiraServerData, JIRAIssue issue, String description) throws JIRAException {
+		 facade.setField(jiraServerData, issue, "description", description);
+	}
+
+	public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {
+		 facade.setField(jiraServerData, issue, "type", type);
+	}
 
     public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
             throws JIRAException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
@@ -212,10 +228,6 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 
     public ServerType getServerType() {
         return facade.getServerType();
-    }
-
-    public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
-         facade.setReporter(jiraServerData, issue, reporter);
     }
 
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {

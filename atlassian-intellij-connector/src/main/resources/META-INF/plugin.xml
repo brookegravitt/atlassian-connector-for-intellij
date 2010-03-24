@@ -1049,6 +1049,10 @@
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
 				text="Add Comment"
 				icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.JiraIssues.EditorEditDescription"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditDescriptionAction"
+				text="Edit Description"
+				icon="/actions/editSource.png"/>
 		<action id="ThePlugin.JiraIssues.EditorAddAttachment"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddAttachmentAction"
 				text="Add Attachment"
@@ -1143,6 +1147,7 @@
 		</group>
 
 		<group id="ThePlugin.JiraIssues.CommentsToolBar" popup="false">
+			<reference id="ThePlugin.JiraIssues.EditorEditDescription"/>
 			<reference id="ThePlugin.JiraIssues.RefreshComments"/>
 			<reference id="ThePlugin.JiraIssues.ExpandComments"/>
 			<reference id="ThePlugin.JiraIssues.CollapseComments"/>
