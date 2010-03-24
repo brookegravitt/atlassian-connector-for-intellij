@@ -38,6 +38,7 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.JiraConstantCellRenderer;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -104,16 +105,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 		});
 
-		typeComboBox.setRenderer(new ColoredListCellRenderer() {
-			@Override
-			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				if (value != null) {
-					JIRAConstant type = (JIRAConstant) value;
-					append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-					setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
-				}
-			}
-		});
+		typeComboBox.setRenderer(new JiraConstantCellRenderer());
 		typeComboBox.setEnabled(false);
 
 		priorityComboBox.setRenderer(new ColoredListCellRenderer() {

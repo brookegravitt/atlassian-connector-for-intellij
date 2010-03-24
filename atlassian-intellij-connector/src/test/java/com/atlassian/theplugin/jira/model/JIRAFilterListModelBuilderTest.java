@@ -173,7 +173,16 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
         public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
         }
 
-        public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+		public void setSummary(JiraServerData jiraServerData, JIRAIssue issue, String summary) throws JIRAException {
+		}
+
+		public void setDescription(JiraServerData jiraServerData, JIRAIssue issue, String description) throws JIRAException {			
+		}
+
+		public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {			
+		}
+
+		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);

@@ -26,8 +26,10 @@ import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.IssueFieldEditDialog;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
+import com.atlassian.theplugin.idea.ui.TypeEditLabel;
 import com.atlassian.theplugin.idea.ui.UserEditLabel;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
@@ -202,6 +204,28 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.descriptionAndCommentsPanel.addComment();
+		}
+	}
+
+	public void editDescription(String key) {
+		final IssuePanel ip = getContentPanel(key);
+		if (ip != null) {
+			final JiraIssueAdapter issue = ip.params.issue;
+			final IssueDescriptionDialog dialog = new IssueDescriptionDialog(issue.getKey(),
+					Html2text.translate(issue.getDescription()));
+			dialog.show();
+			if (dialog.isOK()) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							facade.setDescription(issue.getJiraServerData(), issue, dialog.getDescription());
+							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), issue.getJiraServerData());
+						} catch (JIRAException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
 		}
 	}
 
@@ -591,7 +615,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel originalEstimate = new JLabel("Fetching...");
 			private JLabel remainingEstimate = new JLabel("Fetching...");
 			private JLabel timeSpent = new JLabel("Fetching...");
-			private JLabel issueType;
+			private TypeEditLabel issueType;
 			private JLabel issueStatus;
 			private JLabel issuePriority;
             private UserEditLabel issueAssigneeEditLabel;
@@ -884,9 +908,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private void fillBaseIssueDetails() {
-				issueType = new JLabel(params.issue.getType(),
-						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
-						SwingConstants.LEFT);
+				issueType = new TypeEditLabel(project, jiraIssueListModelBuilder, jiraCache, params.issue);				
 				issueStatus = new JLabel(params.issue.getStatus(),
 						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
 						SwingConstants.LEFT);
@@ -1119,7 +1141,24 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				summary.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-							BrowserUtil.launchBrowser(e.getURL().toString());
+							if (e.getDescription().equals("edit")) {
+							  	IssueFieldEditDialog dialog = new IssueFieldEditDialog(project, params.issue,
+										params.issue.getSummary(), new IssueFieldEditDialog.ResultHandler() {
+											@Override
+											public void handleOK(String newFieldValue) {
+												try {
+													facade.setSummary(params.issue.getJiraServerData(), params.issue,
+															newFieldValue);
+													jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(),
+															params.issue.getJiraServerData());
+												} catch (JIRAException e1) {
+													e1.printStackTrace();
+												}
+											}
+										});
+							} else {
+								BrowserUtil.launchBrowser(e.getURL().toString());
+							}
 						}
 					}
 				});
@@ -1150,7 +1189,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public void refresh() {
 				String txt = "<html><body><a href=\"" + params.issue.getIssueUrl() + "\">"
-						+ params.issue.getKey() + "</a> " + params.issue.getSummary() + "</body></html>";
+						+ params.issue.getKey() + "</a> " + params.issue.getSummary()
+						+ " <i><a href=\"edit\">edit</a></i></body></html>";
 				summary.setText(txt);
 			}
 		}
