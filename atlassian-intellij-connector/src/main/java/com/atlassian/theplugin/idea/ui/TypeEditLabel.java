@@ -166,7 +166,7 @@ public class TypeEditLabel extends JPanel {
 						"Updating issue " + issue.getKey(), false) {
 					@Override
 					public void run(@NotNull ProgressIndicator progressIndicator) {
-						String selectedType = ((Long)((JIRAConstant) comboBox.getSelectedItem()).getId()).toString();
+						String selectedType = ((Long) ((JIRAConstant) comboBox.getSelectedItem()).getId()).toString();
 						try {
 							IntelliJJiraServerFacade.getInstance().setType(issue.getJiraServerData(), issue, selectedType);
 							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), issue.getJiraServerData());
