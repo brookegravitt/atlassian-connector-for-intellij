@@ -14,12 +14,13 @@ public class JiraPresetFilterTreeNode extends AbstractTreeNode {
     private final JiraPresetFilter filter;
 
     public JiraPresetFilterTreeNode(JiraPresetFilter filter) {
-        super(filter.getName(), null, null);
+        super(filter.getName() + (filter.getProjectKey().length() > 0 ? " (" + filter.getProjectKey() + ")" : "")
+                , null, null);
         this.filter = filter;
     }
 
     public String toString() {
-        return filter.getName();
+        return filter.getName() + (filter.getProjectKey().length() > 0 ? " (" + filter.getProjectKey() + ")" : "");
     }
 
     public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {

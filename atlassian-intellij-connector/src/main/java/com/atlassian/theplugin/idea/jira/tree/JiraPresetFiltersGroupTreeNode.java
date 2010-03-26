@@ -15,6 +15,7 @@ public class JiraPresetFiltersGroupTreeNode extends AbstractJiraFilterGroupTreeN
 
 	public JiraPresetFiltersGroupTreeNode(ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
         super(projectCfgManager, jiraServer);
+        
 	}
 
     @Override

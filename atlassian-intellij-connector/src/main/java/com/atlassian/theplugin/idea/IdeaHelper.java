@@ -187,6 +187,11 @@ public final class IdeaHelper {
 
 	}
 
+    public static JiraWorkspaceConfiguration getJiraWorkspaceConfiguration(Project project) {
+		return getProjectComponent(project, JiraWorkspaceConfiguration.class);
+
+	}
+
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
 		Project project = getCurrentProject(e.getDataContext());
 

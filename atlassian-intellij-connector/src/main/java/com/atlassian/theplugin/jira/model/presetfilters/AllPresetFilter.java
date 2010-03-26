@@ -21,10 +21,6 @@ public class AllPresetFilter extends JiraPresetFilter {
     }
 
 
-    public String getQueryStringFragment() {
-        return "";
-    }
-
     public long getId() {
         return 0;
     }
@@ -43,5 +39,10 @@ public class AllPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "priority";
+    }
+
+    @Override
+    protected String getQuery() {
+        return "";
     }
 }

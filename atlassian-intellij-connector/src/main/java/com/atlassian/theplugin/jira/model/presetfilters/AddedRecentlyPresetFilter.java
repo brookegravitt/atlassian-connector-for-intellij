@@ -21,11 +21,6 @@ public class AddedRecentlyPresetFilter extends JiraPresetFilter {
 
     }
 
-
-    public String getQueryStringFragment() {
-        return "created:previous=-1w";
-    }
-
     public long getId() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -48,5 +43,10 @@ public class AddedRecentlyPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "created";
+    }
+
+    @Override
+    protected String getQuery() {
+         return "created:previous=-1w";
     }
 }

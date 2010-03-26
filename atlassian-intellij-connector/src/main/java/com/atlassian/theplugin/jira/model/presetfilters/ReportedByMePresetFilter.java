@@ -23,10 +23,6 @@ public class ReportedByMePresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "reporterSelect=issue_current_user";
-    }
-
     public String getName() {
         return "Reported by me";
     }
@@ -43,5 +39,10 @@ public class ReportedByMePresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "updated";
+    }
+
+    @Override
+    protected String getQuery() {
+        return "reporterSelect=issue_current_user";
     }
 }

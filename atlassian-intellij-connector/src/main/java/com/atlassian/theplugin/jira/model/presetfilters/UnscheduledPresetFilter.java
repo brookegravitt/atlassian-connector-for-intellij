@@ -20,10 +20,6 @@ public class UnscheduledPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "resolution=-1&fixfor=-1";
-    }
-
     public String getName() {
         return "Unscheduled";
     }
@@ -42,5 +38,10 @@ public class UnscheduledPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "priority";
+    }
+
+    @Override
+    protected String getQuery() {
+       return "resolution=-1&fixfor=-1";
     }
 }
