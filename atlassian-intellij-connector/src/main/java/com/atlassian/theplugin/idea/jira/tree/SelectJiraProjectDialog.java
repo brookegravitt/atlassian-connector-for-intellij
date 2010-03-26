@@ -51,7 +51,9 @@ public class SelectJiraProjectDialog extends DialogWrapper {
 
         list.setVisibleRowCount(20);
         JScrollPane listScroller = new JScrollPane(speedList.getComponent());
-        listScroller.setPreferredSize(new Dimension(250, 160));
+        listScroller.setPreferredSize(new Dimension(380, 320));
+        listScroller.setMinimumSize(new Dimension(350, 320));
+        setModal(true);
         panel.add(listScroller, BorderLayout.CENTER);
         updateModel();
         setTitle("Select Project");

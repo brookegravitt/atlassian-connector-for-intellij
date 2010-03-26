@@ -37,12 +37,8 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
                 tree, value, selected, expanded, leaf, row, hasFocus);
         setToolTipText(null);
 
-        if (value instanceof  JiraPresetFiltersGroupTreeNode) {
-            ((JLabel) c).setIcon(JIRA_FILTER_ICON);
-        }
         if (value instanceof JiraPresetFilterTreeNode && c instanceof JLabel) {
             ((JLabel) c).setIcon(JIRA_FILTER_ICON);            
-
             return c;
         }
 
@@ -68,15 +64,12 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 
         if (value instanceof AbstractJiraFilterGroupTreeNode) {
             ((JLabel) c).setIcon(((AbstractJiraFilterGroupTreeNode) value).getIcon());
-                selected = false;
-
             return c;
         }
 
         if (value instanceof JiraRecentlyOpenTreeNode && c instanceof JLabel) {
             ((JLabel) c).setIcon(JIRA_RECENTLY_OPEN_ISSUES_ICON);
-            return  ((AbstractTreeNode) value).getRenderer(c, false, expanded, hasFocus);
-            //return c;
+            return c;
         }
 
         if (value instanceof JIRAServerTreeNode && c instanceof JLabel) {
