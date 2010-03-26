@@ -42,7 +42,7 @@ public class SelectJiraProjectDialog extends DialogWrapper {
     private final JiraServerData jiraServer;
 
     public SelectJiraProjectDialog(Project project, JiraServerData jiraServer) {
-        super(project);
+        super(project, false);
         this.project = project;
         this.jiraServer = jiraServer;
         list = new JList(listModel);
