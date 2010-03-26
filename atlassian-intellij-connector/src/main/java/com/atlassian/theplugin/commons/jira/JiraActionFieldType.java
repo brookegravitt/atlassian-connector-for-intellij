@@ -145,12 +145,13 @@ public final class JiraActionFieldType {
 			}
 		}
 
-		addTimeFields(issue, result);
+		// pstefaniak: why were we adding time fields?
+		// addTimeFields(issue, result);
 
 		return result;
 	}
 
-	private static void addTimeFields(JIRAIssue issue, List<JIRAActionField> result) {
+/*	private static void addTimeFields(JIRAIssue issue, List<JIRAActionField> result) {
 		String originalEstimate = issue.getOriginalEstimateInSeconds();
 		String remainingEstimate = issue.getRemainingEstimateInSeconds();
 		String timeSpent = issue.getTimeSpentInSeconds();
@@ -170,7 +171,7 @@ public final class JiraActionFieldType {
 			timeSpentField.addValue(timeSpent);
 			result.add(timeSpentField);
 		}
-	}
+	}*/
 
 	private static JIRAActionField fillField(JIRAIssue issue, final JIRAActionField field) {
 		WidgetTypeAndFieldFiller widgetTypeAndFieldFiller = typeMap.get(field.getFieldId());
