@@ -654,8 +654,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
-			protected EditableIssueField createEditableField(final JLabel label, final String fieldId, final String displayName) {
-				return new EditableIssueField(label, new EditableIssueField.EditIssueFieldHandler() {
+			protected EditableIssueField createEditableField(final JLabel label, final String fieldId,
+					final String displayName) {
+						return new EditableIssueField(label, new EditableIssueField.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
 								updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
 							}
