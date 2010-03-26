@@ -185,6 +185,15 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		public void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException {
 		}
 
+		public void setAffectedVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
+		}
+
+		public void setFixVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
+		}
+
+		public void setFields(JiraServerData jiraServerData, JIRAIssue issue, List<JIRAActionField> fields) throws JIRAException {
+		}
+
 		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 				String sort, String sortOrder, int start, int size)
 				throws JIRAException {

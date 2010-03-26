@@ -16,12 +16,12 @@ import java.awt.event.MouseEvent;
  * User: pstefaniak
  * Date: Mar 22, 2010
  */
-public class TypeEditLabel extends JPanel {
+public class EditableIssueField extends JPanel {
 	private EditIssueFieldButton button;
 	private JComponent label;
 	private final EditIssueFieldHandler handler;
 
-	public TypeEditLabel(JLabel label, EditIssueFieldHandler handler) {
+	public EditableIssueField(JLabel label, EditIssueFieldHandler handler) {
 		this.handler = handler;
 		button = new EditIssueFieldButton();
 		this.label = label;

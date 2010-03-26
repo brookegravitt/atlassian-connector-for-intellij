@@ -36,6 +36,7 @@ import com.atlassian.theplugin.idea.jira.controls.FieldTimeTracking;
 import com.atlassian.theplugin.idea.jira.controls.FieldUser;
 import com.atlassian.theplugin.idea.jira.controls.FreezeListener;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
+import com.atlassian.theplugin.idea.util.Html2text;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -109,7 +110,8 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     break;
                 case DESCRIPTION:
                     // we use wiki markup version from field (not html version from issue)
-                    editor = new FieldTextArea(field.getValues().get(0), field);
+                    // editor = new FieldTextArea(field.getValues().get(0), field);
+					editor = new FieldTextArea(Html2text.translate(issue.getDescription()), field);
                     row = ", fill:pref:grow, 3dlu";
                     break;
                 case ISSUE_TYPE:

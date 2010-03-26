@@ -96,6 +96,12 @@ public interface JiraServerFacade extends ProductServerFacade {
 
 	void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException;
 
+	void setAffectedVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException;
+
+	void setFixVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException;
+
+	void setFields(JiraServerData jiraServerData, JIRAIssue issue, List<JIRAActionField> fields) throws JIRAException;
+
     JIRAUserBean getUser(JiraServerData jiraServerData, String loginName)
             throws JIRAException, JiraUserNotFoundException;
 

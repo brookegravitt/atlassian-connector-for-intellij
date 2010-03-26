@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
 import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
 import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
@@ -11,6 +13,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
@@ -26,12 +29,9 @@ import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.ui.IssueFieldEditDialog;
-import com.atlassian.theplugin.idea.ui.PriorityEditDialog;
+import com.atlassian.theplugin.idea.ui.EditableIssueField;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
-import com.atlassian.theplugin.idea.ui.TypeEditLabel;
-import com.atlassian.theplugin.idea.ui.TypeEditDialog;
 import com.atlassian.theplugin.idea.ui.UserEditLabel;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
@@ -56,6 +56,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
@@ -212,22 +213,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	public void editDescription(String key) {
 		final IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			final JiraIssueAdapter issue = ip.params.issue;
-			final IssueDescriptionDialog dialog = new IssueDescriptionDialog(issue.getKey(),
-					Html2text.translate(issue.getDescription()));
-			dialog.show();
-			if (dialog.isOK()) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							facade.setDescription(issue.getJiraServerData(), issue, dialog.getDescription());
-							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), issue.getJiraServerData());
-						} catch (JIRAException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-			}
+			updateIssueField(ip.params.issue, new JIRAActionFieldBean("description", "Description"));
 		}
 	}
 
@@ -380,6 +366,39 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 	}
+
+	public void updateIssueField(final JiraIssueAdapter issue, final JIRAActionField field) {
+		List<JIRAActionField> fields = new ArrayList<JIRAActionField>();
+		fields.add(field);
+		final List<JIRAActionField> preFilledFields = JiraActionFieldType.fillFieldValues(issue, fields);
+
+		final PerformIssueActionForm dialog =
+				new PerformIssueActionForm(project, issue, preFilledFields, "Update Issue [" + issue.getKey() + "]");
+		dialog.show();
+		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+			ProgressManager.getInstance().run(
+					new Task.Backgroundable(project, "Updating issue", false) {
+						public void run(final ProgressIndicator indicator) {
+							if (indicator != null) {
+								indicator.setFraction(0.0);
+								indicator.setIndeterminate(true);
+							}
+							JiraServerData server = issue.getJiraServerData();
+							try {
+								facade.setFields(server, issue, dialog.getFields());
+								if (dialog.getComment() != null && dialog.getComment().length() > 0) {
+									facade.addComment(server, issue.getKey(), dialog.getComment());
+								}
+								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
+							} catch (JIRAException e) {
+								setStatusErrorMessage(getContentKey(issue), "Unable to update issue ["
+										+ issue.getKey() + "]: " + e.getMessage(), e);
+							}
+						}
+					});
+		}
+	}
+
 
 	public class IssuePanel extends ContentPanel implements DataProvider, IssueActionProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
@@ -609,17 +628,21 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         private class DetailsPanel extends JPanel {
 
 			private JLabel affectsVersions = new JLabel("Fetching...");
+			private EditableIssueField affectsVersionsEditLabel;
 			private JLabel fixVersions = new JLabel("Fetching...");
+			private EditableIssueField fixVersionsEditLabel;
 			private JLabel components = new JLabel("Fetching...");
+			private EditableIssueField componentsEditLabel;
 			private JLabel affectsVersionsLabel = new BoldLabel("Affects Version/s");
 			private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
 			private JLabel componentsLabel = new BoldLabel("Component/s");
 			private JLabel originalEstimate = new JLabel("Fetching...");
 			private JLabel remainingEstimate = new JLabel("Fetching...");
+			private EditableIssueField remainingEstimateEditLabel;
 			private JLabel timeSpent = new JLabel("Fetching...");
-			private TypeEditLabel issueType;
+			private EditableIssueField issueType;
 			private JLabel issueStatus;
-			private TypeEditLabel issuePriority;
+			private EditableIssueField issuePriority;
             private UserEditLabel issueAssigneeEditLabel;
             private UserEditLabel issueReporterEditLabel;
 			private JComponent issueAssignee;
@@ -630,6 +653,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private JEditorPane issueEnvironment;
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
+
+			protected EditableIssueField createEditableField(final JLabel label, final String fieldId, final String displayName) {
+				return new EditableIssueField(label, new EditableIssueField.EditIssueFieldHandler() {
+							public void handleClickedEditButton() {
+								updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
+							}
+						}
+				);
+			}
 
 			public DetailsPanel() {
 				super(new BorderLayout());
@@ -650,6 +682,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 };
 				subtaskListModel = new DefaultListModel();
 
+				affectsVersionsEditLabel = createEditableField(affectsVersions, "versions", "Affects Versions");
+				fixVersionsEditLabel = createEditableField(fixVersions, "fixVersions", "Fix Versions");
+				componentsEditLabel = createEditableField(components, "components", "Components");
+				remainingEstimateEditLabel = createEditableField(remainingEstimate, "timetracking", "Time Tracking");
 				add(createBody(), BorderLayout.CENTER);
 
 			}
@@ -875,15 +911,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     gbc2.gridy++;
                 }
 				panel.add(affectsVersionsLabel, gbc1);
-				panel.add(affectsVersions, gbc2);
+				panel.add(affectsVersionsEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(fixVersionsLabel, gbc1);
-				panel.add(fixVersions, gbc2);
+				panel.add(fixVersionsEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(componentsLabel, gbc1);
-				panel.add(components, gbc2);
+				panel.add(componentsEditLabel, gbc2);
 
 				gbc1.gridy++;
 				gbc2.gridy++;
@@ -892,7 +928,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Remaining Estimate"), gbc1);
-				panel.add(remainingEstimate, gbc2);
+				panel.add(remainingEstimateEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Time Spent"), gbc1);
@@ -904,33 +940,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private void fillBaseIssueDetails() {
-				issueType = new TypeEditLabel(
-						new JLabel(params.issue.getType(),
+				issueType = createEditableField(new JLabel(params.issue.getType(),
 								CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
-								SwingConstants.LEFT),
-						new TypeEditLabel.EditIssueFieldHandler() {
-							public void handleClickedEditButton() {
-								TypeEditDialog dialog = new TypeEditDialog(project, params.issue,
-										jiraIssueListModelBuilder, jiraCache);
-								dialog.setTitle("Change Issue Type");
-								dialog.show();
-					}
-				});
+								SwingConstants.LEFT), "issuetype", "Type");
 				issueStatus = new JLabel(params.issue.getStatus(),
 						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
 						SwingConstants.LEFT);
-				issuePriority = new TypeEditLabel(
-						new JLabel(params.issue.getPriority(),
+				issuePriority = createEditableField(new JLabel(params.issue.getPriority(),
 								CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
-								SwingConstants.LEFT),
-						new TypeEditLabel.EditIssueFieldHandler() {
-							public void handleClickedEditButton() {
-								PriorityEditDialog dialog = new PriorityEditDialog(project, params.issue,
-										jiraIssueListModelBuilder, jiraCache);
-								dialog.setTitle("Change Issue Priority");
-								dialog.show();
-					}
-				});
+								SwingConstants.LEFT), "priority", "Priority");
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (params.issue.getAssigneeId().equals("-1")) {
 					issueAssignee = new JLabel("Unassigned");
@@ -948,6 +966,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
                 issueAssigneeEditLabel.setLabel(issueAssignee);
                 issueReporterEditLabel.setLabel(issueReporter);
+//				issueResolution = createEditableField(new JLabel(params.issue.getResolution()), "resolution", "Resolution");
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
@@ -1158,19 +1177,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 							if (e.getDescription().equals("edit")) {
-							  	IssueFieldEditDialog dialog = new IssueFieldEditDialog(project, params.issue,
-										params.issue.getSummary(), new IssueFieldEditDialog.ResultHandler() {
-											public void handleOK(String newFieldValue) {
-												try {
-													facade.setSummary(params.issue.getJiraServerData(), params.issue,
-															newFieldValue);
-													jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(),
-															params.issue.getJiraServerData());
-												} catch (JIRAException e1) {
-													e1.printStackTrace();
-												}
-											}
-										});
+								updateIssueField(params.issue, new JIRAActionFieldBean("summary", "Summary"));
 							} else {
 								BrowserUtil.launchBrowser(e.getURL().toString());
 							}

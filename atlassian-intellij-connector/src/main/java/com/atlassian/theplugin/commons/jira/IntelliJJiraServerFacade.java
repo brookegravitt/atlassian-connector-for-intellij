@@ -201,11 +201,23 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 	}
 
 	public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "type", type);
+		 facade.setField(jiraServerData, issue, "issuetype", type);
 	}
 
 	public void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException {
 		 facade.setField(jiraServerData, issue, "priority", priority);
+	}
+
+	public void setAffectedVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
+		facade.setField(jiraServerData, issue, "versions", versions);
+	}
+
+	public void setFixVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
+		facade.setField(jiraServerData, issue, "fixVersions", versions);
+	}
+
+	public void setFields(JiraServerData jiraServerData, JIRAIssue issue, List<JIRAActionField> fields) throws JIRAException {
+		facade.setFields(jiraServerData, issue, fields);
 	}
 
     public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
