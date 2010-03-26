@@ -20,10 +20,6 @@ public class UpdatedRecentlyPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "updated:previous=-1w";
-    }
-
     public String getName() {
         return "Updated recently";
     }
@@ -40,5 +36,10 @@ public class UpdatedRecentlyPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "updated";
+    }
+
+    @Override
+    protected String getQuery() {
+         return "updated:previous=-1w";
     }
 }

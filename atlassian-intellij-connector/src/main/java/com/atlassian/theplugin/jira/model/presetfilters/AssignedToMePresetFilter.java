@@ -21,10 +21,6 @@ public class AssignedToMePresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "assigneeSelect=issue_current_user&resolution=-1";
-    }
-
     public String getName() {
         return "Assigned to me";
     }
@@ -43,5 +39,10 @@ public class AssignedToMePresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "priority";
+    }
+
+    @Override
+    protected String getQuery() {
+        return "assigneeSelect=issue_current_user&resolution=-1";
     }
 }

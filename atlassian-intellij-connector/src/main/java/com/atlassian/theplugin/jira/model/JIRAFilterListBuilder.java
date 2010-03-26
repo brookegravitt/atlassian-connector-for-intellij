@@ -11,6 +11,7 @@ import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -116,6 +117,9 @@ public class JIRAFilterListBuilder {
         }
     }
 
+    public Collection<JiraPresetFilter> getPresetFilters(Project project, JiraServerData serverData) {
+        return listModel.getPresetFilters(project, serverData);
+    }
 
 	public boolean isModelFrozen() {
 		return listModel.isModelFrozen();

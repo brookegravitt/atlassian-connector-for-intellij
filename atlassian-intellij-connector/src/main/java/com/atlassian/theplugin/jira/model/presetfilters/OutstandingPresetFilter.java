@@ -20,10 +20,6 @@ public class OutstandingPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "resolution=-1";
-    }
-
     public String getName() {
         return "Outstanding";
     }
@@ -42,5 +38,10 @@ public class OutstandingPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "updated";
+    }
+
+    @Override
+    protected String getQuery() {
+        return "resolution=-1";
     }
 }

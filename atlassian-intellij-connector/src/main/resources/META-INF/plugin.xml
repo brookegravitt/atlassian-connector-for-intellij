@@ -943,6 +943,34 @@
                 description="Add Custom Filter">
          </action>
 
+        <action id="ThePlugin.JiraIssues.PresetFilter.SetProjectAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.SetProjectAction"
+                text="Set Project"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Set Project For Selected Preset Filter">
+        </action>
+
+         <action id="ThePlugin.JiraIssues.PresetFilter.ClearProjectAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.ClearProjectAction"
+                text="Clear Project"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Clear Project For Selected Preset Filter">
+        </action>
+
+    <action id="ThePlugin.JiraIssues.PresetFilter.SetProjectForAllAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.SetProjectForAllAction"
+                text="Set Project on All Filter"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Set Project For All Preset Filters">
+        </action>
+
+         <action id="ThePlugin.JiraIssues.PresetFilter.ClearProjectForAllAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.ClearProjectForAllAction"
+                text="Clear Project on All Filters"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Clear Project For All Preset FIlters">
+        </action>
+
          <action id="ThePlugin.JiraIssues.CustomFilter.Edit"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
                 text="Edit Custom Filter"
@@ -1155,10 +1183,16 @@
 		</group>
 
 
+        <group id="ThePlugin.JiraIssues.PresetFilterGroup" popup="true">
+            <reference id="ThePlugin.JiraIssues.PresetFilter.SetProjectAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.ClearProjectAction"/>
 
+        </group>
 
         <group id="ThePlugin.JiraIssues.ServerPopupGroup" popup="true">
-               <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.SetProjectForAllAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.ClearProjectForAllAction"/>
         </group>
 
         <!-- Manual Filter popup menu -->

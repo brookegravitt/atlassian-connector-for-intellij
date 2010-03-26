@@ -38,6 +38,7 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JIRAManualFilterTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JIRAServerTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
+import com.atlassian.theplugin.idea.jira.tree.JiraPresetFilterTreeNode;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -96,6 +97,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -281,6 +283,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
                                 .show(e.getComponent(), e.getX(), e.getY());
                     }
+                } else if (o instanceof JiraPresetFilterTreeNode) {
+                    ActionManager aManager = ActionManager.getInstance();
+                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.PresetFilterGroup");
+                    if (menu == null) {
+                        return;
+                    }
+                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+                            .show(e.getComponent(), e.getX(), e.getY());
                 } else if (o instanceof JIRAServerTreeNode) {
                     ActionManager aManager = ActionManager.getInstance();
                     ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ServerPopupGroup");
@@ -913,10 +923,23 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 getStatusBarPane().setInfoMessage("Loading issues...", false);
 
                 try {
+
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        public void run() {
+                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
+                            jiraFilterTree.expandTree();
+                        }
+                    });
+
                     JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
                     JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
                     JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
                     JiraServerData jiraServerData = getSelectedServer();
+
+                    //jiraFilterTree.refreshNodesNames();
+//                    final JIRAProject jiraProject = jiraWorkspaceConfiguration.getPresetFilterProject(jiraServerData,
+//                                presetFilter);
+                   jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
 
                     if (presetFilter != null) {
                         jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
@@ -931,11 +954,23 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     } else if (jiraFilterTree.isRecentlyOpenSelected()) {
                         jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
                     }
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
+                            jiraFilterTree.expandTree();
+                        }
+                    });
                 } catch (JIRAException e) {
                     setStatusErrorMessage(e.getMessage(), e);
+                } catch (InterruptedException e) {
+                    setStatusErrorMessage(e.getMessage(), e);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
         };
+
         ProgressManager.getInstance().run(task);
 
     }
@@ -1045,6 +1080,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     public JiraCustomFilter getSelectedManualFilter() {
         return jiraFilterTree != null ? jiraFilterTree.getSelectedManualFilter() : null;
+    }
+
+    public JiraPresetFilter getSelectedPresetFilter() {
+        return jiraFilterTree != null ? jiraFilterTree.getSelectedPresetFilter() : null;
     }
 
     public JIRAServerModel getJiraServerModel() {
@@ -1275,7 +1314,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     @Override
     public JTree createLeftTree() {
         if (jiraFilterTree == null) {
-            jiraFilterTree = new JIRAFilterTree(projectCfgManager, jiraWorkspaceConfiguration, getJIRAFilterListModel());
+            jiraFilterTree = new JIRAFilterTree(projectCfgManager, jiraWorkspaceConfiguration, getJIRAFilterListModel(), project);
             ToolTipManager.sharedInstance().registerComponent(jiraFilterTree);
         }
 

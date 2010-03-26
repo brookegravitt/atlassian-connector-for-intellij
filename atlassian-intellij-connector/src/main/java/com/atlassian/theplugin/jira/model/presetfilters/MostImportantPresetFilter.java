@@ -20,10 +20,6 @@ public class MostImportantPresetFilter extends JiraPresetFilter {
         super(projectCfgManager, jiraServer);
     }
 
-    public String getQueryStringFragment() {
-        return "resolution=-1";
-    }
-
     public String getName() {
         return "Most important";
     }
@@ -41,5 +37,10 @@ public class MostImportantPresetFilter extends JiraPresetFilter {
 
     public String getSortBy() {
         return "priority";
+    }
+
+    @Override
+    protected String getQuery() {
+        return "resolution=-1";
     }
 }
