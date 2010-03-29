@@ -32,7 +32,6 @@ import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.EditableIssueField;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
-import com.atlassian.theplugin.idea.ui.UserEditLabel;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
@@ -83,6 +82,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -637,16 +637,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
 			private JLabel componentsLabel = new BoldLabel("Component/s");
 			private JLabel originalEstimate = new JLabel("Fetching...");
+			private EditableIssueField originalEstimateEditLabel;
 			private JLabel remainingEstimate = new JLabel("Fetching...");
 			private EditableIssueField remainingEstimateEditLabel;
 			private JLabel timeSpent = new JLabel("Fetching...");
 			private EditableIssueField issueType;
 			private JLabel issueStatus;
 			private EditableIssueField issuePriority;
-            private UserEditLabel issueAssigneeEditLabel;
-            private UserEditLabel issueReporterEditLabel;
-			private JComponent issueAssignee;
-			private JComponent issueReporter;
+            private EditableIssueField issueAssigneeEditLabel;
+			private UserLabel issueAssignee = new UserLabel();
+			private EditableIssueField issueReporterEditLabel;
+			private UserLabel issueReporter = new UserLabel();
 			private JLabel issueResolution;
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
@@ -654,7 +655,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
-			protected EditableIssueField createEditableField(final JLabel label, final String fieldId,
+			protected EditableIssueField createEditableField(final JComponent label, final String fieldId,
 					final String displayName) {
 						return new EditableIssueField(label, new EditableIssueField.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
@@ -666,29 +667,20 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public DetailsPanel() {
 				super(new BorderLayout());
-                issueAssigneeEditLabel = new UserEditLabel(project, "Change Assignee", issueAssignee, jiraCache, params.issue) {
-                    @Override
-                    public void doOkAction(String selectedUserLogin) throws JIRAException {
-                        facade.setAssignee(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
-                        jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
-                    }
-                };
-
-                issueReporterEditLabel = new UserEditLabel(project, "Change Reporter", issueReporter, jiraCache, params.issue) {
-                    @Override
-                    public void doOkAction(String selectedUserLogin) throws JIRAException {
-                        facade.setReporter(params.issue.getJiraServerData(), params.issue, selectedUserLogin);
-                        jiraIssueListModelBuilder.reloadIssue(params.issue.getKey(), params.issue.getJiraServerData());
-                    }
-                };
+				issueAssigneeEditLabel = createEditableField(issueAssignee, "assignee", "Assignee");
+				issueReporterEditLabel = createEditableField(issueReporter, "reporter", "Reporter");
 				subtaskListModel = new DefaultListModel();
-
 				affectsVersionsEditLabel = createEditableField(affectsVersions, "versions", "Affects Versions");
+				affectsVersionsEditLabel.setButtonVisible(false);
 				fixVersionsEditLabel = createEditableField(fixVersions, "fixVersions", "Fix Versions");
+				fixVersionsEditLabel.setButtonVisible(false);
 				componentsEditLabel = createEditableField(components, "components", "Components");
-				remainingEstimateEditLabel = createEditableField(remainingEstimate, "timetracking", "Time Tracking");
+				componentsEditLabel.setButtonVisible(false);
+				originalEstimateEditLabel = createEditableField(originalEstimate, "timetracking", "Original Estimate");
+				originalEstimateEditLabel.setButtonVisible(false);
+				remainingEstimateEditLabel = createEditableField(remainingEstimate, "timetracking", "Remaining Estimate");
+				remainingEstimateEditLabel.setButtonVisible(false);
 				add(createBody(), BorderLayout.CENTER);
-
 			}
 
 			private JPanel createBody() {
@@ -925,7 +917,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Original Estimate"), gbc1);
-				panel.add(originalEstimate, gbc2);
+				panel.add(originalEstimateEditLabel, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				panel.add(new BoldLabel("Remaining Estimate"), gbc1);
@@ -952,21 +944,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								SwingConstants.LEFT), "priority", "Priority");
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (params.issue.getAssigneeId().equals("-1")) {
-					issueAssignee = new JLabel("Unassigned");
-					issueAssignee.setBackground(Color.WHITE);
+					issueAssignee.setText("Unassigned");
 				} else {
-					issueAssignee = new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
-							params.issue.getAssigneeId(), true, false);
+					issueAssignee.setUserName(params.issue.getServerUrl(), params.issue.getAssignee(),
+							params.issue.getAssigneeId(), true);
 				}
 				if (params.issue.getReporterId().equals("-1")) {
-					issueReporter = new JLabel("Anonymous");
-					issueReporter.setBackground(Color.WHITE);
+					issueReporter.setText("Anonymous");
 				} else {
-					issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-							params.issue.getReporterId(), true, false);
+					issueReporter.setUserName(params.issue.getServerUrl(), params.issue.getReporter(),
+							params.issue.getReporterId(), true);
 				}
-                issueAssigneeEditLabel.setLabel(issueAssignee);
-                issueReporterEditLabel.setLabel(issueReporter);
 //				issueResolution = createEditableField(new JLabel(params.issue.getResolution()), "resolution", "Resolution");
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
@@ -1074,7 +1062,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							removeAll();
 							rendererMap.clear();
 							add(createBody(), BorderLayout.CENTER);
-							if (errorString == null) {
+							boolean isError = (errorString != null);
+							affectsVersionsEditLabel.setButtonVisible(!isError);
+							fixVersionsEditLabel.setButtonVisible(!isError);
+							componentsEditLabel.setButtonVisible(!isError);
+							if (!isError) {
 								colorLabels(Color.BLACK);
 
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
@@ -1085,7 +1077,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								setTimeSpent(params.issue.getTimeSpent());
 							} else {
 								colorLabels(Color.RED);
-
 								setAffectsVersions(errorString);
 								setFixVersions(errorString);
 								setComponents(errorString);
@@ -1108,11 +1099,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private void setTimeSpent(String t) {
-				if (t != null) {
-					timeSpent.setText(t);
-				} else {
+				boolean isTimeNull = (t == null);
+				if (isTimeNull) {
 					timeSpent.setText("None");
+				} else {
+					timeSpent.setText(t);
 				}
+				originalEstimateEditLabel.setButtonVisible(isTimeNull);
+				remainingEstimateEditLabel.setButtonVisible(!isTimeNull);
 			}
 
 			private void setRemainingEstimate(String t) {
@@ -1720,12 +1714,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		public class UserLabel extends JPanel {
-			private JLabel label;            
-             UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
-                 this(serverUrl, userName, userNameId, useLink, true);
-             }
-            UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink, boolean fill) {
-                setOpaque(true);
+			private JLabel label;
+			private MouseListener mouseListener;
+
+			UserLabel() {
+				this(false);
+			}
+
+			UserLabel(boolean fill) {
+				setOpaque(true);
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 
@@ -1739,22 +1736,37 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				setBackground(Color.WHITE);
 				label.setBorder(BorderFactory.createEmptyBorder());
 				label.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+				add(label, gbc);
+				if (fill) {
+					addFillerPanel(this, gbc, true);
+				}
+			}
+
+			public void setUserName(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 				String userNameFixed = userName.replace(" ", "&nbsp;");
 				if (useLink) {
 					label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
-                            + "</u></font></body></html>");
+							+ "</u></font></body></html>");
+					if (mouseListener != null) {
+						label.removeMouseListener(mouseListener);
+						mouseListener = null;
+					}
 					addListener(serverUrl, userNameId);
 				} else {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
-				add(label, gbc);
-                if (fill) {
-				    addFillerPanel(this, gbc, true);
-                }
+			}
+
+			public void setText(final String text) {
+				if (mouseListener != null) {
+					label.removeMouseListener(mouseListener);
+					mouseListener = null;
+				}
+				label.setText(text);
 			}
 
 			private void addListener(final String serverUrl, final String userNameId) {
-				label.addMouseListener(new MouseAdapter() {
+				mouseListener = new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
 					}
@@ -1766,7 +1778,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					public void mouseExited(MouseEvent e) {
 						setCursor(Cursor.getDefaultCursor());
 					}
-				});
+				};
+				label.addMouseListener(mouseListener);
 			}
 		}
 
@@ -1858,7 +1871,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				gbc.gridx++;
 				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
-				UserLabel ul = new UserLabel(server != null ? server.getUrl() : "", comment.getAuthorFullName(),
+				UserLabel ul = new UserLabel();
+				ul.setUserName(server != null ? server.getUrl() : "", comment.getAuthorFullName(),
 						comment.getAuthor(), false);
 				ul.setFont(ul.getFont().deriveFont(Font.BOLD));
 				add(ul, gbc);

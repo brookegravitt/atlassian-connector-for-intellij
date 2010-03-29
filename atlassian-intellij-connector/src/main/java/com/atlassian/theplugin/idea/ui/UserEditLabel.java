@@ -38,7 +38,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * @author pmaruszak
- * @date Feb 23, 2010
+ * date Feb 23, 2010
  */
 public abstract class UserEditLabel extends JPanel {
     private EditIssueFieldButton button;
@@ -115,12 +115,6 @@ public abstract class UserEditLabel extends JPanel {
 
     public abstract void doOkAction(String selectedUserLogin) throws JIRAException;
 
-    public void setLabel(JComponent label) {
-        this.label = label;
-        rebuild();
-    }
-
-
     private class EditIssueFieldButton extends JRadioButton {
         private final Icon editIcon = IconLoader.getIcon("/icons/edit.png");
 
@@ -146,10 +140,7 @@ public abstract class UserEditLabel extends JPanel {
                     setCursor(Cursor.getDefaultCursor());
                 }
             });
-
         }
-
-
     }
 
     private class UserListDialog extends DialogWrapper {
@@ -228,10 +219,10 @@ public abstract class UserEditLabel extends JPanel {
 
     }
 
-    private static final class UserComboBoxItem {
+    public static final class UserComboBoxItem {
         private final User user;
 
-        private UserComboBoxItem(User user) {
+        public UserComboBoxItem(User user) {
             this.user = user;
         }
 
