@@ -16,6 +16,11 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.idea.ui.UserEditLabel;
+import com.intellij.openapi.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,36 +30,41 @@ import java.util.Arrays;
  * @author Jacek Jaroczynski
  */
 public class FieldUser extends JPanel implements ActionFieldEditor {
-	private FieldTextField textField;
-	private static final float WARNING_FONT_SIZE = 10.0f;
+	private JComboBox comboBox = new JComboBox();
 	private static final int BOX_WIDTH = 5;
-	private static final String UNASSIGNED_NAME = "Unassigned";
 	private static final String UNASSIGNED_ID = "-1";
+	private JIRAActionField field;
 
-	public FieldUser(final String text, final JIRAActionField field) {
+	public FieldUser(final JIRAServerModel jiraServerModel, final JiraIssueAdapter issue, final String text,
+		final JIRAActionField field) {
 		super();
-
-		String userId = text;
+		this.field = field;
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-		if (userId.equals(UNASSIGNED_ID)) {
-			userId = UNASSIGNED_NAME;
-		}
-
-		textField = new FieldTextField(userId, field);
-		add(textField);
+		comboBox.setEditable(true);
+		add(comboBox);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
-		JLabel warningLabel = new JLabel("Warning! This field is not validated prior to sending to JIRA");
-		warningLabel.setFont(warningLabel.getFont().deriveFont(WARNING_FONT_SIZE));
-		add(warningLabel);
+
+        for (Pair user : jiraServerModel.getUsers(issue.getJiraServerData())) {
+	        comboBox.addItem(new UserEditLabel.UserComboBoxItem(new User((String) user.getFirst(), (String) user.getSecond())));
+			if (text.equals(user.getFirst())) {
+				comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
+			}
+        }
 	}
 
 	public JIRAActionField getEditedFieldValue() {
-		JIRAActionField field = textField.getEditedFieldValue();
-		if (field.getValues().get(0).equals(UNASSIGNED_NAME)) {
-			field.setValues(Arrays.asList(UNASSIGNED_ID));
+		String selectedUser = "";
+		if (comboBox.getSelectedItem() instanceof UserEditLabel.UserComboBoxItem) {
+			selectedUser = ((UserEditLabel.UserComboBoxItem) comboBox.getSelectedItem()).getUser().getUsername();
+		} else if (comboBox.getSelectedItem() instanceof String) {
+			selectedUser = (String) comboBox.getSelectedItem();
 		}
+		if (selectedUser.equals(UNASSIGNED_ID)) {
+			selectedUser = "";
+		}
+		field.setValues(Arrays.asList(selectedUser));
 		return field;
 	}
 
@@ -63,6 +73,6 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	}
 
 	public String getFieldName() {
-		return textField.getFieldName();
+		return field.getName();
 	}
 }

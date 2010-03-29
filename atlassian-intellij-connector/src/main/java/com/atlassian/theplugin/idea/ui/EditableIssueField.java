@@ -21,7 +21,7 @@ public class EditableIssueField extends JPanel {
 	private JComponent label;
 	private final EditIssueFieldHandler handler;
 
-	public EditableIssueField(JLabel label, EditIssueFieldHandler handler) {
+	public EditableIssueField(JComponent label, EditIssueFieldHandler handler) {
 		this.handler = handler;
 		button = new EditIssueFieldButton();
 		this.label = label;
@@ -79,6 +79,10 @@ public class EditableIssueField extends JPanel {
 		filler.setOpaque(false);
 			parent.add(filler, gbc);
 		}
+
+	public void setButtonVisible(boolean isVisible) {
+		button.setVisible(isVisible);
+	}
 
 	private class EditIssueFieldButton extends JRadioButton {
 		private final Icon editIcon = IconLoader.getIcon("/icons/edit.png");
