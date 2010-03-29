@@ -18,7 +18,6 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -28,11 +27,12 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.CommentPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.EditableIssueField;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
-import com.atlassian.theplugin.idea.ui.ShowHideButton;
-import com.atlassian.theplugin.idea.ui.WhiteLabel;
+import com.atlassian.theplugin.idea.ui.StackTracePanel;
+import com.atlassian.theplugin.idea.ui.UserLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -41,10 +41,6 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -82,7 +78,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -91,13 +86,11 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -448,6 +441,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			});
 
 			getAvailableActionsGroup().clearActions(project);
+		}
+
+		public Project getProject() {
+			return project;
 		}
 
 		public String getTitle() {
@@ -1212,6 +1209,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
+		public int incrementStackTraceCounter() {
+			return ++stackTraceCounter;
+		}
+
 		private class DescriptionAndCommentsPanel extends JPanel {
 
 			private final Splitter splitPane = new Splitter(false, PluginToolWindowPanel.PANEL_SPLIT_RATIO);
@@ -1286,7 +1287,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			public void addComment(JIRAComment c) {
                 final ServerId id = params.issue.getJiraServerData().getServerId();
                 CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c,
-                        projectCfgManager.getJiraServerr(id), tabs);
+                        projectCfgManager.getJiraServerr(id), tabs, IssuePanel.this);
 				comments.add(p);
 			}
 
@@ -1357,7 +1358,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				String stack = Html2text.translate(params.issue.getDescription());
 				if (StackTraceDetector.containsStackTrace(stack)) {
-					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
+					tabs.add("Stack Trace: Description", new StackTracePanel(stack, project));
 				}
                 if (selectedIndex < tabs.getTabCount()) {
                     tabs.setSelectedIndex(selectedIndex);
@@ -1713,76 +1714,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		public class UserLabel extends JPanel {
-			private JLabel label;
-			private MouseListener mouseListener;
-
-			UserLabel() {
-				this(false);
-			}
-
-			UserLabel(boolean fill) {
-				setOpaque(true);
-				setLayout(new GridBagLayout());
-				GridBagConstraints gbc = new GridBagConstraints();
-
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.weightx = 0.0;
-				gbc.weighty = 0.0;
-				gbc.fill = GridBagConstraints.NONE;
-
-				label = new JLabel();
-				setBackground(Color.WHITE);
-				label.setBorder(BorderFactory.createEmptyBorder());
-				label.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				add(label, gbc);
-				if (fill) {
-					addFillerPanel(this, gbc, true);
-				}
-			}
-
-			public void setUserName(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
-				String userNameFixed = userName.replace(" ", "&nbsp;");
-				if (useLink) {
-					label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
-							+ "</u></font></body></html>");
-					if (mouseListener != null) {
-						label.removeMouseListener(mouseListener);
-						mouseListener = null;
-					}
-					addListener(serverUrl, userNameId);
-				} else {
-					label.setText("<html><body>" + userNameFixed + "</body></html>");
-				}
-			}
-
-			public void setText(final String text) {
-				if (mouseListener != null) {
-					label.removeMouseListener(mouseListener);
-					mouseListener = null;
-				}
-				label.setText(text);
-			}
-
-			private void addListener(final String serverUrl, final String userNameId) {
-				mouseListener = new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
-						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
-					}
-
-					public void mouseEntered(MouseEvent e) {
-						setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-					}
-
-					public void mouseExited(MouseEvent e) {
-						setCursor(Cursor.getDefaultCursor());
-					}
-				};
-				label.addMouseListener(mouseListener);
-			}
-		}
-
 		private class DescriptionPanel extends JPanel {
 			private JEditorPane body;
 
@@ -1841,146 +1772,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class CommentPanel extends JPanel {
 
-			private ShowHideButton btnShowHide;
-
-			private static final int COMMENT_GAP = 6;
-
-			private HeaderListener headerListener;
-
-			public CommentPanel(int cmtNumber, final JIRAComment comment, final ServerData server, JTabbedPane tabs) {
-				setOpaque(true);
-				setBackground(Color.WHITE);
-
-				int upperMargin = cmtNumber == 1 ? 0 : COMMENT_GAP;
-
-				setLayout(new GridBagLayout());
-				GridBagConstraints gbc;
-
-				JEditorPane commentBody = new JEditorPane();
-				btnShowHide = new ShowHideButton(commentBody, this);
-				headerListener = new HeaderListener();
-
-				gbc = new GridBagConstraints();
-				gbc.gridx++;
-				gbc.gridy = 0;
-				gbc.anchor = GridBagConstraints.WEST;
-				gbc.insets = new Insets(upperMargin, 0, 0, 0);
-				add(btnShowHide, gbc);
-
-				gbc.gridx++;
-				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
-				UserLabel ul = new UserLabel();
-				ul.setUserName(server != null ? server.getUrl() : "", comment.getAuthorFullName(),
-						comment.getAuthor(), false);
-				ul.setFont(ul.getFont().deriveFont(Font.BOLD));
-				add(ul, gbc);
-
-				final JLabel hyphen = new WhiteLabel();
-				hyphen.setText("-");
-				gbc.gridx++;
-				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
-				add(hyphen, gbc);
-
-				final JLabel creationDate = new WhiteLabel();
-				creationDate.setForeground(Color.GRAY);
-				creationDate.setFont(creationDate.getFont().deriveFont(Font.ITALIC));
-
-				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
-				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				String t;
-				try {
-					t = dfo.format(df.parse(comment.getCreationDate().getTime().toString()));
-				} catch (java.text.ParseException e) {
-					t = "Invalid date: " + comment.getCreationDate().getTime().toString();
-				}
-
-				creationDate.setText(t);
-				gbc.gridx++;
-				gbc.insets = new Insets(upperMargin, 0, 0, 0);
-				add(creationDate, gbc);
-
-				String dehtmlizedBody = Html2text.translate(comment.getBody());
-				if (StackTraceDetector.containsStackTrace(dehtmlizedBody)) {
-					tabs.add("Comment Stack Trace #" + (++stackTraceCounter), new StackTracePanel(dehtmlizedBody));
-
-					gbc.gridx++;
-					gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
-					JLabel traceNumber = new WhiteLabel();
-					traceNumber.setText("Stack Trace #" + stackTraceCounter);
-					traceNumber.setForeground(Color.RED);
-
-					add(traceNumber, gbc);
-				}
-
-				// filler
-				gbc.gridx++;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.weightx = 1.0;
-				JPanel filler = new JPanel();
-				filler.setBackground(Color.WHITE);
-				filler.setOpaque(true);
-				gbc.insets = new Insets(upperMargin, 0, 0, 0);
-				add(filler, gbc);
-
-				int gridwidth = gbc.gridx + 1;
-
-				commentBody.setEditable(false);
-				commentBody.setOpaque(true);
-				commentBody.setBackground(Color.WHITE);
-				commentBody.setMargin(new Insets(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
-				commentBody.setContentType("text/html");
-				commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				// JEditorPane does not do XHTML :(
-				String bodyFixed = comment.getBody().replace("/>", ">");
-				commentBody.setText("<html><head></head><body>" + bodyFixed + "</body></html>");
-				commentBody.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-							BrowserUtil.launchBrowser(e.getURL().toString());
-						}
-					}
-				});
-				gbc.gridx = 0;
-				gbc.gridy = 1;
-				gbc.gridwidth = gridwidth;
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
-				gbc.insets = new Insets(0, 0, 0, 0);
-				add(commentBody, gbc);
-
-				addMouseListener(headerListener);
-			}
-
-			private class HeaderListener extends MouseAdapter {
-				public void mouseClicked(MouseEvent e) {
-					btnShowHide.click();
-				}
-			}
-
-			public ShowHideButton getShowHideButton() {
-				return btnShowHide;
-			}
-		}
-
-		private class StackTracePanel extends JPanel {
-			public StackTracePanel(String stack) {
-
-				TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-				TextConsoleBuilder builder = factory.createBuilder(project);
-				ConsoleView console = builder.getConsole();
-				console.print(stack, ConsoleViewContentType.NORMAL_OUTPUT);
-
-				setLayout(new GridBagLayout());
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
-				add(console.getComponent(), gbc);
-			}
-		}
 
 //		private class LocalConfigListener extends ConfigurationListenerAdapter {
 //
@@ -2054,7 +1846,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         }
     }
 
-	private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
+	public static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
 		if (horizontal) {
 			gbc.gridx++;
 			gbc.weightx = 1.0;
