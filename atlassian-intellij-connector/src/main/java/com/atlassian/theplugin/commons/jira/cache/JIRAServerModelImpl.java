@@ -242,7 +242,7 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 
     public List<Pair<String, String>> getUsers(JiraServerData jiraServerData) {
-       if (jiraServerData == null) {
+		if (jiraServerData == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);
@@ -250,7 +250,7 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
     }
 
     public void addUser(JiraServerData jiraServerData, String userId, String userName) {
-       if (jiraServerData == null) {
+		if (jiraServerData == null) {
 			return;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);
