@@ -649,12 +649,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
             private JEditorPane issueEnvironment;
+			private EditableIssueField issueEnvironmentEditLabel;
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
-			protected EditableIssueField createEditableField(final JComponent label, final String fieldId,
+			protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
 					final String displayName) {
-						return new EditableIssueField(label, new EditableIssueField.EditIssueFieldHandler() {
+						return new EditableIssueField(component, new EditableIssueField.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
 								updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
 							}
@@ -897,6 +898,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 if (env != null && env.length() > 0) {
                     panel.add(new BoldLabel("Environment"), gbc1);
                     panel.add(issueEnvironment, gbc2);
+//					panel.add(issueEnvironmentEditLabel, gbc2);
                     gbc1.gridy++;
                     gbc2.gridy++;
                 }
@@ -958,7 +960,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
                 issueEnvironment = new JEditorPane();
                 issueEnvironment.setMargin(new Insets(0, 0, 0, 0));
-                issueEnvironment.setText(params.issue.getEnvironment());
+                issueEnvironment.setText(Html2text.translate(params.issue.getEnvironment()));
+//				issueEnvironmentEditLabel = createEditableField(issueEnvironment, "environment", "Environment");
 			}
 
 			public JLabel getAffectVersionsLabel() {
@@ -1857,6 +1860,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			gbc.fill = GridBagConstraints.VERTICAL;
 		}
 		JPanel filler = new JPanel();
+		filler.setBackground(parent.getBackground());
+//		filler.setBorder(BorderFactory.createEmptyBorder());
 		filler.setOpaque(false);
 		parent.add(filler, gbc);
 	}

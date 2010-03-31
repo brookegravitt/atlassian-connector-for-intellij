@@ -147,7 +147,8 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     row = ", p, 3dlu";
                     break;
                 case ENVIRONMENT:
-                    editor = new FieldTextArea(field.getValues().get(0), field);
+//                    editor = new FieldTextArea(field.getValues().get(0), field);
+                    editor = new FieldTextArea(Html2text.translate(issue.getEnvironment()), field);
                     row = ", fill:pref:grow, 3dlu";
                     break;
                 case TIMETRACKING:

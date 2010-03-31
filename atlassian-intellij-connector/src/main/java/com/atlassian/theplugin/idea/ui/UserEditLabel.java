@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.ui;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -93,25 +94,8 @@ public abstract class UserEditLabel extends JPanel {
         groupingPanel.add(button, gbc1);
         add(groupingPanel, gbc);
 
-        addFillerPanel(this, gbc, true);
+        IssueDetailsToolWindow.addFillerPanel(this, gbc, true);
     }
-
-    private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
-        if (horizontal) {
-            gbc.gridx++;
-            gbc.weightx = 1.0;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-        } else {
-            gbc.gridy++;
-            gbc.weighty = 1.0;
-            gbc.fill = GridBagConstraints.VERTICAL;
-        }
-        JPanel filler = new JPanel();
-        filler.setBorder(BorderFactory.createEmptyBorder());
-        filler.setOpaque(false);
-        parent.add(filler, gbc);
-    }
-
 
     public abstract void doOkAction(String selectedUserLogin) throws JIRAException;
 
