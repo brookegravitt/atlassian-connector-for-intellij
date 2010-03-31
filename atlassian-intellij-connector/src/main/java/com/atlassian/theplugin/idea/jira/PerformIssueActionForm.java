@@ -123,7 +123,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     row = ", p, 3dlu";
                     break;
                 case ASSIGNEE:
-                    editor = new FieldUser(jiraServerModel, issue, issue.getAssigneeId(), field);
+                    editor = new FieldUser(jiraServerModel, issue.getJiraServerData(), issue.getAssigneeId(), field);
                     row = ", p, 3dlu";
                     break;
                 case PRIORITY:
@@ -143,7 +143,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     row = ", p, 3dlu";
                     break;
                 case REPORTER:
-                    editor = new FieldUser(jiraServerModel, issue, issue.getReporterId(), field);
+                    editor = new FieldUser(jiraServerModel, issue.getJiraServerData(), issue.getReporterId(), field);
                     row = ", p, 3dlu";
                     break;
                 case ENVIRONMENT:

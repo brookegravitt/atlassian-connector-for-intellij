@@ -36,6 +36,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.atlassian.theplugin.idea.jira.controls.FieldUser;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.JiraConstantCellRenderer;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
@@ -69,7 +70,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JComboBox typeComboBox;
 	private JTextField summary;
 	private JComboBox priorityComboBox;
-	private JTextField assignee;
+	private FieldUser assigneeField;
 	private JList componentsList;
 	private JList versionsList;
 	private JList fixVersionsList;
@@ -88,6 +89,10 @@ public class IssueCreateDialog extends DialogWrapper {
 		this.model = model;
 		this.jiraConfiguration = jiraProjectCfg;
 		$$$setupUI$$$();
+		assigneeField = new FieldUser(model, jiraServerData, "", null);
+		mainPanel.add(assigneeField, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				new Dimension(50, -1), new Dimension(150, -1), null, 0, false));
 		componentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		init();
 		pack();
@@ -499,7 +504,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		if (components.size() > 0) {
 			newIssue.setComponents(components);
 		}
-		String assignTo = assignee.getText();
+		String assignTo = assigneeField.getSelectedUser();
 		if (assignTo.length() > 0) {
 			newIssue.setAssignee(assignTo);
 		}
@@ -615,10 +620,6 @@ public class IssueCreateDialog extends DialogWrapper {
 		label4.setText("Assignee:");
 		mainPanel.add(label4, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		assignee = new JTextField();
-		mainPanel.add(assignee, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				new Dimension(50, -1), new Dimension(150, -1), null, 0, false));
 		final JLabel label5 = new JLabel();
 		label5.setFont(new Font(label5.getFont().getName(), label5.getFont().getStyle(), 10));
 		label5.setHorizontalTextPosition(10);
