@@ -30,13 +30,12 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @autrhor pmaruszak
- * @date Mar 24, 2010
+ * @author pmaruszak
+ * date Mar 24, 2010
  */
 public class SelectJiraProjectDialog extends DialogWrapper {
     private JPanel panel = new JPanel (new BorderLayout());
     private JList list;
-    private ListSpeedSearch speedList;
     private DefaultListModel listModel = new DefaultListModel();
     private final Project project;
     private final JiraServerData jiraServer;
@@ -46,10 +45,11 @@ public class SelectJiraProjectDialog extends DialogWrapper {
         this.project = project;
         this.jiraServer = jiraServer;
         list = new JList(listModel);
-        speedList = new ListSpeedSearch(list);
+        ListSpeedSearch speedList = new ListSpeedSearch(list);
         list.setModel(listModel);
 
         list.setVisibleRowCount(20);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(speedList.getComponent());
         listScroller.setPreferredSize(new Dimension(380, 320));
         listScroller.setMinimumSize(new Dimension(350, 320));
@@ -74,7 +74,9 @@ public class SelectJiraProjectDialog extends DialogWrapper {
 
         try {
             for (JIRAProject p : IdeaHelper.getJIRAServerModel(project).getProjects(jiraServer)) {
-                listModel.addElement(new JiraProjectWrapper((JIRAProjectBean) p));
+				if (p.getKey() != null) {
+	                listModel.addElement(new JiraProjectWrapper((JIRAProjectBean) p));
+	            }
             }
         } catch (JIRAException e) {
             DialogWithDetails.showExceptionDialog(project, "Cannot retrieve project from server", "");
