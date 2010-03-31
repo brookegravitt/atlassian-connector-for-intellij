@@ -20,8 +20,8 @@ import com.atlassian.theplugin.idea.jira.tree.SelectJiraProjectDialog;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
- * @autrhor pmaruszak
- * @date Mar 24, 2010
+ * @author pmaruszak
+ * date Mar 24, 2010
  */
 public class SetProjectAction extends BaseProjectAction {
     @Override
@@ -31,8 +31,8 @@ public class SetProjectAction extends BaseProjectAction {
         if (dialog.isOK() && dialog.getSelectedProject() != null) {
 
             IdeaHelper.getJiraWorkspaceConfiguration(anActionEvent)
-                    .setPresetFilterProject(selectedServer, panel.getSelectedPresetFilter(), dialog.getSelectedProject());            
-        }
-        panel.refreshIssues(true);
+                    .setPresetFilterProject(selectedServer, panel.getSelectedPresetFilter(), dialog.getSelectedProject());
+			panel.refreshIssues(true);
+		}
     }
 }

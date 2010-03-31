@@ -23,27 +23,27 @@ import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
- * @autrhor pmaruszak
- * @date Mar 24, 2010
+ * @author pmaruszak
+ * date Mar 24, 2010
  */
 public class SetProjectForAllAction extends BaseProjectAction {
     @Override
     public void onActionPerformed(AnActionEvent anActionEvent) {
-        SelectJiraProjectDialog dialog = new SelectJiraProjectDialog(project, selectedServer);
-         dialog.show();
-        if (dialog.isOK()) {
-            final JIRAProject jiraProject = dialog.getSelectedProject();
-            //for(IdeaHelper.getJIRAServerModel(project).getP)
-         
-            if (dialog.getSelectedProject() != null) {
+		SelectJiraProjectDialog dialog = new SelectJiraProjectDialog(project, selectedServer);
+		dialog.show();
+		if (dialog.isOK()) {
+			final JIRAProject jiraProject = dialog.getSelectedProject();
+			//for(IdeaHelper.getJIRAServerModel(project).getP)
 
-                for (JiraPresetFilter filter
-                        : IdeaHelper.getJIRAFilterListBuilder(project).getPresetFilters(project, selectedServer)) {
-                    IdeaHelper.getJiraWorkspaceConfiguration(anActionEvent)
-                    .setPresetFilterProject(selectedServer, filter, (JIRAProjectBean)jiraProject);
-                }
-            }
-        }
-        panel.refreshIssues(true);
-    }
+			if (dialog.getSelectedProject() != null) {
+
+				for (JiraPresetFilter filter
+						: IdeaHelper.getJIRAFilterListBuilder(project).getPresetFilters(project, selectedServer)) {
+					IdeaHelper.getJiraWorkspaceConfiguration(anActionEvent)
+							.setPresetFilterProject(selectedServer, filter, (JIRAProjectBean)jiraProject);
+				}
+				panel.refreshIssues(true);
+			}
+		}
+	}
 }
