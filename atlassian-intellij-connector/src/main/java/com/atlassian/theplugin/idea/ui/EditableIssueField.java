@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.ui;
 
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -18,14 +19,14 @@ import java.awt.event.MouseEvent;
  */
 public class EditableIssueField extends JPanel {
 	private EditIssueFieldButton button;
-	private JComponent label;
+	private JComponent component; //ususally label displaying value of that field
 	private final EditIssueFieldHandler handler;
 
-	public EditableIssueField(JComponent label, EditIssueFieldHandler handler) {
+	public EditableIssueField(JComponent component, EditIssueFieldHandler handler) {
 		this.handler = handler;
 		button = new EditIssueFieldButton();
-		this.label = label;
-		this.label.setBackground(Color.WHITE);
+		this.component = component;
+		this.component.setBackground(Color.WHITE);
 		setBackground(Color.WHITE);
 		button.setBackground(Color.WHITE);
 		setBorder(BorderFactory.createEmptyBorder());
@@ -53,32 +54,25 @@ public class EditableIssueField extends JPanel {
 		gbc1.fill = GridBagConstraints.NONE;
 
 		removeAll();
-		if (label != null) {
-			setBackground(label.getBackground());
-			groupingPanel.add(label, gbc1);
+		if (component != null) {
+			setBackground(component.getBackground());
+			groupingPanel.add(component, gbc1);
 		}
+
+		gbc1.gridx = 0;
+		gbc1.gridy = 0;
+		gbc1.weightx = 0.0;
+		gbc1.weighty = 0.0;
 		gbc1.gridx++;
+		gbc1.anchor = GridBagConstraints.PAGE_START;
+		gbc1.fill = GridBagConstraints.NONE;
+
 		groupingPanel.add(button, gbc1);
 		add(groupingPanel, gbc);
 
-		addFillerPanel(this, gbc, true);
+		IssueDetailsToolWindow.addFillerPanel(this, gbc, true);
 	}
 
-	private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
-		if (horizontal) {
-			gbc.gridx++;
-			gbc.weightx = 1.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-		} else {
-			gbc.gridy++;
-			gbc.weighty = 1.0;
-			gbc.fill = GridBagConstraints.VERTICAL;
-		}
-		JPanel filler = new JPanel();
-		filler.setBorder(BorderFactory.createEmptyBorder());
-		filler.setOpaque(false);
-			parent.add(filler, gbc);
-		}
 
 	public void setButtonVisible(boolean isVisible) {
 		button.setVisible(isVisible);
