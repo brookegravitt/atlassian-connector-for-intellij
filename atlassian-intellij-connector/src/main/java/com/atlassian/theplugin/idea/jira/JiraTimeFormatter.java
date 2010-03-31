@@ -21,7 +21,13 @@ public final class JiraTimeFormatter {
         try {
             t = ds.format(df.parse(dateString));
         } catch (ParseException e) {
-            t = "Invalid";
+			// maybe it is JIRA 4.1 EAP format? try it
+			df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+			try {
+				t = ds.format(df.parse(dateString));
+			} catch (ParseException e2) {
+	            t = "Invalid";
+			}
         }
 
         return t;
