@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.ui.UserEditLabel;
 import com.intellij.openapi.util.Pair;
@@ -31,11 +31,10 @@ import java.util.Arrays;
  */
 public class FieldUser extends JPanel implements ActionFieldEditor {
 	private JComboBox comboBox = new JComboBox();
-	private static final int BOX_WIDTH = 5;
 	private static final String UNASSIGNED_ID = "-1";
 	private JIRAActionField field;
 
-	public FieldUser(final JIRAServerModel jiraServerModel, final JiraIssueAdapter issue, final String text,
+	public FieldUser(final JIRAServerModel jiraServerModel, final JiraServerData serverData, final String text,
 		final JIRAActionField field) {
 		super();
 		this.field = field;
@@ -44,9 +43,9 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 
 		comboBox.setEditable(true);
 		add(comboBox);
-		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
+		add(Box.createRigidArea(new Dimension(0, 0)));
 
-        for (Pair user : jiraServerModel.getUsers(issue.getJiraServerData())) {
+        for (Pair user : jiraServerModel.getUsers(serverData)) {
 	        comboBox.addItem(new UserEditLabel.UserComboBoxItem(new User((String) user.getFirst(), (String) user.getSecond())));
 			if (text.equals(user.getFirst())) {
 				comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
@@ -55,6 +54,11 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	}
 
 	public JIRAActionField getEditedFieldValue() {
+		field.setValues(Arrays.asList(getSelectedUser()));
+		return field;
+	}
+
+	public String getSelectedUser() {
 		String selectedUser = "";
 		if (comboBox.getSelectedItem() instanceof UserEditLabel.UserComboBoxItem) {
 			selectedUser = ((UserEditLabel.UserComboBoxItem) comboBox.getSelectedItem()).getUser().getUsername();
@@ -64,8 +68,7 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 		if (selectedUser.equals(UNASSIGNED_ID)) {
 			selectedUser = "";
 		}
-		field.setValues(Arrays.asList(selectedUser));
-		return field;
+		return selectedUser;
 	}
 
 	public Component getComponent() {
