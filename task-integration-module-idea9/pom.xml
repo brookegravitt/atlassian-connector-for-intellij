@@ -11,7 +11,7 @@
     <description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
     <groupId>com.atlassian.connector.tasks</groupId>
     <artifactId>atlassian-idea9-integration</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/task-integration-module-idea9</connection>
         <url>https://studio.atlassian.com/svn/PL/trunk/task-integration-module-idea9</url>
@@ -24,13 +24,13 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>tasks-core</artifactId>
-            <version>9.0.2-273</version>
+            <version>9.0.2-633</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jira-connector</artifactId>
-            <version>9.0.2-273</version>
+            <version>9.0.2-633</version>
             <scope>compile</scope>
         </dependency>
 
