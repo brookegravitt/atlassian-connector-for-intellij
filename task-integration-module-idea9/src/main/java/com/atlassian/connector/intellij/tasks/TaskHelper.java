@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 public final class TaskHelper {
 
 
-
-    @Nullable
-    public static ActivationProcessingManager getActivationProcessingThread(Project p) {
-        return getProjectComponent(p, ActivationProcessingManager.class);
-    }
+//
+//    @Nullable
+//    public static ActivationProcessingManager getActivationProcessingThread(Project p) {
+//        return getProjectComponent(p, ActivationProcessingManager.class);
+//    }
     
     @Nullable
     public static PluginTaskManager getPluginTaskManager(final Project project) {

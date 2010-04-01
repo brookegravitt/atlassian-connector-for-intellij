@@ -8,7 +8,6 @@ import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.LocalTask;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,11 +17,11 @@ import java.awt.*;
  * @date Feb 2, 2010
  */
 public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
-    volatile LocalTask prevTask = null;
-    volatile DateTime prevTime = new DateTime();
+//    volatile LocalTask prevTask = null;
+//    volatile DateTime prevTime = new DateTime();
     private final Project project;
     private final PluginTaskManager pluginTaskManager;
-    volatile private boolean initialized = false;
+//    volatile private boolean initialized = false;
 
     public TaskListenerImpl(final Project project, PluginTaskManager pluginTaskManager) {
         this.project = project;
@@ -32,10 +31,10 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
     public void taskActivated(final LocalTask localTask) {
         System.out.println("Activated " + localTask.getIssueUrl());
         synchronized (this) {
-            EventQueue.invokeLater(new ActivateRunnable(localTask, prevTask, prevTime, initialized));
-            prevTask = localTask;
-            prevTime = new DateTime();
-            initialized = true;
+            EventQueue.invokeLater(new ActivateRunnable(localTask));
+//            prevTask = localTask;
+//            prevTime = new DateTime();
+//            initialized = true;
         }
 
     }
@@ -43,22 +42,23 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
     class ActivateRunnable implements Runnable {
         private final LocalTask localTask;
-        private final LocalTask prevTask;
-        private final DateTime prevTime;
-        private final boolean initialized;
+//        private final LocalTask prevTask;
+//        private final DateTime prevTime;
+//        private final boolean initialized;
 
-        public ActivateRunnable(LocalTask localTask, LocalTask prevTask, DateTime prevTime, boolean initialized) {
+        public ActivateRunnable(LocalTask localTask) {
 
             this.localTask = localTask;
-            this.prevTask = prevTask;
-            this.prevTime = prevTime;
-            this.initialized = initialized;
+//            this.prevTask = prevTask;
+//            this.prevTime = prevTime;
+//            this.initialized = initialized;
         }
 
         public void run() {
-            Period period = new Period(prevTime, new DateTime());
+            System.out.println("[PTM] Task switching");
+//            Period period = new Period(prevTime, new DateTime());
 
-            if (prevTask != localTask || period.getMillis() > 500 || !initialized) {
+//            if (prevTask != localTask || !initialized) {
                 if (!PluginTaskManager.isDefaultTask(localTask)) {
                     final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
                     if (jiraIssue == null || !localTask.getId().equals(jiraIssue.getIssueKey())) {
@@ -66,19 +66,26 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
                         final JiraServerData sd = pluginTaskManager.findJiraPluginJiraServer(localTask.getIssueUrl());
 
                         if (sd != null) {
-                            final ActiveJiraIssue ai = new ActiveJiraIssueBean(sd.getServerId(), localTask.getIssueUrl(), localTask.getId(),
+                            final ActiveJiraIssueBean ai = new ActiveJiraIssueBean(sd.getServerId(), localTask.getIssueUrl(), localTask.getId(),
                                     new DateTime());
-
+                            ai.setSource(ActiveJiraIssueBean.ActivationSource.INTELLIJ);
+                            System.out.println("[1:PTM] Activating " + ai.getIssueKey());
                             ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
+                        } else {
+                            System.out.println("[2:PTM] Nothing");
                         }
+                    }  else {
+                        System.out.println("[3:PTM] Deactivating to default");
+                        SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
                     }
 
                 } else {
+                     System.out.println("[4:PTM] Deactivating to default");
                     SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
                 }
 
 
             }
-        }
+//        }
     }
 }

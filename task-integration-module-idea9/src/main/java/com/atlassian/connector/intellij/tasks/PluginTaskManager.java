@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
@@ -32,11 +33,11 @@ public class PluginTaskManager implements ProjectComponent {
     private TaskListenerImpl listener;
 
 
-    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager, TaskManager taskManager) {
+    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager) {
         this.project = project;
         this.projectCfgManager = projectCfgManager;
         this.listener = new TaskListenerImpl(project, this);
-        this.taskManager = (TaskManagerImpl)taskManager;
+        this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
     }
 
     public void silentActivateIssue(ActiveJiraIssue issue) {
@@ -48,8 +49,11 @@ public class PluginTaskManager implements ProjectComponent {
 
     public void silentDeactivateIssue() {
         taskManager.removeTaskListener(listener);
-        deactivateToDefaultTask();
-        taskManager.addTaskListener(listener);
+        try {
+            deactivateToDefaultTask();
+        } finally {
+            taskManager.addTaskListener(listener);
+        }
     }
 
     public void activateIssue(ActiveJiraIssue issue) {
@@ -159,19 +163,18 @@ public class PluginTaskManager implements ProjectComponent {
     }
 
     public void projectOpened() {
-//        StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
-//            public void run() {
-//                initializePlugin();
-//            }
-//        });
+        StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
+            public void run() {
+                initializePlugin();
+            }
+        });
     }
 
 
-//    private void initializePlugin() {
-//        this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-//        taskManager.addTaskListener(listener);
-//
-//    }
+    private void initializePlugin() {
+        this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+        taskManager.addTaskListener(listener);
+    }
 
     public void projectClosed() {
         taskManager.removeTaskListener(listener);
