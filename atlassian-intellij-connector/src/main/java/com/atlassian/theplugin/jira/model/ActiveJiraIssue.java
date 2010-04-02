@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.intellij.util.xmlb.annotations.Transient;
 
 /**
  * User: pmaruszak
@@ -34,4 +35,10 @@ public interface ActiveJiraIssue {
 	long recalculateTimeSpent();
 
     boolean isPaused();
+
+    @Transient
+    ActiveJiraIssueBean.ActivationSource getSource();
+
+    @Transient
+    void setSource(ActiveJiraIssueBean.ActivationSource source);
 }

@@ -25,7 +25,13 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DataKey;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -64,7 +70,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 		ActionManager manager = ActionManager.getInstance();
 		ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.CommittedChangesToolbar");
 		ActionToolbar toolbar = manager.createActionToolbar("PostCommitReview", group, true);
-		commitedChangesBrowser.addToolBar(toolbar.getComponent());
+		//commitedChangesBrowser.addToolBar(toolbar.getComponent());
 		setCustomComponent(commitedChangesBrowser);
 
 		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane()));
