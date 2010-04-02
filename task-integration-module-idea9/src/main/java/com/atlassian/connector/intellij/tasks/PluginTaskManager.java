@@ -2,6 +2,7 @@ package com.atlassian.connector.intellij.tasks;
 
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -29,15 +30,18 @@ public class PluginTaskManager implements ProjectComponent {
 
     private final Project project;
     private final ProjectCfgManager projectCfgManager;
+    private final PluginConfiguration pluginConfiguration;
     private TaskManagerImpl taskManager;
     private TaskListenerImpl listener;
 
 
-    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager) {
+    public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager, PluginConfiguration pluginConfiguration) {
         this.project = project;
         this.projectCfgManager = projectCfgManager;
-        this.listener = new TaskListenerImpl(project, this);
+        this.pluginConfiguration = pluginConfiguration;
+        this.listener = new TaskListenerImpl(project, this, pluginConfiguration);
         this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+
     }
 
     public void silentActivateIssue(ActiveJiraIssue issue) {
@@ -240,4 +244,5 @@ public class PluginTaskManager implements ProjectComponent {
 
         return defaultTask;
     }
+
 }
