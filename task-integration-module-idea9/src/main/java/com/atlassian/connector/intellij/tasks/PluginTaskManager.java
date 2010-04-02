@@ -41,17 +41,24 @@ public class PluginTaskManager implements ProjectComponent {
     }
 
     public void silentActivateIssue(ActiveJiraIssue issue) {
+        System.out.println("[1]Removing listener");
         taskManager.removeTaskListener(listener);
-        activateIssue(issue);
-        taskManager.addTaskListener(listener);
+        try {
+            activateIssue(issue);
+        } finally {
+            System.out.println("[1]Adding listener");
+            taskManager.addTaskListener(listener);
+        }
     }
 
 
     public void silentDeactivateIssue() {
+        System.out.println("[2]Removing listener");
         taskManager.removeTaskListener(listener);
         try {
             deactivateToDefaultTask();
         } finally {
+            System.out.println("[2]Adding listener");
             taskManager.addTaskListener(listener);
         }
     }
@@ -69,7 +76,11 @@ public class PluginTaskManager implements ProjectComponent {
             Task activeTask = taskManager.getActiveTask();
             if (activeTask == null || (activeTask != foundTask)) {
                 final Task fFoundTask = foundTask;
-                taskManager.activateTask(fFoundTask, false, true);
+                try {
+                    taskManager.activateTask(fFoundTask, false, true);
+                } catch (Exception e) {
+                    deactivateToDefaultTask();
+                }
 
             } else {
                 //todo search for issue ID and modify task instead of creating one
@@ -79,15 +90,19 @@ public class PluginTaskManager implements ProjectComponent {
                         taskManager.activateTask(fFoundTask, true, true);
                     }
                 } catch (Exception e) {
+                    deactivateToDefaultTask();
                 }
 
             }
         } else {
             Task newTask = (Task) TaskHelper.findJiraTask((JiraRepository) jiraRepository, issue.getIssueKey());
 
-
             if (newTask != null) {
-                taskManager.activateTask(newTask, true, true);
+                try {
+                    taskManager.activateTask(newTask, true, true);
+                } catch (Exception e) {
+                    deactivateToDefaultTask();
+                }
             }
         }
     }
@@ -210,7 +225,7 @@ public class PluginTaskManager implements ProjectComponent {
 
 
     public void deactivateToDefaultTask() {
-
+        System.out.println("Deactivating to default");
         LocalTask defaultTask = getDefaultTask();
         if (defaultTask != null) {
             taskManager.activateTask(defaultTask, false, false);
