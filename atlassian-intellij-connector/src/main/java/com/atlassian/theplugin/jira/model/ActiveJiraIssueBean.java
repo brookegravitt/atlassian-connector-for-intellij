@@ -17,6 +17,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
+import com.intellij.util.xmlb.annotations.Transient;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -25,6 +26,11 @@ import org.joda.time.PeriodType;
  * User: pmaruszak
  */
 public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements ActiveJiraIssue {
+    public enum ActivationSource {
+        CONNECTOR,
+        INTELLIJ
+    }
+    private ActivationSource source = ActivationSource.CONNECTOR;
 	private DateTime lastStartTime = new DateTime();
 	private long secondsSpent;
 	private boolean active = false;
@@ -96,5 +102,12 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
         this.paused = paused;
     }
 
-
+    @Transient
+    public ActivationSource getSource() {
+        return source;
+    }
+    @Transient
+    public void setSource(ActivationSource source) {
+        this.source = source;
+    }
 }

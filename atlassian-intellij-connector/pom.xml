@@ -24,8 +24,8 @@
 	</issueManagement>
 	<dependencies>
 	     <!--<dependency>-->
-            <!--<groupId>com.atlassian.connector</groupId>-->
-            <!--<artifactId>atlassian-idea-plugin-integration</artifactId>-->
+            <!--<groupId>com.atlassian.connector.tasks</groupId>-->
+            <!--<artifactId>atlassian-idea9-integration</artifactId>-->
             <!--<version>0.1.1-SNAPSHOT</version>-->
        <!--</dependency>-->
 		<dependency>

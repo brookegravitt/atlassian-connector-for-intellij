@@ -966,7 +966,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 } catch (InterruptedException e) {
                     setStatusErrorMessage(e.getMessage(), e);
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();  
                 }
             }
         };

@@ -180,7 +180,9 @@ public final class ActiveIssueUtils {
 
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
-                    PluginTaskManagerFacade.silentDeactivateIssue(project);
+                    if (newActiveIssue.getSource().equals(ActiveJiraIssueBean.ActivationSource.CONNECTOR)) {
+                        PluginTaskManagerFacade.silentDeactivateIssue(project);
+                    }
                     setActiveJiraIssue(project, null, null);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
