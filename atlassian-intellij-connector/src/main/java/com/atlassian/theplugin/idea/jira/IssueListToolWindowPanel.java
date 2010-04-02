@@ -249,48 +249,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
     private void addJiraFilterTreeListeners() {
         jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
-        jiraFilterTree.addMouseListener(new PopupAwareMouseAdapter() {
-            protected void onPopup(MouseEvent e) {
-                if (!(e.getComponent() instanceof JIRAFilterTree)) {
-                    return;
-                }
-                JIRAFilterTree tree = (JIRAFilterTree) e.getComponent();
-                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-                if (path == null) {
-                    return;
-                }
-                tree.setSelectionPath(path);
-                Object o = path.getLastPathComponent();
-                if (o instanceof JIRAManualFilterTreeNode) {
-                    JiraCustomFilter manualFilter = ((JIRAManualFilterTreeNode) o).getManualFilter();
-                    if (manualFilter != null) {
-                        ActionManager aManager = ActionManager.getInstance();
-                        ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ManualFilterPopupGroup");
-                        if (menu == null) {
-                            return;
-                        }
-                        aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
-                                .show(e.getComponent(), e.getX(), e.getY());
-                    }
-                } else if (o instanceof JiraPresetFilterTreeNode) {
-                    ActionManager aManager = ActionManager.getInstance();
-                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.PresetFilterGroup");
-                    if (menu == null) {
-                        return;
-                    }
-                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
-                            .show(e.getComponent(), e.getX(), e.getY());
-                } else if (o instanceof JIRAServerTreeNode) {
-                    ActionManager aManager = ActionManager.getInstance();
-                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ServerPopupGroup");
-                    if (menu == null) {
-                        return;
-                    }
-                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
-                            .show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-        });
+        final PopupAwareMouseAdapter awareMouseAdapter = new PopupAwareMouseAdapterLocal();
+        jiraFilterTree.addMouseListener(awareMouseAdapter);
     }
     
     public ProjectCfgManager getProjectCfgManager() {
@@ -897,51 +857,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
             return;
         }
-
-        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Retrieving issues", false) {
-            @Override
-            public void run(@NotNull final ProgressIndicator indicator) {
-                getStatusBarPane().setInfoMessage("Loading issues...", false);
-                try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        public void run() {
-                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
-                            jiraFilterTree.expandTree();
-                        }
-                    });
-                    JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
-                    JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
-                    JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
-                    JiraServerData jiraServerData = getSelectedServer();
-                   jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
-                    if (presetFilter != null) {
-                        jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
-                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
-                    } else if (savedFilter != null) {
-                        jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
-                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
-                    } else if (manualFilter != null) {
-                        jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerData,
-                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
-                    } else if (jiraFilterTree.isRecentlyOpenSelected()) {
-                        jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
-                    }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
-                            jiraFilterTree.expandTree();
-                        }
-                    });
-                } catch (JIRAException e) {
-                    setStatusErrorMessage(e.getMessage(), e);
-                } catch (InterruptedException e) {
-                    setStatusErrorMessage(e.getMessage(), e);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();  
-                }
-            }
-        };
-
+        Task.Backgroundable task = new RetrieveIssues(getProject(), "Retrieving issues", false, reload);
         ProgressManager.getInstance().run(task);
 
     }
@@ -1621,4 +1537,101 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
     }
+
+
+    private class RetrieveIssues extends  Task.Backgroundable {
+        private final boolean reload;
+
+        public RetrieveIssues(@Nullable Project project, @NotNull String title, boolean canBeCancelled, boolean reload) {
+                super(project, title, canBeCancelled);
+            this.reload = reload;
+        }
+
+
+            @Override
+            public void run(@NotNull final ProgressIndicator indicator) {
+                getStatusBarPane().setInfoMessage("Loading issues...", false);
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        public void run() {
+                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
+                            jiraFilterTree.expandTree();
+                        }
+                    });
+                    JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
+                    JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
+                    JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
+                    JiraServerData jiraServerData = getSelectedServer();
+                   jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
+                    if (presetFilter != null) {
+                        jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
+                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+                    } else if (savedFilter != null) {
+                        jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
+                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+                    } else if (manualFilter != null) {
+                        jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerData,
+                                pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+                    } else if (jiraFilterTree.isRecentlyOpenSelected()) {
+                        jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
+                    }
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            jiraFilterTree.reCreateTree(jiraFilterListModel, false);
+                            jiraFilterTree.expandTree();
+                        }
+                    });
+                } catch (JIRAException e) {
+                    setStatusErrorMessage(e.getMessage(), e);
+                } catch (InterruptedException e) {
+                    setStatusErrorMessage(e.getMessage(), e);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+
+    private class PopupAwareMouseAdapterLocal extends PopupAwareMouseAdapter {
+            protected void onPopup(MouseEvent e) {
+                if (!(e.getComponent() instanceof JIRAFilterTree)) {
+                    return;
+                }
+                JIRAFilterTree tree = (JIRAFilterTree) e.getComponent();
+                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                if (path == null) {
+                    return;
+                }
+                tree.setSelectionPath(path);
+                Object o = path.getLastPathComponent();
+                if (o instanceof JIRAManualFilterTreeNode) {
+                    JiraCustomFilter manualFilter = ((JIRAManualFilterTreeNode) o).getManualFilter();
+                    if (manualFilter != null) {
+                        ActionManager aManager = ActionManager.getInstance();
+                        ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ManualFilterPopupGroup");
+                        if (menu == null) {
+                            return;
+                        }
+                        aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+                                .show(e.getComponent(), e.getX(), e.getY());
+                    }
+                } else if (o instanceof JiraPresetFilterTreeNode) {
+                    ActionManager aManager = ActionManager.getInstance();
+                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.PresetFilterGroup");
+                    if (menu == null) {
+                        return;
+                    }
+                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+                            .show(e.getComponent(), e.getX(), e.getY());
+                } else if (o instanceof JIRAServerTreeNode) {
+                    ActionManager aManager = ActionManager.getInstance();
+                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ServerPopupGroup");
+                    if (menu == null) {
+                        return;
+                    }
+                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+                            .show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        }
 }
