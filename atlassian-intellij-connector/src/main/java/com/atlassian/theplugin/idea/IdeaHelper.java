@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
 import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderProxy;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -88,6 +89,9 @@ public final class IdeaHelper {
 		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 	}
 
+    public static PluginConfiguration getPluginConfiguration() {
+        return getApplicationComponent(PluginConfiguration.class);
+    }
 	public static ThePluginApplicationComponent getAppComponent() {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
@@ -237,6 +241,11 @@ public final class IdeaHelper {
 			return null;
 		}
 		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));
+	}
+
+	@Nullable
+	public static <T> T getApplicationComponent(final Class<T> clazz) {
+		return clazz.cast(ApplicationManager.getApplication().getPicoContainer().getComponentInstanceOfType(clazz));
 	}
 
 	public static CrucibleStatusChecker getCrucibleStatusChecker(Project project) {

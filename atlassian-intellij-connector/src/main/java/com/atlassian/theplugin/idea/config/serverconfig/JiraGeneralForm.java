@@ -38,8 +38,9 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
 	private SpinnerModel model;
 	private JSpinner issuePageSize;
+    private JCheckBox cbSynchroWithIntelliJTasks;
 
-	private transient PluginConfiguration globalPluginConfiguration;
+    private transient PluginConfiguration globalPluginConfiguration;
 
 	private transient JiraConfigurationBean jiraConfiguration;
 
@@ -67,7 +68,8 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public boolean isModified() {
-		return IdeaHelper.getSpinnerIntValue(issuePageSize) != jiraConfiguration.getPageSize();
+		return IdeaHelper.getSpinnerIntValue(issuePageSize) != jiraConfiguration.getPageSize() ||
+                cbSynchroWithIntelliJTasks.isSelected() != jiraConfiguration.isSynchronizeWithIntelliJTasks();
 	}
 
 	public String getTitle() {
@@ -77,6 +79,11 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	public void saveData() {
 		getLocalPluginConfigurationCopy().getJIRAConfigurationData().setPageSize((Integer) model.getValue());
 		globalPluginConfiguration.getJIRAConfigurationData().setPageSize((Integer) model.getValue());
+
+        getLocalPluginConfigurationCopy().getJIRAConfigurationData()
+                .setSynchronizeWithIntelliJTasks(cbSynchroWithIntelliJTasks.isSelected());
+        globalPluginConfiguration.getJIRAConfigurationData()
+                .setSynchronizeWithIntelliJTasks(cbSynchroWithIntelliJTasks.isSelected());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -86,6 +93,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		jiraConfiguration = localPluginConfigurationCopy.getJIRAConfigurationData();
 
 		model.setValue(jiraConfiguration.getPageSize());
+        cbSynchroWithIntelliJTasks.setSelected(jiraConfiguration.isSynchronizeWithIntelliJTasks());
 	}
 
 	private PluginConfiguration getLocalPluginConfigurationCopy() {
