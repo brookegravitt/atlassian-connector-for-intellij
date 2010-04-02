@@ -322,13 +322,14 @@ public class JIRAFilterTree extends AbstractTree {
         }
     }
 
-    private void createFilterNodes(Project project, JiraServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
+    private void createFilterNodes(Project p, JiraServerData jiraServer, DefaultMutableTreeNode node,
+                                   JIRAFilterListModel aListModel) {
         if (aListModel != null) {
 
             JiraPresetFiltersGroupTreeNode pfg = new JiraPresetFiltersGroupTreeNode(projectCfgManager, jiraServer);
             node.add(pfg);
 
-            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(project, jiraServer);
+            Collection<JiraPresetFilter> presetFilterSet = aListModel.getPresetFilters(p, jiraServer);
             for (JiraPresetFilter filter : presetFilterSet) {
                 pfg.add(new JiraPresetFilterTreeNode(filter));
             }
@@ -369,13 +370,16 @@ public class JIRAFilterTree extends AbstractTree {
         
         for (int i = 0; i < root.getChildCount(); i++) {
 
-             if (root.getChildAt(i) instanceof JIRAServerTreeNode && ((JIRAServerTreeNode)root.getChildAt(i)).getJiraServer().equals(serverData)) {
+             if (root.getChildAt(i) instanceof JIRAServerTreeNode
+                     && ((JIRAServerTreeNode)root.getChildAt(i)).getJiraServer().equals(serverData)) {
                  JIRAServerTreeNode serverNode =  (JIRAServerTreeNode) root.getChildAt(i);
                     for (int j = 0; j <  serverNode.getChildCount(); j++) {
                         if (serverNode.getChildAt(j) instanceof JiraPresetFiltersGroupTreeNode) {
-                            JiraPresetFiltersGroupTreeNode presetGroup = (JiraPresetFiltersGroupTreeNode) serverNode.getChildAt(j);
+                            JiraPresetFiltersGroupTreeNode presetGroup
+                                    = (JiraPresetFiltersGroupTreeNode) serverNode.getChildAt(j);
                             for (int k = 0; k < presetGroup.getChildCount(); k++) {
-                                JiraPresetFilter filter = ((JiraPresetFilterTreeNode)presetGroup.getChildAt(k)).getPresetFilter();
+                                JiraPresetFilter filter = ((JiraPresetFilterTreeNode) presetGroup.getChildAt(k))
+                                        .getPresetFilter();
                                 filter.setJiraProject(jiraWorkspaceConfiguration.getPresetFilterProject(serverData, filter));
                             }
                         }
@@ -423,8 +427,8 @@ public class JIRAFilterTree extends AbstractTree {
                 prevRecentlyOpen = false;
                 prevServer = serverCfg;
                 fireSelectedSavedFilterNode(savedFilter, serverCfg);
-            } else if (isPresetFilterGroupNodeSelected()){
-
+            } else if (isPresetFilterGroupNodeSelected()) {
+                //do nothing
             }  else if (isServerNodeSelected()) {
                 // server selected: do not fire notification (we must ignore that action)
                 //getSelectionModel().removeTreeSelectionListener(localSelectionListener);
