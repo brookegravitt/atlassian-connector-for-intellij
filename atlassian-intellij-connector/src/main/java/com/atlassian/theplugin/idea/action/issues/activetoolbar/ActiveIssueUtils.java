@@ -177,7 +177,6 @@ public final class ActiveIssueUtils {
 
 
         if (isOtherIssueActive) {
-
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
                     if (newActiveIssue.getSource().equals(ActiveJiraIssueBean.ActivationSource.CONNECTOR)) {
@@ -195,7 +194,6 @@ public final class ActiveIssueUtils {
                                             setActiveJiraIssue(project, null, null);
                                         }
                                         public void cancel(String problem) {
-
                                             PluginTaskManagerFacade.silentDeactivateIssue(project);
                                             setActiveJiraIssue(project, null, null);
                                         }

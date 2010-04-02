@@ -199,7 +199,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
     @Transient
     @Nullable
     public JIRAProject getPresetFilterProject(JiraServerData jiraServerData, JiraPresetFilter presetFilter) {
-        final JiraPresetFilterMap map = presetFiltersMap.get((ServerIdImpl)jiraServerData.getServerId());
+        final JiraPresetFilterMap map = presetFiltersMap.get((ServerIdImpl) jiraServerData.getServerId());
         if (map != null) {
             return map.getProject(presetFilter);
         }
@@ -208,7 +208,8 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
     }
 
     @Transient
-    public void setPresetFilterProject(JiraServerData jiraServerData, JiraPresetFilter presetFilter, JIRAProjectBean jiraProject) {
+    public void setPresetFilterProject(JiraServerData jiraServerData, JiraPresetFilter presetFilter,
+                                       JIRAProjectBean jiraProject) {
        JiraPresetFilterMap map = presetFiltersMap.get((ServerIdImpl) jiraServerData.getServerId());
         if (map == null) {
             map = new JiraPresetFilterMap();

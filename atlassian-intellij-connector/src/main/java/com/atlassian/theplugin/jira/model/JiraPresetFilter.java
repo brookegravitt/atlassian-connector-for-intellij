@@ -31,7 +31,7 @@ public abstract class JiraPresetFilter implements JIRAQueryFragment {
         return -1;
     }
     
-    final public String getQueryStringFragment() {
+    public final String getQueryStringFragment() {
         final String s = getQuery();
         return s != null && s.length() > 0 ? s + getProjectQueryString() : "";
     }

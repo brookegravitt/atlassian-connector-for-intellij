@@ -40,7 +40,7 @@ public class SetProjectForAllAction extends BaseProjectAction {
 				for (JiraPresetFilter filter
 						: IdeaHelper.getJIRAFilterListBuilder(project).getPresetFilters(project, selectedServer)) {
 					IdeaHelper.getJiraWorkspaceConfiguration(anActionEvent)
-							.setPresetFilterProject(selectedServer, filter, (JIRAProjectBean)jiraProject);
+							.setPresetFilterProject(selectedServer, filter, (JIRAProjectBean) jiraProject);
 				}
 				panel.refreshIssues(true);
 			}

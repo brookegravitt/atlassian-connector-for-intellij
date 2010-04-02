@@ -229,38 +229,27 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 // refresh issue list
                 refreshIssues(true);
             }
-
             public void modelChanged(final JIRAFilterListModel listModel) {
             }
-
             public void serverRemoved(final JIRAFilterListModel filterListModel) {
             }
-
             public void serverAdded(final JIRAFilterListModel filterListModel) {
             }
-
             public void serverNameChanged(final JIRAFilterListModel filterListModel) {
             }
-
             public void manualFilterAdded(JIRAFilterListModel filterListModel, JiraCustomFilter manualFilter,
                                           ServerId serverId) {
             }
-
             public void manualFilterRemoved(JIRAFilterListModel filterListModel, JiraCustomFilter manualFilter,
                                             ServerId serverId) {
-
             }
         });
-
         getSplitLeftPane().setOrientation(true);
         getSplitLeftPane().setSecondComponent(null);
-
     }
-
     private void addJiraFilterTreeListeners() {
         jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
         jiraFilterTree.addMouseListener(new PopupAwareMouseAdapter() {
-
             protected void onPopup(MouseEvent e) {
                 if (!(e.getComponent() instanceof JIRAFilterTree)) {
                     return;
@@ -300,18 +289,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
                             .show(e.getComponent(), e.getX(), e.getY());
                 }
-
-
             }
         });
     }
-
-//	protected void hideManualFilterPanel() {
-//		getSplitLeftPane().setOrientation(true);
-//		getSplitLeftPane().setSecondComponent(null);
-//		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
-//	}
-
+    
     public ProjectCfgManager getProjectCfgManager() {
         return projectCfgManager;
     }
@@ -930,15 +911,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             jiraFilterTree.expandTree();
                         }
                     });
-
                     JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
                     JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
                     JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
                     JiraServerData jiraServerData = getSelectedServer();
-
-                    //jiraFilterTree.refreshNodesNames();
-//                    final JIRAProject jiraProject = jiraWorkspaceConfiguration.getPresetFilterProject(jiraServerData,
-//                                presetFilter);
                    jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
 
                     if (presetFilter != null) {
@@ -1314,7 +1290,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     @Override
     public JTree createLeftTree() {
         if (jiraFilterTree == null) {
-            jiraFilterTree = new JIRAFilterTree(projectCfgManager, jiraWorkspaceConfiguration, getJIRAFilterListModel(), project);
+            jiraFilterTree = new JIRAFilterTree(projectCfgManager, jiraWorkspaceConfiguration, getJIRAFilterListModel(),
+                    project);
             ToolTipManager.sharedInstance().registerComponent(jiraFilterTree);
         }
 
