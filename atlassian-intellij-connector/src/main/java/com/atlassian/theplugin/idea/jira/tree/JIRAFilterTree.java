@@ -428,7 +428,7 @@ public class JIRAFilterTree extends AbstractTree {
                 prevServer = serverCfg;
                 fireSelectedSavedFilterNode(savedFilter, serverCfg);
             } else if (isPresetFilterGroupNodeSelected()) {
-                int i=0;
+                int i = 0;
                 //do nothing
             }  else if (isServerNodeSelected()) {
                 prevPresetFilter = null;
