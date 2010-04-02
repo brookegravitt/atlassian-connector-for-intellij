@@ -902,9 +902,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
                 getStatusBarPane().setInfoMessage("Loading issues...", false);
-
                 try {
-
                     SwingUtilities.invokeAndWait(new Runnable() {
                         public void run() {
                             jiraFilterTree.reCreateTree(jiraFilterListModel, false);
@@ -916,11 +914,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
                     JiraServerData jiraServerData = getSelectedServer();
                    jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
-
                     if (presetFilter != null) {
                         jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
                                 pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
-
                     } else if (savedFilter != null) {
                         jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
                                 pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
@@ -930,7 +926,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     } else if (jiraFilterTree.isRecentlyOpenSelected()) {
                         jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
                     }
-
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             jiraFilterTree.reCreateTree(jiraFilterListModel, false);
