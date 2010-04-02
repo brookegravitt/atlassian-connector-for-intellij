@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -74,7 +75,8 @@ public final class PluginTaskManagerFacade {
     public static boolean isValidIdeaVersion() {
         return IdeaVersionFacade.getInstance().isIdea9()
                 && !IdeaVersionFacade.getInstance().isCommunityEdition()
-                && isTaskPluginEnabled();
+                && isTaskPluginEnabled()
+                && IdeaHelper.getPluginConfiguration().getJIRAConfigurationData().isSynchronizeWithIntelliJTasks();
     }
 
     private static boolean isTaskPluginEnabled() {

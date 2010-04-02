@@ -204,16 +204,15 @@ public final class ActiveIssueUtils {
                 public void failure(Throwable problem) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                             PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                             PluginTaskManagerFacade.silentDeactivateIssue(project);
+
                         }
                     });
                 }
                 public void cancel(String problem) {
                       SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                              PluginTaskManagerFacade.silentActivateIssue(project,
-                                                    ActiveIssueUtils.getActiveJiraIssue(project));
+                              PluginTaskManagerFacade.silentDeactivateIssue(project);
                         }
                     });
                 }
