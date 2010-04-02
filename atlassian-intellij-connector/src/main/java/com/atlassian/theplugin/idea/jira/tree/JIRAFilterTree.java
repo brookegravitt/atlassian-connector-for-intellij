@@ -371,7 +371,7 @@ public class JIRAFilterTree extends AbstractTree {
         for (int i = 0; i < root.getChildCount(); i++) {
 
              if (root.getChildAt(i) instanceof JIRAServerTreeNode
-                     && ((JIRAServerTreeNode)root.getChildAt(i)).getJiraServer().equals(serverData)) {
+                     && ((JIRAServerTreeNode) root.getChildAt(i)).getJiraServer().equals(serverData)) {
                  JIRAServerTreeNode serverNode =  (JIRAServerTreeNode) root.getChildAt(i);
                     for (int j = 0; j <  serverNode.getChildCount(); j++) {
                         if (serverNode.getChildAt(j) instanceof JiraPresetFiltersGroupTreeNode) {
@@ -430,29 +430,9 @@ public class JIRAFilterTree extends AbstractTree {
             } else if (isPresetFilterGroupNodeSelected()) {
                 //do nothing
             }  else if (isServerNodeSelected()) {
-                // server selected: do not fire notification (we must ignore that action)
-                //getSelectionModel().removeTreeSelectionListener(localSelectionListener);
-
-                // remove server selection
-                //clearSelection();
-
-                // restore previous selection
-//				if (prevManualFilter != null) {
-//                    setSelectionManualFilter(prevServer.getServerId(), prevManualFilter.getUid().toString());
-//				} else if (prevSavedFilter != null) {
-//					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId());
-//				} else if (prevRecentlyOpen) {
-//					setSelectionRecentlyOpen();
-//				}
-
                 prevPresetFilter = null;
                 prevSavedFilter = null;
                 prevManualFilter = null;
-                //fireSelectionCleared();
-
-
-                //getSelectionModel().addTreeSelectionListener(localSelectionListener);
-
             } else if (recentlyOpenSelected) {
                 prevPresetFilter = null;
                 prevSavedFilter = null;
