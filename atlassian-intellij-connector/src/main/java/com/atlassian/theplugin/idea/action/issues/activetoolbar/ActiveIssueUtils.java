@@ -212,7 +212,7 @@ public final class ActiveIssueUtils {
                 public void cancel(String problem) {
                       SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                              PluginTaskManagerFacade.silentDeactivateIssue(project);
+                            PluginTaskManagerFacade.silentActivateIssue(project, getActiveJiraIssue(project));  
                         }
                     });
                 }
