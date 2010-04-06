@@ -81,7 +81,7 @@ public class PluginTaskManager implements ProjectComponent {
             if (activeTask == null || (activeTask != foundTask)) {
                 final Task fFoundTask = foundTask;
                 try {
-                    taskManager.activateTask(fFoundTask, false, true);
+                    taskManager.activateTask(fFoundTask, true, true);
                 } catch (Exception e) {
                     deactivateToDefaultTask();
                 }
