@@ -56,16 +56,11 @@ public final class PluginTaskManagerFacade {
             final Class ptmClass = Class.forName("com.atlassian.connector.intellij.tasks.PluginTaskManager");
             final Method silentActivateIssue = ptmClass.getMethod("silentActivateIssue", ActiveJiraIssue.class);
             final Object ptmObj = project.getPicoContainer().getComponentInstanceOfType(ptmClass);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    try {
-                        silentActivateIssue.invoke(ptmObj, issue);
-                    } catch (Exception e) {
-                        PluginUtil.getLogger().error("Cannot silent activate issue.", e);
-                    }
-                }
-            });
+            try {
+                silentActivateIssue.invoke(ptmObj, issue);
+            } catch (Exception e) {
+                PluginUtil.getLogger().error("Cannot silent activate issue.", e);
+            }
         } catch (Exception e) {
             PluginUtil.getLogger().error("Cannot silent activate issue.", e);
         }
@@ -93,30 +88,30 @@ public final class PluginTaskManagerFacade {
         return null;
     }
 
-    public static void deactivateToDefaultTask(final Project project) {
-        if (!isValidIdeaVersion()) {
-            return;
-        }
-        try {
-
-            final Class ptmClass = Class.forName("com.atlassian.connector.intellij.tasks.PluginTaskManager");
-            final Method deactivateToDefaultTaskMethod = ptmClass.getMethod("deactivateToDefaultTask");
-            final Object ptmObj = project.getPicoContainer().getComponentInstanceOfType(ptmClass);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    try {
-                        deactivateToDefaultTaskMethod.invoke(ptmObj);
-                    } catch (Exception e) {
-                        PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
-                    }
-                }
-            });
-
-        } catch (Exception e) {
-            PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
-        }
-    }
+//    public static void deactivateToDefaultTask(final Project project) {
+//        if (!isValidIdeaVersion()) {
+//            return;
+//        }
+//        try {
+//
+//            final Class ptmClass = Class.forName("com.atlassian.connector.intellij.tasks.PluginTaskManager");
+//            final Method deactivateToDefaultTaskMethod = ptmClass.getMethod("deactivateToDefaultTask");
+//            final Object ptmObj = project.getPicoContainer().getComponentInstanceOfType(ptmClass);
+//
+//            SwingUtilities.invokeLater(new Runnable() {
+//                public void run() {
+//                    try {
+//                        deactivateToDefaultTaskMethod.invoke(ptmObj);
+//                    } catch (Exception e) {
+//                        PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
+//                    }
+//                }
+//            });
+//
+//        } catch (Exception e) {
+//            PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);
+//        }
+//    }
 
     public static void silentDeactivateIssue(final Project project) {
         if (!isValidIdeaVersion()) {
