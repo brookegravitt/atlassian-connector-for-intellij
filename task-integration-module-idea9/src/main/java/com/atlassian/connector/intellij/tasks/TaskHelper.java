@@ -12,12 +12,6 @@ import org.jetbrains.annotations.Nullable;
 public final class TaskHelper {
 
 
-//
-//    @Nullable
-//    public static ActivationProcessingManager getActivationProcessingThread(Project p) {
-//        return getProjectComponent(p, ActivationProcessingManager.class);
-//    }
-    
     @Nullable
     public static PluginTaskManager getPluginTaskManager(final Project project) {
         return getProjectComponent(project, PluginTaskManager.class);
@@ -36,36 +30,9 @@ public final class TaskHelper {
         return repo.findTask(issueKey);
     }
 
-//      @Nullable
-//    public static Object findJiraTask(final Object repo, final String issueKey) {
-//        try {
-//            Class jiraRepoClass = Class.forName("com.intellij.tasks.jira.JiraRepository");
-//            Method findTaskMethod = jiraRepoClass.getMethod("findTask", String.class);
-//            return  findTaskMethod.invoke(repo, issueKey);
-//        } catch (Exception e) {
-//           PluginUtil.getLogger().error("Cannot create LocalTask " + e.getMessage());
-//        }
-//
-//        return null;
-//    }
+
     public static Object createJiraRepository() {
-//        try {
-//            Class jiraRepositoryTypeClass = Class.forName("com.intellij.tasks.jira.JiraRepositoryType");
-//            Object jiraRepositoryTypeObj = jiraRepositoryTypeClass.newInstance();
-//
-//            if (jiraRepositoryTypeClass == null || jiraRepositoryTypeObj == null) {
-//                return null;
-//            }
-//
-//            Method createRepositoryMethod = jiraRepositoryTypeClass.getMethod("createRepository");
-//            Object jiraRepositoryObj = createRepositoryMethod.invoke(jiraRepositoryTypeObj);
-//
-//             return jiraRepositoryObj;
-//        } catch (Exception e) {
-//            PluginUtil.getLogger().error("Cannot create repository", e);
-//        }
-//
-//        return null;
+
         JiraRepositoryType jiraRepositoryType = new JiraRepositoryType();
         return jiraRepositoryType.createRepository();
     }

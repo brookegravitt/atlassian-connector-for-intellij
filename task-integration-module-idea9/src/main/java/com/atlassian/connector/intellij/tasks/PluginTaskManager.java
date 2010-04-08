@@ -1,11 +1,11 @@
 package com.atlassian.connector.intellij.tasks;
 
-
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
@@ -19,8 +19,12 @@ import com.intellij.tasks.jira.JiraRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * @author pmaruszak
@@ -33,6 +37,9 @@ public class PluginTaskManager implements ProjectComponent {
     private final PluginConfiguration pluginConfiguration;
     private TaskManagerImpl taskManager;
     private TaskListenerImpl listener;
+    private Timer timer = new Timer("plugin task manager timer");
+    private static final int SILENT_ACTIVATE_DELAY = 500;
+//    private PluginChangeListAdapter changeListListener;
 
 
     public PluginTaskManager(Project project, ProjectCfgManager projectCfgManager, PluginConfiguration pluginConfiguration) {
@@ -41,59 +48,57 @@ public class PluginTaskManager implements ProjectComponent {
         this.pluginConfiguration = pluginConfiguration;
         this.listener = new TaskListenerImpl(project, this, pluginConfiguration);
         this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-
+//        this.changeListListener = new PluginChangeListAdapter(project);
     }
 
-    public void silentActivateIssue(ActiveJiraIssue issue) {
-        System.out.println("[1]Removing listener");
-        taskManager.removeTaskListener(listener);
+    public void silentActivateIssue(final ActiveJiraIssue issue) {
+        deactivateListner();
         try {
-            activateIssue(issue);
+            timer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            activateIssue(issue);
+                        }
+                    });
+
+                }
+            }, SILENT_ACTIVATE_DELAY);            
+
         } finally {
-            System.out.println("[1]Adding listener");
-            taskManager.addTaskListener(listener);
+//            taskManager.addTaskListener(listener);
         }
     }
 
 
     public void silentDeactivateIssue() {
-        System.out.println("[2]Removing listener");
-        taskManager.removeTaskListener(listener);
+        deactivateListner();
         try {
             deactivateToDefaultTask();
         } finally {
-            System.out.println("[2]Adding listener");
-            taskManager.addTaskListener(listener);
+//            taskManager.addTaskListener(listener);
         }
     }
 
     public void activateIssue(ActiveJiraIssue issue) {
 
         Task foundTask;
-
         ServerData server = projectCfgManager.getServerr(issue.getServerId());
         foundTask = findLocalTaskByUrl(issue.getIssueUrl());
 
         //ADD or GET JiraRepository
         BaseRepository jiraRepository = getJiraRepository(server);
         if (foundTask != null) {
-            Task activeTask = taskManager.getActiveTask();
-            if (activeTask == null || (activeTask != foundTask)) {
-                final Task fFoundTask = foundTask;
+            LocalTask activeTask = taskManager.getActiveTask();
+            if ((activeTask.getIssueUrl() != null
+                    && !activeTask.getIssueUrl().equals(foundTask.getIssueUrl()))) {
                 try {
-                    taskManager.activateTask(fFoundTask, true, true);
+                    taskManager.activateTask(foundTask, true, false);
+                    activateListener();
                 } catch (Exception e) {
-                    deactivateToDefaultTask();
-                }
-
-            } else {
-                //todo search for issue ID and modify task instead of creating one
-                try {
-                    final Task fFoundTask = jiraRepository != null ? jiraRepository.findTask(issue.getIssueKey()) : null;
-                    if (fFoundTask != null) {
-                        taskManager.activateTask(fFoundTask, true, true);
-                    }
-                } catch (Exception e) {
+                    PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
                     deactivateToDefaultTask();
                 }
 
@@ -104,11 +109,16 @@ public class PluginTaskManager implements ProjectComponent {
             if (newTask != null) {
                 try {
                     taskManager.activateTask(newTask, true, true);
+                    activateListener();
+//                    return (LocalTask) newTask;
                 } catch (Exception e) {
-                    deactivateToDefaultTask();
+                    PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
+                    deactivateToDefaultTask();                    
                 }
             }
         }
+
+//        return getDefaultTask();
     }
 
     @Nullable
@@ -137,6 +147,17 @@ public class PluginTaskManager implements ProjectComponent {
         return null;
     }
 
+    private void activateListener() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                taskManager.addTaskListener(listener);
+            }
+        });
+    }
+
+    private void deactivateListner() {
+        taskManager.removeTaskListener(listener);
+    }
     private void addJiraRepository(TaskRepository repo) {
         TaskRepository[] repos = taskManager.getAllRepositories();
         List<TaskRepository> reposList = new ArrayList<TaskRepository>();
@@ -192,11 +213,12 @@ public class PluginTaskManager implements ProjectComponent {
 
     private void initializePlugin() {
         this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-        taskManager.addTaskListener(listener);
+        activateListener();
+//        ChangeListManagerImpl.getInstance(project).addChangeListListener(changeListListener);
     }
 
     public void projectClosed() {
-        taskManager.removeTaskListener(listener);
+        deactivateListner();
     }
 
     @NotNull
@@ -229,11 +251,11 @@ public class PluginTaskManager implements ProjectComponent {
 
 
     public void deactivateToDefaultTask() {
-        System.out.println("Deactivating to default");
         LocalTask defaultTask = getDefaultTask();
         if (defaultTask != null) {
             taskManager.activateTask(defaultTask, false, false);
         }
+        activateListener();
     }
 
     private LocalTask getDefaultTask() {

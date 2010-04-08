@@ -32,7 +32,8 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
     public void taskActivated(final LocalTask localTask) {
         if (pluginConfiguration != null
-                && pluginConfiguration.getJIRAConfigurationData().isSynchronizeWithIntelliJTasks()) {            
+                && pluginConfiguration.getJIRAConfigurationData().isSynchronizeWithIntelliJTasks()) {
+
             synchronized (this) {
                 EventQueue.invokeLater(new ActivateRunnable(localTask));
             }
@@ -40,14 +41,14 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
     }
 
-    class ActivateRunnable implements Runnable {
+   class ActivateRunnable implements Runnable {
         private final LocalTask localTask;
 
         public ActivateRunnable(LocalTask localTask) {
             this.localTask = localTask;
         }
 
-        public void run() {
+        public void run() {            
             if (!PluginTaskManager.isDefaultTask(localTask)) {
                 final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
                 if (jiraIssue == null || !localTask.getId().equals(jiraIssue.getIssueKey())) {
@@ -62,7 +63,7 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
                         //do nothing
                     }
                 } else {
-                    //the same or none JIRa issue found inside plugin do nothing
+                    //the same or none JIRA issue found inside plugin do nothing
                 }
 
             } else {
