@@ -83,11 +83,6 @@ public final class ActiveIssueUtils {
         return null;
     }
 
-
-//    public static void activateLocalTask(final Project project, final ActiveJiraIssue issue) {
-//        PluginTaskManager.getInstance(project).activateLocalTask(issue);
-//    }
-
     public static void setActiveJiraIssue(final Project project, final ActiveJiraIssue issue,
                                           final JiraIssueAdapter jiraIssue) {
         final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
@@ -202,19 +197,19 @@ public final class ActiveIssueUtils {
                     });
                 }
                 public void failure(Throwable problem) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        public void run() {
                              PluginTaskManagerFacade.silentDeactivateIssue(project);
 
-                        }
-                    });
+//                        }
+//                    });
                 }
                 public void cancel(String problem) {
-                      SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
+//                      SwingUtilities.invokeLater(new Runnable() {
+//                        public void run() {
                             PluginTaskManagerFacade.silentActivateIssue(project, getActiveJiraIssue(project));  
-                        }
-                    });
+//                        }
+//                    });
                 }
             });
         } else {
