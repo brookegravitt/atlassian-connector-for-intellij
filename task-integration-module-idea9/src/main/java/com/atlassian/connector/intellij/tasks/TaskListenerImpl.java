@@ -31,24 +31,11 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
 
     public void taskActivated(final LocalTask localTask) {
+        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] taskActivated : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+
         if (pluginConfiguration != null
                 && pluginConfiguration.getJIRAConfigurationData().isSynchronizeWithIntelliJTasks()) {
-
-            synchronized (this) {
-                EventQueue.invokeLater(new ActivateRunnable(localTask));
-            }
-        }
-
-    }
-
-   class ActivateRunnable implements Runnable {
-        private final LocalTask localTask;
-
-        public ActivateRunnable(LocalTask localTask) {
-            this.localTask = localTask;
-        }
-
-        public void run() {            
+            //SwingUtilities.invokeLater(new ActivateRunnable(localTask));
             if (!PluginTaskManager.isDefaultTask(localTask)) {
                 final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
                 if (jiraIssue == null || !localTask.getId().equals(jiraIssue.getIssueKey())) {
@@ -58,7 +45,14 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
                         final ActiveJiraIssueBean ai = new ActiveJiraIssueBean(sd.getServerId(), localTask.getIssueUrl(), localTask.getId(),
                                 new DateTime());
                         ai.setSource(ActiveJiraIssueBean.ActivationSource.INTELLIJ);
-                        ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
+//                        SwingUtilities.invokeLater(new Runnable() {
+//                            public void run() {
+                                System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+                                ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
+                        System.out.println("[" + new DateTime() + "] [END] " + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+//                            }
+//                        });
+
                     } else {
                         //do nothing
                     }
@@ -70,5 +64,37 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
                 SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
             }
         }
+
     }
+
+//    class ActivateRunnable implements Runnable {
+//        private final LocalTask localTask;
+//
+//        public ActivateRunnable(LocalTask localTask) {
+//            this.localTask = localTask;
+//        }
+//
+//        public void run() {
+//            if (!PluginTaskManager.isDefaultTask(localTask)) {
+//                final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+//                if (jiraIssue == null || !localTask.getId().equals(jiraIssue.getIssueKey())) {
+//                    final JiraServerData sd = pluginTaskManager.findJiraPluginJiraServer(localTask.getIssueUrl());
+//
+//                    if (sd != null) {
+//                        final ActiveJiraIssueBean ai = new ActiveJiraIssueBean(sd.getServerId(), localTask.getIssueUrl(), localTask.getId(),
+//                                new DateTime());
+//                        ai.setSource(ActiveJiraIssueBean.ActivationSource.INTELLIJ);
+//                        ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
+//                    } else {
+//                        //do nothing
+//                    }
+//                } else {
+//                    //the same or none JIRA issue found inside plugin do nothing
+//                }
+//
+//            } else {
+//                SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
+//            }
+//        }
+//    }
 }
