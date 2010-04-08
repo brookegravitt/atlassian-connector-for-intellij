@@ -367,6 +367,7 @@ public final class ActiveIssueUtils {
         boolean isOk = true;
         if (conf != null) {
             ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
+
             if (activeIssue != null && activeIssue.getIssueUrl() != null && activeIssue.getIssueKey() != null
                     && activeIssue.getIssueKey().length() > 0) {
                 final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
