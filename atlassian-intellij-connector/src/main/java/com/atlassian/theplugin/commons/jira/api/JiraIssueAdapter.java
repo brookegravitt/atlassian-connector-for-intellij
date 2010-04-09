@@ -11,6 +11,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author pmaruszak
@@ -156,6 +157,10 @@ public class JiraIssueAdapter implements JIRAIssue {
 
     public List<String> getSubTaskKeys() {
         return jiraIssue.getSubTaskKeys();
+    }
+
+    public Map<String, Map<String, List<String>>> getIssueLinks() {
+        return jiraIssue.getIssueLinks();
     }
 
     public long getPriorityId() {
