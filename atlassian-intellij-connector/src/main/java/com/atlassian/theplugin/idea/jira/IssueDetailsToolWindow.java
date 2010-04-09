@@ -839,7 +839,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     }
                     if (keys.size() > 0) {
                         if (getIssueLinksTask == null) {
-                            getIssueLinksTask = new FetchIssuesBackgroundTask(keys, "Fetching issuelinks for issue " + params.issue.getKey()) {
+                            getIssueLinksTask = new FetchIssuesBackgroundTask(keys,
+									"Fetching issuelinks for issue " + params.issue.getKey()) {
                                 @Override
                                 public void onCancel() {
                                     getIssueLinksTask = null;
@@ -914,7 +915,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 					panel.add(scrollPane, BorderLayout.CENTER);
 					if (getSubTasksTask == null) {
-                        getSubTasksTask = new FetchIssuesBackgroundTask(keys, "Fetching subtasks for issue " + params.issue.getKey()) {
+                        getSubTasksTask = new FetchIssuesBackgroundTask(keys,
+								"Fetching subtasks for issue " + params.issue.getKey()) {
                             @Override
                             public void onCancel() {
                                 getSubTasksTask = null;
