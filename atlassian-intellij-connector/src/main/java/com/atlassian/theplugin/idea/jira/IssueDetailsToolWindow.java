@@ -659,8 +659,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private IssueLinksPanel issueLinksPanel;
             private static final int ISSUELINKS_LABEL_HEIGHT = 14;
 
-            public void FillIssueLinksPanelWithIssues(Collection<JiraIssueAdapter> issues) {
-                issueLinksPanel.FillPanelWithIssues(issues);
+            public void fillIssueLinksPanelWithIssues(Collection<JiraIssueAdapter> issues) {
+                issueLinksPanel.fillPanelWithIssues(issues);
             }
 
 			protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
@@ -693,8 +693,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			private JPanel createBody() {
 				boolean hasSubTasks = params.issue.getSubTaskKeys().size() > 0;
-                boolean hasIssueLinks = params.issue.getIssueLinks() != null &&
-                        params.issue.getIssueLinks().size() > 0;
+                boolean hasIssueLinks = params.issue.getIssueLinks() != null
+                        && params.issue.getIssueLinks().size() > 0;
 
 				JPanel panel = new JPanel(new BorderLayout());
 
@@ -763,13 +763,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             public class IssueLinksPanel extends JPanel {
                 private Map<String, DefaultListModel> issuesToModelMap = new HashMap<String, DefaultListModel>();
 
-                public void FillPanelWithIssues(Collection<JiraIssueAdapter> issues) {
+                public void fillPanelWithIssues(Collection<JiraIssueAdapter> issues) {
                    for (JiraIssueAdapter issue : issues) {
                        issuesToModelMap.get(issue.getKey()).addElement(issue);
                    }
                 }
 
-                public void CreateSubPanels() {
+                public void createSubPanels() {
                     issuesToModelMap.clear();
                     setLayout(new GridBagLayout());
                     removeAll();
@@ -829,7 +829,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     this.setOpaque(true);
                     this.setBackground(Color.WHITE);
 
-                    CreateSubPanels();
+                    createSubPanels();
 
                     List<String> keys = new ArrayList<String>();
                     Map<String, Map<String, List<String>>> issueLinks = params.issue.getIssueLinks();
@@ -852,7 +852,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
             }
 
-            private class FetchSubtasksBackgroundTask extends Task.Backgroundable{
+            private class FetchSubtasksBackgroundTask extends Task.Backgroundable {
                 private List<String> keys;
                 protected DefaultListModel model;
                 protected List<JiraIssueAdapter> subtasks = new ArrayList<JiraIssueAdapter>();
@@ -902,7 +902,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
 
             class FetchTaskLinksBackgroundTask extends FetchSubtasksBackgroundTask {
-                final DetailsPanel detailsPanel;
+                final private DetailsPanel detailsPanel;
 
                 public FetchTaskLinksBackgroundTask(final List<String> keys, final DefaultListModel model,
                         final DetailsPanel detailsPanel) {
@@ -917,7 +917,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
                 @Override
                 public void onSuccess() {
-                    detailsPanel.FillIssueLinksPanelWithIssues(subtasks);
+                    detailsPanel.fillIssueLinksPanelWithIssues(subtasks);
                     getIssueLinksTask = null;
                 }
             }
