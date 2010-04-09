@@ -402,6 +402,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private int stackTraceCounter = 0;
 		//private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
 		private Task.Backgroundable getSubTasksTask;
+        private Task.Backgroundable getIssueLinksTask;
 		private DefaultListModel subtaskListModel;
 		private IssueDetailsToolWindow.IssuePanel.LocalModelListener modelListener;
 		private StatusBarPane statusBarPane;
@@ -437,6 +438,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					if (getSubTasksTask != null) {
 						getSubTasksTask.onCancel();
 					}
+                    if (getIssueLinksTask != null) {
+                        getIssueLinksTask.onCancel();
+                    }
 				}
 			});
 
@@ -652,6 +656,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private EditableIssueField issueEnvironmentEditLabel;
 			private static final float SPLIT_RATIO = 0.3f;
 			private static final int SUBTASKS_LABEL_HEIGHT = 24;
+            private IssueLinksPanel issueLinksPanel;
+            private static final int ISSUELINKS_LABEL_HEIGHT = 14;
+
+            public void FillIssueLinksPanelWithIssues(Collection<JiraIssueAdapter> issues) {
+                issueLinksPanel.FillPanelWithIssues(issues);
+            }
 
 			protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
 					final String displayName) {
@@ -682,21 +692,33 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private JPanel createBody() {
-				boolean haveSubTasks = params.issue.getSubTaskKeys().size() > 0;
+				boolean hasSubTasks = params.issue.getSubTaskKeys().size() > 0;
+                boolean hasIssueLinks = params.issue.getIssueLinks() != null &&
+                        params.issue.getIssueLinks().size() > 0;
 
 				JPanel panel = new JPanel(new BorderLayout());
 
 				JPanel details = createDetailsPanel();
 
-				if (haveSubTasks) {
-					Splitter split = new Splitter(false, SPLIT_RATIO);
+                JComponent subtasks = hasSubTasks ? createSubtasksPanel() : null;
+                issueLinksPanel = hasIssueLinks ? new IssueLinksPanel(this) : null;
+
+                JComponent secondComponent = subtasks != null ? subtasks : issueLinksPanel;
+                if (subtasks != null && issueLinksPanel != null) {
+                    Splitter split = new Splitter(false, 0.5f);
+                    split.setHonorComponentsMinimumSize(true);
+                    split.setFirstComponent(subtasks);
+                    split.setSecondComponent(issueLinksPanel);
+                    secondComponent = split;
+                }
+                if (secondComponent != null) {
                     JScrollPane scrollPane = new JScrollPane(details);
                     scrollPane.setBackground(Color.WHITE);
+                    Splitter split = new Splitter(false, SPLIT_RATIO);
                     split.setFirstComponent(scrollPane);
+                    split.setSecondComponent(secondComponent);
 					split.setHonorComponentsMinimumSize(true);
-					JComponent subtasks = createSubtasksPanel();
-					split.setSecondComponent(subtasks);
-					panel.add(split, BorderLayout.CENTER);
+                    panel.add(split, BorderLayout.CENTER);
 				} else {
 					panel.setOpaque(true);
 					panel.setBackground(Color.WHITE);
@@ -707,6 +729,199 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				return panel;
 			}
+
+            public JList createListForDisplayingIssues() {
+                final JList list = new JList() {
+                    @Override
+                    public boolean getScrollableTracksViewportWidth() {
+                        return true;
+                    }
+                };
+                list.setCellRenderer(new SubtaskListCellRenderer());
+                list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                list.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent event) {
+                        if (event.getClickCount() == 2) {
+                            openSelectedSubtask(list);
+                        }
+                    }
+                });
+                list.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent event) {
+                        if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+                            openSelectedSubtask(list);
+                        }
+                    }
+                });
+                return list;
+            }
+
+            private DefaultListModel issueLinksListModel = new DefaultListModel();
+
+            public class IssueLinksPanel extends JPanel {
+                private Map<String, DefaultListModel> issuesToModelMap = new HashMap<String, DefaultListModel>();
+
+                public void FillPanelWithIssues(Collection<JiraIssueAdapter> issues) {
+                   for (JiraIssueAdapter issue : issues) {
+                       issuesToModelMap.get(issue.getKey()).addElement(issue);
+                   }
+                }
+
+                public void CreateSubPanels() {
+                    issuesToModelMap.clear();
+                    setLayout(new GridBagLayout());
+                    removeAll();
+
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.gridx = 0;
+                    gbc.gridy = 0;
+                    gbc.weightx = 1.0;
+                    gbc.weighty = 1.0;
+                    gbc.fill = GridBagConstraints.BOTH;
+
+                    JLabel label = new JLabel("Issue links");
+                    Dimension size = new Dimension(label.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT);
+                    label.setMinimumSize(size);
+                    label.setPreferredSize(size);
+                    gbc.weighty = 0.0;
+                    this.add(label, gbc);
+                    gbc.gridy++;
+
+                    JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+                    this.add(separator, gbc);
+                    gbc.gridy++;
+
+
+                    Map<String, Map<String, List<String>>> issueLinks = params.issue.getIssueLinks();
+                    if (issueLinks != null) {
+                        for (Map<String, List<String>> issueLinkType : issueLinks.values()) {
+                            for (String linkDescription : issueLinkType.keySet()) {
+                                label = new JLabel(linkDescription);
+                                label.setPreferredSize(
+                                        new Dimension(label.getPreferredSize().width, ISSUELINKS_LABEL_HEIGHT));
+                                gbc.weighty = 0.0;
+                                this.add(label, gbc);
+                                gbc.gridy++;
+
+                                final JList list = createListForDisplayingIssues();
+                                DefaultListModel model = new DefaultListModel();
+                                list.setModel(model);
+
+                                for (String issueKey : issueLinkType.get(linkDescription)) {
+                                    issuesToModelMap.put(issueKey, model);
+                                }
+
+                                JScrollPane scrollPane = new JScrollPane(list);
+                                scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                                gbc.weighty = 1.0;
+                                this.add(scrollPane, gbc);
+                                gbc.gridy++;
+                            }
+                        }
+                    }
+                }
+
+                public IssueLinksPanel(final DetailsPanel detailsPanel) {
+                    super();
+                    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+                    this.setOpaque(true);
+                    this.setBackground(Color.WHITE);
+
+                    CreateSubPanels();
+
+                    List<String> keys = new ArrayList<String>();
+                    Map<String, Map<String, List<String>>> issueLinks = params.issue.getIssueLinks();
+                    if (issueLinks != null) {
+                        for (Map<String, List<String>> value : issueLinks.values()) {
+                            for (List<String> value2 : value.values()) {
+                                for (String issueKey : value2) {
+                                    keys.add(issueKey);
+                                }
+                            }
+                        }
+                    }
+
+                    if (keys.size() > 0) {
+                        if (getIssueLinksTask == null) {
+                            getIssueLinksTask = new FetchTaskLinksBackgroundTask(keys, issueLinksListModel, detailsPanel);
+                            ProgressManager.getInstance().run(getIssueLinksTask);
+                        }
+                    }
+                }
+            }
+
+            private class FetchSubtasksBackgroundTask extends Task.Backgroundable{
+                private List<String> keys;
+                protected DefaultListModel model;
+                protected List<JiraIssueAdapter> subtasks = new ArrayList<JiraIssueAdapter>();
+
+                public FetchSubtasksBackgroundTask(final List<String> keys, final DefaultListModel model,
+                        final String title) {
+                    super(project, title, true);
+                    this.keys = keys;
+                    this.model = model;
+                }
+
+                public void run(@NotNull ProgressIndicator progressIndicator) {
+                    Collection<JiraIssueAdapter> subtasksInModel = params.model.getSubtasks(params.issue);
+                    Map<String, JiraIssueAdapter> subKeysInModel = new HashMap<String, JiraIssueAdapter>();
+                    for (JiraIssueAdapter sub : subtasksInModel) {
+                        subKeysInModel.put(sub.getKey(), sub);
+                    }
+                    for (String key : keys) {
+                        try {
+                            if (subKeysInModel.keySet().contains(key)) {
+                                subtasks.add(subKeysInModel.get(key));
+                            } else {
+                                JiraIssueAdapter subtask = facade.getIssue(params.issue.getJiraServerData(), key);
+                                if (subtask != null) {
+                                    subtasks.add(subtask);
+                                }
+                            }
+                        } catch (JIRAException e) {
+                            LoggerImpl.getInstance().error(e);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    getSubTasksTask = null;
+                }
+
+                @Override
+                public void onSuccess() {
+                    model.clear();
+                    for (JiraIssueAdapter subtask : subtasks) {
+                        model.addElement(subtask);
+                    }
+                    getSubTasksTask = null;
+                }
+            }
+
+            class FetchTaskLinksBackgroundTask extends FetchSubtasksBackgroundTask {
+                final DetailsPanel detailsPanel;
+
+                public FetchTaskLinksBackgroundTask(final List<String> keys, final DefaultListModel model,
+                        final DetailsPanel detailsPanel) {
+                    super(keys, model, "Fetching issuelinks for issue " + params.issue.getKey());
+                    this.detailsPanel = detailsPanel;
+                }
+
+                @Override
+                public void onCancel() {
+                    getIssueLinksTask = null;
+                }
+
+                @Override
+                public void onSuccess() {
+                    detailsPanel.FillIssueLinksPanelWithIssues(subtasks);
+                    getIssueLinksTask = null;
+                }
+            }
+
 
 			private JComponent createSubtasksPanel() {
 				BorderLayout borderLayout = new BorderLayout();
@@ -720,33 +935,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				panel.setOpaque(true);
                 panel.setBackground(Color.WHITE);
-                
+
 				final java.util.List<String> keys = params.issue.getSubTaskKeys();
 				if (keys.size() > 0) {
-					final JList list = new JList() {
-						@Override
-						public boolean getScrollableTracksViewportWidth() {
-							return true;
-						}
-					};
-					list.setCellRenderer(new SubtaskListCellRenderer());
-					list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					list.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent event) {
-							if (event.getClickCount() == 2) {
-								openSelectedSubtask(list);
-							}
-						}
-					});
-					list.addKeyListener(new KeyAdapter() {
-						@Override
-						public void keyPressed(KeyEvent event) {
-							if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-								openSelectedSubtask(list);
-							}
-						}
-					});
+					final JList list = createListForDisplayingIssues();
 					subtaskListModel.clear();
 					list.setModel(subtaskListModel);
 					JLabel subtasksLabel = new JLabel("Subtasks");
@@ -757,11 +949,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 					panel.add(scrollPane, BorderLayout.CENTER);
 					if (getSubTasksTask == null) {
-						createFetchSubtasksBackgroundTask(keys);
+						getSubTasksTask = new FetchSubtasksBackgroundTask(keys, subtaskListModel,
+                                "Fetching subtasks for issue " + params.issue.getKey());
 						ProgressManager.getInstance().run(getSubTasksTask);
 					}
 				}
-
 				return panel;
 			}
 
@@ -773,49 +965,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						panel.openIssue(((JiraIssueAdapter) o).getKey(), params.issue.getJiraServerData(), false);
 					}
 				}
-			}
-
-			private void createFetchSubtasksBackgroundTask(final List<String> keys) {
-				getSubTasksTask = new Task.Backgroundable(project,
-						"Fetching subtasks for issue " + params.issue.getKey(), true) {
-					private List<JiraIssueAdapter> subtasks = new ArrayList<JiraIssueAdapter>();
-
-					public void run(@NotNull ProgressIndicator progressIndicator) {
-						Collection<JiraIssueAdapter> subtasksInModel = params.model.getSubtasks(params.issue);
-						Map<String, JiraIssueAdapter> subKeysInModel = new HashMap<String, JiraIssueAdapter>();
-						for (JiraIssueAdapter sub : subtasksInModel) {
-							subKeysInModel.put(sub.getKey(), sub);
-						}
-						for (String key : keys) {
-							try {
-								if (subKeysInModel.keySet().contains(key)) {
-									subtasks.add(subKeysInModel.get(key));
-								} else {
-									JiraIssueAdapter subtask = facade.getIssue(params.issue.getJiraServerData(), key);
-									if (subtask != null) {
-										subtasks.add(subtask);
-									}
-								}
-							} catch (JIRAException e) {
-								LoggerImpl.getInstance().error(e);
-							}
-						}
-					}
-
-					@Override
-					public void onCancel() {
-						getSubTasksTask = null;
-					}
-
-					@Override
-					public void onSuccess() {
-						subtaskListModel.clear();
-						for (JiraIssueAdapter subtask : subtasks) {
-							subtaskListModel.addElement(subtask);
-						}
-						getSubTasksTask = null;
-					}
-				};
 			}
 
 			private JPanel createDetailsPanel() {
