@@ -902,7 +902,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
 
             class FetchTaskLinksBackgroundTask extends FetchSubtasksBackgroundTask {
-                final private DetailsPanel detailsPanel;
+                private final DetailsPanel detailsPanel;
 
                 public FetchTaskLinksBackgroundTask(final List<String> keys, final DefaultListModel model,
                         final DetailsPanel detailsPanel) {
