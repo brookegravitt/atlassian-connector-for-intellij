@@ -31,7 +31,7 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
 
     public void taskActivated(final LocalTask localTask) {
-        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] taskActivated : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] taskActivated : " + localTask.getIssueUrl());
 
         if (pluginConfiguration != null
                 && pluginConfiguration.getJIRAConfigurationData().isSynchronizeWithIntelliJTasks()) {
@@ -47,9 +47,9 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
                         ai.setSource(ActiveJiraIssueBean.ActivationSource.INTELLIJ);
 //                        SwingUtilities.invokeLater(new Runnable() {
 //                            public void run() {
-                                System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+                                System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl() + " thread : " + Thread.currentThread().getId());
                                 ActiveIssueUtils.activateIssue(project, null, ai, sd, null);
-                        System.out.println("[" + new DateTime() + "] [END] " + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl()  + " thread : " + Thread.currentThread().getId());
+                                System.out.println("[" + new DateTime() + "] [END] " + "[" + EventQueue.getCurrentEvent().getID() + "] activating Connector task : " + localTask.getIssueUrl() + " thread : " + Thread.currentThread().getId());
 //                            }
 //                        });
 
@@ -62,10 +62,12 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 
             } else {
                 SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
+                System.out.println(">>>>>  Deactivated to default task");
+           
             }
+            
+           System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] [END] taskActivated : " + localTask.getIssueUrl());
         }
-
-    }
 
 //    class ActivateRunnable implements Runnable {
 //        private final LocalTask localTask;
@@ -97,4 +99,5 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
 //            }
 //        }
 //    }
+    }
 }
