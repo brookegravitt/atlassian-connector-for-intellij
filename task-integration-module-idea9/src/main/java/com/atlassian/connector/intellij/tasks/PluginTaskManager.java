@@ -18,9 +18,7 @@ import com.intellij.tasks.impl.TaskManagerImpl;
 import com.intellij.tasks.jira.JiraRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTime;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,49 +50,6 @@ public class PluginTaskManager implements ProjectComponent {
 //        this.changeListListener = new PluginChangeListAdapter(project);
     }
 
-    public void silentActivateIssue(final ActiveJiraIssue issue) {
-
-        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] silentActivateIssue : " + issue.getIssueUrl() + " thread : " + Thread.currentThread().getId());
-        PluginUtil.getLogger().debug("silentActivating issue : " + issue.getIssueUrl());
-
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-
-        deactivateListner();
-//            }
-//        });
-
-
-//            timer.schedule(new TimerTask() {
-//
-//                @Override
-//                public void run() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    activateIssue(issue);
-                } finally {
-//                    activateListener();
-                }
-            }
-        });
-
-//                }
-//            }, SILENT_ACTIVATE_DELAY);
-
-       System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] [END] silentActivateIssue : " + issue.getIssueUrl() + " thread : " + Thread.currentThread().getId());
-    }
-
-
-    public void silentDeactivateIssue() {
-        deactivateListner();
-        try {
-            deactivateToDefaultTask();
-        } finally {
-
-        }
-    }
-
     public void activateIssue(final ActiveJiraIssue issue) {
         ServerData server = projectCfgManager.getServerr(issue.getServerId());
         final Task foundTask = findLocalTaskByUrl(issue.getIssueUrl());
@@ -106,13 +61,7 @@ public class PluginTaskManager implements ProjectComponent {
             if ((activeTask.getIssueUrl() != null
                     && !activeTask.getIssueUrl().equals(foundTask.getIssueUrl()))) {
                 try {
-
-                    System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activateIssue0+0 : " + issue.getIssueUrl() + " thread : " + Thread.currentThread().getId());
                     taskManager.activateTask(foundTask, true, false);
-
-
-                    activateListener();
-
                 } catch (Exception e) {
                     PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
                     deactivateToDefaultTask();
@@ -124,18 +73,13 @@ public class PluginTaskManager implements ProjectComponent {
 
             if (newTask != null) {
                 try {
-                    System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activateIssue1 : " + issue.getIssueUrl() + " thread : " + Thread.currentThread().getId());
                     taskManager.activateTask(newTask, true, true);
-                    activateListener();
-//                    return (LocalTask) newTask;
                 } catch (Exception e) {
                     PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
                     deactivateToDefaultTask();
                 }
             }
         }
-        System.out.println("[" + new DateTime() + "] [END] " + "[" + EventQueue.getCurrentEvent().getID() + "] activateIssue0+0 : " + issue.getIssueUrl() + " thread : " + Thread.currentThread().getId());
-//        return getDefaultTask();
     }
 
     @Nullable
@@ -165,14 +109,11 @@ public class PluginTaskManager implements ProjectComponent {
     }
 
     public void activateListener() {
-        SwingUtilities.invokeLater(new Runnable() {
+        EventQueue.invokeLater(new Runnable() {
             public void run() {
                 PluginUtil.getLogger().debug("Activating TM listener");
                 String id = EventQueue.isDispatchThread() && EventQueue.getCurrentEvent() != null ? String.valueOf(EventQueue.getCurrentEvent().getID()) : " null";
-                System.out.println("[" + new DateTime() + "]" + "[" + id + "] activateListener" + " thread : " + Thread.currentThread().getId());
                 taskManager.addTaskListener(listener);
-                System.out.println("[" + new DateTime() + "] [END]" + "[" + id + "] activateListener" + " thread : " + Thread.currentThread().getId());
-
             }
         });
 
@@ -180,9 +121,7 @@ public class PluginTaskManager implements ProjectComponent {
 
     public void deactivateListner() {
         PluginUtil.getLogger().debug("Deactivating TM listener");
-        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] deactivateListner" + " thread : " + Thread.currentThread().getId());
         taskManager.removeTaskListener(listener);
-        System.out.println("[" + new DateTime() + "] [END]" + "[" + EventQueue.getCurrentEvent().getID() + "] deactivateListner" + " thread : " + Thread.currentThread().getId());
     }
 
     private void addJiraRepository(TaskRepository repo) {
@@ -241,7 +180,6 @@ public class PluginTaskManager implements ProjectComponent {
     private void initializePlugin() {
         this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
         activateListener();
-//        ChangeListManagerImpl.getInstance(project).addChangeListListener(changeListListener);
     }
 
     public void projectClosed() {
@@ -279,12 +217,11 @@ public class PluginTaskManager implements ProjectComponent {
 
     public void deactivateToDefaultTask() {
         PluginUtil.getLogger().debug("deactivating to default");
-        System.out.println("[" + new DateTime() + "]" + "[" + EventQueue.getCurrentEvent().getID() + "] activateListener" + " thread : " + Thread.currentThread().getId());
         LocalTask defaultTask = getDefaultTask();
         if (defaultTask != null) {
             taskManager.activateTask(defaultTask, false, false);
         }
-        activateListener();
+
     }
 
     private LocalTask getDefaultTask() {
