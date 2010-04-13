@@ -112,7 +112,6 @@ public class PluginTaskManager implements ProjectComponent {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 PluginUtil.getLogger().debug("Activating TM listener");
-                String id = EventQueue.isDispatchThread() && EventQueue.getCurrentEvent() != null ? String.valueOf(EventQueue.getCurrentEvent().getID()) : " null";
                 taskManager.addTaskListener(listener);
             }
         });
@@ -200,7 +199,8 @@ public class PluginTaskManager implements ProjectComponent {
     }
 
     public static boolean isDefaultTask(LocalTask task) {
-        return (task.getId() != null && task.getId().equalsIgnoreCase("Default")) || task.getSummary().equalsIgnoreCase("Default task");
+        return (task.getId() != null && task.getId().equalsIgnoreCase("Default"))
+                || task.getSummary().equalsIgnoreCase("Default task");
     }
 
     @Nullable
