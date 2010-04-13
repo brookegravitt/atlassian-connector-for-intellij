@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
@@ -25,11 +24,9 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.jira.ActiveIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.JiraIssueCachedAdapter;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -47,7 +44,6 @@ import com.intellij.openapi.vcs.changes.ChangeList;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.List;
 
 /**
  * User: pmaruszak
@@ -174,9 +170,6 @@ public final class ActiveIssueUtils {
         if (isOtherIssueActive) {
             ActiveIssueUtils.deactivate(project, new ActiveIssueResultHandler() {
                 public void success() {
-                    if (newActiveIssue.getSource().equals(ActiveJiraIssueBean.ActivationSource.CONNECTOR)) {
-                        PluginTaskManagerFacade.silentDeactivateIssue(project);
-                    }
                     setActiveJiraIssue(project, null, null);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -185,31 +178,20 @@ public final class ActiveIssueUtils {
                                         public void success() {
                                         }
                                         public void failure(Throwable problem) {
-                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
-                                            setActiveJiraIssue(project, null, null);
+                                            setActiveJiraIssue(project, newActiveIssue, null);
                                         }
                                         public void cancel(String problem) {
-                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
-                                            setActiveJiraIssue(project, null, null);
+                                            setActiveJiraIssue(project, newActiveIssue, null);
                                         }
                                     });
                         }
                     });
                 }
                 public void failure(Throwable problem) {
-//                    SwingUtilities.invokeLater(new Runnable() {
-//                        public void run() {
-                             PluginTaskManagerFacade.silentDeactivateIssue(project);
-
-//                        }
-//                    });
+                    setActiveJiraIssue(project, newActiveIssue, null);
                 }
                 public void cancel(String problem) {
-//                      SwingUtilities.invokeLater(new Runnable() {
-//                        public void run() {
-                            PluginTaskManagerFacade.silentActivateIssue(project, getActiveJiraIssue(project));  
-//                        }
-//                    });
+                    setActiveJiraIssue(project, newActiveIssue, null);
                 }
             });
         } else {
@@ -221,13 +203,11 @@ public final class ActiveIssueUtils {
                                             
                                         }
                                         public void failure(Throwable problem) {
-                                            PluginTaskManagerFacade.silentDeactivateIssue(project);
-                                            setActiveJiraIssue(project, null, null);
+                                            setActiveJiraIssue(project, newActiveIssue, null);
                                         }
 
-                                        public void cancel(String problem) {
-                                             PluginTaskManagerFacade.silentDeactivateIssue(project);
-                                            setActiveJiraIssue(project, null, null);
+                                        public void cancel(String problem) {                                             
+                                            setActiveJiraIssue(project, newActiveIssue, null);
                                         }
                                     });
                         }
@@ -235,45 +215,6 @@ public final class ActiveIssueUtils {
         }
 
 
-    }
-
-
-
-    /**
-     * Bloking method. Refills cache if necessary.
-     *
-     * @param issue issue
-     * @return boolean
-     */
-    private static boolean isInProgress(final JiraIssueAdapter issue) {
-        List<JIRAAction> actions = JiraIssueCachedAdapter.get(issue).getCachedActions();
-
-        if (actions == null) {
-
-            JiraServerData jiraServer = issue.getJiraServerData();
-
-            if (jiraServer != null) {
-                try {
-                    actions = IntelliJJiraServerFacade.getInstance().getAvailableActions(jiraServer, issue);
-                } catch (JIRAException e) {
-                    PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
-                }
-
-                JiraIssueCachedAdapter.get(issue).setCachedActions(actions);
-            }
-        }
-
-        if (actions != null) {
-            for (JIRAAction a : actions) {
-                if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     /**
