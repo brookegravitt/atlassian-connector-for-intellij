@@ -29,16 +29,12 @@ public class DeactivateIssueRunnable  implements Runnable {
                 public void success() {
                     if (conf != null) {
                         conf.setActiveJiraIssuee(null);
-                        PluginTaskManagerFacade.silentDeactivateIssue(project);
-
                     }
                 }
 
                 public void failure(final Throwable problem) {
                     if (conf != null) {
                         conf.setActiveJiraIssuee(null);
-                         PluginTaskManagerFacade.silentDeactivateIssue(project);
-
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -52,7 +48,9 @@ public class DeactivateIssueRunnable  implements Runnable {
                 }
 
                 public void cancel(String problem) {
-                    PluginTaskManagerFacade.silentActivateIssue(project, conf.getActiveJiraIssuee());
+                    if (PluginTaskManagerFacade.isValidIdeaVersion()) {
+                        conf.setActiveJiraIssuee(null);
+                    }
                 }
             });
 

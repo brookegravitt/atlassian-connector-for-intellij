@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
@@ -520,7 +521,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		setupUI();
 
 		if (deactivateActiveIssue) {
-			setTitle("Stop Work on Issue " + issue.getKey());
+            String prefix = PluginTaskManagerFacade.isValidIdeaVersion() ? "[Server Side] " : "";
+			setTitle(prefix + "Stop Work on Issue " + issue.getKey());
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -534,7 +536,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 				}
 			});
 
-			getOKAction().putValue(Action.NAME, "Stop Work");
+			getOKAction().putValue(Action.NAME, prefix + "Stop Work");
 		} else {
 			setTitle("Add Worklog for " + issue.getKey());
 			getOKAction().putValue(Action.NAME, "Add Worklog");
