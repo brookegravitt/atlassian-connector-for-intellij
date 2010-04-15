@@ -1052,7 +1052,7 @@
 		<action id="ThePlugin.JiraIssues.AddAttachment"
 				class="com.atlassian.theplugin.idea.action.issues.AddAttachmentAction"
 				text="Add Attachment"
-				icon="/icons/icn_attachment.gif"/>
+				icon="/icons/icon_addattachment.png"/>
 		<action id="ThePlugin.JiraIssues.LogWork"
 				class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
 				icon="/general/todoDefault.png"
@@ -1085,7 +1085,7 @@
 		<action id="ThePlugin.JiraIssues.EditorAddAttachment"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddAttachmentAction"
 				text="Add Attachment"
-				icon="/icons/icn_attachment.gif"/>
+				icon="/icons/icon_addattachment.png"/>
 		<action id="ThePlugin.JiraIssues.EditorRefresh"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
 				text="Refresh"
