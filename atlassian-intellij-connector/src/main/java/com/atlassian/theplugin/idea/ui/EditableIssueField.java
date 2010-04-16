@@ -4,10 +4,7 @@ import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,96 +15,127 @@ import java.awt.event.MouseEvent;
  * Date: Mar 22, 2010
  */
 public class EditableIssueField extends JPanel {
-	private EditIssueFieldButton button;
-	private JComponent component; //ususally label displaying value of that field
-	private final EditIssueFieldHandler handler;
+    private final static Icon editIcon = IconLoader.getIcon("/icons/edit.png");
+    private final static Icon emptyIcon = IconLoader.getIcon("/icons/empty.png");
+    private EditIssueFieldButton button;
+    private JComponent component; //ususally label displaying value of that field
+    private final EditIssueFieldHandler handler;
 
-	public EditableIssueField(JComponent component, EditIssueFieldHandler handler) {
-		this.handler = handler;
-		button = new EditIssueFieldButton();
-		this.component = component;
-		this.component.setBackground(Color.WHITE);
-		setBackground(Color.WHITE);
-		button.setBackground(Color.WHITE);
-		setBorder(BorderFactory.createEmptyBorder());
-		rebuild();
-	}
+    public EditableIssueField(JComponent component, EditIssueFieldHandler handler) {
+        this.handler = handler;
+        button = new EditIssueFieldButton();
+        this.component = component;
+        setBackground(component.getBackground());
+        button.setBackground(component.getBackground());
+        setBorder(BorderFactory.createEmptyBorder());
+        rebuild();
+        button.hideMe();
+    }
 
-	private void rebuild() {
-		JPanel groupingPanel = new JPanel(new GridBagLayout());
-		groupingPanel.setBackground(getBackground());
-		groupingPanel.setBorder(BorderFactory.createEmptyBorder());
+    private void rebuild() {
+        JPanel groupingPanel = new JPanel(new GridBagLayout());
+        groupingPanel.setBorder(BorderFactory.createEmptyBorder());
 
-		setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		GridBagConstraints gbc1 = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-
-		gbc1.gridx = 0;
-		gbc1.gridy = 0;
-		gbc1.weightx = 0.0;
-		gbc1.weighty = 0.0;
-		gbc1.fill = GridBagConstraints.NONE;
-
-		removeAll();
-		if (component != null) {
-			setBackground(component.getBackground());
-			groupingPanel.add(component, gbc1);
-		}
-
-		gbc1.gridx = 0;
-		gbc1.gridy = 0;
-		gbc1.weightx = 0.0;
-		gbc1.weighty = 0.0;
-		gbc1.gridx++;
-		gbc1.anchor = GridBagConstraints.PAGE_START;
-		gbc1.fill = GridBagConstraints.NONE;
-
-		groupingPanel.add(button, gbc1);
-		add(groupingPanel, gbc);
-
-		IssueDetailsToolWindow.addFillerPanel(this, gbc, true);
-	}
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        GridBagConstraints gbc1 = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
 
 
-	public void setButtonVisible(boolean isVisible) {
-		button.setVisible(isVisible);
-	}
+        gbc1.gridx = 0;
+        gbc1.gridy = 0;
+        gbc1.weightx = 0.0;
+        gbc1.weighty = 0.0;
+        gbc1.fill = GridBagConstraints.NONE;
 
-	private class EditIssueFieldButton extends JRadioButton {
-		private final Icon editIcon = IconLoader.getIcon("/icons/edit.png");
+        removeAll();
+        if (component != null) {
+            groupingPanel.setBackground(component.getBackground());
+            groupingPanel.add(component, gbc1);
+        }
 
-		public EditIssueFieldButton() {
-			super();
-			setIcon(editIcon);
-			this.setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
-			this.setBorder(BorderFactory.createEmptyBorder());
-			this.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent actionEvent) {
-					if (handler != null) {
-						handler.handleClickedEditButton();
-					}
-				}
-			});
+        gbc1.gridx = 0;
+        gbc1.gridy = 0;
+        gbc1.weightx = 0.0;
+        gbc1.weighty = 0.0;
+        gbc1.gridx++;
+        gbc1.anchor = GridBagConstraints.PAGE_START;
+        gbc1.fill = GridBagConstraints.NONE;
+        gbc1.insets = new Insets(0, 4, 4, 0);
 
-			this.addMouseListener(new MouseAdapter() {
-				public void mouseEntered(MouseEvent e) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				}
+        groupingPanel.add(button, gbc1);
+        add(groupingPanel, gbc);
 
-				public void mouseExited(MouseEvent e) {
-					setCursor(Cursor.getDefaultCursor());
-				}
-			});
-		}
-	}
+        IssueDetailsToolWindow.addFillerPanel(this, gbc, true);
+        final MouseAdapter adapter = new MouseAdapter() {
 
-	public interface EditIssueFieldHandler {
-		void handleClickedEditButton();
-	}
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                button.showMe();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                button.hideMe();
+            }
+
+        };
+        groupingPanel.addMouseListener(adapter);
+
+        component.addMouseListener(adapter);
+        for (Component c : component.getComponents()) {
+            c.addMouseListener(adapter);
+        }
+    }
+
+
+    public void setButtonVisible(boolean isVisible) {
+        button.setVisible(isVisible);
+    }
+
+
+    private class EditIssueFieldButton extends JRadioButton {
+        public EditIssueFieldButton() {
+            super();
+            setIcon(editIcon);
+            this.setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
+            this.setBorder(BorderFactory.createEmptyBorder());
+            this.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    if (handler != null) {
+                        handler.handleClickedEditButton();
+                    }
+                }
+            });
+
+            this.addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    showMe();
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+
+                public void mouseExited(MouseEvent e) {
+                    hideMe();
+                    setCursor(Cursor.getDefaultCursor());
+                }
+            });
+        }
+
+        public void showMe() {
+            setIcon(editIcon);
+        }
+
+        public void hideMe() {
+            setIcon(emptyIcon);
+        }
+    }
+
+    public interface EditIssueFieldHandler {
+        void handleClickedEditButton();
+    }
 }
 
