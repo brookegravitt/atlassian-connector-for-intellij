@@ -52,7 +52,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	private Collection<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>(100);
 
 
-	/**
+	/**                
 	 * Do NOT use the constructor. It is called by PICO.
 	 *
 	 * @param workspaceConfiguration used for default credentials purposes only (can be null for tests)
