@@ -665,11 +665,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
 					final String displayName) {
+                        component.setBackground(Color.WHITE);
 						return new EditableIssueField(component, new EditableIssueField.EditIssueFieldHandler() {
 							public void handleClickedEditButton() {
 								updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
 							}
-						}
+                        }
 				);
 			}
 
@@ -1066,9 +1067,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				issueStatus = new JLabel(params.issue.getStatus(),
 						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
 						SwingConstants.LEFT);
-				issuePriority = createEditableField(new JLabel(params.issue.getPriority(),
-								CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
-								SwingConstants.LEFT), "priority", "Priority");
+
+                final JLabel priority = new JLabel(params.issue.getPriority(),
+                        CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
+                        SwingConstants.LEFT);
+                issuePriority = createEditableField(priority, "priority", "Priority");
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (params.issue.getAssigneeId().equals("-1")) {
 					issueAssignee.setText("Unassigned");
@@ -1281,6 +1284,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private class SummaryPanel extends JPanel {
 
 			private JEditorPane summary;
+            private EditableIssueField editableSummary;
 
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
@@ -1296,6 +1300,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				refresh();
 				summary.setEditable(false);
+
 				summary.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -1310,7 +1315,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 				summary.setFont(summary.getFont().deriveFont(Font.BOLD));
 				summary.setOpaque(false);
-				JPanel p = new JPanel();
+                JPanel p = new JPanel();
+
+                summary.setBackground(p.getBackground());
+                editableSummary = createEditableField(summary, "summary", "Summary");				
 				p.setLayout(new GridBagLayout());
 				GridBagConstraints gbcp = new GridBagConstraints();
 				gbcp.fill = GridBagConstraints.BOTH;
@@ -1318,7 +1326,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbcp.weighty = 1.0;
 				gbcp.gridx = 0;
 				gbcp.gridy = 0;
-				p.add(summary, gbcp);
+				p.add(editableSummary, gbcp);
 				add(p, gbc);
 
 				gbc.gridy++;
@@ -1335,8 +1343,18 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			public void refresh() {
 				String txt = "<html><body><a href=\"" + params.issue.getIssueUrl() + "\">"
 						+ params.issue.getKey() + "</a> " + params.issue.getSummary()
-						+ " <i><a href=\"edit\">edit</a></i></body></html>";
+						+ "</body></html>";
 				summary.setText(txt);
+			}
+
+            protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
+					final String displayName) {
+						return new EditableIssueField(component, new EditableIssueField.EditIssueFieldHandler() {
+							public void handleClickedEditButton() {
+								updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
+							}
+                        }
+				);
 			}
 		}
 
@@ -1902,15 +1920,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 			}
 		}
-
-//		private class LocalConfigListener extends ConfigurationListenerAdapter {
-//
-//			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-//				(params.issue).setJiraServerData(IdeaHelper.getProjectCfgManager(project).
-//                        getJiraServerr(params.issue.getJiraServerData().getServerId()));
-//            }
-//
-//		}
 
 		private class LocalModelListener implements JIRAIssueListModelListener {
 
