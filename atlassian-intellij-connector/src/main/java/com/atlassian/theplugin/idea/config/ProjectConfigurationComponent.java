@@ -133,8 +133,6 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void projectClosed() {
 		projectCfgManager.removeProjectConfigurationListener(configurationListener);
-//		projectCfgManager.removeProject();
-//		projectCfgManager.removeAllConfigurationCredentialListeners(getProjectId());
 	}
 
 	@NonNls

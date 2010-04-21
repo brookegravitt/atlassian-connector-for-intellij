@@ -58,6 +58,7 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -781,10 +782,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     gbc.fill = GridBagConstraints.BOTH;
 
                     JLabel label = new JLabel("Issue links");
+                    label.setBackground(UIUtil.getPanelBackgound());
                     Dimension size = new Dimension(label.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT);
                     label.setMinimumSize(size);
                     label.setPreferredSize(size);
                     gbc.weighty = 0.0;
+                    this.setBackground(UIUtil.getPanelBackgound());
                     this.add(label, gbc);
                     gbc.gridy++;
 
@@ -909,8 +912,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					subtaskListModel.clear();
 					list.setModel(subtaskListModel);
 					JLabel subtasksLabel = new JLabel("Subtasks");
+                    subtasksLabel.setBackground(UIUtil.getPanelBackgound());
 					subtasksLabel.setPreferredSize(
 							new Dimension(subtasksLabel.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT));
+                    panel.setBackground(UIUtil.getPanelBackgound());
 					panel.add(subtasksLabel, BorderLayout.NORTH);
 					JScrollPane scrollPane = new JScrollPane(list);
 					scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

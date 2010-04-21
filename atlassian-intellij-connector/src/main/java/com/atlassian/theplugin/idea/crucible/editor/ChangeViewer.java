@@ -24,7 +24,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.LineMarkerRenderer;
+import com.intellij.openapi.editor.markup.MarkupEditorFilterFactory;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -110,7 +115,11 @@ public final class ChangeViewer {
                     // because the containsHighlighter() method of MarkupModelImpl, which could tell us that,
                     // is not exposed in the MarkupModel interface :(
                     try {
-					    document.getMarkupModel(project).removeHighlighter(rangeHighlighter);
+                        //fix for PL-1566 and PL-2089
+                        final MarkupModel markupModel = document.getMarkupModel(project);
+                        if (isValidHighlighter(markupModel, rangeHighlighter)) {
+                            markupModel.removeHighlighter(rangeHighlighter);
+                        }
                     } catch (Throwable t) {
                         LoggerImpl.getInstance().error(t);
                     }
@@ -118,6 +127,18 @@ public final class ChangeViewer {
 			}
 		}
 	}
+
+    private static boolean isValidHighlighter(MarkupModel model, RangeHighlighter rh) {
+        if (model.getAllHighlighters() != null) {
+            for (RangeHighlighter r : model.getAllHighlighters()) {
+                if (r.equals(rh)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
 	private static void removeHighlighters(Project project, Document displayDoc) {
 		Collection<RangeHighlighter> ranges = displayDoc.getUserData(CRUCIBLE_RANGES);
