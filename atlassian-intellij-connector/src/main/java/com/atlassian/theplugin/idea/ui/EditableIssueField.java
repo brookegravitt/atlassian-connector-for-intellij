@@ -15,8 +15,8 @@ import java.awt.event.MouseEvent;
  * Date: Mar 22, 2010
  */
 public class EditableIssueField extends JPanel {
-    private final static Icon editIcon = IconLoader.getIcon("/icons/edit.png");
-    private final static Icon emptyIcon = IconLoader.getIcon("/icons/empty.png");
+    private static final Icon EDIT_ICON = IconLoader.getIcon("/icons/edit.png");
+    private static final Icon EMPTY_ICON = IconLoader.getIcon("/icons/empty.png");
     private EditIssueFieldButton button;
     private JComponent component; //ususally label displaying value of that field
     private final EditIssueFieldHandler handler;
@@ -101,7 +101,7 @@ public class EditableIssueField extends JPanel {
     private class EditIssueFieldButton extends JRadioButton {
         public EditIssueFieldButton() {
             super();
-            setIcon(editIcon);
+            setIcon(EDIT_ICON);
             this.setBackground(com.intellij.util.ui.UIUtil.getLabelBackground());
             this.setBorder(BorderFactory.createEmptyBorder());
             this.addActionListener(new ActionListener() {
@@ -126,11 +126,11 @@ public class EditableIssueField extends JPanel {
         }
 
         public void showMe() {
-            setIcon(editIcon);
+            setIcon(EDIT_ICON);
         }
 
         public void hideMe() {
-            setIcon(emptyIcon);
+            setIcon(EMPTY_ICON);
         }
     }
 

@@ -102,9 +102,7 @@ import java.util.Map;
 public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
-
     protected static final int ROW_HEIGHT = 16;
-
 	private static JiraServerFacade facade = IntelliJJiraServerFacade.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
@@ -677,6 +675,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 			public DetailsPanel() {
 				super(new BorderLayout());
+                
 				issueAssigneeEditLabel = createEditableField(issueAssignee, "assignee", "Assignee");
 				issueReporterEditLabel = createEditableField(issueReporter, "reporter", "Reporter");
 				subtaskListModel = new DefaultListModel();
@@ -1144,7 +1143,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				if (texts.length == 0) {
 					label.setText(NONE[0]);
 				} else {
-
 					StringBuffer txt = new StringBuffer();
 					for (int i = 0; i < texts.length; ++i) {
 						if (i > 0) {
@@ -1166,7 +1164,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 				return sl.toArray(new String[l.size()]);
 			}
-
 
 			public synchronized void getIssueDetails() {
 				Runnable runnable = new IssueDetailsRunnable();
@@ -1287,14 +1284,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		private class SummaryPanel extends JPanel {
-
 			private JEditorPane summary;
             private EditableIssueField editableSummary;
-
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
-
 				gbc.gridy = 0;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.LINE_START;
@@ -1317,7 +1311,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						}
 					}
 				});
-
 				summary.setFont(summary.getFont().deriveFont(Font.BOLD));
 				summary.setOpaque(false);
                 JPanel p = new JPanel();
@@ -1333,14 +1326,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbcp.gridy = 0;
 				p.add(editableSummary, gbcp);
 				add(p, gbc);
-
 				gbc.gridy++;
-
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.OneIssueToolBar");
 				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
 				toolbar.setTargetComponent(IssueDetailsToolWindow.IssuePanel.this);
-
 				JComponent comp = toolbar.getComponent();
 				add(comp, gbc);
 			}
@@ -1362,23 +1352,18 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				);
 			}
 		}
-
 		public int incrementStackTraceCounter() {
 			return ++stackTraceCounter;
 		}
 
 		private class DescriptionAndCommentsPanel extends JPanel {
-
 			private final Splitter splitPane = new Splitter(false, PluginToolWindowPanel.PANEL_SPLIT_RATIO);
-
 			private JScrollPane scroll = new JScrollPane();
 			private ScrollablePanel comments = new ScrollablePanel();
-
 			private Border border = BorderFactory.createTitledBorder("Comments");
 			private final JTabbedPane tabs;
 			private final int tabIndex;
 			private DescriptionPanel descriptionPanel;
-
 			public DescriptionAndCommentsPanel(JTabbedPane tabs, int tabIndex) {
 				this.tabs = tabs;
 				this.tabIndex = tabIndex;
@@ -1617,7 +1602,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 				return true;
 			}
-		};
+		}
 
         private final class AttachementsPanel extends JPanel {
 
@@ -1820,7 +1805,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private void launchAttachment(JIRAAttachment a) {
                 BrowserUtil.launchBrowser(constructAttachmentUrl(a, false));
             }
-
             private String constructAttachmentUrl(JIRAAttachment a, boolean appendAuth) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(params.issue.getServerUrl())
@@ -1832,7 +1816,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 return sb.toString();
             }
-
             private void setErrorMessage(final String message, final Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -1846,7 +1829,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 });
             }
         }
-
 		private final class MyHyperlinkLabel extends JPanel {
 			private MyHyperlinkLabel(String label, HyperlinkListener listener) {
 				super(new GridBagLayout());
@@ -1867,17 +1849,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				addFillerPanel(this, gbc, true);
 			}
 		}
-
 		private class DescriptionPanel extends JPanel {
 			private JEditorPane body;
-
 			public DescriptionPanel() {
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
-
 				gbc.gridx = 0;
 				gbc.gridy = 0;
-
 				gbc.insets = new Insets(0, 0, 0, 0);
 				gbc.fill = GridBagConstraints.BOTH;
 				gbc.weightx = 1.0;
@@ -1897,7 +1875,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						}
 					}
 				});
-
 				body.setOpaque(true);
 				body.setBackground(Color.WHITE);
 				body.setMargin(new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2,
@@ -1907,14 +1884,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				setDescription(params.issue.getDescription());
 				sp.getViewport().setOpaque(false);
 				add(sp, gbc);
-
 				Border b = BorderFactory.createTitledBorder("Description");
 				setBorder(b);
 				Insets i = b.getBorderInsets(this);
 				int minHeight = i.top + i.bottom;
 				setMinimumSize(new Dimension(0, minHeight));
 			}
-
 			public void setDescription(String description) {
 				if (description != null) {
 					String descriptionFixed = description.replace("/>", ">");
@@ -1925,12 +1900,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 			}
 		}
-
 		private class LocalModelListener implements JIRAIssueListModelListener {
-
 			public void issueUpdated(final JiraIssueAdapter issue) {
 			}
-
 			public void modelChanged(final JIRAIssueListModel model) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -1939,21 +1911,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					}
 				});
 			}
-
 			public void issuesLoaded(final JIRAIssueListModel model, final int loadedIssues) {
-
 			}
 		}
 	}
-
     private static final AttachmentRendererPanel ATTACHMENT_RENDERER_PANEL = new AttachmentRendererPanel();
-
     private static final class AttachmentRendererPanel extends JPanel {
-
         private SelectableLabel name = new SelectableLabel(true, true, "NOTHING YET", ROW_HEIGHT, false, false);
         private SelectableLabel author = new SelectableLabel(true, true, "NOTHING HERE ALSO", ROW_HEIGHT, true, false);
         private SelectableLabel date = new SelectableLabel(true, true, "NEITHER HERE", ROW_HEIGHT, false, false);
-
         private AttachmentRendererPanel() {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -1971,7 +1937,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             gbc.gridx++;
             add(date, gbc);
         }
-
         void setAttachment(JiraIssueAdapter issue, JIRAAttachment attachment) throws JIRAException, JiraUserNotFoundException {
             name.setText(" " + attachment.getFilename());
             JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
@@ -1981,7 +1946,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             String commitDate = dfo.format(attachment.getCreated().getTime());
             date.setText(", " + commitDate + " ");
         }
-
         void setSelected(boolean selected) {
             name.setSelected(selected);
             author.setSelected(selected);
@@ -2001,7 +1965,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 		JPanel filler = new JPanel();
 		filler.setBackground(parent.getBackground());
-//		filler.setBorder(BorderFactory.createEmptyBorder());
 		filler.setOpaque(false);
 		parent.add(filler, gbc);
 	}
