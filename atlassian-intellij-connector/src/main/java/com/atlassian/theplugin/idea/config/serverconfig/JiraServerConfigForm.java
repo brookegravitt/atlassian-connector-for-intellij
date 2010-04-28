@@ -62,16 +62,23 @@ public class JiraServerConfigForm {
 
             public void stateChanged(ChangeEvent changeEvent) {
                 AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
-                ButtonModel buttonModel = abstractButton.getModel();
-                tfBasicUserName.setEnabled(buttonModel.isSelected());
-                tfBasicPassword.setEnabled(buttonModel.isSelected());
+                enableDisableBasicAuth(abstractButton);
             }
         });
+
+        enableDisableBasicAuth(cbUseBasicAuthentication);
+    }
+
+    private void enableDisableBasicAuth(AbstractButton button) {
+        ButtonModel buttonModel = button.getModel();
+        tfBasicUserName.setEnabled(buttonModel.isSelected());
+        tfBasicPassword.setEnabled(buttonModel.isSelected());
     }
 
     public void setData(@NotNull final JiraServerCfg serverCfg) {
         jiraServerCfg = serverCfg;
         cbUseBasicAuthentication.setSelected(!serverCfg.isDontUseBasicAuth());
+
         genericServerConfigForm.setData(serverCfg);
         if (serverCfg.getBasicHttpUser() != null) {
             tfBasicUserName.setText(serverCfg.getBasicHttpUser().getUsername());

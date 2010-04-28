@@ -17,11 +17,23 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.config.serverconfig.model.*;
+import com.atlassian.theplugin.idea.config.serverconfig.model.RootNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerInfoNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNodeFactory;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTreeModel;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTypeNode;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
@@ -41,6 +53,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
 import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
@@ -196,13 +209,31 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 					return;
 				}
 
-				servers.remove(selectedServerNode.getServer());
+
+                final ServerCfg serverCfg = selectedServerNode.getServer();
+                servers.remove(serverCfg);
 				TreeNode parent = selectedServerNode.getParent();
 				selectedServerNode.removeFromParent();
 				model.nodeStructureChanged(parent);
+                deleteServerFile(serverCfg);
+                
 			}
 		}
 	}
+
+    /**
+     * Deletes server file with password
+     * */
+    private void deleteServerFile(ServerCfg serverCfg) {
+        String fileName = serverCfg.getServerId().getId();
+        File serverFile = new File(fileName);
+        if (serverFile.exists()) {
+            boolean success = serverFile.delete();
+            if (!success) {
+                PluginUtil.getLogger().error("Cannot delete file:" + fileName + " ");
+            }
+        }
+    }
 
 	public void setData(Collection<ServerCfg> newServers) {
 		servers = newServers;
