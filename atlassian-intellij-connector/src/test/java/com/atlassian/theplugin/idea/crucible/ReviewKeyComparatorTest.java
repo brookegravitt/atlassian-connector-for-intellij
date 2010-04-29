@@ -20,6 +20,7 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewType;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import junit.framework.TestCase;
@@ -50,7 +51,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 	}
 
 	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
-		Review review = new Review("http://jira", projectKey, new User("anauthor"), null);
+		Review review = new Review(ReviewType.REVIEW, "http://jira", projectKey, new User("anauthor"), null);
 		review.setPermId(new PermId(key));
 		return new ReviewAdapter(review, null, new CrucibleProject("myprojectid", projectKey, "My Project"));
 	}
