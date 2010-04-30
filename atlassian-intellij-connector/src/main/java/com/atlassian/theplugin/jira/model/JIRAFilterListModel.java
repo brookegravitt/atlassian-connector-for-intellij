@@ -2,6 +2,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -33,8 +34,8 @@ public class JIRAFilterListModel implements FrozenModel {
         this.projectCfgManager = projectCfgManager;
     }
 
-    private Map<JiraServerData, JIRAServerFiltersBean> serversFilters =
-            new HashMap<JiraServerData, JIRAServerFiltersBean>();
+    private Map<ServerId, JIRAServerFiltersBean> serversFilters =
+            new HashMap<ServerId, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
@@ -42,22 +43,22 @@ public class JIRAFilterListModel implements FrozenModel {
 
 	public void setSavedFilters(final JiraServerData jiraServerData, @NotNull final List<JIRASavedFilter> filters) {
 
-		if (serversFilters.containsKey(jiraServerData)) {
+		if (serversFilters.containsKey(jiraServerData.getServerId())) {
 
-			serversFilters.get(jiraServerData).setSavedFilters(filters);
+			serversFilters.get(jiraServerData.getServerId()).setSavedFilters(filters);
 
 		} else {
 
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
 			serverFilters.setSavedFilters(filters);
-			serversFilters.put(jiraServerData, serverFilters);
+			serversFilters.put(jiraServerData.getServerId(), serverFilters);
 		}
 	}
 
 	public void clearManualFilter(final JiraServerData jiraServerData, final JiraCustomFilter filter) {
-		if (serversFilters.containsKey(jiraServerData)
-                && serversFilters.get(jiraServerData).getManualFilters().contains(filter)) {
-			for (JiraCustomFilter f : serversFilters.get(jiraServerData).getManualFilters()) {
+		if (serversFilters.containsKey(jiraServerData.getServerId())
+                && serversFilters.get(jiraServerData.getServerId()).getManualFilters().contains(filter)) {
+			for (JiraCustomFilter f : serversFilters.get(jiraServerData.getServerId()).getManualFilters()) {
                     if (filter.equals(f)) {
                         f.getQueryFragment().clear();
                     }
@@ -68,31 +69,35 @@ public class JIRAFilterListModel implements FrozenModel {
 
 	public void addManualFilter(final JiraServerData jiraServerData, @NotNull final JiraCustomFilter filter) {
 
-		if (serversFilters.containsKey(jiraServerData)) {
+		if (serversFilters.containsKey(jiraServerData.getServerId())) {
 
-			    serversFilters.get(jiraServerData).getManualFilters().add(filter);
+			    serversFilters.get(jiraServerData.getServerId()).getManualFilters().add(filter);
 		} else {
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
 			serverFilters.getManualFilters().add(filter);
             
-			serversFilters.put(jiraServerData, serverFilters);
+			serversFilters.put(jiraServerData.getServerId(), serverFilters);
 		}
 	}
 
 	public List<JiraServerData> getJIRAServers() {
-		return new ArrayList<JiraServerData>(serversFilters.keySet());
+        List<JiraServerData> servers = new ArrayList<JiraServerData>();
+        for (ServerId id : serversFilters.keySet()) {
+            servers.add(projectCfgManager.getJiraServerr(id));
+        }        
+		return servers;
 	}
 
 	public List<JIRASavedFilter> getSavedFilters(final JiraServerData jiraServerData) {
-		if (serversFilters.containsKey(jiraServerData)) {
-			return serversFilters.get(jiraServerData).getSavedFilters();
+		if (serversFilters.containsKey(jiraServerData.getServerId())) {
+			return serversFilters.get(jiraServerData.getServerId()).getSavedFilters();
 		}
 		return null;
 	}
 
 	public Set<JiraCustomFilter> getManualFilters(final JiraServerData jiraServerData) {
-		if (serversFilters.containsKey(jiraServerData)) {
-			return serversFilters.get(jiraServerData).getManualFilters();
+		if (serversFilters.containsKey(jiraServerData.getServerId())) {
+			return serversFilters.get(jiraServerData.getServerId()).getManualFilters();
 		}
 
 		return null;
@@ -199,8 +204,8 @@ public class JIRAFilterListModel implements FrozenModel {
 
     public void removeManualFilter(JiraServerData jiraServerData, JiraCustomFilter filter) {
         JiraCustomFilter filterToRemove = null;
-        if (serversFilters.containsKey(jiraServerData)) {
-            serversFilters.get(jiraServerData).getManualFilters().remove(filter);
+        if (serversFilters.containsKey(jiraServerData.getServerId())) {
+            serversFilters.get(jiraServerData.getServerId()).getManualFilters().remove(filter);
         }
     }
 

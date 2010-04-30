@@ -1092,6 +1092,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 jiraServerModel.clear(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, true);
                 ProgressManager.getInstance().run(task);
+                refreshIssues(true);
             }
         }
 
@@ -1135,6 +1136,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 JiraServerData jiraServer = (JiraServerData) projectCfgManager.getJiraServerr(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(jiraServer, refreshIssueList);
                 ProgressManager.getInstance().run(task);
+                refreshIssues(false);
 
             }
         }

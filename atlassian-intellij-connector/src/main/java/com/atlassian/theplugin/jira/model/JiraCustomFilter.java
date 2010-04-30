@@ -155,27 +155,26 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 		}
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-		JiraCustomFilter that = (JiraCustomFilter) o;
+        JiraCustomFilter that = (JiraCustomFilter) o;
 
-		return !(name != null ? !name.equals(that.name) : that.name != null)
-				&& !(queryFragment != null ? !queryFragment.equals(that.queryFragment) : that.queryFragment != null);
+        if (!name.equals(that.name)) return false;
+//        if (queryFragment != null ? !queryFragment.equals(that.queryFragment) : that.queryFragment != null)
+//            return false;
+        if (!uid.equals(that.uid)) return false;
 
-	}
+        return true;
+    }
 
-	@Override
-	public int hashCode() {
-		int result;
-		result = (queryFragment != null ? queryFragment.hashCode() : 0);
-		result = HASH_NUMBER * result + (name != null ? name.hashCode() : 0);
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        int result = 0; //queryFragment != null ? queryFragment.hashCode() : 0;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + uid.hashCode();
+        return result;
+    }
 }
