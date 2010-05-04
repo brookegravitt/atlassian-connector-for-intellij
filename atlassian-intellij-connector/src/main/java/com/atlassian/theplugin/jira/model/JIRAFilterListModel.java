@@ -36,72 +36,74 @@ public class JIRAFilterListModel implements FrozenModel {
 
     private Map<ServerId, JIRAServerFiltersBean> serversFilters =
             new HashMap<ServerId, JIRAServerFiltersBean>();
-	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
-	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
+    private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
+    private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
-	private boolean modelFrozen = false;
+    private boolean modelFrozen = false;
 
-	public void setSavedFilters(final JiraServerData jiraServerData, @NotNull final List<JIRASavedFilter> filters) {
+    public void setSavedFilters(final JiraServerData jiraServerData, @NotNull final List<JIRASavedFilter> filters) {
 
-		if (serversFilters.containsKey(jiraServerData.getServerId())) {
+        if (serversFilters.containsKey(jiraServerData.getServerId())) {
 
-			serversFilters.get(jiraServerData.getServerId()).setSavedFilters(filters);
+            serversFilters.get(jiraServerData.getServerId()).setSavedFilters(filters);
 
-		} else {
+        } else {
 
-			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
-			serverFilters.setSavedFilters(filters);
-			serversFilters.put(jiraServerData.getServerId(), serverFilters);
-		}
-	}
+            JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
+            serverFilters.setSavedFilters(filters);
+            serversFilters.put(jiraServerData.getServerId(), serverFilters);
+        }
+    }
 
-	public void clearManualFilter(final JiraServerData jiraServerData, final JiraCustomFilter filter) {
-		if (serversFilters.containsKey(jiraServerData.getServerId())
+    public void clearManualFilter(final JiraServerData jiraServerData, final JiraCustomFilter filter) {
+        if (serversFilters.containsKey(jiraServerData.getServerId())
                 && serversFilters.get(jiraServerData.getServerId()).getManualFilters().contains(filter)) {
-			for (JiraCustomFilter f : serversFilters.get(jiraServerData.getServerId()).getManualFilters()) {
-                    if (filter.equals(f)) {
-                        f.getQueryFragment().clear();
-                    }
+            for (JiraCustomFilter f : serversFilters.get(jiraServerData.getServerId()).getManualFilters()) {
+                if (filter.equals(f)) {
+                    f.getQueryFragment().clear();
+                }
             }
-		}
+        }
 
-	}
+    }
 
-	public void addManualFilter(final JiraServerData jiraServerData, @NotNull final JiraCustomFilter filter) {
+    public void addManualFilter(final JiraServerData jiraServerData, @NotNull final JiraCustomFilter filter) {
 
-		if (serversFilters.containsKey(jiraServerData.getServerId())) {
+        if (serversFilters.containsKey(jiraServerData.getServerId())) {
 
-			    serversFilters.get(jiraServerData.getServerId()).getManualFilters().add(filter);
-		} else {
-			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
-			serverFilters.getManualFilters().add(filter);
-            
-			serversFilters.put(jiraServerData.getServerId(), serverFilters);
-		}
-	}
+            serversFilters.get(jiraServerData.getServerId()).getManualFilters().add(filter);
+        } else {
+            JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
+            serverFilters.getManualFilters().add(filter);
 
-	public List<JiraServerData> getJIRAServers() {
+            serversFilters.put(jiraServerData.getServerId(), serverFilters);
+        }
+    }
+
+    public List<JiraServerData> getJIRAServers() {
         List<JiraServerData> servers = new ArrayList<JiraServerData>();
-        for (ServerId id : serversFilters.keySet()) {
-            servers.add(projectCfgManager.getJiraServerr(id));
-        }        
-		return servers;
-	}
+        if (projectCfgManager != null) {
+            for (ServerId id : serversFilters.keySet()) {
+                servers.add(projectCfgManager.getJiraServerr(id));
+            }
+        }
+        return servers;
+    }
 
-	public List<JIRASavedFilter> getSavedFilters(final JiraServerData jiraServerData) {
-		if (serversFilters.containsKey(jiraServerData.getServerId())) {
-			return serversFilters.get(jiraServerData.getServerId()).getSavedFilters();
-		}
-		return null;
-	}
+    public List<JIRASavedFilter> getSavedFilters(final JiraServerData jiraServerData) {
+        if (serversFilters.containsKey(jiraServerData.getServerId())) {
+            return serversFilters.get(jiraServerData.getServerId()).getSavedFilters();
+        }
+        return null;
+    }
 
-	public Set<JiraCustomFilter> getManualFilters(final JiraServerData jiraServerData) {
-		if (serversFilters.containsKey(jiraServerData.getServerId())) {
-			return serversFilters.get(jiraServerData.getServerId()).getManualFilters();
-		}
+    public Set<JiraCustomFilter> getManualFilters(final JiraServerData jiraServerData) {
+        if (serversFilters.containsKey(jiraServerData.getServerId())) {
+            return serversFilters.get(jiraServerData.getServerId()).getManualFilters();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     public Collection<JiraPresetFilter> getPresetFilters(Project project, JiraServerData jiraServer) {
         List<JiraPresetFilter> list = new ArrayList<JiraPresetFilter>();
@@ -124,83 +126,83 @@ public class JIRAFilterListModel implements FrozenModel {
         return list;
     }
 
-	public void fireModelChanged() {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.modelChanged(this);
-		}
-	}
-
-	public void fireServerRemoved() {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.serverRemoved(this);
-		}
-	}
-
-	public void fireServerAdded() {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.serverAdded(this);
-		}
-	}
-
-	public void fireServerNameChanged() {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.serverNameChanged(this);
-		}
-	}
-
-	public void fireManualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.manualFilterChanged(manualFilter, jiraServerData);
-		}
-	}
-
-    public void fireManualFilterAdded(final JiraCustomFilter filter, final JiraServerData jiraServerData) {
-        	for (JIRAFilterListModelListener listener : listeners) {
-			listener.manualFilterAdded(this, filter, jiraServerData.getServerId());
-		}
+    public void fireModelChanged() {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.modelChanged(this);
+        }
     }
 
-     public void fireManualFilterRemoved(final JiraCustomFilter filter, final JiraServerData jiraServer) {
-        	for (JIRAFilterListModelListener listener : listeners) {
-			listener.manualFilterRemoved(this, filter, jiraServer.getServerId());
-		}
-     }
+    public void fireServerRemoved() {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.serverRemoved(this);
+        }
+    }
 
-	public void addModelListener(JIRAFilterListModelListener listener) {
-		listeners.add(listener);
-	}
+    public void fireServerAdded() {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.serverAdded(this);
+        }
+    }
 
-	public void removeModelListener(JIRAFilterListModelListener listener) {
-		listeners.remove(listener);
-	}
+    public void fireServerNameChanged() {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.serverNameChanged(this);
+        }
+    }
 
-	public void clearAllServerFilters() {
-		serversFilters.clear();
-	}
+    public void fireManualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.manualFilterChanged(manualFilter, jiraServerData);
+        }
+    }
 
-	public boolean isModelFrozen() {
-		return this.modelFrozen;
-	}
+    public void fireManualFilterAdded(final JiraCustomFilter filter, final JiraServerData jiraServerData) {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.manualFilterAdded(this, filter, jiraServerData.getServerId());
+        }
+    }
 
-	public void setModelFrozen(boolean frozen) {
-		this.modelFrozen = frozen;
+    public void fireManualFilterRemoved(final JiraCustomFilter filter, final JiraServerData jiraServer) {
+        for (JIRAFilterListModelListener listener : listeners) {
+            listener.manualFilterRemoved(this, filter, jiraServer.getServerId());
+        }
+    }
 
-		fireModelFrozen();
-	}
+    public void addModelListener(JIRAFilterListModelListener listener) {
+        listeners.add(listener);
+    }
 
-	public void addFrozenModelListener(FrozenModelListener listener) {
-		frozenModelListeners.add(listener);
-	}
+    public void removeModelListener(JIRAFilterListModelListener listener) {
+        listeners.remove(listener);
+    }
 
-	public void removeFrozenModelListener(FrozenModelListener listener) {
-		frozenModelListeners.remove(listener);
-	}
+    public void clearAllServerFilters() {
+        serversFilters.clear();
+    }
 
-	private void fireModelFrozen() {
-		for (FrozenModelListener listener : frozenModelListeners) {
-			listener.modelFrozen(this, this.modelFrozen);
-		}
-	}
+    public boolean isModelFrozen() {
+        return this.modelFrozen;
+    }
+
+    public void setModelFrozen(boolean frozen) {
+        this.modelFrozen = frozen;
+
+        fireModelFrozen();
+    }
+
+    public void addFrozenModelListener(FrozenModelListener listener) {
+        frozenModelListeners.add(listener);
+    }
+
+    public void removeFrozenModelListener(FrozenModelListener listener) {
+        frozenModelListeners.remove(listener);
+    }
+
+    private void fireModelFrozen() {
+        for (FrozenModelListener listener : frozenModelListeners) {
+            listener.modelFrozen(this, this.modelFrozen);
+        }
+    }
 
     public void removeManualFilter(JiraServerData jiraServerData, JiraCustomFilter filter) {
         JiraCustomFilter filterToRemove = null;
