@@ -26,7 +26,7 @@
 	     <dependency>
             <groupId>com.atlassian.connector.tasks</groupId>
             <artifactId>atlassian-idea9-integration</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
+            <version>LATEST</version>
        </dependency>
 		<dependency>
 			<groupId>com.atlassian.connector</groupId>
