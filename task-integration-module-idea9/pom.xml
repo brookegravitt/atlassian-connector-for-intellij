@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.atlassian.connector</groupId>
@@ -11,11 +10,12 @@
     <description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
     <groupId>com.atlassian.connector.tasks</groupId>
     <artifactId>atlassian-idea9-integration</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/task-integration-module-idea9</connection>
-        <url>https://studio.atlassian.com/svn/PL/trunk/task-integration-module-idea9</url>
-    </scm>
+        <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</connection>
+        <url>https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</url>
+      <developerConnection>scm:svn:https://studio.atlassian.com/svn/ACC/tags/atlassian-idea9-integration-0.1.1</developerConnection>
+  </scm>
     <issueManagement>
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL/</url>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0-m2</version>
             <scope>compile</scope>
         </dependency>
 
