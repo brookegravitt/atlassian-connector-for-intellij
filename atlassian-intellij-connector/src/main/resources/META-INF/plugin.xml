@@ -40,6 +40,7 @@
 		]]>
 	</description>
 
+    
 	<version>${project.version}, SVN:${buildNumber}</version>
 
 	<!-- no email link for now - we don't have the plugin email alias yet-->
