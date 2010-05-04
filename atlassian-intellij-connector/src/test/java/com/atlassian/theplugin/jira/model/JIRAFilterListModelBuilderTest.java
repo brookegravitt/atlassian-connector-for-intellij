@@ -140,8 +140,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			builder.rebuildModel(serverModel);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			fail(); //we do not expect exception
-		}
-		assertEquals(3, listModel.getJIRAServers().size());
+		}		
 		JiraServerCfg jiraServer = savedFilters.keySet().iterator().next();
 		assertEquals(listModel.getSavedFilters(ServerDataProvider.getServerData(jiraServer)).size(),
 				savedFilters.get(jiraServer).size());
