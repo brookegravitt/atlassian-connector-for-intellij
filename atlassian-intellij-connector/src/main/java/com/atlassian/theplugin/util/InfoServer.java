@@ -147,7 +147,8 @@ public final class InfoServer {
 			try {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
-				if (element == null) {
+				if (element == null)
+                {
 					throw new VersionServiceException("Error while parsing metadata file");
 				}
 			} catch (JDOMException e) {
