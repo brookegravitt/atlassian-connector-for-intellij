@@ -6,8 +6,8 @@
         <name>Hosted</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <isBamboo2M9>true</isBamboo2M9>
+        <bamboo2>false</bamboo2>
+        <isBamboo2M9>false</isBamboo2M9>
         <plans>
           <plan key="ACC-CS" />
           <plan key="ACC-CLO" />
