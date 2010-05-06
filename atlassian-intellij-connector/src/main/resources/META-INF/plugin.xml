@@ -962,7 +962,7 @@
 
     <action id="ThePlugin.JiraIssues.PresetFilter.SetProjectForAllAction"
                 class="com.atlassian.theplugin.idea.action.jira.PresetFilter.SetProjectForAllAction"
-                text="Set Project on All Filter"
+                text="Set Project on All Filters"
                 icon="/icons/jira/nodes/ico_jira_add_filter.png"
                 description="Set Project For All Preset Filters">
         </action>
