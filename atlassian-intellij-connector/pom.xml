@@ -247,26 +247,26 @@
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 				</configuration>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>com.atlassian.maven.plugins</groupId>-->
-				<!--<artifactId>maven-upload-plugin</artifactId>-->
-				<!--<version>1.1</version>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>upload-artifact</id>-->
-						<!--<phase>deploy</phase>-->
-						<!--<goals>-->
-							<!--<goal>upload</goal>-->
-						<!--</goals>-->
-						<!--<configuration>-->
-							<!--<resourceSrc>-->
-								<!--${basedir}/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip-->
-							<!--</resourceSrc>-->
-							<!--<resourceDest>${pom.artifactId}/Downloads</resourceDest>-->
-							<!--<serverId>atlassian-documentation</serverId>-->
-							<!--<url>dav:https://docs.atlassian.com/</url>-->
-						<!--</configuration>-->
-					<!--</execution>-->
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-upload-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>upload-artifact</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<resourceSrc>
+								${basedir}/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip
+							</resourceSrc>
+							<resourceDest>${pom.artifactId}/Downloads</resourceDest>
+							<serverId>atlassian-documentation</serverId>
+							<url>dav:https://update.atlassian.com/</url>
+						</configuration>
+					</execution>
 					<!--<execution>-->
 						<!--<id>upload-metadata</id>-->
 						<!--<phase>deploy</phase>-->
@@ -279,11 +279,11 @@
 							<!--</resourceSrc>-->
 							<!--<resourceDest>${pom.artifactId}</resourceDest>-->
 							<!--<serverId>atlassian-documentation</serverId>-->
-							<!--<url>dav:https://docs.atlassian.com/</url>-->
+							<!--<url>dav:https://update.atlassian.com/</url>-->
 						<!--</configuration>-->
 					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
