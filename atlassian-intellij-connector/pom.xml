@@ -267,21 +267,21 @@
 							<url>dav:https://update.atlassian.com/</url>
 						</configuration>
 					</execution>
-					<!--<execution>-->
-						<!--<id>upload-metadata</id>-->
-						<!--<phase>deploy</phase>-->
-						<!--<goals>-->
-							<!--<goal>upload</goal>-->
-						<!--</goals>-->
-						<!--<configuration>-->
-							<!--<resourceSrc>-->
-								<!--${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml-->
-							<!--</resourceSrc>-->
-							<!--<resourceDest>${pom.artifactId}</resourceDest>-->
-							<!--<serverId>atlassian-documentation</serverId>-->
-							<!--<url>dav:https://update.atlassian.com/</url>-->
-						<!--</configuration>-->
-					<!--</execution>-->
+					<execution>
+						<id>upload-metadata</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<resourceSrc>
+								${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml
+							</resourceSrc>
+							<resourceDest>${pom.artifactId}</resourceDest>
+							<serverId>atlassian-documentation</serverId>
+							<url>dav:https://update.atlassian.com/</url>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
