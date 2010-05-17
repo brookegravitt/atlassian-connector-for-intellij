@@ -84,7 +84,10 @@ public class JIRAFilterListModel implements FrozenModel {
         List<JiraServerData> servers = new ArrayList<JiraServerData>();
         if (projectCfgManager != null) {
             for (ServerId id : serversFilters.keySet()) {
-                servers.add(projectCfgManager.getJiraServerr(id));
+                final JiraServerData jiraServer = projectCfgManager.getJiraServerr(id);
+                if (jiraServer != null) {
+                    servers.add(jiraServer);
+                }
             }
         }
         return servers;
