@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
@@ -124,7 +125,12 @@ public class JIRAFilterListModel implements FrozenModel {
 
         //set stored by user assigned project for each preset filter
         for (JiraPresetFilter filter : list) {
-            filter.setJiraProject(workspace.getPresetFilterProject(jiraServer, filter));
+            if (workspace != null) {
+                JIRAProject jiraProject = workspace.getPresetFilterProject(jiraServer, filter);
+                if (jiraProject != null) {
+                    filter.setJiraProject(jiraProject);
+                }
+            }
         }
         return list;
     }
