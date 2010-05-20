@@ -89,6 +89,15 @@
         <!--</resources>-->
         <plugins>
             <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<preparationGoals>assembly:directory-single</preparationGoals>
+					<arguments>-DallowTimestampedSnapshots=true -DupdateReleaseInfo -Prelease</arguments>
+					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+				</configuration>
+			</plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <configuration>
