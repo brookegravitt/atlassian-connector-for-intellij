@@ -10,7 +10,7 @@
     <description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
     <groupId>com.atlassian.connector.tasks</groupId>
     <artifactId>atlassian-idea9-integration</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2-SNAPSHOT</version>
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</connection>
         <url>https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</url>
