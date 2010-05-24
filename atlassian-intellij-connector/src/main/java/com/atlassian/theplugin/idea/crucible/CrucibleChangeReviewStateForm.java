@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
@@ -77,7 +76,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
     private JPanel publishPanel;
 
     private final ReviewAdapter review;
-    private final CrucibleServerFacade crucibleServerFacade;
+    private final IntelliJCrucibleServerFacade crucibleServerFacade;
     private final CrucibleAction action;
     private DescriptionPanel descriptionPanel;
     private final Project project;
@@ -94,49 +93,20 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
         publishPanel.setVisible(false);
 
-        switch (action) {
-            case CLOSE:
-                setTitle("Close Review");
-                getOKAction().putValue(Action.NAME, "Close Review");
-                summaryPanel.setBackground(UIUtil.getWindowColor());
-                break;
-            case APPROVE:
-                setTitle("Approve Review");
-                getOKAction().putValue(Action.NAME, "Approve Review");
-                break;
-            case SUBMIT:
-                setTitle("Submit Review");
-                getOKAction().putValue(Action.NAME, "Submit Review");
-                break;
-            case ABANDON:
-                setTitle("Abandon Review");
-                getOKAction().putValue(Action.NAME, "Abandon Review");
-                break;
-            case SUMMARIZE:
-                setTitle("Summarize and Close Review");
-                getOKAction().putValue(Action.NAME, "Summarize and Close Review");
-                break;
-            case REOPEN:
-                setTitle("Reopen Review");
-                getOKAction().putValue(Action.NAME, "Reopen Review");
-                break;
-            case RECOVER:
-                setTitle("Recover Abandoned Review");
-                getOKAction().putValue(Action.NAME, "Recover Abandoned Review");
-                break;
-            case COMPLETE:
-                setTitle("Complete Review");
-                getOKAction().putValue(Action.NAME, "Complete Review");
-                publishPanel.setVisible(true);
-                break;
-            case UNCOMPLETE:
-                setTitle("Uncomplete Review");
-                getOKAction().putValue(Action.NAME, "Uncomplete Review");
-                break;
-            default:
-                break;
-        }
+		if (CrucibleAction.SUMMARIZE.equals(action)) {
+			setTitle("Summarize and Close Review");
+			getOKAction().putValue(Action.NAME, "Summarize and Close Review");
+		} else {
+			setTitle(action.displayName());
+			getOKAction().putValue(Action.NAME, action.displayName());
 
+		}
+
+		if (CrucibleAction.COMPLETE.equals(action)) {
+			publishPanel.setVisible(true);
+		} else if (CrucibleAction.CLOSE.equals(action)) {
+			summaryPanel.setBackground(UIUtil.getWindowColor());
+        }
     }
 
     public void showDialog() {
@@ -219,45 +189,23 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
         if (description == null) {
             description = "";
         }
-        switch (action) {
-            case APPROVE:
-                crucibleServerFacade.approveReview(review.getServerData(), review.getPermId());
-                break;
-            case SUBMIT:
-                crucibleServerFacade.submitReview(review.getServerData(), review.getPermId());
-                break;
-            case ABANDON:
-                crucibleServerFacade.abandonReview(review.getServerData(), review.getPermId());
-                break;
-            case SUMMARIZE:
-                crucibleServerFacade
-                        .summarizeReview(review.getServerData(), review.getPermId());
-                crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(),
-                        description);
-                break;
-            case CLOSE:
-                crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(),
-                        description);
-                break;
-            case REOPEN:
-                crucibleServerFacade.reopenReview(review.getServerData(), review.getPermId());
-                break;
-            case RECOVER:
-                crucibleServerFacade.recoverReview(review.getServerData(), review.getPermId());
-                break;
-            case COMPLETE:
-                if (this.publishDraftsCheckBox.isSelected()) {
-                    crucibleServerFacade.publishAllCommentsForReview(review.getServerData(),
-                            review.getPermId());
-                }
-                crucibleServerFacade.completeReview(review.getServerData(), review.getPermId(),
-                        true);
-                break;
-            case UNCOMPLETE:
-                crucibleServerFacade
-                        .completeReview(review.getServerData(), review.getPermId(), false);
-                break;
-        }
+		if (CrucibleAction.SUMMARIZE.equals(action)) {
+			crucibleServerFacade.summarizeReview(review.getServerData(), review.getPermId());
+			crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(), description);
+		} else if (CrucibleAction.CLOSE.equals(action)) {
+			crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(), description);
+		} else if (CrucibleAction.COMPLETE.equals(action)) {
+			if (this.publishDraftsCheckBox.isSelected()) {
+				crucibleServerFacade.publishAllCommentsForReview(review.getServerData(),
+						review.getPermId());
+			}
+			crucibleServerFacade.completeReview(review.getServerData(), review.getPermId(), true);
+		} else if (CrucibleAction.UNCOMPLETE.equals(action)) {
+			crucibleServerFacade.completeReview(review.getServerData(), review.getPermId(), false);
+		} else {
+			crucibleServerFacade.changeReviewState(review.getServerData(), review.getPermId(), action);
+		}
+			
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
