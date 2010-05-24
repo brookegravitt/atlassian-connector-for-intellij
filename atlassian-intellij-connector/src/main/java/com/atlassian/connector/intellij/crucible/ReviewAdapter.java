@@ -34,10 +34,8 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -169,11 +167,11 @@ public class ReviewAdapter {
 		return review.getGeneralComments();
 	}
 
-	public EnumSet<CrucibleAction> getTransitions() {
+	public Set<CrucibleAction> getTransitions() {
 		return review.getTransitions();
 	}
 
-	public EnumSet<CrucibleAction> getActions() {
+	public Set<CrucibleAction> getActions() {
 		return review.getActions();
 	}
 

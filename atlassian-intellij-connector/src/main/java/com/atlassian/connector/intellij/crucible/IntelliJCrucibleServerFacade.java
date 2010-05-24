@@ -10,8 +10,8 @@ import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.BasicReview;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -29,7 +29,6 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -119,8 +118,14 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter abandonReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.abandonReview(server, permId), server);
+		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.ABANDON), server);
     }
+
+	public Review changeReviewState(ServerData server, PermId permId, CrucibleAction action) throws RemoteApiException,
+			ServerPasswordNotProvidedException {
+		final BasicReview review = facade.getSession(server).changeReviewState(permId, CrucibleAction.ABANDON);
+		return facade.getReview(server, review.getPermId());
+	}
 
     private ReviewAdapter toReviewAdapter(@NotNull Review review, ServerData serverData)
             throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -174,7 +179,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter approveReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.approveReview(server, permId), server);
+		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.APPROVE), server);
     }
 
     public boolean checkContentUrlAvailable(ServerData server)
@@ -321,7 +326,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter recoverReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.recoverReview(server, permId), server);
+		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.RECOVER), server);
     }
 
     public void removeComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
@@ -336,7 +341,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter reopenReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.reopenReview(server, permId), server);
+		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.REOPEN), server);
     }
 
     public void setReviewers(@NotNull ServerData server, @NotNull PermId permId, @NotNull Collection<String> usernames)
@@ -346,7 +351,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public ReviewAdapter submitReview(ServerData server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.submitReview(server, permId), server);
+		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.SUBMIT), server);
     }
 
     public ReviewAdapter summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
