@@ -21,11 +21,12 @@ import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -40,7 +41,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	}
 
 	@Nullable
-	public CrucibleProject getProject(@NotNull final ServerData server, @NotNull final String projectKey)
+	public ExtendedCrucibleProject getProject(@NotNull final ServerData server, @NotNull final String projectKey)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
@@ -123,40 +123,11 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			@NotNull final Collection<String> userName) throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public ReviewAdapter approveReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public ReviewAdapter submitReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public ReviewAdapter summarizeReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public ReviewAdapter abandonReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
 	public ReviewAdapter closeReview(ServerData server, PermId permId, String summary)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}
 
-	public ReviewAdapter recoverReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
-
-	public ReviewAdapter reopenReview(ServerData server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
-		return null;
-	}
 
 	public void completeReview(ServerData server, PermId permId, boolean complete)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -235,7 +206,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return null;
 	}
 
-	public List<CrucibleProject> getProjects(ServerData server)
+	public List<BasicProject> getProjects(ServerData server)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}

@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			CrucibleProject crucibleProject = getDistinctProjects().get(index);
+			BasicProject crucibleProject = getDistinctProjects().get(index);
 
 			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(crucibleProject);
 			p.add(serverNode);
@@ -79,18 +79,18 @@ public class ProjectNodeManipulator extends NodeManipulator {
 		return null;
 	}
 
-	private List<CrucibleProject> getDistinctProjects() {
-		Set<CrucibleProject> projects = new TreeSet<CrucibleProject>(COMPARATOR);
+	private List<BasicProject> getDistinctProjects() {
+		Set<BasicProject> projects = new TreeSet<BasicProject>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
 			projects.add(review.getCrucibleProject());
 		}
 
-		return new ArrayList<CrucibleProject>(projects);
+		return new ArrayList<BasicProject>(projects);
 	}
 
-	private static final Comparator<CrucibleProject> COMPARATOR = new Comparator<CrucibleProject>() {
-		public int compare(CrucibleProject lhs, CrucibleProject rhs) {
+	private static final Comparator<BasicProject> COMPARATOR = new Comparator<BasicProject>() {
+		public int compare(BasicProject lhs, BasicProject rhs) {
 			return lhs.getName().compareTo(rhs.getName());
 		}
 	};

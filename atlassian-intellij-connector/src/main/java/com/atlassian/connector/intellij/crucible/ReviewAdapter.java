@@ -19,8 +19,8 @@ package com.atlassian.connector.intellij.crucible;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
@@ -53,13 +53,13 @@ public class ReviewAdapter {
 	private CrucibleServerFacade facade;
 
 	private final Collection<CrucibleReviewListener> listeners = new HashSet<CrucibleReviewListener>();
-	private final CrucibleProject crucibleProject;
+	private final ExtendedCrucibleProject crucibleProject;
 
     private Collection<CrucibleReviewListener> getListeners() {
 		return listeners;
 	}
 
-	public ReviewAdapter(Review review, ServerData server, CrucibleProject crucibleProject) {
+	public ReviewAdapter(Review review, ServerData server, ExtendedCrucibleProject crucibleProject) {
 		this.review = review;
 		this.server = server;
 		this.crucibleProject = crucibleProject;
@@ -127,7 +127,7 @@ public class ReviewAdapter {
 		return review.getProjectKey();
 	}
 
-	public CrucibleProject getCrucibleProject() {
+	public ExtendedCrucibleProject getCrucibleProject() {
 		return crucibleProject;
 	}
 

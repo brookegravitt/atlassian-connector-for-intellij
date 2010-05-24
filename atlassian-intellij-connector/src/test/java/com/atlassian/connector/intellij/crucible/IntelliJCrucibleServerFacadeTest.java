@@ -7,8 +7,9 @@ import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -26,8 +27,11 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 	private final User U1 = new User("wseliga", "Wojciech Seliga");
 	private final User U2 = new User("pmaruszak", "Piotr Maruszak");
 	private final User U3 = new User("jgorycki", "Janusz Gorycki");
-	private final CrucibleProject P1 = new CrucibleProject("1", "PRJ1", "Project One", MiscUtil.buildArrayList("wseliga", "pmaruszak"));
-	private final CrucibleProject P2 = new CrucibleProject("2", "PRJ2", "Project Two", MiscUtil.buildArrayList("wseliga"));
+	private final BasicProject P1 = new ExtendedCrucibleProject("1", "PRJ1", "Project One", MiscUtil.buildArrayList(
+			"wseliga",
+			"pmaruszak"));
+	private final BasicProject P2 = new ExtendedCrucibleProject("2", "PRJ2", "Project Two",
+			MiscUtil.buildArrayList("wseliga"));
 
 	public void testGetAllowedReviewers() throws RemoteApiException, ServerPasswordNotProvidedException {
 		final CrucibleServerCfg SERVER_CFG = new CrucibleServerCfg(true, "myname", new ServerIdImpl());

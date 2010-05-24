@@ -190,7 +190,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             description = "";
         }
 		if (CrucibleAction.SUMMARIZE.equals(action)) {
-			crucibleServerFacade.summarizeReview(review.getServerData(), review.getPermId());
+			crucibleServerFacade.changeReviewState(review.getServerData(), review.getPermId(), CrucibleAction.SUMMARIZE);
 			crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(), description);
 		} else if (CrucibleAction.CLOSE.equals(action)) {
 			crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(), description);
