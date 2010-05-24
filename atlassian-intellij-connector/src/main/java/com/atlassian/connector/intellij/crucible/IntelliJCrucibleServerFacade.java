@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.BasicReview;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
@@ -15,6 +16,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -40,27 +42,34 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAdapter implements CrucibleServerFacade {
 
 	public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
-        private final Map<ConnectionCfg, Map<String, CrucibleProject>> serverMap
-                = new ConcurrentHashMap<ConnectionCfg, Map<String, CrucibleProject>>();
+		private final Map<ConnectionCfg, Map<String, BasicProject>> serverMap = new ConcurrentHashMap<ConnectionCfg, Map<String, BasicProject>>();
 
 
-        public Map<String, CrucibleProject> getProjects(ConnectionCfg server)
+		public Map<String, BasicProject> getProjects(ConnectionCfg server)
                 throws RemoteApiException, ServerPasswordNotProvidedException {
-            Map<String, CrucibleProject> projects = serverMap.get(server);
+			Map<String, BasicProject> projects = serverMap.get(server);
             if (projects == null) {
                 projects = refreshProjectsFromServer(server);
             }
             return projects;
         }
 
+		public void registerProject(ConnectionCfg server, ExtendedCrucibleProject project) {
+			Map<String, BasicProject> projectsForServer = serverMap.get(server);
+			if (projectsForServer == null) {
+				projectsForServer = MiscUtil.buildHashMap();
+			}
+			projectsForServer.put(project.getKey(), project);
+		}
+
         @NotNull
-        private Map<String, CrucibleProject> refreshProjectsFromServer(ConnectionCfg server)
+		private Map<String, BasicProject> refreshProjectsFromServer(ConnectionCfg server)
                 throws RemoteApiException, ServerPasswordNotProvidedException {
-            final List<CrucibleProject> projects = facade.getProjects(server);
+			final List<BasicProject> projects = facade.getProjects(server);
 
-            Map<String, CrucibleProject> map = new HashMap<String, CrucibleProject>(projects.size() + 1, 1);
+			Map<String, BasicProject> map = new HashMap<String, BasicProject>(projects.size() + 1, 1);
 
-            for (CrucibleProject project : projects) {
+            for (BasicProject project : projects) {
                 map.put(project.getKey(), project);
             }
             serverMap.put(server, map);
@@ -242,14 +251,19 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     }
 
     @Nullable
-    public CrucibleProject getProject(@NotNull ServerData server, @NotNull String projectKey) throws RemoteApiException,
+	public ExtendedCrucibleProject getProject(@NotNull ServerData server, @NotNull String projectKey)
+			throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        final Map<String, CrucibleProject> projectsByKey = projectCache.getProjects(server);
-        final CrucibleProject crucibleProject = projectsByKey.get(projectKey);
-        if (crucibleProject == null) {
-            return projectCache.refreshProjectsFromServer(server).get(projectKey);
-        }
-        return crucibleProject;
+		final Map<String, BasicProject> projectsByKey = projectCache.getProjects(server);
+		final BasicProject crucibleProject = projectsByKey.get(projectKey);
+        
+        if (crucibleProject instanceof ExtendedCrucibleProject) {
+			return (ExtendedCrucibleProject) crucibleProject;
+		} else {
+			final ExtendedCrucibleProject project = facade.getSession(server).getProject(projectKey);
+			projectCache.registerProject(server, project);
+			return project;
+		}
     }
 
 	private List<ReviewAdapter> toReviewAdapterList(Collection<BasicReview> reviews, ServerData server)
@@ -265,7 +279,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     /**
      * Does caching, as IntelliJ Connector does not have its own meta-data cache
      */
-    public List<CrucibleProject> getProjects(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public List<BasicProject> getProjects(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException {
         return MiscUtil.buildArrayList(projectCache.getProjects(server).values());
     }
 
@@ -349,16 +363,6 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         facade.setReviewers(server, permId, usernames);
     }
 
-    public ReviewAdapter submitReview(ServerData server, PermId permId)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.SUBMIT), server);
-    }
-
-    public ReviewAdapter summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
-            ServerPasswordNotProvidedException {
-        return toReviewAdapter(facade.summarizeReview(server, permId), server);
-    }
-
     public void updateComment(ServerData server, PermId id, Comment comment) throws RemoteApiException,
             ServerPasswordNotProvidedException {
         facade.updateComment(server, id, comment);
@@ -392,7 +396,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     public List<User> getAllowedReviewers(ServerData server, String projectKey) throws RemoteApiException,
             ServerPasswordNotProvidedException {
 
-        final CrucibleProject project = getProject(server, projectKey);
+		final ExtendedCrucibleProject project = getProject(server, projectKey);
         if (project == null) {
             return null;
         }

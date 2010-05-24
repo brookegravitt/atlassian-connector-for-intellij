@@ -10,7 +10,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
@@ -23,8 +23,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -33,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import junit.framework.TestCase;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModelImplAdapter model;
@@ -42,7 +41,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private final Date date = new Date();
 	private final User moderator = new User("moderator");
 	private final User author = new User("author");
-	private static final CrucibleProject PROJECT_1 = new CrucibleProject("My Id", "TEST", "My Test Project");
+	private static final ExtendedCrucibleProject PROJECT_1 = new ExtendedCrucibleProject("My Id", "TEST", "My Test Project");
 
 	@Override
 	public void setUp() throws Exception {

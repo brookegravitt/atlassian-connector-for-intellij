@@ -18,11 +18,12 @@ package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ExtendedCrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -91,29 +92,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	void setReviewers(@NotNull ServerData server, @NotNull PermId permId, @NotNull Collection<String> usernames)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	ReviewAdapter approveReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
-	ReviewAdapter submitReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
-	ReviewAdapter summarizeReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
-	ReviewAdapter abandonReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
 	ReviewAdapter closeReview(ServerData server, PermId permId, String summary) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
-
-	ReviewAdapter recoverReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
-	ReviewAdapter reopenReview(ServerData server, PermId permId) throws RemoteApiException,
-			ServerPasswordNotProvidedException;
-
-//	Review rejectReview(CrucibleServerCfg server, PermId permId)
-//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	void completeReview(ServerData server, PermId permId, boolean complete) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
@@ -176,7 +156,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
 	List<User> getUsers(ServerData server) throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<CrucibleProject> getProjects(ServerData server) throws RemoteApiException,
+	List<BasicProject> getProjects(ServerData server) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
 	List<Repository> getRepositories(ServerData server) throws RemoteApiException,
@@ -192,7 +172,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	String getDisplayName(@NotNull final ServerData server, @NotNull String username);
 
 	@Nullable
-	CrucibleProject getProject(@NotNull final ServerData server, @NotNull final String projectKey)
+	ExtendedCrucibleProject getProject(@NotNull final ServerData server, @NotNull final String projectKey)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	boolean checkContentUrlAvailable(ServerData server) throws RemoteApiException,
