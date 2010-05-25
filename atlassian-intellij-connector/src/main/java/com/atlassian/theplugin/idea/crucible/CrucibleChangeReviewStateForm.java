@@ -97,8 +97,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			setTitle("Summarize and Close Review");
 			getOKAction().putValue(Action.NAME, "Summarize and Close Review");
 		} else {
-			setTitle(action.displayName());
-			getOKAction().putValue(Action.NAME, action.displayName());
+			setTitle(action.getDisplayName());
+			getOKAction().putValue(Action.NAME, action.getDisplayName());
 
 		}
 
