@@ -65,7 +65,9 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 	private PluginSSLProtocolSocketFactory() {
 		try {
 			trustManager = new ConnectorTrustManager(PluginSSLProtocolSocketFactory.generalConfigurationBean,
-                                PluginSSLProtocolSocketFactory.certMessageDialog);
+                                PluginSSLProtocolSocketFactory.certMessageDialog, getKeyStore());
+            
+
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} catch (KeyStoreException e) {
