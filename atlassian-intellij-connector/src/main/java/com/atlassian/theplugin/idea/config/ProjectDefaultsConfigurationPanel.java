@@ -31,7 +31,7 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
@@ -108,17 +108,17 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
 
-	private final MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg> crucProjectModel
-			= new MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg>(
+	private final MyModel<CrucibleProjectWrapper, BasicProject, CrucibleServerCfg> crucProjectModel
+			= new MyModel<CrucibleProjectWrapper, BasicProject, CrucibleServerCfg>(
 			CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE, "projects", "Crucible") {
 
 		@Override
-		protected CrucibleProjectWrapper toT(final CrucibleProject element) {
+		protected CrucibleProjectWrapper toT(final BasicProject element) {
 			return new CrucibleProjectWrapper(element);
 		}
 
 		@Override
-		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
+		protected List<BasicProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
             ServerData.Builder builder = new ServerData.Builder(serverCfg);
             builder.defaultUser(defaultCredentials);
@@ -136,7 +136,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				projectConfiguration.setDefaultCrucibleProject(null);
 				return;
 			}
-			final CrucibleProject wrapped = newSelection.getWrapped();
+			final BasicProject wrapped = newSelection.getWrapped();
 			if (wrapped != null) {
 				projectConfiguration.setDefaultCrucibleProject(wrapped.getKey());
 			} else {

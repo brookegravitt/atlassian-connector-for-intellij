@@ -25,7 +25,6 @@ import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
 import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
@@ -110,7 +109,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-	private final CrucibleServerFacade crucibleServerFacade;
+	private final IntelliJCrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
