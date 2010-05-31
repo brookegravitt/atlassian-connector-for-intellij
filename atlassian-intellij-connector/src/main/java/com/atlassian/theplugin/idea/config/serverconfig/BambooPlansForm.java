@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import static java.lang.System.arraycopy;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -27,12 +28,31 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -43,8 +63,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.System.arraycopy;
 
 
 public class BambooPlansForm extends JPanel {
@@ -63,10 +81,10 @@ public class BambooPlansForm extends JPanel {
     private JPanel listPanel;
     private JPanel plansPanel;
     private JSpinner spinnerTimeZoneDifference;
-    private SpinnerModel timezoneOffsetSpinnerModel = new SpinnerNumberModel(0, MIN_TIMEZONE_DIFF, MAX_TIMEZONE_DIFF, 1);
+    private final SpinnerModel timezoneOffsetSpinnerModel = new SpinnerNumberModel(0, MIN_TIMEZONE_DIFF, MAX_TIMEZONE_DIFF, 1);
     private JPanel timezonePanel;
     private JLabel bambooVersionNumberInfo;
-    private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+    private final ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
     private DefaultListModel model;
 
@@ -74,10 +92,10 @@ public class BambooPlansForm extends JPanel {
     private Boolean isUseFavourite;
     private transient BambooServerCfg bambooServerCfg;
     private static final int NUM_SERVERS = 10;
-    private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
+    private final Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
     private final transient BambooServerFacade bambooServerFacade;
     private final BambooServerConfigForm serverPanel;
-    private UserCfg defaultCredentials;
+    private final UserCfg defaultCredentials;
 
     public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
                            final BambooServerConfigForm bambooServerConfigForm, @NotNull UserCfg defaultCredentials) {
@@ -136,8 +154,6 @@ public class BambooPlansForm extends JPanel {
         BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
         builder.defaultUser(defaultCredentials);
         bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(builder.build()));
-        bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(builder.build()));
-        bambooServerCfg.setIsBamboo24(bambooServerFacade.isBamboo24(builder.build()));
         retrievePlans(bambooServerCfg);
     }
 
@@ -236,9 +252,6 @@ public class BambooPlansForm extends JPanel {
                 builder.defaultUser(defaultCredentials);
                 bambooServerCfg.setIsBamboo2(
                         bambooServerFacade.isBamboo2(builder.build()));
-
-                bambooServerCfg.setIsBamboo2M9(
-                        bambooServerFacade.isBamboo2M9(builder.build()));
 
                 final StringBuilder msg = new StringBuilder();
                 try {

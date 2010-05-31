@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -31,7 +32,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,25 +47,6 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	private static IntelliJBambooServerFacade instance;
 	private final BambooServerFacade2 facade;
-	private final SubscribedPlansProvider newSubscribedPlansProvider = new SubscribedPlansProvider() {
-		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
-				final Collection<SubscribedPlan> plans, final boolean isUseFavourities,
-				final int timezoneOffset) throws ServerPasswordNotProvidedException, RemoteApiLoginException {
-			return convertToBambooBuildAdapters(bambooServer,
-					facade.getSubscribedPlansResultsNew(bambooServer,
-							plans, isUseFavourities, timezoneOffset));
-		}
-	};
-
-	private final SubscribedPlansProvider oldSubscribedPlansProvider = new SubscribedPlansProvider() {
-
-		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
-				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
-				throws ServerPasswordNotProvidedException, RemoteApiException {
-			return convertToBambooBuildAdapters(bambooServer, facade.getSubscribedPlansResults(
-					bambooServer, plans, isUseFavourities, timezoneOffset));
-		}
-	};
 
     public IntelliJBambooServerFacade(Logger logger) {
 		facade = new BambooServerFacadeImpl(logger, new IntelliJHttpSessionCallback());
@@ -147,10 +128,10 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 			Collection<SubscribedPlan> plans, boolean isUseFavourities, int timezoneOffset)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 
-		SubscribedPlansProvider provider = (bambooServer.isBamboo24())
-				? newSubscribedPlansProvider : oldSubscribedPlansProvider;
 		try {
-			return provider.getBuilds(bambooServer, plans, isUseFavourities, timezoneOffset);
+			return convertToBambooBuildAdapters(bambooServer,
+					facade.getSubscribedPlansResults(bambooServer,
+							plans, isUseFavourities, timezoneOffset));
 		} catch (RemoteApiLoginException e) {
 			Collection<BambooBuildAdapter> res = MiscUtil.buildArrayList(plans.size());
 			for (SubscribedPlan plan : plans) {
@@ -175,17 +156,20 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 	}
 
 
-	public boolean isBamboo2(BambooServerData serverData) {
-		return facade.isBamboo2(serverData);
+	public boolean isBamboo2(final BambooServerData serverData) {
+		BambooSession session;
+		try {
+			session = facade.getSession(serverData);
+			if (session != null && session.getBamboBuildNumber() > 0) {
+				return true;
+			}
+
+		} catch (RemoteApiException e) {
+			// not important == false
+		}
+		return false;
 	}
 
-	public boolean isBamboo2M9(BambooServerData bambooServerData) {
-		return facade.isBamboo2M9(bambooServerData);
-	}
-
-    public boolean isBamboo24(BambooServerData bambooServerData) {
-        return facade.isBamboo24(bambooServerData);
-    }
 
     public ServerType getServerType() {
 		return facade.getServerType();
@@ -195,9 +179,6 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
         facade.testServerConnection(connectionCfg);
     }
 
-    private interface SubscribedPlansProvider {
-		ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
-				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
-				throws ServerPasswordNotProvidedException, RemoteApiException;
-	}
+
+
 }
