@@ -21,7 +21,7 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
@@ -327,7 +327,7 @@ return new Action[] {
 			setStateForAllControls(false);
 
 			uiTaskExecutor.execute(new UiTask() {
-				private List<CrucibleProject> projects = Collections.emptyList();
+				private List<BasicProject> projects = Collections.emptyList();
 				private List<User> users = Collections.emptyList();
 				private String currentAction;
 
@@ -389,7 +389,7 @@ return new Action[] {
         matchRoleComboBox.setSelectedIndex(-1);
         filter.setEmpty(true);
     }
-	private void updateServerRelatedCombos(List<CrucibleProject> projects, List<User> users) {
+	private void updateServerRelatedCombos(List<BasicProject> projects, List<User> users) {
 
 		draftCheckBox.setSelected(false);
 		pendingApprovalCheckBox.setSelected(false);
@@ -445,7 +445,7 @@ return new Action[] {
 			setOKActionEnabled(false);
 		} else {
 			projectComboBox.addItem(CRUC_PROJECT_ANY);
-			for (CrucibleProject crucibleProject : projects) {
+			for (BasicProject crucibleProject : projects) {
 				projectComboBox.addItem(new CrucibleProjectWrapper(crucibleProject));
 			}
 			projectComboBox.setEnabled(true);
@@ -508,7 +508,7 @@ return new Action[] {
 		}
 		for (int i = 0; i < combo.getModel().getSize(); ++i) {
 			CrucibleProjectWrapper item = (CrucibleProjectWrapper) combo.getModel().getElementAt(i);
-			final CrucibleProject crucibleProject = item.getWrapped();
+			final BasicProject crucibleProject = item.getWrapped();
 			if ((crucibleProject != null && projectName.equals(crucibleProject.getKey())) || (projectName.length() == 0
 					&& crucibleProject == null)) {
 				combo.setSelectedItem(item);

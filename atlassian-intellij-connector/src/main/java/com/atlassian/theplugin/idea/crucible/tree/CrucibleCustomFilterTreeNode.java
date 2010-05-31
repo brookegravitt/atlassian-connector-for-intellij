@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -120,7 +120,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 			String projectName = filter.getProjectKey() + " <i>(fetching full name...)</i>";
 			if (fetchRemoteData) {
 				try {
-					CrucibleProject crucibleProject = server != null
+					BasicProject crucibleProject = server != null
 							? IntelliJCrucibleServerFacade.getInstance().getProject(server, filter.getProjectKey())
 							: null;
 					if (crucibleProject != null) {

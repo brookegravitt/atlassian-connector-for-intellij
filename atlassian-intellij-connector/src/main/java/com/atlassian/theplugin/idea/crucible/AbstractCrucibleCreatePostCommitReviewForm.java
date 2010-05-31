@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public abstract class AbstractCrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm {
-	public AbstractCrucibleCreatePostCommitReviewForm(Project project, CrucibleServerFacade crucibleServerFacade,
+	public AbstractCrucibleCreatePostCommitReviewForm(Project project, IntelliJCrucibleServerFacade crucibleServerFacade,
 			String commitMessage,
 			@NotNull final ProjectCfgManager projectCfgManager) {
 		super(project, crucibleServerFacade, commitMessage, projectCfgManager, "Create Post-Commit Review");

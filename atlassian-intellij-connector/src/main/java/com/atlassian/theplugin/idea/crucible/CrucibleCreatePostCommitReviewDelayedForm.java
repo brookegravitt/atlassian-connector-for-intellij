@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
@@ -51,7 +51,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 
     public CrucibleCreatePostCommitReviewDelayedForm(
             final Project project,
-            final CrucibleServerFacade crucibleServerFacade,
+            final IntelliJCrucibleServerFacade crucibleServerFacade,
             @NotNull final ProjectCfgManager projectCfgManager,
             CrucibleConfigurationBean cruciblePluginConfig,
             String title,

@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -61,7 +61,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	private final UiTaskExecutor taskExecutor;
 	private int revisionsNumber = 30;
 
-	public CrucibleCreatePostCommitReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
+	public CrucibleCreatePostCommitReviewForm(final Project project, final IntelliJCrucibleServerFacade crucibleServerFacade,
 			@NotNull final ProjectCfgManager projectCfgManager, @NotNull final UiTaskExecutor taskExecutor) {
 		super(project, crucibleServerFacade, "", projectCfgManager);
 		this.taskExecutor = taskExecutor;

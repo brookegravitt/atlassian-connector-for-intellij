@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -40,7 +40,7 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 
 	private final MultipleChangeListBrowser changesBrowser;
 
-	public CrucibleCreatePreCommitUploadReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
+	public CrucibleCreatePreCommitUploadReviewForm(final Project project, final IntelliJCrucibleServerFacade crucibleServerFacade,
 			Collection<Change> changes,
 			@NotNull final ProjectCfgManager projectCfgManager) {
 		super(project, crucibleServerFacade, "", projectCfgManager);

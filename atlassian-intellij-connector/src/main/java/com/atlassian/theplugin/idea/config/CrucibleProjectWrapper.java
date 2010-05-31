@@ -15,10 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
 
-public class CrucibleProjectWrapper extends GenericComboBoxItemWrapper<CrucibleProject> {
-	public CrucibleProjectWrapper(final CrucibleProject crucibleProject) {
+
+public class CrucibleProjectWrapper extends GenericComboBoxItemWrapper<BasicProject> {
+	public CrucibleProjectWrapper(final BasicProject crucibleProject) {
 		super(crucibleProject);
 	}
 
