@@ -40,17 +40,6 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.SettingsSavingComponent;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -62,9 +51,20 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.SettingsSavingComponent;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VirtualFile;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -270,6 +270,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		List<Element> projectConfigurationNode = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration");
 		for (Element e : projectConfigurationNode) {
 			e.removeChild("defaultUser");
+		}
+		
+		/* remove unused anymore BambooServerCfg fields */
+		@SuppressWarnings("unchecked")
+		List<Element> bambooNodes = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration/servers/bamboo");
+		for (Element e : bambooNodes) {
+			e.removeChild("isBamboo2M9");
+			e.removeChild("isBamboo24");
 		}
 	}
 
