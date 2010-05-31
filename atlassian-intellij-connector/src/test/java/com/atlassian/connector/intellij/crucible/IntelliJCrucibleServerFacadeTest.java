@@ -16,9 +16,9 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import org.mockito.Mockito;
 import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
+import org.mockito.Mockito;
 
 /**
  * @author Wojciech Seliga
@@ -41,6 +41,8 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 		final CrucibleSession crucibleSessionMock = Mockito.mock(CrucibleSession.class);
 		Mockito.when(crucibleSessionMock.getProjects()).thenReturn(MiscUtil.buildArrayList(P1, P2));
 		Mockito.when(crucibleSessionMock.getUsers()).thenReturn(MiscUtil.buildArrayList(U1, U2, U3));
+        Mockito.when(crucibleSessionMock.getProject("PRJ1")).thenReturn((ExtendedCrucibleProject)null);
+
 
 		final IntelliJCrucibleServerFacade facade = new IntelliJCrucibleServerFacade(
 				new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()) {
