@@ -43,7 +43,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAdapter implements CrucibleServerFacade {
 
 	public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
-		private final Map<ConnectionCfg, Map<String, BasicProject>> serverMap = new ConcurrentHashMap<ConnectionCfg, Map<String, BasicProject>>();
+		private final Map<ConnectionCfg, Map<String, BasicProject>> serverMap =
+                new ConcurrentHashMap<ConnectionCfg, Map<String, BasicProject>>();
+
 
 
 		public Map<String, BasicProject> getProjects(ConnectionCfg server)
