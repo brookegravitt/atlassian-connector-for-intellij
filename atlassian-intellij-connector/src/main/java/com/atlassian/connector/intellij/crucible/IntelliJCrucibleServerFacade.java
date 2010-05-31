@@ -31,6 +31,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -261,7 +262,9 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 			return (ExtendedCrucibleProject) crucibleProject;
 		} else {
 			final ExtendedCrucibleProject project = facade.getSession(server).getProject(projectKey);
-			projectCache.registerProject(server, project);
+            if (project != null) {
+			    projectCache.registerProject(server, project);
+            }
 			return project;
 		}
     }
