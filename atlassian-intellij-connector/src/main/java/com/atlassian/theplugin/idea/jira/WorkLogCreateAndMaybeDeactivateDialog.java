@@ -31,6 +31,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
@@ -56,7 +57,7 @@ import java.util.regex.Pattern;
 
 
 public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
-
+    private static Icon copyIcon = IconLoader.getIcon("/actions/copy.png");
 	private JPanel contentPane;
 	private JTextArea comment;
 	private JButton endDateChange;
@@ -68,6 +69,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	private JTextField remainingEstimateField;
 	private JTextPane explanationText;
 	private JPanel endTimePanel;
+    private JButton copyButton;
 
     private JRadioButton btnChangeSetDoNothing;
     private JRadioButton btnChangeSetDeactivate;
@@ -87,11 +89,13 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
     private Date endTime = Calendar.getInstance().getTime();
 
 	private WdhmInputListener timeSpentListener;
+    private JTextArea issueComment;
 	private WdhmInputListener remainingEstimateListener;
 	private MultipleChangeListBrowser changesBrowserPanel;
     private JiraServerFacade facade;
     private JComboBox actionCombo;
     private JCheckBox cbPerformWorkflowAction;
+
 
 
     /**
@@ -243,8 +247,21 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		changesPanel.setPreferredSize(new Dimension(1, 1));
 		changesetPanel.add(changesPanel, cc.xy(2, 2));
 
+        JPanel labelPanel = new JPanel(new FormLayout ("right:pref", "10dlu, pref:grow"));
+        labelPanel.add(new JLabel("Comment:"), cc.xy(1,1));
+
+        copyButton = new JButton(copyIcon);
+        copyButton.addActionListener(new ActionListener() {
+        
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (chkLogWork.isSelected()) {
+                    issueComment.setText(comment.getText());
+                }
+            }
+        });
+        labelPanel.add(copyButton, cc.xy(1,2, CellConstraints.CENTER, CellConstraints.CENTER));
 		commentPanel = new JPanel(new FormLayout("right:pref, fill:d:grow", "40dlu"));
-		commentPanel.add(new JLabel("Comment:"), cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+		commentPanel.add(labelPanel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.FILL));
 		comment = new JTextArea();
 		comment.setLineWrap(true);
 		final JScrollPane scroll = new JScrollPane();
@@ -294,7 +311,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		CellConstraints cc = new CellConstraints();
 		timePanel = new JPanel(new FormLayout(
 				"3dlu, right:pref, 3dlu, left:pref, 3dlu, 10dlu, left:pref, 3dlu, left:pref:grow, 3dlu",
-				"3dlu, pref, 3dlu, pref, pref, pref, 3dlu, pref, 3dlu"));
+				"3dlu, pref, 3dlu, pref, pref, pref, 3dlu, pref, 10dlu, center:pref:grow, 3dlu"));
 
 		timePanel.add(new JLabel("Time Spent:"), cc.xy(2, 2));
 
@@ -344,9 +361,18 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			timePanel.add(endTimePanel, cc.xy(4, 8));
 		}
 
+        timePanel.add(new JLabel("Comment:"), cc.xy(2, 10, CellConstraints.RIGHT, CellConstraints.TOP));        
+        issueComment = new JTextArea();
+        issueComment.setLineWrap(true);
+        issueComment.setPreferredSize(new Dimension(240, 56));
+        final JScrollPane scroll = new JScrollPane();
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setViewportView(issueComment);
+
+        timePanel.add(scroll, cc.xyw(4, 10, 6, CellConstraints.FILL, CellConstraints.FILL));
+
         UIUtil.setEnabled(timePanel, chkLogWork.isSelected() || !deactivateActiveIssue, true);
         remainingEstimateField.setEnabled(false);
-
 		return timePanel;
 	}
 
@@ -690,6 +716,9 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return comment.getText();
 	}
 
+    public String getLogWorkComment() {
+        return issueComment.getText();
+    }
     public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
         if (btnAutoUpdate.isSelected()) {
             return RemainingEstimateUpdateMode.AUTO;

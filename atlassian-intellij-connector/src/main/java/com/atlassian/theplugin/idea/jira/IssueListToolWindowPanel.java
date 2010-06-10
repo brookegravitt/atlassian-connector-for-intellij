@@ -1430,7 +1430,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         .equals(RemainingEstimateUpdateMode.MANUAL)
                         ? dialog.getRemainingEstimateString() : null;
                 jiraServerFacade.logWork(jiraServerData, issue, dialog.getTimeSpentString(),
-                        cal, null,
+                        cal, dialog.getLogWorkComment(),
                         !dialog.getRemainingEstimateUpdateMode()
                                 .equals(RemainingEstimateUpdateMode.UNCHANGED),
                         newRemainingEstimate);
