@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 
 
 public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
-    private static Icon copyIcon = IconLoader.getIcon("/actions/copy.png");
+    private static Icon copyIcon;
 	private JPanel contentPane;
 	private JTextArea comment;
 	private JButton endDateChange;
@@ -250,6 +250,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         JPanel labelPanel = new JPanel(new FormLayout ("right:pref", "10dlu, pref:grow"));
         labelPanel.add(new JLabel("Comment:"), cc.xy(1,1));
 
+        copyIcon = IconLoader.getIcon("/actions/copy.png");
         copyButton = new JButton(copyIcon);
         copyButton.addActionListener(new ActionListener() {
         
