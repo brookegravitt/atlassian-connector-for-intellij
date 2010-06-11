@@ -135,7 +135,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
 	public Review changeReviewState(ServerData server, PermId permId, CrucibleAction action) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
-		final BasicReview review = facade.getSession(server).changeReviewState(permId, CrucibleAction.ABANDON);
+		final BasicReview review = facade.getSession(server).changeReviewState(permId, action);
 		return facade.getReview(server, review.getPermId());
 	}
 
