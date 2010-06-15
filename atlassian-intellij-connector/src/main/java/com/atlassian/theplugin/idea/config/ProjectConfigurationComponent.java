@@ -34,23 +34,13 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
+import com.atlassian.theplugin.commons.cfg.xstream.UserSharedConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.xpath.XPath;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
@@ -62,9 +52,20 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import java.awt.EventQueue;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -77,6 +78,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final ProjectCfgManagerImpl projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
+    private final UserSharedConfigurationDao userSharedConfigurationDao;
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private static final String CFG_LOAD_ERROR_MSG =
 			"Error while loading the configuration of " + PluginUtil.PRODUCT_NAME;
@@ -94,11 +96,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public ProjectConfigurationComponent(final Project project, final ProjectCfgManager projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
-			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull WorkspaceConfigurationBean projectConfigurationBean) {
+			@NotNull PrivateConfigurationDao privateCfgDao,
+            @NotNull WorkspaceConfigurationBean projectConfigurationBean,
+            @NotNull UserSharedConfigurationDao sharedCfgDao) {
 		this.project = project;
 		this.projectCfgManager = (ProjectCfgManagerImpl) projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
+        this.userSharedConfigurationDao = sharedCfgDao;
 		this.projectConfigurationBean = projectConfigurationBean;
 		shouldSaveConfiguration = load();
 	}
@@ -169,7 +174,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			return false;
 		}
 
-		final JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(root.getRootElement(), privateCfgDao);
+		final JDomProjectConfigurationDao cfgFactory =
+                new JDomProjectConfigurationDao(root.getRootElement(), privateCfgDao, userSharedConfigurationDao);
 		migrateOldPrivateProjectSettings(cfgFactory);
 
 		try {
@@ -319,7 +325,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
 
-		JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(element, privateCfgDao);
+		JDomProjectConfigurationDao cfgFactory =
+                new JDomProjectConfigurationDao(element, privateCfgDao, userSharedConfigurationDao);
 		final ProjectConfiguration configuration = projectCfgManager.getProjectConfiguration();
 		if (configuration != null) {
 			if (configuration.getServers().size() > 0 && !shouldSaveConfiguration) {

@@ -57,7 +57,8 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 	private JCheckBox useDefault;
-	private DocumentListener listener;
+    private DocumentListener listener;
+    private JCheckBox cbShared;
 
 	private transient ServerCfg serverCfg;
 	private Project project;
@@ -118,7 +119,6 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		});
 
 		urlDocumentListener = new DocumentAdapter() {
-
 			protected void textChanged(DocumentEvent documentEvent) {
 				enableDisableSever(false);
 			}
@@ -135,7 +135,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		enableDisableSever(true);
 		enableDisableUserPassword();
 	}
-
+    
 	private synchronized void enableDisableSever(boolean quiet) {
 		if (serverUrl.getText().length() > 0) {
 			cbEnabled.setEnabled(true);
@@ -208,6 +208,8 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		enableDisableUserPassword();
 		enableDisableSever(true);
 		serverUrl.getDocument().addDocumentListener(urlDocumentListener);
+
+        cbShared.setSelected(server.isShared());
 	}
 
 	public synchronized void saveData() {
@@ -231,6 +233,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		} else {
 			cbEnabled.setEnabled(false);
 		}
+        serverCfg.setShared(cbShared.isSelected());
 	}
 
 	public JComponent getRootComponent() {

@@ -185,43 +185,50 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		private int idx;
         private final JiraServerData jiraServerData = new JiraServerData(new Server() {
             public ServerIdImpl getServerId() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getUrl() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public boolean isEnabled() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public boolean isUseDefaultCredentials() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public String getUsername() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getPassword() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public ServerType getServerType() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public boolean isDontUseBasicAuth() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public UserCfg getBasicHttpUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
+            }
+
+            public boolean isShared() {
+                return false;
+            }
+
+            public void setShared(boolean global) {
             }
         });
 
@@ -242,7 +249,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		}
 
         public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
-            //To change body of implemented methods use File | Settings | File Templates.
+
         }
 
         public ServerType getServerType() {
