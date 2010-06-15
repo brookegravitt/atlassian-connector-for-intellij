@@ -43,16 +43,11 @@ public class PlanListCellRenderer implements ListCellRenderer {
                 isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238,229,222)
                         : list.getBackground();
 
-        label.setBackground(background);
-
-
 		if (value instanceof BambooPlanItem) {
 
 			BambooPlanItem pi = (BambooPlanItem) value;
 			JCheckBox checkBox = new JCheckBox(pi.getPlan().getKey());
             JCheckBox groupedBox = new JCheckBox();
-
-
 
             groupedBox.setSelected(pi.isGrouped());
             groupedBox.setBackground(background);
@@ -66,8 +61,6 @@ public class PlanListCellRenderer implements ListCellRenderer {
             checkBox.setBackground(background);
 
 			panel.add(checkBox,cc.xy(3, 1));
-
-
 
 			checkBox.setBackground(background);
 			checkBox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
