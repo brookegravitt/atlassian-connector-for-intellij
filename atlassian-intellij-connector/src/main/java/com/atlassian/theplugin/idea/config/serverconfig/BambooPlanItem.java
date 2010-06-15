@@ -21,11 +21,13 @@ import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 public class BambooPlanItem {
 	private final BambooPlan plan;
 	private boolean selected;
+    private boolean grouped;
 
-	public BambooPlanItem(BambooPlan plan, boolean selected) {
+	public BambooPlanItem(BambooPlan plan, boolean selected, final boolean grouped) {
 		this.plan = plan;
 		this.selected = selected;
-	}
+        this.grouped = grouped;
+    }
 
 	public BambooPlan getPlan() {
 		return plan;
@@ -38,4 +40,12 @@ public class BambooPlanItem {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+
+    public boolean isGrouped() {
+        return grouped;
+    }
+
+    public void setGrouped(boolean grouped) {
+        this.grouped = grouped;
+    }
 }

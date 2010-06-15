@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.intellij.openapi.util.IconLoader;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -33,31 +35,70 @@ public class PlanListCellRenderer implements ListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value, int index,
 			boolean isSelected, boolean cellHasFocus) {
 		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        CellConstraints cc = new CellConstraints();
+		panel.setLayout(new FormLayout("pref, 5dlu, pref, pref:grow, pref, 5dlu", "pref"));
 		JLabel label = new JLabel();
-		panel.add(label);
+		panel.add(label,cc.xy(1, 1));
+        Color background =
+                isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238,229,222)
+                        : list.getBackground();
+
+        label.setBackground(background);
+
 
 		if (value instanceof BambooPlanItem) {
+
 			BambooPlanItem pi = (BambooPlanItem) value;
 			JCheckBox checkBox = new JCheckBox(pi.getPlan().getKey());
+            JCheckBox groupedBox = new JCheckBox();
+
+
+
+            groupedBox.setSelected(pi.isGrouped());
+            groupedBox.setBackground(background);
+
 			label.setIcon(pi.getPlan().isEnabled()
 					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON)
 					: DISABLED_ICON);
+            label.setBackground(background);
 			checkBox.setText(pi.getPlan().getKey());
 			checkBox.setSelected(pi.isSelected());
-			panel.add(checkBox);
+            checkBox.setBackground(background);
 
-			checkBox.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+			panel.add(checkBox,cc.xy(3, 1));
+
+
+
+			checkBox.setBackground(background);
 			checkBox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
 
 			checkBox.setEnabled(list.isEnabled());
 			checkBox.setFont(list.getFont());
 			checkBox.setFocusPainted(false);
 			checkBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
+
+            final JPanel growPanel = new JPanel();
+            growPanel.setBackground(background);
+            growPanel.setPreferredSize(checkBox.getPreferredSize());
+            panel.add(growPanel, cc.xy(4, 1));
+            panel.add(groupedBox, cc.xy(5, 1));
+            
+            groupedBox.setEnabled(list.isEnabled());
+            groupedBox.setBackground(background);
+            groupedBox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+            groupedBox.setFocusPainted(false);
+            groupedBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
+
+            final JPanel finalPanel = new JPanel();
+            finalPanel.setBackground(background);
+            finalPanel.setPreferredSize(checkBox.getPreferredSize());
+            panel.add(finalPanel, cc.xy(6, 1));
+
 		} else {
 			label.setText(value.toString());
+            label.setBackground(background);
 		}
-		panel.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+		panel.setBackground(list.getBackground());
 		panel.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
 		panel.setEnabled(list.isEnabled());
 

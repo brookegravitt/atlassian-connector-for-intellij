@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import static java.lang.System.arraycopy;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -28,31 +27,12 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -63,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.System.arraycopy;
 
 
 public class BambooPlansForm extends JPanel {
@@ -274,7 +256,7 @@ public class BambooPlansForm extends JPanel {
                         List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
                         if (plans != null) {
                             for (BambooPlan plan : plans) {
-                                plansForServer.add(new BambooPlanItem(plan, false));
+                                plansForServer.add(new BambooPlanItem(plan, false, false));
                             }
                             msg.append("Build plans updated from server\n");
                         }
@@ -288,7 +270,7 @@ public class BambooPlansForm extends JPanel {
                             }
                             if (!exists) {
                                 BambooPlan p = new BambooPlan(sPlan.getKey(), sPlan.getKey(), false, false);
-                                plansForServer.add(new BambooPlanItem(p, true));
+                                plansForServer.add(new BambooPlanItem(p, true, sPlan.isGrouped()));
                             }
                         }
                         msg.append("Build plans updated based on stored configuration");
@@ -350,16 +332,17 @@ public class BambooPlansForm extends JPanel {
                     for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
                         if (sPlan.getKey().equals(plan.getPlan().getKey())) {
                             plan.setSelected(true);
+                            plan.setGrouped(sPlan.isGrouped());
                             break;
                         }
                     }
-                    model.addElement(new BambooPlanItem(plan.getPlan(), plan.isSelected()));
+                    model.addElement(new BambooPlanItem(plan.getPlan(), plan.isSelected(), plan.isGrouped()));
                 }
             } else {
                 // for those servers for which we cannot fetch metadata, we just show current plans
                 List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
                 for (SubscribedPlan plan : server.getSubscribedPlans()) {
-                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()), true);
+                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()), true, plan.isGrouped());
                     model.addElement(bambooPlanItem);
                     modelPlans.add(bambooPlanItem);
                 }
