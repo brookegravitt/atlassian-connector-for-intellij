@@ -75,11 +75,11 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		}
 
         public boolean isDontUseBasicAuth() {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false;
         }
 
         public UserCfg getBasicHttpUser() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null;
         }
 
         @Override

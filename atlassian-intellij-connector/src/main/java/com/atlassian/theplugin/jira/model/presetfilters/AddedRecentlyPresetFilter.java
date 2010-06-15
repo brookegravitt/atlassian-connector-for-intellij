@@ -22,7 +22,7 @@ public class AddedRecentlyPresetFilter extends JiraPresetFilter {
     }
 
     public long getId() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     public String getName() {

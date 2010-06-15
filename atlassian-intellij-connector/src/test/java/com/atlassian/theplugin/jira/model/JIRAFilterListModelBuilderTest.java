@@ -52,31 +52,31 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.setUp();
         jiraServerData = new JiraServerData(new Server(){
             public ServerIdImpl getServerId() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getUrl() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public boolean isEnabled() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public boolean isUseDefaultCredentials() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public String getUsername() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public String getPassword() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public ServerType getServerType() {
@@ -84,11 +84,19 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
             }
 
             public boolean isDontUseBasicAuth() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public UserCfg getBasicHttpUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
+            }
+
+            public boolean isShared() {
+                return false;
+            }
+
+            public void setShared(boolean global) {
+
             }
         });
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();

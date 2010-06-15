@@ -77,11 +77,11 @@ public class JIRAFilterListModelTest extends TestCase {
 			}
 
             public void manualFilterAdded(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter, ServerId serverId) {
-                //To change body of implemented methods use File | Settings | File Templates.
+
             }
 
             public void manualFilterRemoved(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter, ServerId serverId) {
-                //To change body of implemented methods use File | Settings | File Templates.
+
             }
 
         });

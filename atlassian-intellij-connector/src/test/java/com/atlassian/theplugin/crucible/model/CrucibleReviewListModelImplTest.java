@@ -23,6 +23,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -31,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import junit.framework.TestCase;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModelImplAdapter model;
@@ -86,11 +87,11 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			}
 
             public boolean isDontUseBasicAuth() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public UserCfg getBasicHttpUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             @Override
@@ -525,11 +526,11 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			}
 
             public boolean isDontUseBasicAuth() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public UserCfg getBasicHttpUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             @Override

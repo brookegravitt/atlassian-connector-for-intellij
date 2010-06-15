@@ -46,7 +46,7 @@ public class ReviewTree extends AbstractTree {
 
 		// listen to the review tree model changes
 		reviewTreeModel.addTreeModelListener(localTreeModelListener);
-		// listen to the global review list changes
+		// listen to the shared review list changes
 		reviewTreeModel.getReviewListModel().addListener(localReviewModelListener);
 
 		init();

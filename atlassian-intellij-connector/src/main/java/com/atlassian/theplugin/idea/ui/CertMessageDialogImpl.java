@@ -252,7 +252,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 		}
 
 		protected boolean shouldSaveOptionsOnCancel() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		private final class InfoPanel extends JPanel {

@@ -177,7 +177,7 @@ public class MockVirtualFile extends VirtualFile {
     }
 
     public VirtualFile[] getChildren() {
-        return new VirtualFile[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return new VirtualFile[0];
     }
 
     public OutputStream getOutputStream(Object requestor, long newModificationStamp, long newTimeStamp) throws IOException {

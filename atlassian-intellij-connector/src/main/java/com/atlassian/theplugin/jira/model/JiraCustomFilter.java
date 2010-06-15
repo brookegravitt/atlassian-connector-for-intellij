@@ -71,11 +71,11 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 	}
 
     public String getQueryStringFragment() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public long getId() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     public String getName() {
@@ -83,11 +83,11 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 	}
 
     public HashMap<String, String> getMap() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public JIRAQueryFragment getClone() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void setName(final String name) {

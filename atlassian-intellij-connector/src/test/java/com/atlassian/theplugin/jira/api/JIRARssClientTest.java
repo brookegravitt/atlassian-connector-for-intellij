@@ -106,11 +106,18 @@ public class JIRARssClientTest extends TestCase {
             }
 
             public boolean isDontUseBasicAuth() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public UserCfg getBasicHttpUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
+            }
+
+            public boolean isShared() {
+                return false;
+            }
+
+            public void setShared(boolean global) {
             }
         };
 

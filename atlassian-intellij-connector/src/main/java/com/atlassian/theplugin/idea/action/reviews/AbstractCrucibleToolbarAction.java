@@ -29,7 +29,7 @@ public abstract class AbstractCrucibleToolbarAction extends AnAction {
 		Boolean windowEnabled = e.getData(Constants.REVIEW_WINDOW_ENABLED_KEY);
 
 		if (windowEnabled == null) {
-			// this is required for global action - if there is no focus
+			// this is required for shared action - if there is no focus
 			// on any of the toolwindows, then we have to query the toolwindow directly
 			ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(e);
 			windowEnabled = panel != null && (Boolean) panel.getData(Constants.REVIEW_WINDOW_ENABLED);
