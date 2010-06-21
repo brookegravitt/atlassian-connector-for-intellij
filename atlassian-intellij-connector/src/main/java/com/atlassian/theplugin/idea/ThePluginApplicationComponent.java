@@ -141,7 +141,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     }
 
     public boolean isModified() {
-        return configPanel.isModified();
+        return configPanel != null ? configPanel.isModified() : false;
     }
 
     private void disableTimers() {
