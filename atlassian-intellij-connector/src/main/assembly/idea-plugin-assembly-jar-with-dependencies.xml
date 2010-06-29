@@ -56,20 +56,20 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>./target/classes</directory>
+            <directory>${project.basedir}/target/classes</directory>
             <outputDirectory></outputDirectory>
             <excludes>
                 <exclude>META-INF/**</exclude>
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>./target/classes/META-INF</directory>
+            <directory>${project.basedir}/target/classes/META-INF</directory>
             <outputDirectory>META-INF</outputDirectory>
         </fileSet>
     </fileSets>
     <files>
         <file>
-            <source>LICENSE</source>
+            <source>${project.basedir}/LICENSE</source>
             <outputDirectory>LICENSE</outputDirectory>
         </file>
     </files>    

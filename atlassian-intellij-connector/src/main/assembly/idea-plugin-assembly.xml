@@ -16,29 +16,28 @@
     limitations under the License.
 
 -->
-
 <assembly>
-    <!--id>plugin</id-->
+    <id>plugin</id>
     <includeBaseDirectory>false</includeBaseDirectory>
     <formats>
         <format>zip</format>
     </formats>
     <fileSets>
         <fileSet>
-            <directory>./target/classes</directory>
+            <directory>${project.basedir}/target/classes</directory>
             <outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
             <excludes>
                 <exclude>META-INF/**</exclude>
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>./target/classes/META-INF</directory>
+            <directory>${project.basedir}/target/classes/META-INF</directory>
             <outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
         </fileSet>
     </fileSets>
     <files>
         <file>
-            <source>./LICENSE</source>
+            <source>${project.basedir}/LICENSE</source>
             <outputDirectory>${pom.project.artifactId}/</outputDirectory>
         </file>
     </files>
