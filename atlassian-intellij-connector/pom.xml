@@ -6,6 +6,13 @@
 		<artifactId>atlassian-connector-parent-pom</artifactId>
 		<version>2.1.4</version>
 	</parent>
+<!--
+    <parent>
+        <groupId>com.atlassian.pom</groupId>
+        <artifactId>atlassian-closedsource-pom</artifactId>
+        <version>23</version>
+    </parent>
+-->
 	<name>Atlassian Intellij IDEA Plugin</name>
 	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
 	<groupId>com.atlassian.connector</groupId>
@@ -21,11 +28,12 @@
 		<url>https://studio.atlassian.com/browse/PL</url>
 	</issueManagement>
 	<dependencies>
-	     <dependency>
-            <groupId>com.atlassian.connector.tasks</groupId>
-            <artifactId>atlassian-idea9-integration</artifactId>
-            <version>0.1.1-SNAPSHOT</version>
-       </dependency>
+		<dependency>
+        		<groupId>com.atlassian.connector.tasks</groupId>
+        		<artifactId>atlassian-idea9-integration</artifactId>
+        		<version>0.1.1-SNAPSHOT</version>
+       		</dependency>
+
 		<dependency>
 			<groupId>com.atlassian.connector</groupId>
 			<artifactId>atlassian-connector-commons</artifactId>
@@ -314,25 +322,25 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
-					</descriptors>
-				</configuration>
+				
+
 				<executions>
-					<execution>
-						<id>distribution-package</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attached</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
-							</descriptors>
-							<outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
-						</configuration>
-					</execution>
+                                        <execution>
+                                                <id>dependency-jar-package</id>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>attached</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <descriptors>
+                                                                <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml</descriptor>
+                                                                <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
+                                                                <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
+                                                        </descriptors>
+                                                        <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
+                                                </configuration>
+                                        </execution>
+
 					<execution>
 						<id>metadata</id>
 						<phase>package</phase>
@@ -340,11 +348,18 @@
 							<goal>directory-single</goal>
 						</goals>
 						<configuration>
+		                                       <descriptors>
+               		                                 <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
+                       			               </descriptors>
+
 							<outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
+
+
 			<!--
 									<plugin>
 										<groupId>com.atlassian.maven.plugins</groupId>
@@ -536,8 +551,9 @@
 					</excludes>
 				</configuration>
 			</plugin>
-
 		</plugins>
+
+
 	</build>
 	<repositories>
 		<repository>
@@ -554,4 +570,9 @@
 			<url>https://maven.atlassian.com/public</url>
 		</repository>
 	</repositories>
+
+
+
+
+
 </project>
