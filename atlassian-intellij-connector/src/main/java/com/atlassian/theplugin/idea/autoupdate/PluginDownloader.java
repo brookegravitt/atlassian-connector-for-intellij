@@ -34,7 +34,12 @@ import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -53,6 +58,8 @@ public class PluginDownloader {
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
+    public static final String PLUGIN_DIR_NAME = "atlassian-ide-plugin";
+    public static final String PLUGIN_NAME = "atlassian-idea-plugin";
 
 	private static String pluginName = PluginUtil.getInstance().getName();
 
@@ -120,7 +127,7 @@ public class PluginDownloader {
 		}
 	}
 
-	private void promptShutdownAndShutdown() {
+    private void promptShutdownAndShutdown() {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				String title = "IDEA shutdown";
@@ -228,15 +235,27 @@ public class PluginDownloader {
 
 	private void addActions(@NotNull final IdeaPluginDescriptor installedPlugin, File localArchiveFile) throws IOException {
 		PluginUtil.getLogger().info("IdeaPluginDescriptor [" + installedPlugin.getPluginId() + "]");
-
+        String fileName = PathManager.getPluginsPath() + File.separator + PLUGIN_NAME + ".jar";
 		PluginId id = installedPlugin.getPluginId();
 
 		if (PluginManager.isPluginInstalled(id)) {
-			// store old plugins file
-			File oldFile = installedPlugin.getPath();
-			StartupActionScriptManager.ActionCommand deleteOld = new StartupActionScriptManager.DeleteCommand(oldFile);
-			StartupActionScriptManager.addActionCommand(deleteOld);
-			PluginUtil.getLogger().info("Queueing deletion of [" + oldFile.getPath() + "], exists [" + oldFile.exists() + "]");
+			// remove old plugins dir
+			File oldDir = installedPlugin.getPath();
+            if (!oldDir.getAbsolutePath().equals(PathManager.getPluginsPath()) && oldDir.exists()) {
+			    StartupActionScriptManager.ActionCommand deleteOld = new StartupActionScriptManager.DeleteCommand(oldDir);
+			    StartupActionScriptManager.addActionCommand(deleteOld);
+                PluginUtil.getLogger()
+                        .info("Queueing deletion of [" + oldDir.getPath() + "], exists [" + oldDir.exists() + "]");
+            }
+            
+            File oldFile = new File(fileName);
+            if (oldFile.exists()) {
+                StartupActionScriptManager.ActionCommand deleteOld = new StartupActionScriptManager.DeleteCommand(oldFile);
+			    StartupActionScriptManager.addActionCommand(deleteOld);
+                PluginUtil.getLogger()
+                        .info("Queueing deletion of [" + oldFile.getPath() + "], exists [" + oldFile.exists() + "]");
+            }
+
 		} else {
 			// we shoud not be here
 			PluginUtil.getLogger().warn("Install error. Cannot find plugin [" + installedPlugin.getName()
@@ -249,7 +268,7 @@ public class PluginDownloader {
 
 		if (isJarFile) {
 			// add command to copy file to the IDEA/plugins path
-			String fileName = localArchiveFile.getName();
+            
 			File newFile = new File(PathManager.getPluginsPath() + File.separator + fileName);
 			StartupActionScriptManager.ActionCommand copyPlugin =
 					new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
@@ -262,9 +281,8 @@ public class PluginDownloader {
 			if (ZipUtil.isZipContainsFolder(localArchiveFile)) {
 				unzipPath = PathManager.getPluginsPath();
 				PluginUtil.getLogger().info("Zip [" + localArchiveFile + "] contains a root folder");
-			} else {
-				String dirName = installedPlugin.getName();
-				unzipPath = PathManager.getPluginsPath() + File.separator + dirName;
+			} else {				
+				unzipPath = PathManager.getPluginsPath();
 				PluginUtil.getLogger().info("Zip [" + localArchiveFile + "] does not contain a root folder");
 			}
 

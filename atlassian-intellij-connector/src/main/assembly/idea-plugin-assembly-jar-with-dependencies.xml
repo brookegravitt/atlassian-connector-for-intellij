@@ -19,7 +19,7 @@
 
 
 <assembly>
-    <id>jar-with-dependencies</id>
+    <id>plugin</id>
     <includeBaseDirectory>false</includeBaseDirectory>    
     <formats>
         <format>jar</format>
@@ -73,5 +73,4 @@
             <outputDirectory>LICENSE</outputDirectory>
         </file>
     </files>    
-
 </assembly>

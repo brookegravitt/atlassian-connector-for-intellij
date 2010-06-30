@@ -330,7 +330,7 @@
                                                                 <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
                                                                 <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                                                         </descriptors>
-                                                        <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
+                                                        <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>                                                        
                                                 </configuration>
                                         </execution>
 
@@ -350,40 +350,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
-
-			<!--
-									<plugin>
-										<groupId>com.atlassian.maven.plugins</groupId>
-										<artifactId>maven-clover2-plugin</artifactId>
-										<version>2.4.1</version>
-										<configuration>
-											<resolveReportDescriptor>false</resolveReportDescriptor>
-											<generateXml>true</generateXml>
-											<generateHtml>true</generateHtml>
-
-						-->
-			<!--
-											<licenseLocation>${clover.licenseLocation}</licenseLocation>
-											<cloverDatabase>${clover.database}</cloverDatabase>
-											<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
-						-->
-			<!--
-											<targetPercentage>60%</targetPercentage>
-											<jdk>${jdkLevel}</jdk>
-											<excludes>
-												<exclude>**/thirdparty/**/*.*</exclude>
-												<exclude>**/soap/axis/**/*.*</exclude>
-											</excludes>
-											<contextFilters>private-constructor-noparam-nothrows</contextFilters>
-											<methodContexts>
-												<private-constructor-noparam-nothrows>private +[a-zA-Z0-9_$]+ *\( *\)</private-constructor-noparam-nothrows>
-											</methodContexts>
-											<historyDir>${user.home}/clover-studio-history/${pom.artifactId}</historyDir>
-										</configuration>
-									</plugin>
-						-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
