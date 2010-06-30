@@ -16,75 +16,77 @@ import java.util.Collection;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
-	private JiraServerFacade facade;
+    private JiraServerFacade facade;
 
-	private static final String SORT_BY = "priority";
-	private static final String SORT_ORDER = "DESC";
+    private static final String SORT_BY = "priority";
+    private static final String SORT_ORDER = "DESC";
 
-	private int startFrom;
-	private JIRAIssueListModel model;
-	private Project project;
-	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
+    private int startFrom;
+    private JIRAIssueListModel model;
+    private Project project;
+    private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
     public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
-		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
-		this.project = null;
-		facade = IntelliJJiraServerFacade.getInstance();
-		startFrom = 0;
-	}
+        this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
+        this.project = null;
+        facade = IntelliJJiraServerFacade.getInstance();
+        startFrom = 0;
+    }
 
-	// for testing
-	public void setFacade(JiraServerFacade newFacade) {
-		facade = newFacade;
-	}
+    // for testing
 
-	public void setModel(final JIRAIssueListModel model) {
-		this.model = model;
-	}
+    public void setFacade(JiraServerFacade newFacade) {
+        facade = newFacade;
+    }
 
-	public JIRAIssueListModel getModel() {
-		return model;
-	}
+    public void setModel(final JIRAIssueListModel model) {
+        this.model = model;
+    }
+
+    public JIRAIssueListModel getModel() {
+        return model;
+    }
 
 
-	public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter,
+    public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
-		List<JiraIssueAdapter> l = null;
-		try {
-			model.setModelFrozen(true);
-			if (jiraServerCfg == null || model == null || manualFilter == null) {
-				if (model != null) {
-					model.clear();
-					model.fireModelChanged();
-				}
-				return;
-			}
+        List<JiraIssueAdapter> l = null;
+        try {
+            model.setModelFrozen(true);
+            if (jiraServerCfg == null || model == null || manualFilter == null) {
+                if (model != null) {
+                    model.clear();
+                    model.fireModelChanged();
+                }
+                return;
+            }
 
-			if (reload) {
-				startFrom = 0;
-				model.clear();
-			}
+            if (reload) {
+                startFrom = 0;
+                model.clear();
+            }
 
-			if (recentlyOpenIssuesCache != null) {
-				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
-			}
+            if (recentlyOpenIssuesCache != null) {
+                recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+            }
 
-			if (manualFilter.getQueryFragment().size() > 0) {
-				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
-				model.addIssues(l);
-				startFrom += l != null ? l.size() : 0;
+            if (manualFilter.getQueryFragment().size() > 0) {
+//				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
+                l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), "", "", startFrom, size);
+                model.addIssues(l);
+                startFrom += l != null ? l.size() : 0;
 //				checkActiveIssue(l);
-			}
-		} finally {
-			if (model != null) {
-				model.fireModelChanged();
-				model.fireIssuesLoaded(l != null ? l.size() : 0);
-				model.setModelFrozen(false);
-			}
-		}
-	}
+            }
+        } finally {
+            if (model != null) {
+                model.fireModelChanged();
+                model.fireIssuesLoaded(l != null ? l.size() : 0);
+                model.setModelFrozen(false);
+            }
+        }
+    }
 
     public void addIssuesToModel(final JiraPresetFilter presetFilter,
                                  final JiraServerData jiraServerData, int size,
@@ -110,9 +112,12 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
                 recentlyOpenIssuesCache.loadRecenltyOpenIssues();
             }
 
+//            l = facade.getIssues(
+//                    jiraServerData,
+//                    presetFilter.getQueryStringFragment(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
             l = facade.getIssues(
                     jiraServerData,
-                    presetFilter.getQueryStringFragment(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
+                    presetFilter.getQueryStringFragment(), "", "", startFrom, size);
             model.addIssues(l);
 
             startFrom += l != null ? l.size() : 0;
@@ -129,163 +134,164 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
     public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
                                               final JiraServerData jiraServerCfg, int size,
                                               boolean reload) throws JIRAException {
-		List<JiraIssueAdapter> l = null;
-		try {
-			model.setModelFrozen(true);
-			if (jiraServerCfg == null || model == null || savedFilter == null) {
-				if (model != null) {
-					model.clear();
-					model.fireModelChanged();
-				}
-				return;
-			}
+        List<JiraIssueAdapter> l = null;
+        try {
+            model.setModelFrozen(true);
+            if (jiraServerCfg == null || model == null || savedFilter == null) {
+                if (model != null) {
+                    model.clear();
+                    model.fireModelChanged();
+                }
+                return;
+            }
 
-			if (reload) {
-				startFrom = 0;
-				model.clear();
-			}
+            if (reload) {
+                startFrom = 0;
+                model.clear();
+            }
 
-			if (recentlyOpenIssuesCache != null) {
-				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
-			}
+            if (recentlyOpenIssuesCache != null) {
+                recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+            }
 
-			List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-			query.add(savedFilter);
-			l = facade.getSavedFilterIssues(jiraServerCfg, query, SORT_BY, SORT_ORDER, startFrom, size);
-			model.addIssues(l);
+            List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+            query.add(savedFilter);
+//			l = facade.getSavedFilterIssues(jiraServerCfg, query, SORT_BY, SORT_ORDER, startFrom, size);
+            l = facade.getSavedFilterIssues(jiraServerCfg, query, "", "", startFrom, size);
+            model.addIssues(l);
 
-			startFrom += l != null ? l.size() : 0;
+            startFrom += l != null ? l.size() : 0;
 //			checkActiveIssue(l);
-		} finally {
-			if (model != null) {
-				model.fireModelChanged();
-				model.fireIssuesLoaded(l != null ? l.size() : 0);
-				model.setModelFrozen(false);
-			}
-		}
-	}
+        } finally {
+            if (model != null) {
+                model.fireModelChanged();
+                model.fireIssuesLoaded(l != null ? l.size() : 0);
+                model.setModelFrozen(false);
+            }
+        }
+    }
 
-	public synchronized void addRecenltyOpenIssuesToModel(boolean reload) {
+    public synchronized void addRecenltyOpenIssuesToModel(boolean reload) {
 
-		if (model == null) {
-			return;
-		}
+        if (model == null) {
+            return;
+        }
 
-		List<JiraIssueAdapter> issues = null;
+        List<JiraIssueAdapter> issues = null;
 
-		try {
-			model.setModelFrozen(true);
+        try {
+            model.setModelFrozen(true);
 
-			if (reload) {
-				startFrom = 0;
-				model.clear();
-			}
-			issues = recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+            if (reload) {
+                startFrom = 0;
+                model.clear();
+            }
+            issues = recentlyOpenIssuesCache.loadRecenltyOpenIssues();
 
-			model.addIssues(issues);
-			startFrom += issues.size();
+            model.addIssues(issues);
+            startFrom += issues.size();
 //			checkActiveIssue(issues);
 
-		} finally {
-			if (model != null) {
-				model.fireModelChanged();
-				model.fireIssuesLoaded(issues != null ? issues.size() : 0);
-				model.setModelFrozen(false);
-			}
-		}
-	}
+        } finally {
+            if (model != null) {
+                model.fireModelChanged();
+                model.fireIssuesLoaded(issues != null ? issues.size() : 0);
+                model.setModelFrozen(false);
+            }
+        }
+    }
 
-	/**
-	 * Retrieves issue from the server and updates model
-	 *
-	 * @param issueKey	  issue to reload
-	 * @param jiraServerCfg server
-	 * @throws JIRAException
-	 */
-	public synchronized void reloadIssue(final String issueKey,
+    /**
+     * Retrieves issue from the server and updates model
+     *
+     * @param issueKey      issue to reload
+     * @param jiraServerCfg server
+     * @throws JIRAException
+     */
+    public synchronized void reloadIssue(final String issueKey,
                                          final JiraServerData jiraServerCfg) throws JIRAException {
-		if (model == null || jiraServerCfg == null) {
-			return;
-		}
-		model.setModelFrozen(true);
+        if (model == null || jiraServerCfg == null) {
+            return;
+        }
+        model.setModelFrozen(true);
 
-		JiraIssueAdapter updatedIssue;
+        JiraIssueAdapter updatedIssue;
 
-		try {
-			updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
+        try {
+            updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
 
-			if (recentlyOpenIssuesCache != null) {
-				recentlyOpenIssuesCache.updateIssue(updatedIssue);
-			}
+            if (recentlyOpenIssuesCache != null) {
+                recentlyOpenIssuesCache.updateIssue(updatedIssue);
+            }
 
-			model.updateIssue(updatedIssue);
-		} finally {
-			model.setModelFrozen(false);
-		}
-		model.fireIssueUpdated(updatedIssue);
-		model.fireModelChanged();
-	}
+            model.updateIssue(updatedIssue);
+        } finally {
+            model.setModelFrozen(false);
+        }
+        model.fireIssueUpdated(updatedIssue);
+        model.fireModelChanged();
+    }
 
-	/**
-	 * Updates the given issue in the model. That method does not retrieve issue from the server.
-	 * Can be called from the UI thread
-	 *
-	 * @param issue fresh issue to update in the model
-	 */
-	public synchronized void updateIssue(final JiraIssueAdapter issue) {
-		if (model == null) {
-			return;
-		}
+    /**
+     * Updates the given issue in the model. That method does not retrieve issue from the server.
+     * Can be called from the UI thread
+     *
+     * @param issue fresh issue to update in the model
+     */
+    public synchronized void updateIssue(final JiraIssueAdapter issue) {
+        if (model == null) {
+            return;
+        }
 
-		if (recentlyOpenIssuesCache != null) {
-			recentlyOpenIssuesCache.updateIssue(issue);
-		}
+        if (recentlyOpenIssuesCache != null) {
+            recentlyOpenIssuesCache.updateIssue(issue);
+        }
 
-		model.setModelFrozen(true);
-		model.updateIssue(issue);
-		model.setModelFrozen(false);
-		model.fireIssueUpdated(issue);
-		model.fireModelChanged();
-	}
+        model.setModelFrozen(true);
+        model.updateIssue(issue);
+        model.setModelFrozen(false);
+        model.fireIssueUpdated(issue);
+        model.fireModelChanged();
+    }
 
-	public synchronized void reset() {
+    public synchronized void reset() {
 //		int size = model.getIssues().size();
 //		if (size > 0) {
-		model.clear();
-		startFrom = 0;
-		model.fireModelChanged();
+        model.clear();
+        startFrom = 0;
+        model.fireModelChanged();
 //		}
-	}
+    }
 
-	public void checkActiveIssue(final Collection<JiraIssueAdapter> newIssues) {
-		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
-		if (activeIssue != null) {
-			for (JiraIssueAdapter issue : newIssues) {
-				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getJiraServerData() != null
-						&& issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
-					ActiveIssueUtils.checkIssueState(project, issue);
-				}
-			}
-		}
-	}
+    public void checkActiveIssue(final Collection<JiraIssueAdapter> newIssues) {
+        ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+        if (activeIssue != null) {
+            for (JiraIssueAdapter issue : newIssues) {
+                if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getJiraServerData() != null
+                        && issue.getJiraServerData().getServerId().equals(activeIssue.getServerId())) {
+                    ActiveIssueUtils.checkIssueState(project, issue);
+                }
+            }
+        }
+    }
 
-	public boolean isModelFrozen() {
-		return model.isModelFrozen();
-	}
+    public boolean isModelFrozen() {
+        return model.isModelFrozen();
+    }
 
-	public void setModelFrozen(boolean frozen) {
-		this.model.setModelFrozen(frozen);
-	}
+    public void setModelFrozen(boolean frozen) {
+        this.model.setModelFrozen(frozen);
+    }
 
-	public void addFrozenModelListener(FrozenModelListener listener) {
-		this.model.addFrozenModelListener(listener);
-	}
+    public void addFrozenModelListener(FrozenModelListener listener) {
+        this.model.addFrozenModelListener(listener);
+    }
 
-	public void removeFrozenModelListener(FrozenModelListener listener) {
-		this.model.removeFrozenModelListener(listener);
-	}
+    public void removeFrozenModelListener(FrozenModelListener listener) {
+        this.model.removeFrozenModelListener(listener);
+    }
 
-	public void setProject(final Project project) {
-		this.project = project;
+    public void setProject(final Project project) {
+        this.project = project;
 	}
 }
