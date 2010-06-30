@@ -18,24 +18,21 @@
 
 <assembly>
     <!-- no id as we don't want anything it the name of artifacts -->
-    <id>idea-plugin-zip</id>
+    <id>plugin-zip</id>
     <formats>
         <format>zip</format>
     </formats>
-
-    <dependencySets>
-        <dependencySet>
-            <includes>
-		<include>com.atlassian.connector.tasks:atlassian-idea9-integration:jar</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
-
-
+    <includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>${project.basedir}/target/site/download/${artifactId}-${version}-jar-with-dependencies.jar</source>
+			<source>${project.basedir}/target/site/download/${artifactId}-${version}-plugin.jar</source>
+            <destName>${artifactId}.jar</destName>
+            
 		</file>
+        <file>
+            <source>${project.basedir}/LICENSE</source>
+            <outputDirectory>${pom.project.artifactId}/</outputDirectory>
+        </file>
 	</files>
 </assembly>
 
