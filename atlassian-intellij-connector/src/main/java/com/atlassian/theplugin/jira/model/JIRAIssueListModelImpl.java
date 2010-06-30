@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	public JIRAIssueListModelImpl() {
 		super(null);
-		issues = new HashSet<JiraIssueAdapter>();
+		issues = new LinkedHashSet<JiraIssueAdapter>();
 	}
 
 	public void clear() {
