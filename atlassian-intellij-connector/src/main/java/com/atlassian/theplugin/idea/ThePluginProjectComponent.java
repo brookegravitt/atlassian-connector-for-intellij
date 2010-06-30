@@ -308,6 +308,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			projectCfgManager.addProjectConfigurationListener(configurationListener);
 			projectCfgManager.addProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
 
+            projectCfgManager.addProjectConfigurationListener(
+                    IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).getConfigurationListener());
+
 			created = true;
 
 			crucibleEditorFactoryListener = new CrucibleEditorFactoryListener(project,

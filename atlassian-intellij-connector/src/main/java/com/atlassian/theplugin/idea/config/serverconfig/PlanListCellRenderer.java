@@ -31,8 +31,9 @@ public class PlanListCellRenderer implements ListCellRenderer {
 	private static final Icon FAVOURITE_ON_ICON = IconLoader.getIcon("/icons/fav_on.gif");
 	private static final Icon FAVOURITE_OFF_ICON = IconLoader.getIcon("/icons/fav_off.gif");
 	private static final Icon DISABLED_ICON = IconLoader.getIcon("/icons/icn_plan_disabled-16.gif");
+    public static final String GROUP_NAME = "group";
 
-	public Component getListCellRendererComponent(JList list, Object value, int index,
+    public Component getListCellRendererComponent(JList list, Object value, int index,
 			boolean isSelected, boolean cellHasFocus) {
 		JPanel panel = new JPanel();
         CellConstraints cc = new CellConstraints();
@@ -51,6 +52,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
 
             groupedBox.setSelected(pi.isGrouped());
             groupedBox.setBackground(background);
+            groupedBox.setName(GROUP_NAME);
 
 			label.setIcon(pi.getPlan().isEnabled()
 					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON)
@@ -81,6 +83,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
             groupedBox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
             groupedBox.setFocusPainted(false);
             groupedBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
+            groupedBox.setToolTipText("Group builds");
 
             final JPanel finalPanel = new JPanel();
             finalPanel.setBackground(background);

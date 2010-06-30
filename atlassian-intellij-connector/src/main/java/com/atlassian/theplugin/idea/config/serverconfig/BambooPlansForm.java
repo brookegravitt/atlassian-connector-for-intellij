@@ -99,7 +99,8 @@ public class BambooPlansForm extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 int index = list.locationToIndex(e.getPoint());
-                setCheckboxState(index);
+                boolean select = (list.getWidth()/2 - e.getPoint().getX() >= 0);
+                setCheckboxState(index, select, !select);
             }
         });
 
@@ -108,10 +109,12 @@ public class BambooPlansForm extends JPanel {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                     int index = list.getSelectedIndex();
-                    setCheckboxState(index);
+//                    boolean select = list.getComponentAt(e.getPoint()).getName().equals(PlanListCellRenderer.GROUP_NAME);
+//                setCheckboxState(index, select, !select);
                 }
             }
         });
+
 
         cbUseFavouriteBuilds.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -139,11 +142,29 @@ public class BambooPlansForm extends JPanel {
         retrievePlans(bambooServerCfg);
     }
 
-    private void setCheckboxState(int index) {
+    private void setCheckboxState(int index, boolean select, boolean group) {
         if (index != -1 && isEnabled()) {
             BambooPlanItem pi = (BambooPlanItem) list.getModel().getElementAt(index);
-            pi.setSelected(!pi.isSelected());
-            setViewState(index, pi.isSelected());
+            if (group) {
+                pi.setGrouped(!pi.isGrouped());
+                setViewState(index, pi.isGrouped());
+                if (pi.isGrouped()) {
+                    pi.setSelected(true);
+                    setViewState(index, pi.isSelected());
+                }
+            }
+
+            if (select) {
+                pi.setSelected(!pi.isSelected());
+                setViewState(index, pi.isSelected());
+                if (!pi.isSelected()) {
+                    pi.setGrouped(false);
+                    setViewState(index, pi.isSelected());
+                }
+            }
+
+
+
             repaint();
 
             setModifiedState();
@@ -378,7 +399,7 @@ public class BambooPlansForm extends JPanel {
                     BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
                     if (p.isSelected()) {
-                        SubscribedPlan spb = new SubscribedPlan(p.getPlan().getKey());
+                        SubscribedPlan spb = new SubscribedPlan(p.getPlan().getKey(), p.isGrouped());
                         bambooServerCfg.getSubscribedPlans().add(spb);
                     }
                 }
@@ -446,6 +467,7 @@ public class BambooPlansForm extends JPanel {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 12, 0, 12);
+
         plansPanel.add(listPanel, gbc);
         scrollList = new JScrollPane();
         scrollList.setBackground(new Color(-1));

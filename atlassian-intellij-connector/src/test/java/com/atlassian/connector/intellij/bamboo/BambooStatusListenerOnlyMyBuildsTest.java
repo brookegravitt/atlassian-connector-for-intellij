@@ -15,7 +15,6 @@
  */
 package com.atlassian.connector.intellij.bamboo;
 
-import static org.easymock.EasyMock.createStrictMock;
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -26,11 +25,14 @@ import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import junit.framework.TestCase;
+
+import static org.easymock.EasyMock.createStrictMock;
 
 /**
  * @author Jacek Jaroczynski
@@ -91,7 +93,7 @@ public class BambooStatusListenerOnlyMyBuildsTest extends TestCase {
 		BambooBuildAdapter buildOK_US = generateBuildInfo(BuildStatus.SUCCESS, 4, LOGGED_USER_US);
 		BambooBuildAdapter buildFail_UN = generateBuildInfo(BuildStatus.FAILURE, 5, LOGGED_USER_UN);
 		BambooBuildAdapter buildOK_UN = generateBuildInfo(BuildStatus.SUCCESS, 6, LOGGED_USER_UN);
-
+        
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.SUCCESS), EasyMock.isA(BambooPopupInfo.class));

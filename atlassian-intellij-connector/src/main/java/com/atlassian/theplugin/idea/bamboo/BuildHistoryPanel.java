@@ -1,25 +1,8 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import org.jetbrains.annotations.NotNull;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -34,6 +17,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
 
 /**
  * User: kalamon
@@ -160,7 +152,7 @@ public class BuildHistoryPanel extends JPanel {
             @Override
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
-							builds =
+                    builds =
 									facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),
 											buildDetailsInfo.getServer().getTimezoneOffset());
                 } catch (ServerPasswordNotProvidedException e) {

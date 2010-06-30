@@ -21,7 +21,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.commons.jira.rss.JIRARssClient;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.Server;
@@ -157,7 +157,7 @@ public class JIRARssClientTest extends TestCase {
 
 		final JiraServerData server = new JiraServerData(serverCfg);
 
-		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallbackImpl()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -191,7 +191,7 @@ public class JIRARssClientTest extends TestCase {
 			}
 		});
 
-		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallbackImpl()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -232,7 +232,7 @@ public class JIRARssClientTest extends TestCase {
 
         builder.useDefaultUser(false);
         builder.defaultUser(new UserCfg(userName, password));
-		return new JIRARssClient(builder.build(), new IntelliJHttpSessionCallback()) {
+		return new JIRARssClient(builder.build(), new IntelliJHttpSessionCallbackImpl()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {
 				mostRecentUrl = url;

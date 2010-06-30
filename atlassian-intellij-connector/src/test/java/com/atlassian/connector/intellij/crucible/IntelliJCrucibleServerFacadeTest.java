@@ -1,7 +1,7 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
@@ -45,7 +45,7 @@ public class IntelliJCrucibleServerFacadeTest extends TestCase {
 
 
 		final IntelliJCrucibleServerFacade facade = new IntelliJCrucibleServerFacade(
-				new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallback()) {
+				new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), new IntelliJHttpSessionCallbackImpl()) {
 			@Override
 			public CrucibleSession getSession(final ConnectionCfg server)
 					throws RemoteApiException, ServerPasswordNotProvidedException {

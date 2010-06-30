@@ -1,31 +1,27 @@
+/**
+ * Copyright (C) 2008 Atlassian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.atlassian.connector.intellij.remoteapi;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.util.HttpClientFactory;
-import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
-import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
-import com.atlassian.theplugin.idea.BugReporting;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 
 /**
- * @author Wojciech Seliga
+ * @autrhor pmaruszak
+ * @date Jun 28, 2010
  */
-public class IntelliJHttpSessionCallback extends HttpSessionCallbackImpl {
-	private static final String USER_AGENT = "Atlassian Connector for IntelliJ/" + BugReporting.getVersionString();
-
-	public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
-		final HttpClient client = HttpClientFactory.getClient();
-		client.getParams().setParameter(HttpMethodParams.USER_AGENT, USER_AGENT);
-        //to get rid of warning message 
-        client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1048576);
-		return client;
-	}
-
-    @Override
-    public void configureHttpMethod(AbstractHttpSession session, HttpMethod method) {
-        super.configureHttpMethod(session, method);
-    }
+public abstract class IntelliJHttpSessionCallback extends HttpSessionCallbackImpl {
+    abstract void disposeClient(ConnectionCfg server);
 }

@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -63,6 +63,7 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
 	}
 
 	protected boolean isBamboo2(final AnActionEvent event, final BambooServerData serverData) {
+
 		return serverData != null && serverData.isBamboo2();
 
 	}
