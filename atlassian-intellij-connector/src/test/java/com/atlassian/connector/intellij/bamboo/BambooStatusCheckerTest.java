@@ -89,14 +89,15 @@ public class BambooStatusCheckerTest extends TestCase {
 		final BambooBuildInfo build = new BambooBuildInfo.Builder("TP-DEF", null, server, "a project", 140, BuildStatus.SUCCESS).testsFailedCount(10).testsPassedCount(30).build();
 
 		IntelliJBambooServerFacade mockFacade = Mockito.mock(IntelliJBambooServerFacade.class);
-		Mockito.when(mockFacade.getSubscribedPlansResults(server, server.getPlans(), server.isUseFavourites(),
-				server.getTimezoneOffset())).thenReturn(Collections.singleton(new BambooBuildAdapter(build, server)));
-
+		Mockito.when(mockFacade.getSubscribedPlansResults(server, s.getPlans(), s.isUseFavourites(),
+				s.getTimezoneOffset())).thenReturn(Collections.singleton(new BambooBuildAdapter(build, server)));        
+        
 		EasyInvoker invoker = new EasyInvoker();
 		BambooStatusChecker checker = new BambooStatusChecker(null, cfg, null, null, mockFacade);
 
 		checker.setActionScheduler(invoker);
 		checker.updateConfiguration(cfg);
+        Mockito.when(cfg.getAllEnabledBambooServerss()).thenReturn(Collections.singleton(server));
 
 		TimerTask task = checker.newTimerTask();
 		task.run();
@@ -130,10 +131,10 @@ public class BambooStatusCheckerTest extends TestCase {
 		assertNull(r1.getLastAndClear());
 		assertNotNull(r2.getLastAndClear());
 
+        Mockito.when(cfg.getAllEnabledBambooServerss()).thenReturn(Collections.<BambooServerData>emptyList());
 		assertFalse(checker.canSchedule()); // config empty
 		Mockito.when(cfg.getAllEnabledBambooServerss()).thenReturn(Arrays.asList(server));
 		assertTrue(checker.canSchedule()); // config not empty
-
 
 		task.run();
 		assertEquals(1, r2.lastStatuses.size());
@@ -150,7 +151,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		server.setPassword(PASSWORD);
 
 		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
-		SubscribedPlan plan = new SubscribedPlan(PLAN_ID);
+		SubscribedPlan plan = new SubscribedPlan(PLAN_ID, false);
 		plans.add(plan);
 
 		server.setPlans(plans);

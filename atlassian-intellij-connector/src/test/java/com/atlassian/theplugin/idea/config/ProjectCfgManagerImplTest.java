@@ -254,12 +254,15 @@ public class ProjectCfgManagerImplTest extends TestCase {
     }
 
 	private class LocalBambooServerData extends BambooServerData {
-		public LocalBambooServerData(final ServerCfg serverCfg, final UserCfg userCfg) {
-			super(serverCfg, userCfg);
-		}
+        private final ServerCfg serverCfg;
+
+        public LocalBambooServerData(final ServerCfg serverCfg, final UserCfg userCfg) {
+			super((BambooServerCfg)serverCfg, userCfg);
+            this.serverCfg = serverCfg;
+        }
 
 		public ServerCfg getServerr() {
-			return getServer();
+			return serverCfg;
 		}
 	}
 }

@@ -13,7 +13,7 @@ package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.connector.commons.api.BambooServerFacade2;
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
@@ -25,13 +25,18 @@ import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,9 +52,29 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	private static IntelliJBambooServerFacade instance;
 	private final BambooServerFacade2 facade;
+    final IntelliJHttpSessionCallbackImpl callback;
+    private ConfigurationListenerAdapter configurationListener;
 
-    public IntelliJBambooServerFacade(Logger logger) {
-		facade = new BambooServerFacadeImpl(logger, new IntelliJHttpSessionCallback());
+    private IntelliJBambooServerFacade(Logger logger) {
+        callback = new IntelliJHttpSessionCallbackImpl();
+        facade = new BambooServerFacadeImpl(logger, callback);
+        configurationListener =  new ConfigurationListenerAdapter() {
+                @Override
+                public void serverRemoved(ServerData serverData) {
+                    callback.disposeClient(serverData.toConnectionCfg());
+                }
+
+            @Override
+            public void serverConnectionDataChanged(ServerId serverId) {
+                callback.disposeClient(serverId);
+            }
+
+            @Override
+            public void serverDisabled(ServerId serverId) {
+                callback.disposeClient(serverId);                
+            }
+        };
+
 	}
 
 	public static synchronized IntelliJBambooServerFacade getInstance(Logger logger) {
@@ -180,5 +205,12 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
     }
 
 
+    public void disposeClient(ConnectionCfg server) {
+            callback.disposeClient(server);
+    }
+
+    public ConfigurationListener getConfigurationListener() {
+           return configurationListener;
+    }
 
 }

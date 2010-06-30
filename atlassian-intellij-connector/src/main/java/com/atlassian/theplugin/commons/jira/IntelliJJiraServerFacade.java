@@ -19,7 +19,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJAxisSessionCallback;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -39,7 +39,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private static JIRAServerModel serverModel;
 
     private IntelliJJiraServerFacade() {
-		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallback(), new IntelliJAxisSessionCallback()));
+		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallbackImpl(), new IntelliJAxisSessionCallback()));
 	}
 
     public static synchronized IntelliJJiraServerFacade getInstance() {

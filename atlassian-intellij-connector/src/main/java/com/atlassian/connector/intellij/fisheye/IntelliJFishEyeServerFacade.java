@@ -2,7 +2,7 @@ package com.atlassian.connector.intellij.fisheye;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.fisheye.FishEyeServerFacade2;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.api.model.FisheyePathHistoryItem;
@@ -14,7 +14,7 @@ import java.util.Collection;
 
 public final class IntelliJFishEyeServerFacade implements FishEyeServerFacade {
 	
-	private final FishEyeServerFacade2 facade = FishEyeServerFacadeImpl.getInstance(new IntelliJHttpSessionCallback());
+	private final FishEyeServerFacade2 facade = FishEyeServerFacadeImpl.getInstance(new IntelliJHttpSessionCallbackImpl());
 	
 	private static IntelliJFishEyeServerFacade instance;
 

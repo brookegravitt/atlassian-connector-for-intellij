@@ -59,7 +59,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		checkServerBean(outServerBean);
 		assertEquals(0, outServerBean.getSubscribedPlans().size());
 
-		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-1"));
+		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-1", false));
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 		outServerBean = bambooPluginConfigurationForm.getBambooServerCfg();
@@ -69,7 +69,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals("Plan-1", outServerBean.getSubscribedPlansData().get(0).getPlanId());
 
 		/*  */
-		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-2"));
+		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-2", false));
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 
@@ -79,7 +79,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals(2, outServerBean.getSubscribedPlansData().size());
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2" });
 		/*  */
-		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-3"));
+		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-3", false));
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 

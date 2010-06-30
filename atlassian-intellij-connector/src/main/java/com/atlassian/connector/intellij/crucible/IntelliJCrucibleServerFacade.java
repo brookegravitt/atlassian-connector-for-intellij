@@ -1,7 +1,7 @@
 package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -108,7 +108,7 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     private IntelliJCrucibleServerFacade() {
         this(new CrucibleServerFacadeImpl(LoggerImpl.getInstance(), new CrucibleUserCacheImpl(), 
-        		new IntelliJHttpSessionCallback()));
+        		new IntelliJHttpSessionCallbackImpl()));
     }
 
     IntelliJCrucibleServerFacade(CrucibleServerFacadeImpl facade) {

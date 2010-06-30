@@ -17,6 +17,7 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,31 +42,22 @@ public class StatusIconBambooListener implements BambooStatusListener {
 		if (buildStatuses == null || buildStatuses.size() == 0) {
 			status = BuildStatus.UNKNOWN;
 		} else {
-			List<BambooBuildAdapter> sortedStatuses = new ArrayList<BambooBuildAdapter>(buildStatuses);
-			Collections.sort(sortedStatuses, new Comparator<BambooBuildAdapter>() {
+
+			List<BambooBuildAdapter> sortedStatuses;
+            GroupStatus gs = new GroupStatus(buildStatuses);
+
+            if (!gs.isGroup()) {
+                sortedStatuses = new ArrayList<BambooBuildAdapter>(buildStatuses);
+            } else {
+                sortedStatuses = gs.getBuildStatuses();
+            }
+
+            Collections.sort(sortedStatuses, new Comparator<BambooBuildAdapter>() {
 				public int compare(BambooBuildAdapter b1, BambooBuildAdapter b2) {
 					return b1.getServer().getUrl().compareTo(b2.getServer().getUrl());
 				}
 			});
-
-			for (BambooBuildAdapter buildInfo : buildStatuses) {
-				if (buildInfo.isEnabled()) {
-					switch (buildInfo.getStatus()) {
-						case FAILURE:
-							status = BuildStatus.FAILURE;
-							break;
-						case UNKNOWN:
-							break;
-						case SUCCESS:
-							if (status != BuildStatus.FAILURE) {
-								status = BuildStatus.SUCCESS;
-							}
-							break;
-						default:
-							throw new IllegalStateException("Unexpected build status encountered");
-					}
-				}
-			}
+			status = StatusIconBambooListener.getStatus(sortedStatuses);
 		}
 		display.updateBambooStatus(status, new BambooPopupInfo());
 	}
@@ -74,4 +66,45 @@ public class StatusIconBambooListener implements BambooStatusListener {
 		// set empty list of builds
 		updateBuildStatuses(new ArrayList<BambooBuildAdapter>(), null);
 	}
+
+     public static BuildStatus getStatus(Collection<BambooBuildAdapter> statuses) {
+            BuildStatus foundStatus = BuildStatus.UNKNOWN;
+        	for (BambooBuildAdapter buildInfo : statuses) {
+				if (buildInfo.isEnabled()) {
+					switch (buildInfo.getStatus()) {
+						case FAILURE:
+							foundStatus = BuildStatus.FAILURE;
+							break;
+						case UNKNOWN:
+							break;
+						case SUCCESS:
+							if (foundStatus != BuildStatus.FAILURE) {
+								foundStatus = BuildStatus.SUCCESS;
+							}
+							break;
+						default:
+							throw new IllegalStateException("Unexpected build status encountered");
+					}
+				}
+			}
+         return foundStatus;
+       }
+    private class GroupStatus {
+        ArrayList<BambooBuildAdapter> buildStatuses = new ArrayList<BambooBuildAdapter>();
+
+        private GroupStatus(Collection<BambooBuildAdapter> buildStatuses) {
+            for (BambooBuildAdapter build : buildStatuses) {
+                if (build.isGrouped()) {
+                    this.buildStatuses.add(build);
+                }
+            }
+        }
+        public boolean isGroup() {
+            return buildStatuses != null && buildStatuses.size() > 0;
+        }
+
+        public ArrayList<BambooBuildAdapter> getBuildStatuses() {
+            return buildStatuses;
+        }
+    }
 }
