@@ -17,6 +17,8 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
 import com.atlassian.connector.commons.jira.JIRAIssueBean;
 import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
@@ -74,7 +76,9 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JList componentsList;
 	private JList versionsList;
 	private JList fixVersionsList;
-	private final JiraServerData jiraServerData;
+    private JTextField originalEstimate;    
+    private JLabel OriginalEstimateLabel;
+    private final JiraServerData jiraServerData;
 	private IssueListToolWindowPanel issueListToolWindowPanel;
 	private Project project;
 	private final JIRAServerModel model;
@@ -89,8 +93,9 @@ public class IssueCreateDialog extends DialogWrapper {
 		this.model = model;
 		this.jiraConfiguration = jiraProjectCfg;
 		$$$setupUI$$$();
+       originalEstimate.getDocument().addDocumentListener(new JiraTimeWdhmTextFieldListener(originalEstimate, true));
 		assigneeField = new FieldUser(model, jiraServerData, "", null);
-		mainPanel.add(assigneeField, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+		mainPanel.add(assigneeField, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				new Dimension(50, -1), new Dimension(150, -1), null, 0, false));
 		componentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -468,6 +473,8 @@ public class IssueCreateDialog extends DialogWrapper {
 		newIssue.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		newIssue.setDescription(description.getText());
 		newIssue.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
+        newIssue.setOriginalEstimate(originalEstimate.getText());
+        
 		List<JIRAConstant> components = MiscUtil.buildArrayList();
 		Collection<Long> selectedComponents = new LinkedHashSet<Long>();
 		for (Object selectedObject : componentsList.getSelectedValues()) {
@@ -527,7 +534,8 @@ public class IssueCreateDialog extends DialogWrapper {
 				indicator.setIndeterminate(true);
 
 				try {
-					final JiraIssueAdapter createdIssue = IntelliJJiraServerFacade.getInstance().createIssue(jiraServerData, newIssue);
+                    final IntelliJJiraServerFacade jiraServerFacade = IntelliJJiraServerFacade.getInstance();
+                    final JiraIssueAdapter createdIssue = jiraServerFacade.createIssue(jiraServerData, newIssue);
 
                     IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(createdIssue.getLocalConfigurationListener());
 
@@ -539,10 +547,28 @@ public class IssueCreateDialog extends DialogWrapper {
 
 					issueListToolWindowPanel.setStatusInfoMessage(message);
 
+                    if (originalEstimate.getText() != null && originalEstimate.getText().length() > 0) {
+//                        "timeoriginalestimate"
+                        JIRAActionField originalEstimateField = new JIRAActionFieldBean("timetracking", "Original Estimate");
+                        originalEstimateField.addValue(newIssue.getOriginalEstimate());
+
+                        ArrayList<JIRAActionField> fieldList = new ArrayList<JIRAActionField>();
+                        fieldList.add(originalEstimateField);
+
+                        jiraServerFacade.setFields(jiraServerData, createdIssue, fieldList);
+		            message = "Original estimate updated for: <a href="
+							+ createdIssue.getIssueUrl()
+							+ ">"
+							+ createdIssue.getKey()
+							+ "</a>";
+
+					issueListToolWindowPanel.setStatusInfoMessage(message);
+                    }
+
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 
-                            issueListToolWindowPanel.refreshIssues(false);
+                            issueListToolWindowPanel.refreshIssues(true);
 							issueListToolWindowPanel.openIssue(createdIssue, false);
 
 							close(0);
