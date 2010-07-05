@@ -65,6 +65,10 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
         pack();
     }
 
+    public boolean isDoCreateReview() {
+        return doCreateReview;
+    }
+
     @Override
     protected void doOKAction() {
         doCreateReview = true;
