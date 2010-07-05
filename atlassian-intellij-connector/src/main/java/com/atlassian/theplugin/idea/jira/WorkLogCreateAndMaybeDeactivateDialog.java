@@ -95,6 +95,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
     private JiraServerFacade facade;
     private JComboBox actionCombo;
     private JCheckBox cbPerformWorkflowAction;
+    private JCheckBox cbCreateReviewAfterCommit;
 
 
 
@@ -122,8 +123,17 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
             contentPane.add(createWorkflowActionCombo(), cc.xy(2, 2));
 			contentPane.add(chkLogWork, cc.xy(2, 4));
 			chkCommitChanges = new JCheckBox("Commit Changes", config.isActiveIssueCommitChanges());
-			contentPane.add(chkCommitChanges, cc.xy(2, 8));
+//			contentPane.add(chkCommitChanges, cc.xy(2, 8));
 			contentPane.add(createChangesetPanel(), cc.xy(2, 10));
+            JPanel basePanel = new JPanel(new FormLayout("pref, 5dlu, pref, fill:pref:grow", "pref"));
+            basePanel.add(chkCommitChanges, cc.xy(1,1));
+
+            cbCreateReviewAfterCommit = new JCheckBox("Create Review After Commit", false);
+//            contentPane.add(cbCreateReviewAfterCommit, cc.xy(3, 8));
+            basePanel.add(cbCreateReviewAfterCommit, cc.xy(3, 1));
+
+            contentPane.add(basePanel, cc.xy(2, 8));
+
 
 			contentPane.setMinimumSize(new Dimension(800, 600));
 			contentPane.setPreferredSize(new Dimension(800, 600));
@@ -493,7 +503,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
             config.setActiveIssueProgressWorkflowAction(cbPerformWorkflowAction.isSelected());
             config.setActiveIssueAfterCommit(btnChangeSetDoNothing.isSelected() ? AfterCommit.DO_NOTHING.ordinal()
                     : (btnChangeSetDeactivate.isSelected()
-                        ? AfterCommit.DEACTIVATE_CHANGESET.ordinal() : AfterCommit.REMOVE_CHANGESET.ordinal()));
+                        ? AfterCommit.DEACTIVATE_CHANGESET.ordinal() : AfterCommit.REMOVE_CHANGESET.ordinal()));           
         }
         super.doOKAction();
     }
@@ -557,7 +567,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 					LocalChangeList chList = changeListManager.getDefaultChangeList();
 
 					changesBrowserPanel = IdeaVersionFacade.getInstance()
-							.getChangesListBrowser(project, changeListManager, chList.getChanges());
+							.getChangesListBrowser(project, changeListManager, chList.getChanges());                    
 					changesPanel.add(changesBrowserPanel, BorderLayout.CENTER);
 					changesPanel.validate();
 				}
@@ -671,6 +681,10 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	public boolean isCommitChanges() {
 		return chkCommitChanges.isSelected();
 	}
+
+    public boolean isCreateReviewAfterCommit() {
+        return cbCreateReviewAfterCommit.isSelected();
+    }
 
 	public AfterCommit getAfterCommitChangeSetAction() {
         if (btnChangeSetDeactivate.isSelected()) {

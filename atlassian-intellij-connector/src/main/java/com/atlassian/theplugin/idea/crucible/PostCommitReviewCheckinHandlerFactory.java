@@ -37,13 +37,15 @@ import java.util.List;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
 	private final CrucibleWorkspaceConfiguration config;
-	private final ProjectCfgManager projectCfgManager;
+    private final WorkspaceConfigurationBean projectConfiguration;
+    private final ProjectCfgManager projectCfgManager;
 	private final CrucibleConfigurationBean cruciblePluginConfig;
 
     public PostCommitReviewCheckinHandlerFactory(@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull ProjectCfgManager cfgManager,
 			@NotNull PluginConfigurationBean pluginCfg) {
-		this.projectCfgManager = cfgManager;
+        this.projectConfiguration = projectConfiguration;
+        this.projectCfgManager = cfgManager;
 		config = projectConfiguration.getCrucibleConfiguration();
 		cruciblePluginConfig = pluginCfg.getCrucibleConfigurationData();
 	}
