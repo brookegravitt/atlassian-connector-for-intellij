@@ -48,7 +48,7 @@ import java.util.Date;
  * @author wseliga
  * 
  */
-public class IntelliJBambooServerFacade implements BambooServerFacade {
+final public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	private static IntelliJBambooServerFacade instance;
 	private final BambooServerFacade2 facade;
