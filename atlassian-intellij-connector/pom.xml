@@ -261,7 +261,7 @@
 						</goals>
 						<configuration>
 							<resourceSrc>
-								${basedir}/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip
+								${basedir}/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip
 							</resourceSrc>
 							<resourceDest>${pom.artifactId}/Downloads</resourceDest>
 							<serverId>atlassian-documentation</serverId>
