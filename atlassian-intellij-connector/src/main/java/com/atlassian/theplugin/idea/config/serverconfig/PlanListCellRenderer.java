@@ -39,9 +39,9 @@ public class PlanListCellRenderer implements ListCellRenderer {
         CellConstraints cc = new CellConstraints();
 		panel.setLayout(new FormLayout("pref, 5dlu, pref, pref:grow, pref, 5dlu", "pref"));
 		JLabel label = new JLabel();
-		panel.add(label,cc.xy(1, 1));
+		panel.add(label, cc.xy(1, 1));
         Color background =
-                isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238,229,222)
+                isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238, 229, 222)
                         : list.getBackground();
 
 		if (value instanceof BambooPlanItem) {
@@ -62,7 +62,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
 			checkBox.setSelected(pi.isSelected());
             checkBox.setBackground(background);
 
-			panel.add(checkBox,cc.xy(3, 1));
+			panel.add(checkBox, cc.xy(3, 1));
 
 			checkBox.setBackground(background);
 			checkBox.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());

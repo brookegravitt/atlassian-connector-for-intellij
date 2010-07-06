@@ -24,7 +24,6 @@ import java.util.UUID;
  * User: pmaruszak
  */
 public final class JiraCustomFilter implements JIRAQueryFragment {
-    private UUID uuid = UUID.randomUUID();
 	private static final int HASH_NUMBER = 31;
 
     public enum QueryElement {
@@ -104,7 +103,7 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
         this.uid = uid;
     }
 
-    public List<JIRAQueryFragment> getQueryFragment() {
+     public List<JIRAQueryFragment> getQueryFragment() {
 		return queryFragment;
 	}
 
@@ -158,36 +157,18 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         JiraCustomFilter that = (JiraCustomFilter) o;
 
-        if (!name.equals(that.name)) {
-            return false;
-        }
-//        if (queryFragment != null ? !queryFragment.equals(that.queryFragment) : that.queryFragment != null)
-//            return false;
-        if (!uid.equals(that.uid)) {
-            return false;
-        }
+        if (uid != null ? !uid.equals(that.uid) : that.uid != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = 0; //queryFragment != null ? queryFragment.hashCode() : 0;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + uid.hashCode();
-        return result;
-    }
-
-    public UUID getUuid() {
-        return uuid;
+        return uid != null ? uid.hashCode() : 0;
     }
 }

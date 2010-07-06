@@ -1373,7 +1373,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     if (dialog.isCreateReviewAfterCommit()) {
 
                         
-                        final Collection<VirtualFile> vFiles = IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
+                        final Collection<VirtualFile> vFiles =
+                                IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
                         LoggerImpl.getInstance().info(
                                 "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
 
@@ -1632,8 +1633,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
     }
-
-    ;
 
 
     private class PopupAwareMouseAdapterLocal extends PopupAwareMouseAdapter {

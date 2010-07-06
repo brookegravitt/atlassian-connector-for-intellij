@@ -52,7 +52,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	private static IntelliJBambooServerFacade instance;
 	private final BambooServerFacade2 facade;
-    final IntelliJHttpSessionCallbackImpl callback;
+    private final IntelliJHttpSessionCallbackImpl callback;
     private ConfigurationListenerAdapter configurationListener;
 
     private IntelliJBambooServerFacade(Logger logger) {

@@ -28,8 +28,8 @@ import java.util.Map;
  * @date Jun 25, 2010
  */
 class BambooBuildGroup {
-      List<BambooBuildAdapter> groupBuilds;
-       Map<String, BambooBuildAdapter> buildStatuses = new HashMap<String, BambooBuildAdapter>(0);
+      private List<BambooBuildAdapter> groupBuilds;
+      private Map<String, BambooBuildAdapter> buildStatuses = new HashMap<String, BambooBuildAdapter>(0);
 
 
 
@@ -89,13 +89,18 @@ class BambooBuildGroup {
 
       @Override
       public boolean equals(Object o) {
-          if (this == o) return true;
-          if (o == null || getClass() != o.getClass()) return false;
+          if (this == o) {
+              return true;
+          }
+          if (o == null || getClass() != o.getClass()) {
+              return false;
+          }
 
           BambooBuildGroup that = (BambooBuildGroup) o;
 
-          if (groupBuilds != null ? !groupBuilds.equals(that.groupBuilds) : that.groupBuilds != null)
+          if (groupBuilds != null ? !groupBuilds.equals(that.groupBuilds) : that.groupBuilds != null) {
               return false;
+          }
 
           return true;
       }

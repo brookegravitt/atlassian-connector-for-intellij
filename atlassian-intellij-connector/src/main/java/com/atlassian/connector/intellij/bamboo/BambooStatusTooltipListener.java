@@ -46,7 +46,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
         this.pluginConfiguration = pluginConfiguration;
     }
 
-    public static boolean isBuildStatusFailed(final BambooBuildAdapter currentBuild, final BambooBuildAdapter prevBuild, BambooTooltipOption option) {
+    public static boolean isBuildStatusFailed(final BambooBuildAdapter currentBuild, final BambooBuildAdapter prevBuild,
+                                              BambooTooltipOption option) {
         if (currentBuild.getStatus() == BuildStatus.FAILURE) {
             if (prevBuild != null) {
                 if (prevBuild.getStatus() == BuildStatus.SUCCESS
@@ -84,7 +85,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
     }
 
     public static BuildStatus privateUpdateBuildStatuses(Collection<BambooBuildAdapter> buildsUpdate,
-                                                         Map<String, BambooBuildAdapter> prevStatuses, PluginConfiguration pluginCfg, BambooPopupInfo infos) {
+                                                         Map<String, BambooBuildAdapter> prevStatuses,
+                                                         PluginConfiguration pluginCfg, BambooPopupInfo infos) {
         infos.clear();
         final BambooTooltipOption bambooTooltipOption = pluginCfg != null
                 ? pluginCfg.getBambooConfigurationData().getBambooTooltipOption()
@@ -110,7 +112,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
                                 // prepare information
                                 infos.add(currentBuild);
                             }
-                            if (prevStatuses != null ) {
+                            if (prevStatuses != null) {
                                 prevStatuses.put(getBuildMapKey(currentBuild), currentBuild);
                             }
                             break;
