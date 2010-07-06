@@ -89,8 +89,8 @@ public class StatusIconBambooListener implements BambooStatusListener {
 			}
          return foundStatus;
        }
-    private class GroupStatus {
-        ArrayList<BambooBuildAdapter> buildStatuses = new ArrayList<BambooBuildAdapter>();
+    private final class GroupStatus {
+        private ArrayList<BambooBuildAdapter> buildStatuses = new ArrayList<BambooBuildAdapter>();
 
         private GroupStatus(Collection<BambooBuildAdapter> buildStatuses) {
             for (BambooBuildAdapter build : buildStatuses) {

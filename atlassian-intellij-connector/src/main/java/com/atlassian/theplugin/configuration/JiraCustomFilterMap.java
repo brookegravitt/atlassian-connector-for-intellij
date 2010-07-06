@@ -17,4 +17,4 @@ public class JiraCustomFilterMap {
     public void setCustomFilters(Map<String, JiraFilterConfigurationBean> customFilters) {
         this.customFilters = customFilters;
     }
-}
+    }

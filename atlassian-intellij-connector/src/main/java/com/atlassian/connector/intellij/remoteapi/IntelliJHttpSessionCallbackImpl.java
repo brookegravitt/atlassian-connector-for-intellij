@@ -19,7 +19,8 @@ import java.util.Map;
  */
 public class IntelliJHttpSessionCallbackImpl extends IntelliJHttpSessionCallback {
 	private static final String USER_AGENT = "Atlassian Connector for IntelliJ/" + BugReporting.getVersionString();
-    private final Map<ConnectionCfg, HttpClient> httpClients =  Collections.synchronizedMap(new HashMap<ConnectionCfg, HttpClient>());
+    private final Map<ConnectionCfg, HttpClient> httpClients =
+            Collections.synchronizedMap(new HashMap<ConnectionCfg, HttpClient>());
 
 	public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
         if (httpClients.get(server) == null) {
