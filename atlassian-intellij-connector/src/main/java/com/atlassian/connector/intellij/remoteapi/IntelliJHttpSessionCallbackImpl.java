@@ -42,11 +42,18 @@ public class IntelliJHttpSessionCallbackImpl extends IntelliJHttpSessionCallback
        httpClients.remove(server);
     }
 
-    public void disposeClient(ServerId serverId) {       
+    public void disposeClient(ServerId serverId) {
+       ConnectionCfg toRemove = null;
        for (ConnectionCfg connection : httpClients.keySet()) {
            if (connection.getId().equals(serverId.toString())) {
-               httpClients.remove(connection);
+
+               toRemove = connection;
+               break;
            }
        }
+
+       if (toRemove != null) {
+               httpClients.remove(toRemove);
+        }
     }
 }
