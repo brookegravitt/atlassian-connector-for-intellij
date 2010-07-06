@@ -29,6 +29,7 @@ import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
@@ -1371,11 +1372,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                    /////////
                     if (dialog.isCreateReviewAfterCommit()) {
 
-                        final Collection<VirtualFile> vFiles = new ArrayList<VirtualFile>();
-
-                        for (Change c : selectedChanges) {
-                            vFiles.add(c.getVirtualFile());
-                        }
+                        
+                        final Collection<VirtualFile> vFiles = IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
                         LoggerImpl.getInstance().info(
                                 "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
 
@@ -1416,14 +1414,15 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     switch (afterCommit) {
                         case DEACTIVATE_CHANGESET:
 
-                            activateDefaultChangeList(changeListManager);
+                            PluginUtil.activateDefaultChangeList(changeListManager);
                             break;
                         case REMOVE_CHANGESET:
-                            activateDefaultChangeList(changeListManager);
+                            PluginUtil.activateDefaultChangeList(changeListManager);
                             if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())) {
                                 // PL-1612 - belt and suspenders probably, but just to be sure
                                 try {
-                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+//                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                    PluginUtil.removeChangeList(project, dialog.getCurrentChangeList());
 
                                 } catch (Exception e) {
                                     // stupid IDEA 7 API. I hate you
@@ -1489,15 +1488,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
 
-        private void activateDefaultChangeList(ChangeListManager changeListManager) {
-            List<LocalChangeList> chLists = changeListManager.getChangeLists();
-            for (LocalChangeList chl : chLists) {
-                if ("default".equalsIgnoreCase(chl.getName())) {
-                    changeListManager.setDefaultChangeList(chl);
-                    break;
-                }
-            }
-        }
+      
     }
 
     private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {

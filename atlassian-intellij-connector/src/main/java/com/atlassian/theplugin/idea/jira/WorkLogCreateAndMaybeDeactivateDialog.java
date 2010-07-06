@@ -568,9 +568,10 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 					changesBrowserPanel = IdeaVersionFacade.getInstance()
 							.getChangesListBrowser(project, changeListManager, chList.getChanges());                    
-					changesPanel.add(changesBrowserPanel, BorderLayout.CENTER);
+                    changesPanel.add(changesBrowserPanel, BorderLayout.CENTER);
 					changesPanel.validate();
-				}
+                    btnChangeSetRemove.setEnabled(!"default".equalsIgnoreCase(chList.getName()));
+                }
 			});
 
 			getOKAction().putValue(Action.NAME, prefix + "Stop Work");
