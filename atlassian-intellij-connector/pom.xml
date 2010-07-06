@@ -506,7 +506,8 @@
 						**/JIRAIssueFilterPanel.java,
 						**/JIRAButtonPanel.java,
 						**/WorkLogCreateAndMaybeDeactivate.java,
-						**/DialogWithDetails.java
+						**/DialogWithDetails.java,
+                        **/IntelliJBambooServerFacade.java
 					</excludes>
 				</configuration>
 			</plugin>
