@@ -18,6 +18,9 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.util.PathUtil;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,6 +37,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipFile;
 
@@ -172,6 +176,38 @@ public final class PluginUtil {
     }
 
 	@NotNull
-	public static final String PRODUCT_NAME = "Atlassian Connector for IntelliJ IDEA"; 
+	public static final String PRODUCT_NAME = "Atlassian Connector for IntelliJ IDEA";
+
+    public static void removeChangeList(Project project, LocalChangeList currentChangeList) {
+        ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+
+        if (changeListManager.getChangeLists().size() <= 1) {
+            return;
+        }
+
+        if (currentChangeList.isDefault()) {
+            for (LocalChangeList list : changeListManager.getChangeLists()) {
+                if (!list.equals(currentChangeList)) {
+                    //switch to first as default
+                    changeListManager.setDefaultChangeList(list);
+                }
+            }
+
+        }
+        changeListManager.removeChangeList(currentChangeList);
+    }
+
+      public static void activateDefaultChangeList(ChangeListManager changeListManager) {
+            List<LocalChangeList> chLists = changeListManager.getChangeLists();
+            for (LocalChangeList chl : chLists) {
+                if ("default".equalsIgnoreCase(chl.getName())) {
+                    changeListManager.setDefaultChangeList(chl);
+                    return;
+                }
+            }
+
+          LocalChangeList defaultLst = changeListManager.addChangeList("Default", "This is a default change list");
+          changeListManager.setDefaultChangeList(defaultLst);
+        }
 }
 
