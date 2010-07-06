@@ -3,24 +3,27 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author pmaruszak
  */
 public class JIRAServerFiltersBean {
-	private Set<JiraCustomFilter> manualFilters = new HashSet<JiraCustomFilter>();
+	private HashMap<UUID, JiraCustomFilter> manualFilters = new HashMap<UUID, JiraCustomFilter>();
 	private List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>();
 
 
-    public Set<JiraCustomFilter> getManualFilters() {
-        return manualFilters;
+    public Collection<JiraCustomFilter> getManualFilters() {
+        return manualFilters.values();
     }
 
-    public void setManualFilters(Set<JiraCustomFilter> manualFilters) {
-        this.manualFilters = manualFilters;
+    public void setManualFilters(Collection<JiraCustomFilter> manualFilters) {
+        for (JiraCustomFilter filter : manualFilters) {
+            this.manualFilters.put(filter.getUuid(), filter);
+        }        
     }
 
 

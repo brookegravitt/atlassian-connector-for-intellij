@@ -24,6 +24,7 @@ import java.util.UUID;
  * User: pmaruszak
  */
 public final class JiraCustomFilter implements JIRAQueryFragment {
+    private UUID uuid = UUID.randomUUID();
 	private static final int HASH_NUMBER = 31;
 
     public enum QueryElement {
@@ -184,5 +185,9 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
         result = 31 * result + name.hashCode();
         result = 31 * result + uid.hashCode();
         return result;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 }
