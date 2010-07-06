@@ -157,12 +157,18 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         JiraCustomFilter that = (JiraCustomFilter) o;
 
-        if (uid != null ? !uid.equals(that.uid) : that.uid != null) return false;
+        if (uid != null ? !uid.equals(that.uid) : that.uid != null) {
+            return false;
+        }
 
         return true;
     }
