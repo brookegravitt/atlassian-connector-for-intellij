@@ -20,10 +20,9 @@ import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,9 +60,9 @@ public class DatePicker extends DialogWrapper implements CaretListener {
 		Calendar nowcal = Calendar.getInstance();
 
 		nowcal.setTime(dateToSelect);
-		nowcal.set(Calendar.HOUR_OF_DAY, 0);
-		nowcal.set(Calendar.MINUTE, 0);
-		nowcal.set(Calendar.SECOND, 0);
+		nowcal.set(Calendar.HOUR_OF_DAY, 12);
+		nowcal.set(Calendar.MINUTE, 11);
+		nowcal.set(Calendar.SECOND, 9);
 		nowcal.set(Calendar.MILLISECOND, 0);
 
 		Date nowZeroZero = nowcal.getTime();

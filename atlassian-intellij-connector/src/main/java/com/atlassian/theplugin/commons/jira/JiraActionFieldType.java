@@ -65,7 +65,8 @@ public final class JiraActionFieldType {
 		RESOLUTION,
 		PRIORITY,
 		COMPONENTS,
-		SECURITY
+		SECURITY,
+        CUSTOM_FIELD
 	}
 
 	private static final class WidgetTypeAndFieldFiller {
@@ -112,6 +113,8 @@ public final class JiraActionFieldType {
 		typeMap.put("description", new WidgetTypeAndFieldFiller(WidgetType.DESCRIPTION, ++i, new DescriptionFiller()));
 		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIMETRACKING, ++i, new TimeTrackingFiller()));
 		typeMap.put("security", new WidgetTypeAndFieldFiller(WidgetType.SECURITY, ++i, new SecurityFiller()));
+        typeMap.put("customfield", new WidgetTypeAndFieldFiller(WidgetType.CUSTOM_FIELD, ++i, new CustomFieldFiller()));
+
 	}
 
 	private JiraActionFieldType() {
@@ -127,6 +130,9 @@ public final class JiraActionFieldType {
 		if (typeMap.containsKey(fieldId)) {
 			return typeMap.get(fieldId).getWidgetType();
 		}
+        if (fieldId.startsWith("customfield")) {
+            return typeMap.get("customfield").getWidgetType();
+        }
 		return WidgetType.UNSUPPORTED;
 	}
 

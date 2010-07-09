@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.jira.renderers;
 
+import com.atlassian.connector.commons.jira.JiraTImeFormatter;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.idea.jira.JiraTimeFormatter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
@@ -111,7 +111,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 
 		gbc.gridx++;
 		gbc.weightx = 0.0;
-		updated = new SelectableLabel(true, true, null, JiraTimeFormatter.formatTimeFromJiraTimeString(issue.getUpdated()),
+		updated = new SelectableLabel(true, true, null, JiraTImeFormatter.formatShortTimeFromJiraTimeString(issue.getUpdated()),
 				null, SwingConstants.LEADING, AbstractTreeNode.ICON_HEIGHT, false, true);
 		updated.setHorizontalAlignment(SwingConstants.RIGHT);
 		Dimension minDimension = updated.getPreferredSize();
