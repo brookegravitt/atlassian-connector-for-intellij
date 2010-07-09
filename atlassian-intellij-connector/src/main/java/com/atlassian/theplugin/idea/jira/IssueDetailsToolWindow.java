@@ -1066,7 +1066,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                      gbc2.gridy++;
                     panel.add(new BoldLabel(field.getName()), gbc1);
                     if (field.isSupported()) {
-                        panel.add(createEditableField(new JLabel("<html>" + field.getFormattedValue() + "</html>"), field.getId(), field.getName()), gbc2);
+                        panel.add(createEditableField(new JLabel("<html>" + field.getFormattedValue() + "</html>"),
+                                field.getId(), field.getName()), gbc2);
                     } else {
                         panel.add(new JLabel("<html>" + field.getFormattedValue() + "</html>"), gbc2);
                     }
