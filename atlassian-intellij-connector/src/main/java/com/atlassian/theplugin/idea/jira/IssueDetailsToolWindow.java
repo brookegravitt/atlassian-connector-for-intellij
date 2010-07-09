@@ -4,6 +4,8 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.JiraCustomField;
+import com.atlassian.connector.commons.jira.JiraTImeFormatter;
 import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
 import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
@@ -1059,10 +1061,21 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				panel.add(new BoldLabel("Time Spent"), gbc1);
 				panel.add(timeSpent, gbc2);
 
+                for (JiraCustomField field : params.issue.getCustomFields()) {
+                     gbc1.gridy++;
+                     gbc2.gridy++;
+                    panel.add(new BoldLabel(field.getName()), gbc1);
+                    if (field.isSupported()) {
+                        panel.add(createEditableField(new JLabel("<html>" + field.getFormattedValue() + "</html>"), field.getId(), field.getName()), gbc2);
+                    } else {
+                        panel.add(new JLabel("<html>" + field.getFormattedValue() + "</html>"), gbc2);
+                    }
+                }
 				addFillerPanel(panel, gbc1, false);
 
 				return panel;
 			}
+
 
 			private void fillBaseIssueDetails() {
 				issueType = createEditableField(new JLabel(params.issue.getType(),
@@ -1091,8 +1104,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 //				issueResolution = createEditableField(new JLabel(params.issue.getResolution()), "resolution", "Resolution");
 				issueResolution = new JLabel(params.issue.getResolution());
-				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
-				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
+				issueCreationTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString(params.issue.getCreated()));
+				issueUpdateTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString((params.issue.getUpdated())));
                 issueEnvironment = new JEditorPane();
                 issueEnvironment.setMargin(new Insets(0, 0, 0, 0));
                 issueEnvironment.setText(Html2text.translate(params.issue.getEnvironment()));

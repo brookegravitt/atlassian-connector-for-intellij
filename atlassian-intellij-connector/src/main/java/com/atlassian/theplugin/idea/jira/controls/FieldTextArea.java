@@ -39,6 +39,8 @@ public class FieldTextArea extends JScrollPane implements ActionFieldEditor {
 		textArea.setColumns(40);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
+        
+
 
 		this.setViewportView(textArea);
 		this.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);

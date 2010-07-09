@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JiraCustomField;
 import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -162,6 +163,37 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     }
                     editor = new FieldDueDate(content, field, this);
                     row = ", p, 3dlu";
+                    break;
+                case CUSTOM_FIELD:
+                    for (JiraCustomField custom : issue.getCustomFields()) {
+                        if (custom.getId().equals(field.getFieldId())) {
+                            switch (custom.getTypeKey()) {
+                                case NUMERIC:
+                                    editor = new FieldTextField(custom.getValues().get(0), field);
+                                    row = ", p, 3dlu";
+                                    break;
+                                case TEXT:
+                                    editor = new FieldTextField(custom.getValues().get(0), field);
+                                    row = ", p, 3dlu";
+                                    break;
+                                case TEXT_AREA:
+//                                    editor = new FieldEditorPane(custom.getValues().get(0).replaceAll("<br/>", "\n"), field, true);
+                                    editor = new FieldTextArea(custom.getValues().get(0).replaceAll("<br/>", ""), field);
+                                    row = ", p, 3dlu";
+                                    break;
+                                case DATE_PICKER:
+                                    editor = new FieldDueDate(custom.getFormattedValue(), field, this);
+                                    row = ", p, 3dlu";
+                                    break;
+                                case URL:
+                                    editor = new FieldTextField(custom.getFormattedValue(), field);
+                                    row = ", p, 3dlu";
+                                case UNSUPPORTED:
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     break;
                 case UNSUPPORTED:
                 default:

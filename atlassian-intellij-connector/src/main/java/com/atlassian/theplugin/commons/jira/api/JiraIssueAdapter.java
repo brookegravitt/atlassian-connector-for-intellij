@@ -2,6 +2,7 @@ package com.atlassian.theplugin.commons.jira.api;
 
 import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.JIRAIssueBean;
+import com.atlassian.connector.commons.jira.JiraCustomField;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
 import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
@@ -253,6 +254,10 @@ public class JiraIssueAdapter implements JIRAIssue {
 
     public JIRASecurityLevelBean getSecurityLevel() {
         return jiraIssue.getSecurityLevel();
+    }
+
+    public List<JiraCustomField> getCustomFields() {
+        return jiraIssue.getCustomFields();
     }
 
     public void setJiraServerData(JiraServerData jiraServerData) {
