@@ -8,6 +8,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -17,6 +18,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.intellij.openapi.util.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -259,7 +261,19 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
         }
     }
 
+    @Nullable
+    public List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey) 
+            throws RemoteApiException, JIRAException {
+        if (jiraServerData == null) {
+            return null;
+        }
+        JIRAServerCache srv = getServer(jiraServerData);
+        if (srv != null) {
+            return srv.getSecurityLevels(projectKey);
+        }
 
+        return null;
+    }
 
     public void setChanged(boolean changed) {
         this.changed = changed;

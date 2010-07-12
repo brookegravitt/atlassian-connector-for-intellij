@@ -7,6 +7,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -65,4 +66,6 @@ public interface JIRAServerModel {
     List<Pair<String, String>> getUsers(JiraServerData jiraServerData);
 
     void addUser(JiraServerData jiraServerData, String userId, String userName);
+
+    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String key) throws RemoteApiException, JIRAException;
 }
