@@ -12,6 +12,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
@@ -114,4 +115,5 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     ServerType getServerType();
 
+    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey) throws RemoteApiException, JIRAException;
 }

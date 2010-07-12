@@ -31,6 +31,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilterBean;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
 import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
@@ -668,6 +669,10 @@ public class JIRAServerModelImplTest extends TestCase {
         public ServerType getServerType() {
 			return null;
 		}
+
+        public List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey) throws RemoteApiException, JIRAException {
+            return null;
+        }
 
         public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
             

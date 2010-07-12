@@ -12,6 +12,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
@@ -176,6 +177,10 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
         public ServerType getServerType() {
 			return null;
 		}
+
+        public List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey) throws RemoteApiException, JIRAException {
+            return null;
+        }
 
         public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
         }
