@@ -523,7 +523,7 @@ public class IssueCreateDialog extends DialogWrapper {
         newIssue.setDescription(description.getText());
         newIssue.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
         newIssue.setOriginalEstimate(originalEstimate.getText());
-        if (securityLevels != null) {
+        if (securityLevels != null && securityLevels.size() > 0 && cbSecurityLevel.getSelectedItem() != null) {
             JIRASecurityLevelBean sl = ((SecurityLevelWrapper)cbSecurityLevel.getSelectedItem()).getWrapped();
             if (sl != null) {
                 newIssue.setSecurityLevel(sl);
