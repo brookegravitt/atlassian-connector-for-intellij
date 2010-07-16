@@ -115,5 +115,6 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     ServerType getServerType();
 
-    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey) throws RemoteApiException, JIRAException;
+    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey)
+            throws RemoteApiException, JIRAException;
 }
