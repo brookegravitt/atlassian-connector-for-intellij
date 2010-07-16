@@ -67,5 +67,6 @@ public interface JIRAServerModel {
 
     void addUser(JiraServerData jiraServerData, String userId, String userName);
 
-    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String key) throws RemoteApiException, JIRAException;
+    List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String key)
+            throws RemoteApiException, JIRAException;
 }
