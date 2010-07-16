@@ -205,9 +205,6 @@ public final class PluginUtil {
                     return;
                 }
             }
-
-          LocalChangeList defaultLst = changeListManager.addChangeList("Default", "This is a default change list");
-          changeListManager.setDefaultChangeList(defaultLst);
         }
 }
 

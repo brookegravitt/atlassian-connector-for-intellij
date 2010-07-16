@@ -1419,7 +1419,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             break;
                         case REMOVE_CHANGESET:
                             PluginUtil.activateDefaultChangeList(changeListManager);
-                            if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())) {
+                            if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())
+                                    && !(changeListManager.getChangeLists().size() <= 1)) {
                                 // PL-1612 - belt and suspenders probably, but just to be sure
                                 try {
 //                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
