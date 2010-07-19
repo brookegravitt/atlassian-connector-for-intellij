@@ -351,13 +351,15 @@ public class IssueCreateDialog extends DialogWrapper {
         return new UiTaskAdapter("fetching security levels", getContentPane()) {
 
             public void run() throws Exception {
-                securityLevels = model.getSecurityLevels(jiraServerData, project.getKey());
+                if (project != null) {
+                    securityLevels = model.getSecurityLevels(jiraServerData, project.getKey());
+                }
             }
 
             @Override
             public void onSuccess() {
                 addSecurityLevels(securityLevels);
-                if (securityLevels != null) {
+                if (securityLevels != null && securityLevels.size() > 0) {
                     setVisibleSecurityLevel(true);
                 } else {
                     setVisibleSecurityLevel(false);
