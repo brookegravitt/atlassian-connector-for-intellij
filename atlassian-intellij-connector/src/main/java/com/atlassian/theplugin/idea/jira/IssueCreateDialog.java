@@ -422,6 +422,7 @@ public class IssueCreateDialog extends DialogWrapper {
     private void  addSecurityLevels(List<JIRASecurityLevelBean> levels) {
         if (levels != null) {
             cbSecurityLevel.removeAllItems();
+            cbSecurityLevel.addItem(new SecurityLevelWrapper(new JIRASecurityLevelBean(0L, "None. If default is not set"), true));
             for (JIRASecurityLevelBean level : levels) {
                 cbSecurityLevel.addItem(new SecurityLevelWrapper(level));
             }
@@ -526,8 +527,9 @@ public class IssueCreateDialog extends DialogWrapper {
         newIssue.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
         newIssue.setOriginalEstimate(originalEstimate.getText());
         if (securityLevels != null && securityLevels.size() > 0 && cbSecurityLevel.getSelectedItem() != null) {
-            JIRASecurityLevelBean sl = ((SecurityLevelWrapper)cbSecurityLevel.getSelectedItem()).getWrapped();
-            if (sl != null) {
+            SecurityLevelWrapper wrapper = (SecurityLevelWrapper)cbSecurityLevel.getSelectedItem();
+            JIRASecurityLevelBean sl = wrapper.getWrapped();
+            if (sl != null && !wrapper.isNone()) {
                 newIssue.setSecurityLevel(sl);
             }
         }
@@ -799,14 +801,23 @@ public class IssueCreateDialog extends DialogWrapper {
     }
 
     private static class SecurityLevelWrapper extends GenericComboBoxItemWrapper<JIRASecurityLevelBean> {
+        boolean none = false;
 
         public SecurityLevelWrapper(final JIRASecurityLevelBean wrapped) {
             super(wrapped);
         }
 
+        public SecurityLevelWrapper(final JIRASecurityLevelBean wrapped, boolean none) {
+            super(wrapped);
+            this.none = none;
+        }
+
         @Override
         public String toString() {
             return wrapped.getName() + " (" + wrapped.getId() + ")";
+        }
+        public boolean isNone() {
+            return none;
         }
     }
 }
