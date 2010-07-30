@@ -201,6 +201,10 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         new FetchingReviewDetailsTask(review).queue();
     }
 
+    public ReviewAdapter getSelectedReview() {
+        return reviewTree.getSelectedReview();        
+    }
+
     private class FetchingReviewDetailsTask extends Task.Modal {
         private final ReviewAdapter review;
 

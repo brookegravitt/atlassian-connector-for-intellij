@@ -37,6 +37,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -109,8 +110,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	ReviewAdapter getReview(ServerData server, PermId permId) throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
-//	List<Review> getAllReviewsForFile(CrucibleServerCfg server, String repoName, String path)
-//			throws RemoteApiException, ServerPasswordNotProvidedException;
+	List<ReviewAdapter> getAllReviewsForFile(ServerData server, String repoName, String path)
+			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch) throws RemoteApiException,
 			ServerPasswordNotProvidedException;

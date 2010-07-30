@@ -133,7 +133,12 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 		return toReviewAdapter(changeReviewState(server, permId, CrucibleAction.ABANDON), server);
     }
 
-	public Review changeReviewState(ServerData server, PermId permId, CrucibleAction action) throws RemoteApiException,
+
+    public List<ReviewAdapter> getAllReviewsForFile(ServerData server, String repoName, String path) throws RemoteApiException, ServerPasswordNotProvidedException {
+        return toReviewAdapterList(facade.getAllReviewsForFile(server.toConnectionCfg(), repoName, path), server);
+    }
+
+    public Review changeReviewState(ServerData server, PermId permId, CrucibleAction action) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		final BasicReview review = facade.getSession(server).changeReviewState(permId, action);
 		return facade.getReview(server, review.getPermId());
