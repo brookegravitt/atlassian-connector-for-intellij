@@ -2,163 +2,33 @@
   <project-configuration>
     <servers>
       <bamboo>
-        <server-id>7dea32ca-7ea9-4220-9dbe-7db95349be1c</server-id>
-        <name>Hosted</name>
+        <server-id>701d0d73-da21-4dba-a1c7-031bbbbab051</server-id>
+        <name>GDansk</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
         <bamboo2>true</bamboo2>
         <plans>
+          <plan key="ACC-CS" grouped="0" />
+          <plan key="ACC-DPL" grouped="0" />
+          <plan key="ACC-TST" grouped="0" />
           <plan key="INT-CS" grouped="0" />
           <plan key="INT-DPL" grouped="0" />
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
       <jira>
-        <server-id>d5b71692-3679-474f-bc0a-28165fd8f69b</server-id>
-        <name>Studioo</name>
-        <url>https://studio.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
-      <crucible>
-        <server-id>f398acb6-3be9-43b4-8985-485b57a146b9</server-id>
-        <name>Atlaseye</name>
-        <url>https://atlaseye.atlassian.com</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>962d5cd2-1c2a-47cc-963e-6c54966f65b2</server-id>
-        <name>Extranet</name>
-        <url>https://extranet.atlassian.com/crucible</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>d5f90b60-7c6a-4d85-aa78-1ed7dff209ef</server-id>
-        <name>lech21</name>
-        <url>http://lech:8020/crucible-2.0</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <jira>
-        <server-id>104d2e64-b203-40bb-99c2-db629055de17</server-id>
-        <name>Jira Atlassian</name>
-        <url>https://jira.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
-      <fisheye>
-        <server-id>f9eb736a-4d98-44e2-aa41-476185f26d84</server-id>
-        <name>AtlasEye</name>
-        <url>https://atlaseye.atlassian.com</url>
-        <shared>false</shared>
-      </fisheye>
-      <bamboo>
-        <server-id>69c2a572-ce9a-4ff6-919f-43a21c586519</server-id>
-        <name>Panda</name>
-        <url>http://panda.sydney.atlassian.com:8080/bamboo</url>
-        <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
-        <plans />
-      </bamboo>
-      <jira>
-        <server-id>a5088764-a34a-4bd9-b3ca-789689e6bd37</server-id>
-        <name>EAC</name>
-        <url>https://extranet.atlassian.com/jira</url>
-        <shared>false</shared>
-      </jira>
-      <crucible>
-        <server-id>85e207bc-5895-4a02-a6a1-b9f805e241d0</server-id>
-        <name>JIRA Studio</name>
-        <url>https://studio.atlassian.com/source</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>d4292b00-cdbb-48fa-9fff-0b472d380652</server-id>
-        <name>SVN</name>
-        <url>https://atlaseye.atlassian.com</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <jira>
-        <server-id>38bf481a-53cb-4181-9b30-ad01cdc50583</server-id>
-        <name>Lech</name>
-        <url>http://lech:33315</url>
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>50261bbe-771c-474f-bcd0-c995ffe79418</server-id>
-        <name>Extranet</name>
-        <url>https://extranet.atlassian.com/crucible</url>
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>31b5fe93-30bc-4475-8545-901987ebb582</server-id>
-        <name>Spartez</name>
-        <url>https://loft.spartez.com/jira</url>
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>b6358665-1030-4860-b5e0-0686df1639af</server-id>
-        <name>local STD</name>
-        <url>https://localhost/jira</url>
-        <shared>false</shared>
-      </jira>
-      <crucible>
-        <server-id>41dda02a-557c-4379-a758-c94382651a3c</server-id>
-        <name>local</name>
-        <url>http://localhost:8060</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <fisheye>
-        <server-id>c22e9802-54b8-4e50-a6c7-f433fa4c177d</server-id>
-        <name>Local</name>
-        <url>http://localhost:8060</url>
-        <shared>false</shared>
-      </fisheye>
-      <jira>
-        <server-id>e77dc5c2-dc5f-41b1-ad51-7f686539e1bf</server-id>
-        <name>TEst</name>
-        <url>http://stage.jira.com</url>
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>f2437246-39ab-4d6c-b1e2-d5b2705dbe82</server-id>
-        <name>Vbox</name>
+        <server-id>d252b3f6-774b-4f97-a53f-f6f7bedb4bc1</server-id>
+        <name>vBox</name>
         <url>http://192.168.157.158:8080</url>
         <shared>false</shared>
       </jira>
-      <crucible>
-        <server-id>3aea3212-4c11-4df4-be08-cb33d0d878e8</server-id>
-        <name>Cru1.6.6</name>
-        <url>http://lech:8145/crucible-auth</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>df019bdd-8c75-4f0d-9a05-2864c4639bde</server-id>
-        <name>LEch 2.0</name>
-        <url>http://lech:5223/crucible</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
       <jira>
-        <server-id>33fa37e2-1104-487d-8c8a-c06f3c82e545</server-id>
-        <name>LABS (JIRA Studio)</name>
-        <url>https://labs.atlassian.com</url>
+        <server-id>5570b7e8-e71b-41da-88ca-95a267870ff3</server-id>
+        <name>Studio</name>
+        <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
-      <crucible>
-        <server-id>08c6fed7-1999-424b-af30-6bfc07f7393e</server-id>
-        <name>LABS (JIRA Studio)</name>
-        <url>https://labs.atlassian.com/source</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
     </servers>
-    <fisheye-project-path>ACC/trunk</fisheye-project-path>
   </project-configuration>
 </atlassian-ide-plugin>

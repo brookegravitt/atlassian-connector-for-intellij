@@ -41,6 +41,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -153,7 +154,11 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return null;
 	}
 
-	public ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch)
+    public List<ReviewAdapter> getAllReviewsForFile(ServerData server, String repoName, String path) throws RemoteApiException, ServerPasswordNotProvidedException {
+        return null;
+    }
+
+    public ReviewAdapter createReviewFromPatch(ServerData server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
 	}

@@ -697,7 +697,15 @@
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</group>
 
-
+         <action id="ShowAllReviewsForFileAction"
+                 class="com.atlassian.theplugin.idea.action.crucible.ShowAllReviewsForFileAction"
+                 text="Show Related Reviews"
+                 icon="/icons/crucible-16.png">
+          </action>
+        <group id="ThePlugin.CrucibleEditorMenu" popup="true" text="Crucible">
+            <reference id="ShowAllReviewsForFileAction"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </group>
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
