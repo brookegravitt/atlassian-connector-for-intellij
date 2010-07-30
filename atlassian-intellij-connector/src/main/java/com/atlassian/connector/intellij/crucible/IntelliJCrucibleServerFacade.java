@@ -134,7 +134,8 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
     }
 
 
-    public List<ReviewAdapter> getAllReviewsForFile(ServerData server, String repoName, String path) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public List<ReviewAdapter> getAllReviewsForFile(ServerData server, String repoName, String path)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
         return toReviewAdapterList(facade.getAllReviewsForFile(server.toConnectionCfg(), repoName, path), server);
     }
 

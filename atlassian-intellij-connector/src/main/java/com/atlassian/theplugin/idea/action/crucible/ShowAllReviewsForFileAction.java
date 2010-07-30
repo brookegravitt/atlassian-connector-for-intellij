@@ -77,9 +77,10 @@ public class ShowAllReviewsForFileAction extends AnAction {
                         if (isContextValid(anActionEvent)) {
                             try {
                                 SvnRepository repo = (SvnRepository) facade.getRepository(selectedServer, selectedRepoName);
-                                final String filePath = getSVNPathForFile(VcsIdeaHelper.getRepositoryUrlForFile(project, selectedFiles[0]), repo,
-                                        project);
-                                final List<ReviewAdapter> reviews = facade.getAllReviewsForFile(selectedServer, selectedRepoName, filePath);
+                                final String filePath = getSVNPathForFile(VcsIdeaHelper.getRepositoryUrlForFile(project,
+                                        selectedFiles[0]), repo, project);
+                                final List<ReviewAdapter> reviews = facade.getAllReviewsForFile(selectedServer,
+                                        selectedRepoName, filePath);
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
                                         showPopup(reviews, project, fileEditorManager.getSelectedTextEditor(),
@@ -104,9 +105,7 @@ public class ShowAllReviewsForFileAction extends AnAction {
     }
 
     @Override
-    public void update
-            (AnActionEvent
-                    e) {
+    public void update(AnActionEvent e) {
         e.getPresentation().setEnabled(isContextValid(e));
     }
 
@@ -137,7 +136,8 @@ public class ShowAllReviewsForFileAction extends AnAction {
             reviewsWindow.openReview(reviews.iterator().next(), true);
         } else if (reviews.size() > 1) {
             final ListPopup popup = JBPopupFactory.getInstance().createListPopup(
-                    new QuickSearchReviewAction.ReviewListPopupStep("Found " + reviews.size() + " reviews", reviews, reviewsWindow));
+                    new QuickSearchReviewAction.ReviewListPopupStep(
+                            "Found " + reviews.size() + " reviews", reviews, reviewsWindow));
             popup.showInBestPositionFor(editor);
 
         }
