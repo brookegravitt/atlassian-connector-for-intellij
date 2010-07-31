@@ -89,6 +89,7 @@ public class MissingPasswordHandler implements MissingPasswordHandlerQueue.Handl
                     server.setPassword(password);
                     server.setPasswordStored(shouldPasswordBeStored);
                     server.setUsername(dialog.getUserName());
+                    server.setUseDefaultCredentials(dialog.isUseDefaultCredentials());
                     wasOk = true;
                 } else {
                     wasCanceled = true;
