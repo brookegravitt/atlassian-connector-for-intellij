@@ -20,12 +20,15 @@ import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,11 +44,14 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	private JButton testConnectionButton;
 	private JLabel lblCommand;
 	private JTextField userName;
-	private transient ServerCfg server;
+    private JCheckBox cbUseDefault;
+    private transient ServerCfg server;
+    private final Project project;
 
-	public PasswordDialog(final ServerCfg server, final ProductServerFacade serverFacade, final Project project) {
+    public PasswordDialog(final ServerCfg server, final ProductServerFacade serverFacade, final Project project) {
 		this.server = server;
-		setContentPane(passwordPanel);
+        this.project = project;
+        setContentPane(passwordPanel);
 		setModal(true);
 // call onCancel() when cross is clicked
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -76,6 +82,15 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 					public void onError(final String errorMessage, Throwable exception, String helpUrl) {
 					}
 				}));
+
+        cbUseDefault.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                passwordField.setEnabled(!cbUseDefault.isSelected());
+                userName.setEnabled(!cbUseDefault.isSelected());
+            }
+        });
+
+        cbUseDefault.setSelected(server.isUseDefaultCredentials());
 	}
 
 	private void onCancel() {
@@ -86,7 +101,12 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
         //@todo server change might not be good
         server.setUsername(getUserName());
         server.setPassword(getPasswordString());
-		return new ServerData(server);
+        server.setUseDefaultCredentials(cbUseDefault.isSelected());
+        ServerData.Builder builder = new ServerData.Builder(server);
+        builder.useDefaultUser(cbUseDefault.isSelected());
+        builder.defaultUser(((ProjectCfgManagerImpl)IdeaHelper.getProjectCfgManager(project)).getDefaultCredentials());        
+		return builder.build();
+
 	}
 
 	public JPanel getPasswordPanel() {
@@ -175,4 +195,8 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	public JComponent $$$getRootComponent$$$() {
 		return passwordPanel;
 	}
+
+    public boolean isUseDefaultCredentials() {
+        return cbUseDefault.isSelected();
+    }
 }

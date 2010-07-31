@@ -108,7 +108,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	@NotNull
-	UserCfg getDefaultCredentials() {
+	public UserCfg getDefaultCredentials() {
 		return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
 				StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
 	}
