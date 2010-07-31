@@ -68,6 +68,7 @@ import com.intellij.ui.content.ContentManagerListener;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -724,6 +725,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 remainingEstimateEditLabel = createEditableField(remainingEstimate, "timetracking", "Remaining Estimate");
                 remainingEstimateEditLabel.setButtonVisible(false);
                 add(createBody(), BorderLayout.CENTER);
+                relatedReviewsPanel.setBackground(Color.WHITE);
             }
 
 
@@ -929,7 +931,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     SwingUtilities.invokeLater(new Runnable() {
                           public void run() {
                               detailsPanel.fillReviews(reviews);
-                              detailsPanel.refresh();
                           }
                       });
 
@@ -1265,14 +1266,35 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             public synchronized void getIssueDetails() {
                 Runnable runnable = new IssueDetailsRunnable();
                 new Thread(runnable, "atlassian-idea-plugin get issue details").start();
-                ProgressManager.getInstance().run(new FetcheRelatedReviews(detailsPanel));
             }
 
             private class IssueDetailsRunnable implements Runnable {
                 private String[] errorString = null;
 
-                public void run() {
+                @Nullable
+                private List<ReviewAdapter> getRelatedReviews() {
+                    final CrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
+                    final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(project);
+                    final ServerData defaultCrucibleServer = cfgManager.getDefaultCrucibleServer();
 
+                    if (defaultCrucibleServer != null) {
+                        try {
+
+                            return facade.getReviewsForIssue(defaultCrucibleServer,
+                                    params.issue.getKey());
+
+                        } catch (Exception e) {
+                            PluginUtil.getLogger().error("Cannot fetch reviews from ("
+                                    + defaultCrucibleServer.getUrl() + ") for issue "
+                                    + params.issue.getKey()
+                                    + e.getMessage());
+                        }
+                    }
+
+                    return null;
+                }
+                public void run() {
+                    List<ReviewAdapter> reviews = null;
                     try {
                         if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
                             // damn it! the XML view of the list of issues does not
@@ -1283,11 +1305,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                             params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
                             params.issue.setFixVersions(issueDetails.getFixVersions());
                             params.issue.setComponents(issueDetails.getComponents());
-
+                            reviews = getRelatedReviews();
                         }
                     } catch (JIRAException e) {
                         errorString = new String[]{"Unable to retrieve"};
                     }
+
+                    final List<ReviewAdapter> fReviews = reviews;
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             removeAll();
@@ -1315,6 +1339,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 setRemainingEstimate(errorString[0]);
                                 setTimeSpent(errorString[0]);
                             }
+
+                            fillReviews(fReviews);
                         }
                     });
                 }

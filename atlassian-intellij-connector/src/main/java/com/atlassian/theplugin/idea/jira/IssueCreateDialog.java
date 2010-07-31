@@ -422,7 +422,7 @@ public class IssueCreateDialog extends DialogWrapper {
     private void  addSecurityLevels(List<JIRASecurityLevelBean> levels) {
         if (levels != null) {
             cbSecurityLevel.removeAllItems();
-            cbSecurityLevel.addItem(new SecurityLevelWrapper(new JIRASecurityLevelBean(-1L, "None. If default is not set"), true));
+            cbSecurityLevel.addItem(new SecurityLevelWrapper(new JIRASecurityLevelBean(-1L, "None"), true));
             for (JIRASecurityLevelBean level : levels) {
                 cbSecurityLevel.addItem(new SecurityLevelWrapper(level));
             }
