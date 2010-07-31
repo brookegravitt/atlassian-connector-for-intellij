@@ -592,6 +592,13 @@
 			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
 		</action>
 
+        <action id="ThePlugin.JiraIssues.QuickSearchForReviews"
+                class="com.atlassian.theplugin.idea.action.crucible.SearchReviewsForIssueAction"
+                text="Search for Reviews"
+                icon="/icons/find-crucible.png">
+            <keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+                </action>
+
 		<!--<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"-->
 				<!--class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"-->
 				<!--text=""-->
@@ -1121,6 +1128,7 @@
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
             <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+            <reference id="ThePlugin.JiraIssues.QuickSearchForReviews"/>
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>

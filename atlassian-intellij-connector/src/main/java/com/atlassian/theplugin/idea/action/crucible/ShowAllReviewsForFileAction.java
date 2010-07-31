@@ -59,7 +59,7 @@ public class ShowAllReviewsForFileAction extends AnAction {
 
 
         ProgressManager.getInstance().run(
-                new Task.Backgroundable(project, "Searchiong for reviews") {
+                new Task.Backgroundable(project, "Searching for reviews") {
                     @Override
                     public void run(@NotNull ProgressIndicator progressIndicator) {
                         final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(anActionEvent);

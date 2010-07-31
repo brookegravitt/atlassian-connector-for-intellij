@@ -16,8 +16,18 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.idea.config.serverconfig.model.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.idea.config.serverconfig.model.RootNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerInfoNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNodeFactory;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTreeModel;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTypeNode;
 import junit.framework.TestCase;
 
 /**

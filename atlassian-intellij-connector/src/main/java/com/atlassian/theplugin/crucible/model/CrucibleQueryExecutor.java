@@ -4,7 +4,11 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
@@ -15,7 +19,11 @@ import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CrucibleQueryExecutor {
 	private final CrucibleServerFacade crucibleServerFacade;
@@ -87,8 +95,11 @@ public class CrucibleQueryExecutor {
 							predefinedFiterNotificationBean.addException(server, exception);
 							break;
 						} catch (RemoteApiException e) {
+                            if (e.getMessage().contains("HTTP 403 (Forbidden)")) {
+                               MissingPasswordHandlerQueue.addHandler(missingPasswordHandler); 
+                            }
 							PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-									+ " server", e);
+									+ " server. Change password or login via WEB.", e);
 							predefinedFiterNotificationBean.addException(server, e);
 							break;
 						}
@@ -139,6 +150,10 @@ public class CrucibleQueryExecutor {
 								new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
 						recenltyOpenFilterNotificationBean.addException(server, exception);
 					} catch (RemoteApiException e) {
+                        if (e.getMessage().contains("HTTP 403 (Forbidden)")) {
+                            MissingPasswordHandlerQueue.addHandler(
+                                    new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
+                        }
 						PluginUtil.getLogger().info("Error getting Crucible review for " + server.getName()
 								+ " server", e);
 						recenltyOpenFilterNotificationBean.addException(server, e);
