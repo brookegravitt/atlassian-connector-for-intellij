@@ -677,10 +677,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             
             public void fillReviews(final List<ReviewAdapter> reviews) {
                 relatedReviewsPanel.removeAll();
-                for (ReviewAdapter r : reviews) {
-                    final HyperlinkLabel label = new HyperlinkLabel(r.getPermId().getId());
-                    label.addHyperlinkListener(new HyperlinkReviewLabelListener(r));
-                    relatedReviewsPanel.add(label);
+                if (reviews != null) {
+                    for (ReviewAdapter r : reviews) {
+                        final HyperlinkLabel label = new HyperlinkLabel(r.getPermId().getId());
+                        label.addHyperlinkListener(new HyperlinkReviewLabelListener(r));
+                        relatedReviewsPanel.add(label);
+                    }
                 }
             }
             private class HyperlinkReviewLabelListener implements HyperlinkListener {
