@@ -14,7 +14,7 @@ public class SearchReviewsForIssueDialog extends DialogWrapper {
     private JTextField tfIssueKey;
 
     public SearchReviewsForIssueDialog(Project project) {
-        super(project);        
+        super(project, false);
 		init();
 		pack();
         final ServerData defaultServer = IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer();
