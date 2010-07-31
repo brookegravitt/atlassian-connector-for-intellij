@@ -64,6 +64,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -158,6 +159,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		leftToolBar = createLeftToolBar();
 		rightToolBar = createRightToolBar();
 		buildHistoryPanel = new BuildHistoryPanel(project);
+        buildTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
 		init();
 		addBuildTreeListeners();
@@ -213,7 +215,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		});
 
 		buildTree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent event) {
+			public void valueChanged(TreeSelectionEvent event) {                
 				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
 				if (buildDetailsInfo != null) {
 					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo);

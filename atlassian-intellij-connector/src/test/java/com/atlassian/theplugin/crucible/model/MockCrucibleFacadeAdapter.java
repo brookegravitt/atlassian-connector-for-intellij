@@ -262,4 +262,9 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
         return null;  
     }
+
+    public List<ReviewAdapter> getReviewsForIssue(ServerData server, String jiraIssueKey)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        return null;
+    }
 }

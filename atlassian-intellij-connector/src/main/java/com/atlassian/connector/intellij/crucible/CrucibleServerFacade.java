@@ -199,4 +199,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
     List<User> getAllowedReviewers(ServerData server, String projectKey) throws RemoteApiException,
             ServerPasswordNotProvidedException;
+
+    List<ReviewAdapter> getReviewsForIssue(ServerData server, String jiraIssueKey)
+             throws RemoteApiException, ServerPasswordNotProvidedException;
 }
