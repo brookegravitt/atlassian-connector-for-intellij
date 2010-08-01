@@ -101,7 +101,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 /**
  * User: jgorycki
  * Date: Dec 23, 2008
@@ -117,10 +116,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
     private PluginConfiguration pluginConfiguration;
     private ProjectCfgManager projectCfgManager;
     private final JIRAServerModelIdea jiraCache;
-
-
     private ContentPanel selectedContent = null;
-
     public IssueDetailsToolWindow(@NotNull final Project project,
                                   @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
                                   @NotNull final PluginConfiguration pluginConfiguration,
@@ -188,14 +184,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         closeToolWindow(TOOL_WINDOW_TITLE, e);
     }
 
-//	public boolean isServerEnabled(String key) {
-//		IssuePanel ip = getContentPanel(key);
-//		ServerCfg serverCfg = projectCfgManager.getJiraServerData(
-//				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getJiraServerData() : null);
-//
-//		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
-//	}
-
     public void refreshComments(String key) {
         IssuePanel ip = getContentPanel(key);
         if (ip != null) {
@@ -226,7 +214,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 return;
             }
             File file = fc.getSelectedFile();
-
             addAttachment(issue, file, IssueDetailsToolWindow.AttachmentAddedFrom.ISSUE_DETAILS_WINDOW);
         }
     }
@@ -243,9 +230,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             e.printStackTrace();
         }
     }
-
     // used to determine where to show errors caused by adding attachment failures:
-
     public enum AttachmentAddedFrom {
         ISSUE_DETAILS_WINDOW, ISSUE_LIST_WINDOW
     }
@@ -452,7 +437,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     }
                 }
             });
-
             getAvailableActionsGroup().clearActions(project);
         }
 
@@ -636,7 +620,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         }
 
         private class DetailsPanel extends JPanel {
-
             private JLabel affectsVersions = new JLabel("Fetching...");
             private EditableIssueField affectsVersionsEditLabel;
             private JLabel fixVersions = new JLabel("Fetching...");
@@ -674,7 +657,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             public void fillIssueLinksPanelWithIssues(Collection<JiraIssueAdapter> issues) {
                 issueLinksPanel.fillPanelWithIssues(issues);
             }
-            
             public void fillReviews(final List<ReviewAdapter> reviews) {
                 relatedReviewsPanel.removeAll();
                 if (reviews != null) {
@@ -691,8 +673,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 public HyperlinkReviewLabelListener(ReviewAdapter review) {
                     this.review = review;
                 }
-
-
                     public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
                             ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
                             panel.openReview(this.review, false);
@@ -709,10 +689,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 );
             }
-
             public DetailsPanel() {
                 super(new BorderLayout());
-
                 issueAssigneeEditLabel = createEditableField(issueAssignee, "assignee", "Assignee");
                 issueReporterEditLabel = createEditableField(issueReporter, "reporter", "Reporter");
                 subtaskListModel = new DefaultListModel();
@@ -729,8 +707,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 add(createBody(), BorderLayout.CENTER);
                 relatedReviewsPanel.setBackground(Color.WHITE);
             }
-
-
             private JPanel createBody() {
                 boolean hasSubTasks = params.issue.getSubTaskKeys().size() > 0;
                 boolean hasIssueLinks = params.issue.getIssueLinks() != null
@@ -898,46 +874,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                         }
                     }
                 }
-            }
-
-            private class FetcheRelatedReviews extends Task.Backgroundable {
-                private final DetailsPanel detailsPanel;
-
-                public FetcheRelatedReviews(final DetailsPanel detailsPanel) {
-                    super(project, "Fetchig reviews for issue " + params.issue.getKey(), true);
-                    this.detailsPanel = detailsPanel;
-                }
-
-                @Override
-                public void run(@NotNull ProgressIndicator progressIndicator) {
-                    final CrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
-                    final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(project);
-                    final ServerData defaultCrucibleServer = cfgManager.getDefaultCrucibleServer();
-
-                    if (defaultCrucibleServer != null) {
-                        try {
-                            final List<ReviewAdapter> reviews = facade.getReviewsForIssue(defaultCrucibleServer,
-                                    params.issue.getKey());
-
-                            refreshPanel(reviews);
-
-                        } catch (Exception e) {
-                            PluginUtil.getLogger().error("Cannot fetch reviews from ("
-                                    + defaultCrucibleServer.getUrl() + ") for issue "
-                                    + params.issue.getKey()
-                                    + e.getMessage());
-                        }
-                    }
-                }
-                private void refreshPanel(final List<ReviewAdapter> reviews) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                          public void run() {
-                              detailsPanel.fillReviews(reviews);
-                          }
-                      });
-
-                }
-
             }
 
             private class FetchIssuesBackgroundTask extends Task.Backgroundable {
@@ -1275,14 +1211,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
                 @Nullable
                 private List<ReviewAdapter> getRelatedReviews() {
-                    final CrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
+                  final CrucibleServerFacade crucibleFacade = IntelliJCrucibleServerFacade.getInstance();
                     final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(project);
                     final ServerData defaultCrucibleServer = cfgManager.getDefaultCrucibleServer();
 
                     if (defaultCrucibleServer != null) {
                         try {
 
-                            return facade.getReviewsForIssue(defaultCrucibleServer,
+                            return crucibleFacade.getReviewsForIssue(defaultCrucibleServer,
                                     params.issue.getKey());
 
                         } catch (Exception e) {
@@ -1904,7 +1840,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 validate();
             }
-
             private void fillPreview(JIRAAttachment a) {
                 previewEditor.setContentType("text/html");
                 if (a == null) {
@@ -1930,11 +1865,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                     + "\">Click here to open the attachment in the browser</a></center></body></html>");
                 }
             }
-
             private void launchAttachment(JIRAAttachment a) {
                 BrowserUtil.launchBrowser(constructAttachmentUrl(a, false));
             }
-
             private String constructAttachmentUrl(JIRAAttachment a, boolean appendAuth) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(params.issue.getServerUrl())
@@ -1960,7 +1893,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 });
             }
         }
-
         private final class MyHyperlinkLabel extends JPanel {
             private MyHyperlinkLabel(String label, HyperlinkListener listener) {
                 super(new GridBagLayout());
@@ -1981,7 +1913,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 addFillerPanel(this, gbc, true);
             }
         }
-
         private class DescriptionPanel extends JPanel {
             private JEditorPane body;
 
@@ -2035,7 +1966,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
             }
         }
-
         private class LocalModelListener implements JIRAIssueListModelListener {
             public void issueUpdated(final JiraIssueAdapter issue) {
             }
@@ -2053,9 +1983,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
         }
     }
-
     private static final AttachmentRendererPanel ATTACHMENT_RENDERER_PANEL = new AttachmentRendererPanel();
-
     private static final class AttachmentRendererPanel extends JPanel {
         private SelectableLabel name = new SelectableLabel(true, true, "NOTHING YET", ROW_HEIGHT, false, false);
         private SelectableLabel author = new SelectableLabel(true, true, "NOTHING HERE ALSO", ROW_HEIGHT, true, false);
