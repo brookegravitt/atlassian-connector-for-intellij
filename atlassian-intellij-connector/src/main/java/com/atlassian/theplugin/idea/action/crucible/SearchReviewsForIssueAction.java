@@ -66,8 +66,10 @@ public class SearchReviewsForIssueAction extends AnAction {
                         public void run(@NotNull ProgressIndicator progressIndicator) {
                             if (defaultCrucibleServer != null) {
                                 try {
-                                    final List<ReviewAdapter> reviews = facade.getReviewsForIssue(defaultCrucibleServer, dialog.getIssueKey());
-                                    final ReviewListToolWindowPanel reviewPanel = IdeaHelper.getReviewListToolWindowPanel(project);
+                                    final List<ReviewAdapter> reviews = facade.getReviewsForIssue(defaultCrucibleServer,
+                                            dialog.getIssueKey());
+                                    final ReviewListToolWindowPanel reviewPanel
+                                            = IdeaHelper.getReviewListToolWindowPanel(project);
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
                                             showPopup(reviews, project, event.getInputEvent().getComponent(),
