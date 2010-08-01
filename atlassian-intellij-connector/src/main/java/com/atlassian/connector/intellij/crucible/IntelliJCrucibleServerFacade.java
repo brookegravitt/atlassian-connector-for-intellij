@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAdapter implements CrucibleServerFacade {
-    final private int MAX_REVIEWS = 10;
+    private static final int MAX_REVIEWS = 10;
 
 	public class CrucibleProjectCacheImpl extends ConfigurationListenerAdapter {
 		private final Map<ConnectionCfg, Map<String, BasicProject>> serverMap =
@@ -430,7 +430,8 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
         return allUsers;
     }
 
-    public List<ReviewAdapter> getReviewsForIssue(ServerData server, String jiraIssueKey) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public List<ReviewAdapter> getReviewsForIssue(ServerData server, String jiraIssueKey)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
         return toReviewAdapterList(facade.getReviewsForIssue(server, jiraIssueKey, MAX_REVIEWS), server);
     }
 }
