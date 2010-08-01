@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.bamboo.tree;
+package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.BuildHistoryPanel;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 
 import javax.swing.event.TreeSelectionEvent;
@@ -36,7 +35,7 @@ public class BuildTreeEventHandler {
     private final BuildTree buildTree;
     private final BuildHistoryPanel buildHistoryPanel;
 
-    public BuildTreeEventHandler(BambooToolWindowPanel panel, BuildTree bTree, BuildHistoryPanel historyPanel) {
+    BuildTreeEventHandler(BambooToolWindowPanel panel, BuildTree bTree, BuildHistoryPanel historyPanel) {
         this.bambooPanel = panel;
         this.buildTree = bTree;
         this.buildHistoryPanel = historyPanel;
@@ -50,16 +49,6 @@ public class BuildTreeEventHandler {
 					bambooPanel.openBuild(buildDetailsInfo);
 				}
 			}
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
         });
 
 		buildTree.addMouseListener(new PopupAwareMouseAdapter() {
