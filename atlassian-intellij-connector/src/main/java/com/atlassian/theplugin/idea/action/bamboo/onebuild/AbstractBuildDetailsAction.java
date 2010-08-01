@@ -15,12 +15,15 @@
  */
 package com.atlassian.theplugin.idea.action.bamboo.onebuild;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.bamboo.AbstractBuildAction;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+
+import java.util.List;
 
 /**
  * @author Jacek Jaroczynski
@@ -39,6 +42,16 @@ public abstract class AbstractBuildDetailsAction extends AbstractBuildAction {
 		return null;
 	}
 
+
+	@Override
+	protected List<BambooBuildAdapter> getBuilds(final AnActionEvent e) {
+		BambooToolWindowPanel btw = IdeaHelper.getBambooToolWindowPanel(e);
+		if (btw != null) {
+			return btw.getSelectedBuilds();
+		}
+
+		return null;
+	}
 	@Override
 	protected void setStatusMessage(final Project project, final String message) {
 		// no status bar in the build details panel at the moment

@@ -52,7 +52,7 @@ public class BuildHistoryPanel extends JPanel {
         setBackground(UIUtil.getListBackground());
         setOpaque(true);
 
-		facade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
+        facade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -69,8 +69,8 @@ public class BuildHistoryPanel extends JPanel {
         buildList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         buildList.setCellRenderer(new ListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index,
-                                                      boolean isSelected, boolean cellHasFocus) {
-				BambooBuildAdapter buildAdapter = (BambooBuildAdapter) value;
+                                                          boolean isSelected, boolean cellHasFocus) {
+                BambooBuildAdapter buildAdapter = (BambooBuildAdapter) value;
                 RENDERER_PANEL.setBuild(buildAdapter);
                 RENDERER_PANEL.setSelected(isSelected);
                 BuildTreeNode.addTooltipToPanel(buildAdapter, RENDERER_PANEL);
@@ -91,7 +91,7 @@ public class BuildHistoryPanel extends JPanel {
     private void createListListeners() {
         buildList.addMouseListener(new MouseAdapter() {
             @Override
-			public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                     openBuild();
                 }
@@ -116,21 +116,22 @@ public class BuildHistoryPanel extends JPanel {
         if (selected == null || selected.length == 0) {
             return;
         }
-		BambooBuildAdapter build = (BambooBuildAdapter) selected[0];
+        BambooBuildAdapter build = (BambooBuildAdapter) selected[0];
         final BambooToolWindowPanel buildsWindow = IdeaHelper.getBambooToolWindowPanel(project);
         if (buildsWindow != null) {
-			buildsWindow.openBuild(build);
+            buildsWindow.openBuild(build);
         }
     }
 
     //
     // getBuilds from dispatch thread
     //
-	public synchronized void showHistoryForBuild(@NotNull final BambooBuildAdapter buildDetailsInfo) {
+
+    public synchronized void showHistoryForBuild(@NotNull final BambooBuildAdapter buildDetailsInfo) {
         try {
-			String currentBuild =
-					buildDetailsInfo.getServer().getUrl() + ":" + buildDetailsInfo.getPlanKey() + "-"
-							+ buildDetailsInfo.getNumber();
+            String currentBuild =
+                    buildDetailsInfo.getServer().getUrl() + ":" + buildDetailsInfo.getPlanKey() + "-"
+                            + buildDetailsInfo.getNumber();
             if (previousBuild != null) {
                 if (currentBuild.equals(previousBuild)) {
                     scrollPane.setViewportView(buildList);
@@ -146,35 +147,37 @@ public class BuildHistoryPanel extends JPanel {
             startThrobber();
         }
 
-		currentTask =
-				new Task.Backgroundable(project, "Getting build history for build " + buildDetailsInfo.getPlanKey(), false) {
-			private Collection<BambooBuildAdapter> builds;
-            @Override
-			public void run(@NotNull ProgressIndicator progressIndicator) {
-                try {
-                    builds =
-									facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),
-											buildDetailsInfo.getServer().getTimezoneOffset());
-                } catch (ServerPasswordNotProvidedException e) {
-                    PluginUtil.getLogger().error(e);
-                }
-            }
+        currentTask =
+                new Task.Backgroundable(project, "Getting build history for build " + buildDetailsInfo.getPlanKey(), false) {
+                    private Collection<BambooBuildAdapter> builds;
 
-            @Override
-            public void onSuccess() {
-                synchronized (BuildHistoryPanel.this) {
-                    if (currentTask == this) {
-                        listModel.clear();
-                        scrollPane.setViewportView(buildList);
-						for (BambooBuildAdapter bambooBuild : builds) {
-                            listModel.addElement(bambooBuild);
+                    @Override
+                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                        try {
+                            builds = facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),
+                                    buildDetailsInfo.getServer().getTimezoneOffset());
+                        } catch (ServerPasswordNotProvidedException e) {
+                            PluginUtil.getLogger().error(e);
                         }
-                        stopThrobber();
-                        currentTask = null;
                     }
-                }
-            }
-        };
+
+                    @Override
+                    public void onSuccess() {
+                        synchronized (BuildHistoryPanel.this) {
+                            if (currentTask == this) {
+                                listModel.clear();
+                                scrollPane.setViewportView(buildList);
+                                if (builds != null) {
+                                    for (BambooBuildAdapter bambooBuild : builds) {
+                                        listModel.addElement(bambooBuild);
+                                    }
+                                }
+                                stopThrobber();
+                                currentTask = null;
+                            }
+                        }
+                    }
+                };
         ProgressManager.getInstance().run(currentTask);
     }
 
@@ -197,10 +200,10 @@ public class BuildHistoryPanel extends JPanel {
 //        listModel.clear();
     }
 
-	public synchronized BambooBuildAdapter getSelectedBuild() {
+    public synchronized BambooBuildAdapter getSelectedBuild() {
         Object[] selected = buildList.getSelectedValues();
         if (selected != null && selected.length > 0) {
-			return (BambooBuildAdapter) selected[0];
+            return (BambooBuildAdapter) selected[0];
         }
         return null;
     }

@@ -34,149 +34,165 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class BuildTree extends AbstractTree {
-	private BuildTreeModel buildTreeModel;
-	private final TreeUISetup buildTreeUiSetup;
-	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
+    private BuildTreeModel buildTreeModel;
+    private final TreeUISetup buildTreeUiSetup;
+    private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
-	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel,
-			@NotNull final JScrollPane parentScrollPane) {
-		super(buildTreeModel);
+    public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel,
+                     @NotNull final JScrollPane parentScrollPane) {
+        super(buildTreeModel);
 
-		this.buildTreeModel = buildTreeModel;
-		this.buildTreeModel.setGroupBy(groupBy);
+        this.buildTreeModel = buildTreeModel;
+        this.buildTreeModel.setGroupBy(groupBy);
         buildTreeUiSetup = new TreeUISetup(TREE_RENDERER);
         buildTreeUiSetup.initializeUI(this, parentScrollPane);
 
-		init();
+        init();
 
-		buildTreeModel.addTreeModelListener(new LocalTreeModelListener());
-		buildTreeModel.getBuildListModel().addListener(new LocalBuildListModelListener());
+        buildTreeModel.addTreeModelListener(new LocalTreeModelListener());
+        buildTreeModel.getBuildListModel().addListener(new LocalBuildListModelListener());
 
-		addMouseMotionListener(new MouseMotionListener() {
-			public void mouseDragged(final MouseEvent e) {
-			}
+        addMouseMotionListener(new MouseMotionListener() {
+            public void mouseDragged(final MouseEvent e) {
+            }
 
-			public void mouseMoved(final MouseEvent e) {
-				TreePath path = getPathForLocation(e.getX(), e.getY());
-				if (path != null) {
-					if (path.getLastPathComponent() instanceof BuildTreeNode) {
-						BuildTreeNode node = (BuildTreeNode) path.getLastPathComponent();
-						buildTreeModel.setHoeverNode(node);
-					} else {
-						buildTreeModel.setHoeverNode(null);
-					}
-				}
-			}
-		});
+            public void mouseMoved(final MouseEvent e) {
+                TreePath path = getPathForLocation(e.getX(), e.getY());
+                if (path != null) {
+                    if (path.getLastPathComponent() instanceof BuildTreeNode) {
+                        BuildTreeNode node = (BuildTreeNode) path.getLastPathComponent();
+                        buildTreeModel.setHoeverNode(node);
+                    } else {
+                        buildTreeModel.setHoeverNode(null);
+                    }
+                }
+            }
+        });
 
-		addMouseListener(new MouseAdapter() {
-			public void mouseExited(final MouseEvent e) {
-				buildTreeModel.setHoeverNode(null);
-			}
-		});
-	}
+        addMouseListener(new MouseAdapter() {
+            public void mouseExited(final MouseEvent e) {
+                buildTreeModel.setHoeverNode(null);
+            }
+        });
+    }
 
-	private void init() {
-		setRootVisible(false);
-		setShowsRootHandles(true);
-		setExpandsSelectedPaths(true);
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	}
+    private void init() {
+        setRootVisible(false);
+        setShowsRootHandles(true);
+        setExpandsSelectedPaths(true);
+        getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+    }
 
-	public BambooBuildAdapter getSelectedBuild() {
-		final TreePath selectionPath = getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() != null && selectionPath
-				.getLastPathComponent() instanceof BuildTreeNode) {
-			return ((BuildTreeNode) selectionPath.getLastPathComponent()).getBuild();
-		} else {
-			// nothing selected
-			return null;
-		}
-	}
 
-	private void selectBuildNode(BambooBuildAdapter build) {
-		if (build == null) {
-			clearSelection();
-			return;
-		}
+    @Nullable
+    public BambooBuildAdapter getSelectedBuild() {
+        final List<BambooBuildAdapter> selectedBuilds = getSelectedBuilds();
+        if (selectedBuilds != null && selectedBuilds.size() == 1) {
+            return selectedBuilds.get(0);
+        }
 
-		for (int i = 0; i < getRowCount(); i++) {
-			TreePath path = getPathForRow(i);
-			Object object = path.getLastPathComponent();
-			if (object instanceof BuildTreeNode) {
-				BuildTreeNode node = (BuildTreeNode) object;
-				if (node.getBuild().getPlanKey().equals(build.getPlanKey())) {
-					expandPath(path);
-					makeVisible(path);
-					setSelectionPath(path);
-					break;
-				}
-			}
-		}
-	}
+        return null;
+    }
+    @Nullable
+    public List<BambooBuildAdapter> getSelectedBuilds() {
+        final TreePath[] selectionPaths = getSelectionPaths();
+        List<BambooBuildAdapter> selectedBuilds = null;
+        if (selectionPaths != null && selectionPaths.length > 0) {
+            selectedBuilds = new ArrayList<BambooBuildAdapter>();
+            for (TreePath tp : selectionPaths) {
+                if (tp.getLastPathComponent() != null && tp.getLastPathComponent() instanceof BuildTreeNode) {
+                    selectedBuilds.add(((BuildTreeNode) tp.getLastPathComponent()).getBuild());
+                }
+            }
+        }
+        return selectedBuilds;
+    }
 
-	public void groupBy(final BuildGroupBy groupingType) {
-		buildTreeModel.groupBy(groupingType);
-		expandTree();
-	}
+    private void selectBuildNode(BambooBuildAdapter build) {
+        if (build == null) {
+            clearSelection();
+            return;
+        }
 
-	private class LocalTreeModelListener implements TreeModelListener {
-		public void treeNodesChanged(final TreeModelEvent e) {
-		}
+        for (int i = 0; i < getRowCount(); i++) {
+            TreePath path = getPathForRow(i);
+            Object object = path.getLastPathComponent();
+            if (object instanceof BuildTreeNode) {
+                BuildTreeNode node = (BuildTreeNode) object;
+                if (node.getBuild().getPlanKey().equals(build.getPlanKey())) {
+                    expandPath(path);
+                    makeVisible(path);
+                    setSelectionPath(path);
+                    break;
+                }
+            }
+        }
+    }
 
-		public void treeNodesInserted(final TreeModelEvent e) {
-		}
+    public void groupBy(final BuildGroupBy groupingType) {
+        buildTreeModel.groupBy(groupingType);
+        expandTree();
+    }
 
-		public void treeNodesRemoved(final TreeModelEvent e) {
-		}
+    private class LocalTreeModelListener implements TreeModelListener {
+        public void treeNodesChanged(final TreeModelEvent e) {
+        }
 
-		public void treeStructureChanged(final TreeModelEvent e) {
+        public void treeNodesInserted(final TreeModelEvent e) {
+        }
+
+        public void treeNodesRemoved(final TreeModelEvent e) {
+        }
+
+        public void treeStructureChanged(final TreeModelEvent e) {
 //			expandTree();
-		}
-	}
+        }
+    }
 
-	private class LocalBuildListModelListener implements BuildListModelListener {
+    private class LocalBuildListModelListener implements BuildListModelListener {
 
-		public void modelChanged() {
-			refreshTree();
-		}
+        public void modelChanged() {
+            refreshTree();
+        }
 
-		public void buildsChanged(@Nullable final Collection<String> additionalInfo,
-				@Nullable final Collection<Pair<String, Throwable>> errors) {
-			refreshTree();
-		}
+        public void buildsChanged(@Nullable final Collection<String> additionalInfo,
+                                  @Nullable final Collection<Pair<String, Throwable>> errors) {
+            refreshTree();
+        }
 
-		public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
-		}
+        public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+        }
 
-		private void refreshTree() {
-			//		long begin = System.currentTimeMillis();
-			try {
-				buildTreeUiSetup.setTreeRebuilding(true);
-				Set<TreePath> collapsedPaths = getCollapsedPaths();
+        private void refreshTree() {
+            //		long begin = System.currentTimeMillis();
+            try {
+                buildTreeUiSetup.setTreeRebuilding(true);
+                Set<TreePath> collapsedPaths = getCollapsedPaths();
 				BambooBuildAdapter build = getSelectedBuild();
 
-				// rebuild the tree
-				buildTreeModel.update();
+                // rebuild the tree
+                buildTreeModel.update();
 
-				// expand entire tree
-				expandTree();
+                // expand entire tree
+                expandTree();
 
-				// restore selection and collapse state
-				collapsePaths(collapsedPaths);
+                // restore selection and collapse state
+                collapsePaths(collapsedPaths);
 				selectBuildNode(build);
-			} finally {
-				buildTreeUiSetup.setTreeRebuilding(false);
-				buildTreeUiSetup.forceTreePrefSizeRecalculation(BuildTree.this);
-			}
-			//			System.out.println("Time: " + (System.currentTimeMillis() - begin));
-		}
-	}
+            } finally {
+                buildTreeUiSetup.setTreeRebuilding(false);
+                buildTreeUiSetup.forceTreePrefSizeRecalculation(BuildTree.this);
+            }
+            //			System.out.println("Time: " + (System.currentTimeMillis() - begin));
+        }
+    }
 }

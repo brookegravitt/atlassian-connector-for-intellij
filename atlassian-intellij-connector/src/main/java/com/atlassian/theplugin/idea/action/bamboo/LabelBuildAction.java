@@ -19,26 +19,31 @@ package com.atlassian.theplugin.idea.action.bamboo;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+import java.util.List;
+
 public class LabelBuildAction extends AbstractBuildListAction {
 
-	@Override
-	public void actionPerformed(AnActionEvent event) {
-		labelBuild(event);
-	}
+    @Override
+    public void actionPerformed(AnActionEvent event) {
+        labelBuild(event);
+    }
 
-	@Override
-	public void update(final AnActionEvent event) {
-		super.update(event);
+    @Override
+    public void update(final AnActionEvent event) {
+        super.update(event);
 
-		final BambooBuildAdapter build = getBuild(event);
-		boolean isBamboo2 = false;
-		if (build != null) {
-			isBamboo2 = isBamboo2(event, build.getServer());			
-		}
-
-		if (build == null || !isBamboo2 || !build.areActionsAllowed()) {
-			event.getPresentation().setEnabled(false);
-		}
-	}
+        final List<BambooBuildAdapter> builds = getBuilds(event);
+        boolean isBamboo2 = false;
+        if (builds != null) {
+            for (BambooBuildAdapter build : builds) {
+                if (isBamboo2(event, build.getServer()) && build.areActionsAllowed()) {
+                    event.getPresentation().setEnabled(true);
+                    return;
+                }
+            }
+        } else {
+            event.getPresentation().setEnabled(false);
+        }
+    }
 
 }
