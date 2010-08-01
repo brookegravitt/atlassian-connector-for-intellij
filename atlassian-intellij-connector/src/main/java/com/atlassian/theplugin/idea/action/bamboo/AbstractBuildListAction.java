@@ -22,6 +22,8 @@ import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
+import java.util.List;
+
 /**
  * @author Jacek Jaroczynski
  *         <p/>
@@ -29,43 +31,63 @@ import com.intellij.openapi.project.Project;
  */
 public abstract class AbstractBuildListAction extends AbstractBuildAction {
 
-	@Override
-	public void update(AnActionEvent event) {
-		super.update(event);
-		BambooBuildAdapter build = getBuild(event);
-		event.getPresentation().setEnabled(build != null
-				&& build.isEnabled() && build.getPlanKey() != null && build.isValid());
-	}
+    @Override
+    public void update(AnActionEvent event) {
+        super.update(event);
+        List<BambooBuildAdapter> builds = getBuilds(event);
+        if (builds != null) {
+            for (BambooBuildAdapter build : builds) {
+                final boolean enable = build != null
+                        && build.isEnabled() && build.getPlanKey() != null && build.isValid();
+                if (enable) {
+                    event.getPresentation().setEnabled(true);
+                    return;
+                }
+            }
+        } else {
+            event.getPresentation().setEnabled(false);
+        }
+    }
 
-	@Override
-	protected BambooBuildAdapter getBuild(final AnActionEvent event) {
-		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(event, BambooToolWindowPanel.class);
-		if (panel != null) {
-			return panel.getSelectedBuild();
-		}
-		return null;
-	}
+    @Override
+    protected BambooBuildAdapter getBuild(final AnActionEvent event) {
+        BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(event, BambooToolWindowPanel.class);
+        if (panel != null) {
+            return panel.getSelectedBuild();
+        }
+        return null;
+    }
 
-	@Override
-	protected void setStatusMessage(final Project project, final String message) {
-		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
-		if (panel != null) {
-			panel.setStatusMessage(message);
-		}
-	}
+    @Override
+    protected void setStatusMessage(final Project project, final String message) {
+        BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+        if (panel != null) {
+            panel.setStatusMessage(message);
+        }
+    }
 
-	@Override
-	protected void setStatusErrorMessage(final Project project, final String message) {
-		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
-		if (panel != null) {
-			panel.setErrorMessage(message);
-		}
-	}
+    @Override
+    protected void setStatusErrorMessage(final Project project, final String message) {
+        BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+        if (panel != null) {
+            panel.setErrorMessage(message);
+        }
+    }
 
-	protected boolean isBamboo2(final AnActionEvent event, final BambooServerData serverData) {
+    protected boolean isBamboo2(final AnActionEvent event, final BambooServerData serverData) {
 
-		return serverData != null && serverData.isBamboo2();
+        return serverData != null && serverData.isBamboo2();
 
-	}
+    }
+
+    @Override
+    protected List<BambooBuildAdapter> getBuilds(final AnActionEvent e) {
+        BambooToolWindowPanel btw = IdeaHelper.getBambooToolWindowPanel(e);
+        if (btw != null) {
+            return btw.getSelectedBuilds();
+        }
+
+        return null;
+    }
 }
 

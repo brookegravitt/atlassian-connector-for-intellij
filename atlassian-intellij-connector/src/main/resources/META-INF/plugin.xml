@@ -1426,6 +1426,12 @@
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
 		</group>
 
+
+		<group id="ThePlugin.Bamboo.BuildPopupMenuNewGroup" popup="true">
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+		</group>
+        
 		<action id="ThePlugin.Reviews.RecentlyOpen"
 				class="com.atlassian.theplugin.idea.action.reviews.RecentlyOpenReviewsAction"
 				text="RecentlyOpenReviews">

@@ -32,10 +32,10 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeEventHandler;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -61,16 +61,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Wojciech Seliga
@@ -179,53 +176,10 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 	private void addBuildTreeListeners() {
-		buildTree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
-				if (e.getKeyCode() == KeyEvent.VK_ENTER && buildDetailsInfo != null) {
-					openBuild(buildDetailsInfo);
-				}
-			}
-		});
+        final BuildTreeEventHandler buildTreeEventHandler = new BuildTreeEventHandler(this, buildTree, buildHistoryPanel);
+    }
 
-		buildTree.addMouseListener(new PopupAwareMouseAdapter() {
-
-			@Override
-			public void mouseClicked(final MouseEvent e) {
-				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && buildDetailsInfo != null) {
-					openBuild(buildDetailsInfo);
-				}
-			}
-
-			@Override
-			protected void onPopup(MouseEvent e) {
-				int selRow = buildTree.getRowForLocation(e.getX(), e.getY());
-				TreePath selPath = buildTree.getPathForLocation(e.getX(), e.getY());
-				if (selRow != -1 && selPath != null) {
-					buildTree.setSelectionPath(selPath);
-					final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
-					if (buildDetailsInfo != null) {
-						launchContextMenu(e);
-					}
-				}
-			}
-		});
-
-		buildTree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent event) {                
-				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
-				if (buildDetailsInfo != null) {
-					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo);
-				} else {
-					buildHistoryPanel.clearBuildHistory();
-				}
-			}
-		});
-	}
-
-	private void launchContextMenu(MouseEvent e) {
+	public void launchContextMenu(MouseEvent e) {
 		final DefaultActionGroup actionGroup = new DefaultActionGroup();
 		final ActionGroup configActionGroup = (ActionGroup) ActionManager
 				.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenuNew");
@@ -237,6 +191,18 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 	}
 
+
+	public void launchContextMenuGorGroup(MouseEvent e) {
+		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+				.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenuNewGroup");
+		actionGroup.addAll(configActionGroup);
+
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getActionPlaceName(), actionGroup);
+
+		final JPopupMenu jPopupMenu = popup.getComponent();
+		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
 	private String getActionPlaceName() {
 		return PLACE_PREFIX + project.getName();
 	}
@@ -458,6 +424,9 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
+    public List<BambooBuildAdapter> getSelectedBuilds() {
+        return buildTree.getSelectedBuilds();
+    }
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
 		filterList.setBambooFilterType(bambooFilterType);
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
@@ -526,9 +495,10 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return groupBy;
 	}
 
+    @Nullable
 	public BambooBuildAdapter getSelectedBuild() {
 		return buildTree.getSelectedBuild();
-	}
+        }
 
 	private class FetchingBuildTask extends Task.Modal {
 		private final BambooServerData server;

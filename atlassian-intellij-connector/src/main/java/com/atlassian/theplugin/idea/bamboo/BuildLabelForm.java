@@ -16,17 +16,18 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Collection;
 
 public class BuildLabelForm extends DialogWrapper {
     private JPanel mainPanel;
@@ -34,14 +35,14 @@ public class BuildLabelForm extends DialogWrapper {
     private JTextField buildNumberKey;
     private JTextField labelField;
 
-    public BuildLabelForm(BambooBuildAdapter build) {
+    public BuildLabelForm(Collection<BambooBuildAdapter> builds) {
         super(false);
         init();
         pack();
         setTitle("Add Label");
 
-        this.buildKeyField.setText(build.getPlanKey());
-        this.buildNumberKey.setText(build.getBuildNumberAsString());
+        this.buildKeyField.setText(getKeyFieldsNames(builds));
+        this.buildNumberKey.setText(getBuildNumbers(builds));
 
         getOKAction().putValue(Action.NAME, "Add Label");
         labelField.addKeyListener(new KeyAdapter() {
@@ -56,6 +57,26 @@ public class BuildLabelForm extends DialogWrapper {
                 super.keyTyped(event);
             }
         });
+    }
+
+    private static String getKeyFieldsNames(Collection<BambooBuildAdapter> builds) {
+        StringBuilder namesBuilder = new StringBuilder();
+
+        for (BambooBuildAdapter build : builds) {
+            namesBuilder.append(build.getPlanKey()).append(", ");
+        }
+        String s = namesBuilder.toString();
+        return (s.length() > 2 ? s.substring(0, s.length() - 2) : "");
+    }
+
+   private static String getBuildNumbers(Collection<BambooBuildAdapter> builds) {
+        StringBuilder buildNumbers = new StringBuilder();
+
+        for (BambooBuildAdapter build : builds) {
+            buildNumbers.append(build.getBuildNumberAsString()).append(", ");
+        }
+        String s = buildNumbers.toString();
+        return (s.length() > 2 ? s.substring(0, s.length() - 2) : "");
     }
 
     public String getLabel() {
