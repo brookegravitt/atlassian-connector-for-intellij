@@ -30,7 +30,7 @@ import java.awt.event.MouseEvent;
  * @autrhor pmaruszak
  * @date Aug 1, 2010
  */
-public class BuildTreeEventHandler {
+class BuildTreeEventHandler {
     private final BambooToolWindowPanel bambooPanel;
     private final BuildTree buildTree;
     private final BuildHistoryPanel buildHistoryPanel;
