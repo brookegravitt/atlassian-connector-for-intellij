@@ -74,7 +74,7 @@ public class ShowAllReviewsForFileAction extends AnAction {
 
                         IntelliJCrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
 
-                        VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
+                        final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
                         if (isContextValid(anActionEvent)) {
                             try {
                                 SvnRepository repo = (SvnRepository) facade.getRepository(selectedServer, selectedRepoName);
@@ -93,9 +93,15 @@ public class ShowAllReviewsForFileAction extends AnAction {
                                     });
 
                                 } else {
-                                     Messages.showInfoMessage(project, "File " +
+                                    final String fSelectedRepoName = selectedRepoName;
+                                    SwingUtilities.invokeLater(new Runnable() {                                         
+                                        public void run() {
+                                            Messages.showInfoMessage(project, "File " +
                                              selectedFiles[0] + " not found in repository ("
-                                             + selectedRepoName + ")", PluginUtil.PRODUCT_NAME);
+                                             + fSelectedRepoName + ")", PluginUtil.PRODUCT_NAME);
+                                        }
+                                    });
+
                                 }
 
                             } catch (RemoteApiException e) {
