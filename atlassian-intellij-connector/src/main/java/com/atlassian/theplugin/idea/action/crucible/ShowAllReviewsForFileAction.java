@@ -84,15 +84,19 @@ public class ShowAllReviewsForFileAction extends AnAction {
                                 if (filePath != null) {
                                     reviews = facade.getAllReviewsForFile(selectedServer,
                                             selectedRepoName, filePath);
-                                }
-                                final List<ReviewAdapter> fReviews = reviews;
+                                    final List<ReviewAdapter> fReviews = reviews;
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run() {
                                             showPopup(fReviews, project, fileEditorManager.getSelectedTextEditor(),
                                                     filePath, panel);
                                         }
-                                    }
-                                    );
+                                    });
+
+                                } else {
+                                     Messages.showInfoMessage(project, "File " +
+                                             selectedFiles[0] + " not found in repository ("
+                                             + selectedRepoName + ")", PluginUtil.PRODUCT_NAME);
+                                }
 
                             } catch (RemoteApiException e) {
                                 DialogWithDetails.showExceptionDialog(project, "Error occured", e);
