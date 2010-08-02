@@ -66,6 +66,7 @@ public class JiraServerConfigForm {
             }
         });
 
+       cbUseBasicAuthentication.setSelected(false);
         enableDisableBasicAuth(cbUseBasicAuthentication);
     }
 
