@@ -1,39 +1,46 @@
 1) Atlassian,
 site: https://www.atlasssian.com
-license: http://www.apache.org/licenses/LICENSE-2.0
 library: atlassian-connector-commons.jar
 library: atlassian-idea9-integration.jar
+license: http://www.apache.org/licenses/LICENSE-2.0
+license path: src/main/resources/apache_2.0_license.txt
+
 
 2)Apache,
 site: http://commons.apache.org/
-license: http://commons.apache.org/
 commons-httpclient.jar
 commons-logging.jar
 commons-discovery.jar
 commons-io.jar
 commons-codec.jar
 commons-lang.jar
+license: http://commons.apache.org/
+license path: src/main/resources/apache_2.0_license.txt
 
 site: http://ws.apache.org/axis/
-license: http://www.apache.org/licenses/LICENSE-2.0.html
 library: axis.jar
 library: org.apache.axis:axis-jaxrpc.jar
 library: axis-saaj.jar
 library: wsdl4j.jar
+license: http://www.apache.org/licenses/LICENSE-2.0.html
+license path: src/main/resources/apache_2.0_license.txt
 
 3) toedter.com,
 site: http://www.toedter.com/en/jcalendar/index.html
 license: http://www.toedter.com/en/jcalendar/license.html
+license path: src/main/resources/glgpl_2.0.txt
 library: jcalendar:jar
 
 
 4) Joda Time,
 site: http://joda-time.sourceforge.net/
 license: http://joda-time.sourceforge.net/license.html
+license path: src/main/resources/apache_2.0_license.txt
 library: joda-time.jar
 
 5) Codehaus,
 site: http://xstream.codehaus.org/download.html
 license: http://xstream.codehaus.org/license.html
+license path: src/main/resources/bsd_license.txt
 library: xstream:jar
 
