@@ -115,11 +115,11 @@ public class ShowAllReviewsForFileAction extends AnAction {
     }
 
     private String getSVNPathForFile(String filePath, SvnRepository repo, final Project project) {
-        if (repo.getUrl() != null && filePath.contains(repo.getUrl())) {
+        if (repo != null && filePath != null && repo.getUrl() != null && filePath.contains(repo.getUrl())) {
             filePath = filePath.replace(repo.getUrl(), "");
         }
 
-        if (filePath.startsWith(repo.getPath())) {
+        if (filePath != null && filePath.startsWith(repo.getPath())) {
             //removes also "/" slash
             filePath = filePath.substring(repo.getPath().length() + 1);
         }
