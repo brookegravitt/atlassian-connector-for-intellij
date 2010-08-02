@@ -45,6 +45,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,15 +80,20 @@ public class ShowAllReviewsForFileAction extends AnAction {
                                 SvnRepository repo = (SvnRepository) facade.getRepository(selectedServer, selectedRepoName);
                                 final String filePath = getSVNPathForFile(VcsIdeaHelper.getRepositoryUrlForFile(project,
                                         selectedFiles[0]), repo, project);
-                                final List<ReviewAdapter> reviews = facade.getAllReviewsForFile(selectedServer,
-                                        selectedRepoName, filePath);
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run() {
-                                        showPopup(reviews, project, fileEditorManager.getSelectedTextEditor(),
-                                                filePath, panel);
-                                    }
+                                List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+                                if (filePath != null) {
+                                    reviews = facade.getAllReviewsForFile(selectedServer,
+                                            selectedRepoName, filePath);
                                 }
-                                );
+                                final List<ReviewAdapter> fReviews = reviews;
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            showPopup(fReviews, project, fileEditorManager.getSelectedTextEditor(),
+                                                    filePath, panel);
+                                        }
+                                    }
+                                    );
+
                             } catch (RemoteApiException e) {
                                 DialogWithDetails.showExceptionDialog(project, "Error occured", e);
                             } catch (ServerPasswordNotProvidedException
