@@ -215,12 +215,18 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         try {
             int size = iconStream.available();
             iconArray = new byte[size];
-            if (iconStream.read(iconArray, 0, size) < size) {
+            int readSize = iconStream.read(iconArray, 0, size);
+            int loopCount = 0;
+            while (readSize < size && loopCount++ < 5) {
+                readSize += iconStream.read(iconArray, readSize, size - readSize);
+            }
+
+            if (readSize < size) {
                 PluginUtil.getLogger().error("Failed to load icon for http server");
                 return;
             }
         } catch (IOException e) {
-            PluginUtil.getLogger().error("Failed to load icon for http server");
+            PluginUtil.getLogger().error("Failed to load icon for http server");            
             return;
         }
 
