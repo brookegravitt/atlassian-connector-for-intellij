@@ -6,11 +6,13 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.SwingUtilities;
 import java.util.Collection;
 import java.util.Date;
 
@@ -114,8 +116,13 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     for (Comment comment : comments) {
                         getReview().markCommentRead(comment);
                     }
-                } catch (Exception e) {
-                    panel.setStatusText(MARKING_COMMENTS_READ_FAILED + e.getMessage(), true);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(MARKING_COMMENTS_READ_FAILED + e.getMessage(), true);
+                        }
+                    });
+
                 }
             }
         };
@@ -128,8 +135,13 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     getReview().markCommentLeaveUnread(comment);
-                } catch (Exception e) {
-                    panel.setStatusText(MARKING_COMMENT_LEAVE_UNREAD_FAILED + e.getMessage(), true);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable(){
+                        public void run() {
+                            panel.setStatusText(MARKING_COMMENT_LEAVE_UNREAD_FAILED + e.getMessage(), true);
+                        }
+                    });
+
                 }
             }
         };
@@ -144,8 +156,12 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                 try {
 					getReview().removeComment(comment);
 					panel.setAllButtonsVisible();
-                } catch (Exception e) {
-                    panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage(), true);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage(), true);
+                        }
+                    });
                 }
             }
         };
@@ -162,9 +178,14 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     } else {
                         getReview().editGeneralComment(comment);
                     }
-                } catch (Exception e) {
-                    panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage(), true);
-                    panel.resumeEditing(comment);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage(), true);
+                            panel.resumeEditing(comment);
+                        }
+                    });
+
                 }
             }
         };
@@ -181,9 +202,14 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     } else {
                         getReview().addGeneralComment(comment);
                     }
-                } catch (Exception e) {
-                    panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
-                    panel.resumeAdding(comment);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
+                            panel.resumeAdding(comment);                            
+                        }
+                    });
+
                 }
             }
         };
@@ -196,9 +222,13 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
 					getReview().addReply(parent, reply);
-                } catch (Exception e) {
-                    panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
-                    panel.resumeAdding(reply);
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage(), true);
+                            panel.resumeAdding(reply);
+                        }
+                    });
                 }
             }
         };
@@ -215,9 +245,14 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                     } else {
                         getReview().publishGeneralComment(comment);
                     }
-                } catch (Exception e) {
-                    panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage(), true);
-                    panel.setAllButtonsVisible();
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage(), true);
+                            panel.setAllButtonsVisible();
+                        }
+                    });
+
                 }
             }
         };
