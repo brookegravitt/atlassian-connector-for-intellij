@@ -67,11 +67,8 @@ public class ShowAllReviewsForFileAction extends AnAction {
                         final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(anActionEvent);
                         ServerData selectedServer;
                         String selectedRepoName;
-
-
                         selectedServer = cfgManager.getDefaultCrucibleServer();
                         selectedRepoName = cfgManager.getDefaultCrucibleRepo();
-
                         IntelliJCrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
 
                         final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
@@ -96,14 +93,12 @@ public class ShowAllReviewsForFileAction extends AnAction {
                                     final String fSelectedRepoName = selectedRepoName;
                                     SwingUtilities.invokeLater(new Runnable() {                                         
                                         public void run() {
-                                            Messages.showInfoMessage(project, "File " +
-                                             selectedFiles[0] + " not found in repository ("
+                                            Messages.showInfoMessage(project, "File " 
+                                             + selectedFiles[0] + " not found in repository ("
                                              + fSelectedRepoName + ")", PluginUtil.PRODUCT_NAME);
                                         }
                                     });
-
                                 }
-
                             } catch (RemoteApiException e) {
                                 DialogWithDetails.showExceptionDialog(project, "Error occured", e);
                             } catch (ServerPasswordNotProvidedException

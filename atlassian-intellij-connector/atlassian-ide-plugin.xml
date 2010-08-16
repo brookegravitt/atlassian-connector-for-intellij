@@ -3,7 +3,7 @@
     <servers>
       <bamboo>
         <server-id>701d0d73-da21-4dba-a1c7-031bbbbab051</server-id>
-        <name>GDansk</name>
+        <name>Gdansk</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
