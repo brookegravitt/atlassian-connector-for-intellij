@@ -26,8 +26,18 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -179,7 +189,9 @@ public class DialogWithDetails extends DialogWrapper {
 
     public static String getExceptionString(Throwable t) {
         StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
+        if (t != null ) {
+            t.printStackTrace(new PrintWriter(sw));
+        }
         return sw.getBuffer().toString();
     }
 
