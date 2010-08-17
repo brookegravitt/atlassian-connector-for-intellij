@@ -23,7 +23,15 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
@@ -189,7 +197,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     }
 
     private void testCrucibleConnection(final TestConnectionProcessor processor) {
-        JiraServerData.Builder builder = new JiraServerData.Builder(generateJiraServerCfg());
+        JiraServerData.Builder builder = new JiraServerData.Builder(generateCrucibleServerCfg());
         builder.defaultUser(defaultUser);
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
                 new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
