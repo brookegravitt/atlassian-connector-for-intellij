@@ -1,34 +1,21 @@
 <atlassian-ide-plugin>
   <project-configuration>
     <servers>
-      <bamboo>
-        <server-id>701d0d73-da21-4dba-a1c7-031bbbbab051</server-id>
-        <name>Gdansk</name>
-        <url>https://gdansk.bamboo2.atlassian.com</url>
+      <crucible>
+        <server-id>9538b116-c4a7-4afd-bf33-f45a738dce2e</server-id>
+        <name>Unnamed_1</name>
+        <url>http://lech:5225/crucible</url>
         <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="ACC-CS" grouped="0" />
-          <plan key="ACC-DPL" grouped="0" />
-          <plan key="ACC-TST" grouped="0" />
-          <plan key="INT-CS" grouped="0" />
-          <plan key="INT-DPL" grouped="0" />
-          <plan key="INT-TST" grouped="0" />
-        </plans>
-      </bamboo>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
       <jira>
-        <server-id>d252b3f6-774b-4f97-a53f-f6f7bedb4bc1</server-id>
-        <name>vBox</name>
-        <url>http://192.168.157.158:8080</url>
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>5570b7e8-e71b-41da-88ca-95a267870ff3</server-id>
+        <server-id>c2f78497-e859-444b-9995-5c0e50315cbd</server-id>
         <name>Studio</name>
         <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
     </servers>
+    <default-crucible-server>9538b116-c4a7-4afd-bf33-f45a738dce2e</default-crucible-server>
+    <default-jira-server>c2f78497-e859-444b-9995-5c0e50315cbd</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
