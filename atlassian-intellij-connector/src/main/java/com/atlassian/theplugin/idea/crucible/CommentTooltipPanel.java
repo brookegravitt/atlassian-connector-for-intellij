@@ -20,6 +20,7 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.ActiveIcon;
@@ -29,18 +30,35 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.EmptyIcon;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.StyledEditorKit;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -854,9 +872,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 							} else {
 								updateCommentForReview(CommentPanel.this.comment, commentBody.getText(), isDefect);
 							}
-							btnCancel.setVisible(false);
-							setCommentPanelEditable(CommentPanel.this, false);
-							btnEdit.setHyperlinkText(EDIT);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+							        btnCancel.setVisible(false);
+							        setCommentPanelEditable(CommentPanel.this, false);
+							        btnEdit.setHyperlinkText(EDIT);                                    
+                                }
+                            });
+
 						}
 					}
 				});
@@ -1091,9 +1114,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 		updateComment(comment, text);
 	}
 
-	private void addCommentForReview(CommentPanel panel, Comment parentComment,
+	private void addCommentForReview(final CommentPanel panel, Comment parentComment,
 			String text, boolean draft, boolean defect) {
-		setCommentPanelEditable(panel, false);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                setCommentPanelEditable(panel, false);
+            }
+        });
+
 
 		if (panel.replyPanel) {
 			setStatusText("Adding new reply...", false);
