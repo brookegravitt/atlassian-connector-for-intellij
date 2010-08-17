@@ -6,20 +6,35 @@
    <html><body>
        <p><font color="#003366"><b>Highlights of this Release:</b></font></p>
 <div>
+
+    <b>What's New for JIRA Issues</b>
+
 <ul>
-    <li>What's New for JIRA Issues</li>
-<ul>
-    <li>Context Management Integration (IDEA 9.0.2 only)</li>
-    <li>In-place Field Editing and File Attachments</li>
-    <li>Preset Filters</li>
-    <li>Basic Authentication</li>
+ 	<li>Comment field into logWork dialog</li>
+ 	<li>In-place editing of issue fields</li>
+ 	<li>Show linked issues</li>
+ 	<li>Limited support for displaying and editing custom fields</li>
+ 	<li>Use commit comment as the the work log description</li>
+ 	<li>Ability to specify time estimate when creating new issues</li>
+ 	<li>Make it possible to navigate from JIRA issue to Crucuble review</li>
+	<li>When creating a new issue through the plugin, should have the ability to choose security level</li>
 </ul>
-    <li>What's New for Crucible Reviews</li>
+
+    <b>What's New for Crucible Reviews</b>
+
 <ul>
-    <li>Iterative Reviews</li>
-    <li>Pre-Loading of Review Files</li>
-    <li>Revision Numbers for Comments</li>
-</div></td> 
+    <li>Reply to Reply</li>
+ 	<li>Show versioned comment replies to reply (in review details/files)</li>
+ 	<li>Add support for creating crucible review when deactivating an issue</li>
+ </ul>
+
+    <b>What's New for Bamboo</b>
+
+<ul>
+    <li>Bulk operations on Bamboo builds</li>
+ 	<li>Logical grouping of builds to form a red/green aggregated</li>
+ </ul>
+</div>
   </body></html>
 
         ]]></releaseNotes>
