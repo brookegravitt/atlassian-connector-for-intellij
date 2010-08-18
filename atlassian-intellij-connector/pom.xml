@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.atlassian.connector</groupId>
@@ -14,8 +13,7 @@
     <version>2.3.1-SNAPSHOT</version>
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/
-        </developerConnection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</developerConnection>
         <url>https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</url>
     </scm>
     <issueManagement>
@@ -320,7 +318,7 @@
 
                 <configuration>
                     <descriptors>
-                        <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
+
                     </descriptors>
                 </configuration>
                 <executions>
@@ -331,7 +329,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
-
+                        <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
                             <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                            <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml</descriptor>
                            <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
