@@ -325,7 +325,6 @@
                         <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
                         <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                     </descriptors>
-                    <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -334,6 +333,9 @@
                         <goals>
                             <goal>attached</goal>
                         </goals>
+                        <configuration>
+                           <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
+                         </configuration>
                     </execution>
 
                     <execution>
