@@ -320,10 +320,7 @@
 
                 <configuration>
                     <descriptors>
-                        <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml
-                        </descriptor>
                         <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
-                        <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
@@ -334,6 +331,9 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+
+                            <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
+                           <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml</descriptor>
                            <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
                          </configuration>
                     </execution>
