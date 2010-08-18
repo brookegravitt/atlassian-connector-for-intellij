@@ -317,9 +317,11 @@
                 <artifactId>maven-assembly-plugin</artifactId>
 
                 <configuration>
-                    <descriptors>
+                            <descriptors>
+                                <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
+                            </descriptors>
 
-                    </descriptors>
+                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -329,9 +331,11 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+                            <descriptors>
                         <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
                             <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                            <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml</descriptor>
+                            </descriptors>
                            <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
                          </configuration>
                     </execution>
@@ -343,11 +347,11 @@
                             <goal>directory-single</goal>
                         </goals>
                         <configuration>
-                            <descriptors>
+<!--                            <descriptors>
                                 <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
                             </descriptors>
 
-                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
+                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>-->
                         </configuration>
                     </execution>
                 </executions>
