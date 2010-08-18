@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.atlassian.connector</groupId>
@@ -10,10 +11,12 @@
     <description>An Intellij IDEA plugin for Atlassian's tools.</description>
     <groupId>com.atlassian.connector</groupId>
     <artifactId>atlassian-idea-plugin</artifactId>
-	<version>2.4.1-SNAPSHOT</version>
+    <version>2.3.1-SNAPSHOT</version>
+
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</developerConnection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/
+        </developerConnection>
         <url>https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</url>
     </scm>
     <issueManagement>
@@ -269,6 +272,21 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>upload-stable-metadata</id>
+                        <phase>site-deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <configuration>
+                            <resourceSrc>
+                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml
+                            </resourceSrc>
+                            <resourceDest>${pom.artifactId}</resourceDest>
+                            <serverId>atlassian-documentation</serverId>
+                            <url>dav:https://update.atlassian.com/</url>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>upload-metadata</id>
                         <phase>deploy</phase>
                         <goals>
@@ -317,11 +335,11 @@
                 <artifactId>maven-assembly-plugin</artifactId>
 
                 <configuration>
-                            <descriptors>
-                                <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
-                            </descriptors>
+                    <descriptors>
+                        <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
+                    </descriptors>
 
-                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
+                    <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -332,12 +350,14 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml</descriptor>
+                                <descriptor>
+                                    ${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml
+                                </descriptor>
                                 <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
                                 <descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
                             </descriptors>
-                           <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
-                         </configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
+                        </configuration>
                     </execution>
 
                     <execution>
@@ -347,11 +367,11 @@
                             <goal>directory-single</goal>
                         </goals>
                         <configuration>
-<!--                            <descriptors>
+                            <descriptors>
                                 <descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
                             </descriptors>
 
-                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>-->
+                            <outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
