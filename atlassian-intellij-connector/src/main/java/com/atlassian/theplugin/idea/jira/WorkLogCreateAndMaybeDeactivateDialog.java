@@ -42,10 +42,32 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.management.timer.Timer;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -278,7 +300,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		final JScrollPane scroll = new JScrollPane();
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setViewportView(comment);
-		commentPanel.add(scroll, cc.xy(2, 1, CellConstraints.FILL, CellConstraints.FILL));
+
+		commentPanel.add(scroll, cc.xyw(2, 1, 1, CellConstraints.FILL, CellConstraints.FILL));
 		changesetPanel.add(commentPanel, cc.xy(2, 4));
 
         btnChangeSetDoNothing =
@@ -322,7 +345,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		CellConstraints cc = new CellConstraints();
 		timePanel = new JPanel(new FormLayout(
 				"3dlu, right:pref, 3dlu, left:pref, 3dlu, 10dlu, left:pref, 3dlu, left:pref:grow, 3dlu",
-				"3dlu, pref, 3dlu, pref, pref, pref, 3dlu, pref, 10dlu, center:pref:grow, 3dlu"));
+				"3dlu, pref, 3dlu, pref, pref, pref, 3dlu, pref, 10dlu, 40dlu, 3dlu"));
 
 		timePanel.add(new JLabel("Time Spent:"), cc.xy(2, 2));
 
@@ -375,7 +398,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         timePanel.add(new JLabel("Comment:"), cc.xy(2, 10, CellConstraints.RIGHT, CellConstraints.TOP));        
         issueComment = new JTextArea();
         issueComment.setLineWrap(true);
-        issueComment.setPreferredSize(new Dimension(240, 56));
         final JScrollPane scroll = new JScrollPane();
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setViewportView(issueComment);
