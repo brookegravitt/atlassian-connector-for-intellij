@@ -15,32 +15,37 @@ public class SearchReviewsForIssueDialog extends DialogWrapper {
 
     public SearchReviewsForIssueDialog(Project project) {
         super(project, false);
-		init();
-		pack();
+        init();
+        pack();
+
         final ServerData defaultServer = IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer();
-		setTitle("Search Crucible Reviews" + defaultServer != null ? " (" + defaultServer.getName() + ")" : "");
-		getOKAction().putValue(Action.NAME, "Search");
-		getOKAction().setEnabled(false);
-        tfIssueKey.addKeyListener(new KeyListener() {
+        if (defaultServer != null) {
+            setTitle("Search Crucible Reviews" + defaultServer != null ? " (" + defaultServer.getName() + ")" : "");
+            getOKAction().putValue(Action.NAME, "Search");
+            getOKAction().setEnabled(false);
+            tfIssueKey.addKeyListener(new KeyListener() {
 
-            public void keyTyped(KeyEvent keyEvent) {
+                public void keyTyped(KeyEvent keyEvent) {
 
-            }
+                }
 
-            public void keyPressed(KeyEvent keyEvent) {
+                public void keyPressed(KeyEvent keyEvent) {
 
-            }
+                }
 
-            public void keyReleased(KeyEvent keyEvent) {
-                getOKAction().setEnabled(tfIssueKey.getText().length() > 0 && defaultServer != null);
-            }
-        });
+                public void keyReleased(KeyEvent keyEvent) {
+                    getOKAction().setEnabled(tfIssueKey.getText().length() > 0 && defaultServer != null);
+                }
+            });
 
 //        contentPane.setRequestFocusEnabled(true);
 
+
+            setButtonsAlignment(SwingConstants.CENTER);
+            tfIssueKey.requestFocus();
+        }
+
         setOKActionEnabled(false);
-		setButtonsAlignment(SwingConstants.CENTER);
-        tfIssueKey.requestFocus();
 
     }
 

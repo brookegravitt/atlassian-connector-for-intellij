@@ -49,6 +49,12 @@ import java.util.List;
  * @date Jul 30, 2010
  */
 public class SearchReviewsForIssueAction extends AnAction {
+
+    @Override
+    public void update(AnActionEvent e) {
+        e.getPresentation().setEnabled(IdeaHelper.getProjectCfgManager(e).getDefaultCrucibleServer() != null);
+    }
+
     @Override
     public void actionPerformed(final AnActionEvent event) {
         final Project project = DataKeys.PROJECT.getData(event.getDataContext());
