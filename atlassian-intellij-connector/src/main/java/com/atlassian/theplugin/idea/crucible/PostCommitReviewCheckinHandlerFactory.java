@@ -11,7 +11,6 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcsHelper;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
@@ -106,9 +105,9 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		}
 
 
-        public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
-            return super.getAfterCheckinConfigurationPanel(parentDisposable);    //To change body of overridden methods use File | Settings | File Templates.
-        }
+//        public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
+//            return super.getAfterCheckinConfigurationPanel(parentDisposable);    //To change body of overridden methods use File | Settings | File Templates.
+//        }
 
         
 		public RefreshableOnComponent getAfterCheckinConfigurationPanel() {
