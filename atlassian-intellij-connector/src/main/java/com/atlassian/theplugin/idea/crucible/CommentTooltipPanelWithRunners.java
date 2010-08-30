@@ -136,7 +136,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
                 try {
                     getReview().markCommentLeaveUnread(comment);
                 } catch (final Exception e) {
-                    SwingUtilities.invokeLater(new Runnable(){
+                    SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             panel.setStatusText(MARKING_COMMENT_LEAVE_UNREAD_FAILED + e.getMessage(), true);
                         }
