@@ -103,7 +103,8 @@ public class ShowAllReviewsForFileAction extends AnAction {
     }
 
     class SearchForReviewTask extends Task.Backgroundable {
-        final FileEditorManager fileEditorManager;
+
+
         private final AnActionEvent event;
         private Project project;
 
@@ -111,7 +112,7 @@ public class ShowAllReviewsForFileAction extends AnAction {
             super(DataKeys.PROJECT.getData(event.getDataContext()), title);
             this.event = event;
             this.project = DataKeys.PROJECT.getData(event.getDataContext());
-            fileEditorManager = FileEditorManagerImpl.getInstance(project);
+
 
         }
 
@@ -119,6 +120,7 @@ public class ShowAllReviewsForFileAction extends AnAction {
         public void run(@NotNull ProgressIndicator progressIndicator) {
             final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(event);
             final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(event);
+            final FileEditorManager fileEditorManager = FileEditorManagerImpl.getInstance(project);
             ServerData selectedServer;
             String selectedRepoName;
             selectedServer = cfgManager.getDefaultCrucibleServer();
