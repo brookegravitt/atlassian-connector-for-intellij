@@ -12,6 +12,7 @@ import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -19,6 +20,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
+import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
@@ -27,8 +29,14 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -51,9 +59,10 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 	@NotNull
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
+        //reflection
 		// PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
 		// "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
-		if (checkinProjectPanel.getAffectedVcses().size() > 0) {
+        if (((CommitChangeListDialog) checkinProjectPanel).getAffectedVcses().size() > 0) {
 			return new Handler(checkinProjectPanel);
 		}
 		return new NullCheckinHandler();
@@ -157,13 +166,11 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			lblRemainingEstimateAdjust.setEnabled(enabled);
 			btnChange.setEnabled(enabled);
 		}
-
-		@Override
-		public RefreshableOnComponent getAfterCheckinConfigurationPanel() {
+        @Override
+        public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
 			return afterCheckinConfig;
 		}
 
-		@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
 			if (cbLogTime.isEnabled() && cbLogTime.isSelected()) {
 				if (!timeSpentCorrect) {
@@ -178,9 +185,10 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			return ReturnResult.COMMIT;
 		}
 
+
 		@Override
 		public ReturnResult beforeCheckin() {
-			return beforeCheckin(null);
+			return beforeCheckin();
 		}
 
 		@Override

@@ -11,6 +11,7 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcsHelper;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
@@ -18,18 +19,22 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesCache;
+import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.util.Consumer;
+import com.intellij.util.PairConsumer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -39,14 +44,16 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 	private final CrucibleWorkspaceConfiguration config;
     private final WorkspaceConfigurationBean projectConfiguration;
     private final ProjectCfgManager projectCfgManager;
-	private final CrucibleConfigurationBean cruciblePluginConfig;
+    private final Project project;
+    private final CrucibleConfigurationBean cruciblePluginConfig;
 
     public PostCommitReviewCheckinHandlerFactory(@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull ProjectCfgManager cfgManager,
-			@NotNull PluginConfigurationBean pluginCfg) {
+			@NotNull PluginConfigurationBean pluginCfg, @NotNull Project project) {
         this.projectConfiguration = projectConfiguration;
         this.projectCfgManager = cfgManager;
-		config = projectConfiguration.getCrucibleConfiguration();
+        this.project = project;
+        config = projectConfiguration.getCrucibleConfiguration();
 		cruciblePluginConfig = pluginCfg.getCrucibleConfigurationData();
 	}
 
@@ -55,7 +62,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
         // PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
         // "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
-        if (checkinProjectPanel.getAffectedVcses().size() > 0) {
+        if (((CommitChangeListDialog) checkinProjectPanel).getAffectedVcses().size() > 0) {
     		return new Handler(checkinProjectPanel);
         }
         return new NullCheckinHandler();
@@ -98,12 +105,22 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 			return super.getBeforeCheckinConfigurationPanel();
 		}
 
-		@Override
+
+        public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
+            return super.getAfterCheckinConfigurationPanel(parentDisposable);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        
 		public RefreshableOnComponent getAfterCheckinConfigurationPanel() {
 			return afterCheckinConfig;
 		}
 
-		@Override
+        //           @Override     -- different definition for ides X and 9 do not uncomment
+        public ReturnResult beforeCheckin(@Nullable CommitExecutor executor, PairConsumer<Object, Object> additionalDataConsumer) {
+            return beforeCheckin(executor);
+        }
+//           @Override     -- different definition for ides X and 9 do not uncomment
+        //@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
             Project project = checkinProjectPanel.getProject();
 			if (cbCreateReview.isSelected()) {
@@ -123,7 +140,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 
 		@Override
 		public ReturnResult beforeCheckin() {
-			return beforeCheckin(null);
+			return beforeCheckin();
 		}
 
 		@Override

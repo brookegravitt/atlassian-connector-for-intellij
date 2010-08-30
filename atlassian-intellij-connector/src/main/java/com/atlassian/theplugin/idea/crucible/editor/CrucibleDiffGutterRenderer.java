@@ -3,8 +3,18 @@ package com.atlassian.theplugin.idea.crucible.editor;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.codeInsight.hint.EditorFragmentComponent;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.diff.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.diff.DiffColors;
+import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.diff.DiffRequest;
+import com.intellij.openapi.diff.DocumentContent;
+import com.intellij.openapi.diff.FragmentContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -30,8 +40,15 @@ import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SideBorder2;
 import com.intellij.util.ui.UIUtil;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.Iterator;
@@ -406,7 +423,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		JComponent toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.FILEHISTORY_VIEW_TOOLBAR, group, true)
 				.getComponent();
 
-		final Color background = ((EditorEx) anEditor).getBackroundColor();
+		final Color background = IdeaVersionFacade.getInstance().getEditorBackgroundColor((EditorEx) anEditor);
 		final Color foreground = anEditor.getColorsScheme().getColor(EditorColors.CARET_COLOR);
 		toolbar.setBackground(background);
 
