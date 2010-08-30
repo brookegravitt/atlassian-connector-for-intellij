@@ -19,6 +19,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
@@ -36,8 +37,12 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Point;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -55,9 +60,12 @@ public final class IdeaVersionFacade {
     private static final int IDEA_8_0_1 = 9164;
     private static final int IDEA_8_1_3 = 9886;
     private static final int IDEA_9_EAP = 10000;
+    private static final int IDEA_X_EAP_GR4 = 96;
+    private static final int IDEA_9_GR4 = 95;
 
     private boolean isIdea8;
     private boolean isIdea9;
+    private boolean isIdeaX;
     private boolean communityEdition = false;
 
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
@@ -69,14 +77,22 @@ public final class IdeaVersionFacade {
         @SuppressWarnings("deprecation")
         String ver = ApplicationInfo.getInstance().getBuildNumber();
         Matcher m = IDEA_9_REGEX.matcher(ver);
-        if (m.matches()) {
+        m.matches();
+        final int group4 = m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
+
+        if (m.matches() && group4 == IDEA_9_GR4) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
+        } else if (m.matches() && group4 == IDEA_X_EAP_GR4) {
+            isIdeaX = true;
+            communityEdition = m.group(3) != null;
         } else {
+
             try {
                 int v = Integer.parseInt(ver);
                 isIdea8 = v > IDEA_8_0;
                 isIdea9 = v > IDEA_9_EAP;
+
             } catch (NumberFormatException e) {
                 LoggerImpl.getInstance().error(e);
             }
@@ -181,10 +197,29 @@ public final class IdeaVersionFacade {
                 }
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
 
         return vFiles;
+    }
+
+    public Color getEditorBackgroundColor(EditorEx editor) {
+
+        Class editorClass = null;
+        try {
+            editorClass = Class.forName("com.intellij.openapi.editor.ex.EditorEx");
+            Method getBackgroundColorMethod;
+            if (isIdeaX) {
+                getBackgroundColorMethod = editorClass.getMethod("getBackgroundColor");
+            } else {
+                getBackgroundColorMethod = editorClass.getMethod("getBackroundColor");
+            }
+            return (Color) getBackgroundColorMethod.invoke(editor);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Color.WHITE;
+        }
+
     }
 
     public MultipleChangeListBrowser getChangesListBrowser(Project project, ChangeListManager changeListManager,
@@ -475,6 +510,10 @@ public final class IdeaVersionFacade {
 
     public boolean isIdea9() {
         return isIdea9;
+    }
+
+    public boolean isIdeaX() {
+        return isIdeaX;
     }
 
     public boolean isCommunityEdition() {

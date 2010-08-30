@@ -40,8 +40,8 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
 import java.util.List;
 
 /**
@@ -52,7 +52,9 @@ public class SearchReviewsForIssueAction extends AnAction {
 
     @Override
     public void update(AnActionEvent e) {
-        e.getPresentation().setEnabled(IdeaHelper.getProjectCfgManager(e).getDefaultCrucibleServer() != null);
+
+        e.getPresentation().setEnabled(IdeaHelper.getProjectCfgManager(e) != null
+                && IdeaHelper.getProjectCfgManager(e).getDefaultCrucibleServer() != null);
     }
 
     @Override
