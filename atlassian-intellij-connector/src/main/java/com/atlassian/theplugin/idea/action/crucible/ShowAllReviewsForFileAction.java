@@ -44,7 +44,7 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,63 +56,11 @@ public class ShowAllReviewsForFileAction extends AnAction {
     @Override
     public void actionPerformed(final AnActionEvent anActionEvent) {
         final Project project = DataKeys.PROJECT.getData(anActionEvent.getDataContext());
-        final FileEditorManager fileEditorManager = FileEditorManagerImpl.getInstance(project);
 
 
         ProgressManager.getInstance().run(
-                new Task.Backgroundable(project, "Searching for reviews") {
-                    @Override
-                    public void run(@NotNull ProgressIndicator progressIndicator) {
-                        final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(anActionEvent);
-                        final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(anActionEvent);
-                        ServerData selectedServer;
-                        String selectedRepoName;
-                        selectedServer = cfgManager.getDefaultCrucibleServer();
-                        selectedRepoName = cfgManager.getDefaultCrucibleRepo();
-                        IntelliJCrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
-
-                        final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
-                        if (isContextValid(anActionEvent)) {
-                            try {
-                                SvnRepository repo = (SvnRepository) facade.getRepository(selectedServer, selectedRepoName);
-                                final String filePath = getSVNPathForFile(VcsIdeaHelper.getRepositoryUrlForFile(project,
-                                        selectedFiles[0]), repo, project);
-                                List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
-                                if (filePath != null) {
-                                    reviews = facade.getAllReviewsForFile(selectedServer,
-                                            selectedRepoName, filePath);
-                                    final List<ReviewAdapter> fReviews = reviews;
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run() {
-                                            showPopup(fReviews, project, fileEditorManager.getSelectedTextEditor(),
-                                                    filePath, panel);
-                                        }
-                                    });
-
-                                } else {
-                                    final String fSelectedRepoName = selectedRepoName;
-                                    SwingUtilities.invokeLater(new Runnable() {                                         
-                                        public void run() {
-                                            Messages.showInfoMessage(project, "File " 
-                                             + selectedFiles[0] + " not found in repository ("
-                                             + fSelectedRepoName + ")", PluginUtil.PRODUCT_NAME);
-                                        }
-                                    });
-                                }
-                            } catch (RemoteApiException e) {
-                                DialogWithDetails.showExceptionDialog(project, "Error occured", e);
-                            } catch (ServerPasswordNotProvidedException
-                                    e) {
-                                DialogWithDetails.showExceptionDialog(project, "Incorrect password", e);
-                            }
-                        }
-
-                    }
-                }
-
+                new SearchForReviewTask(anActionEvent, "Searching for reviews")
         );
-
-
     }
 
     @Override
@@ -150,6 +98,68 @@ public class ShowAllReviewsForFileAction extends AnAction {
                     new QuickSearchReviewAction.ReviewListPopupStep(
                             "Found " + reviews.size() + " reviews", reviews, reviewsWindow));
             popup.showInBestPositionFor(editor);
+
+        }
+    }
+
+    class SearchForReviewTask extends Task.Backgroundable {
+        final FileEditorManager fileEditorManager;
+        private final AnActionEvent event;
+        private Project project;
+
+        SearchForReviewTask(@NotNull AnActionEvent event, String title) {
+            super(DataKeys.PROJECT.getData(event.getDataContext()), title);
+            this.event = event;
+            this.project = DataKeys.PROJECT.getData(event.getDataContext());
+            fileEditorManager = FileEditorManagerImpl.getInstance(project);
+
+        }
+
+        @Override
+        public void run(@NotNull ProgressIndicator progressIndicator) {
+            final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(event);
+            final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(event);
+            ServerData selectedServer;
+            String selectedRepoName;
+            selectedServer = cfgManager.getDefaultCrucibleServer();
+            selectedRepoName = cfgManager.getDefaultCrucibleRepo();
+            IntelliJCrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
+
+            final VirtualFile[] selectedFiles = fileEditorManager.getSelectedFiles();
+            if (isContextValid(event)) {
+                try {
+                    SvnRepository repo = (SvnRepository) facade.getRepository(selectedServer, selectedRepoName);
+                    final String filePath = getSVNPathForFile(VcsIdeaHelper.getRepositoryUrlForFile(project,
+                            selectedFiles[0]), repo, project);
+                    List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+                    if (filePath != null) {
+                        reviews = facade.getAllReviewsForFile(selectedServer,
+                                selectedRepoName, filePath);
+                        final List<ReviewAdapter> fReviews = reviews;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                showPopup(fReviews, project, fileEditorManager.getSelectedTextEditor(),
+                                        filePath, panel);
+                            }
+                        });
+
+                    } else {
+                        final String fSelectedRepoName = selectedRepoName;
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                Messages.showInfoMessage(project, "File "
+                                        + selectedFiles[0] + " not found in repository ("
+                                        + fSelectedRepoName + ")", PluginUtil.PRODUCT_NAME);
+                            }
+                        });
+                    }
+                } catch (RemoteApiException e) {
+                    DialogWithDetails.showExceptionDialog(project, "Error occured", e);
+                } catch (ServerPasswordNotProvidedException
+                        e) {
+                    DialogWithDetails.showExceptionDialog(project, "Incorrect password", e);
+                }
+            }
 
         }
     }

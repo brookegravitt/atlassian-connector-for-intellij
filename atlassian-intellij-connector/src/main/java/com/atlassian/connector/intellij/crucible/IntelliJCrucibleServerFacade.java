@@ -6,6 +6,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.PathAndRevision;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
@@ -242,7 +243,8 @@ public final class IntelliJCrucibleServerFacade extends ConfigurationListenerAda
 
     public byte[] getFileContent(@NotNull ServerData server, String contentUrl) throws RemoteApiException,
             ServerPasswordNotProvidedException {
-        return facade.getFileContent(server, contentUrl);
+        CrucibleSession session = facade.getSession(server);
+		return session.getFileContent(contentUrl);
     }
 
 //    public Set<CrucibleFileInfo> getFiles(ServerData server, PermId permId) throws RemoteApiException,
