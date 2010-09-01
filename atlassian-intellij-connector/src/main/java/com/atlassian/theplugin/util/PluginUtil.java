@@ -187,9 +187,10 @@ public final class PluginUtil {
 
         if (currentChangeList.isDefault()) {
             for (LocalChangeList list : changeListManager.getChangeLists()) {
-                if (!list.equals(currentChangeList)) {
+                if (!list.getId().equals(currentChangeList.getId())) {
                     //switch to first as default
                     changeListManager.setDefaultChangeList(list);
+                    break;
                 }
             }
 
