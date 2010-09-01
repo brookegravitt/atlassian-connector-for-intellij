@@ -23,7 +23,7 @@ import com.intellij.openapi.project.Project;
  * @date Sep 1, 2010
  */
 public class AtlassianEditorImpl  {
-    final EditorImpl editor;
+    final private EditorImpl editor;
 
     public AtlassianEditorImpl(Document document, boolean flag, Project project) {
         this.editor = new EditorImpl(document, flag, project);
