@@ -91,7 +91,7 @@ public final class IdeaVersionFacade {
             try {
                 int v = Integer.parseInt(ver);
                 isIdea8 = v > IDEA_8_0;
-                isIdea9 = v > IDEA_9_EAP;
+                isIdea9 = v > IDEA_9_EAP;                
 
             } catch (NumberFormatException e) {
                 LoggerImpl.getInstance().error(e);
@@ -173,7 +173,7 @@ public final class IdeaVersionFacade {
         final Collection<VirtualFile> vFiles = new ArrayList<VirtualFile>();
         try {
             int v = 0;
-            if (!isIdea9) {
+            if (!isIdea9 && !isIdeaX) {
                 // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
                 // deprecated getBuildNumber() method here...
                 @SuppressWarnings("deprecation")
@@ -181,7 +181,7 @@ public final class IdeaVersionFacade {
                 v = Integer.parseInt(ver);
             }
 
-            if (isIdea9 || v > IDEA_8_0_1) {
+            if (isIdeaX || isIdea9 || v > IDEA_8_0_1) {
                 Class changeClass = Class.forName("com.atlassian.theplugin.commons.crucible.api.model.changes.Change");
                 Method getVirtualFile = changeClass.getMethod("getVirtualFile");
                 for (Change c : selectedChanges) {
@@ -234,7 +234,7 @@ public final class IdeaVersionFacade {
                 changeList = new ArrayList<Change>(changes);
             }
             int v = 0;
-            if (!isIdea9) {
+            if (!isIdea9 && !isIdeaX) {
                 // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
                 // deprecated getBuildNumber() method here...
                 @SuppressWarnings("deprecation")
@@ -243,7 +243,7 @@ public final class IdeaVersionFacade {
             }
             Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
             Constructor[] constructors = browserClass.getConstructors();
-            if (isIdea9 || v >= IDEA_8_1_3) {
+            if (isIdeaX || isIdea9 || v >= IDEA_8_1_3) {
                 return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
                         changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
             } else if (v > IDEA_8_0_1) {

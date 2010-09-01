@@ -33,4 +33,6 @@ public class AtlassianEditorImpl  {
     public EditorImpl getEditor() {
         return editor;
     }
+
+
 }
