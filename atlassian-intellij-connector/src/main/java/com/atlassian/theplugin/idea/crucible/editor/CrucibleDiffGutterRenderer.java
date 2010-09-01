@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.intellij.codeInsight.hint.EditorFragmentComponent;
+import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -18,8 +20,11 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
+import com.intellij.openapi.editor.highlighter.EditorHighlighter;
+import com.intellij.openapi.editor.impl.AtlassianEditorImpl;
 import com.intellij.openapi.editor.markup.ActiveGutterRenderer;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
@@ -435,17 +440,17 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 		if (aRange.getType() != Range.INSERTED) {
             //todo uncomment if IDEa x IS FIXED
-			/*DocumentEx doc = (DocumentEx) referenceDocument;
-			EditorImpl uEditor = new EditorImpl(doc, true, project);
+			DocumentEx doc = (DocumentEx) referenceDocument;
+			AtlassianEditorImpl uEditor = new AtlassianEditorImpl(doc, true, project);
 			EditorHighlighter highlighter = HighlighterFactory
 					.createHighlighter(project, getReferenceVirtualFileName());
-			uEditor.setHighlighter(highlighter);
+			uEditor.getEditor().setHighlighter(highlighter);
 
 			EditorFragmentComponent editorFragmentComponent =
 					EditorFragmentComponent
-							.createEditorFragmentComponent(uEditor, aRange.getUOffset1(), aRange.getUOffset2(), false, false);
+							.createEditorFragmentComponent(uEditor.getEditor(), aRange.getUOffset1(), aRange.getUOffset2(), false, false);
 
-			component.add(editorFragmentComponent, BorderLayout.CENTER);*/
+			component.add(editorFragmentComponent, BorderLayout.CENTER);
 		}
 
 		LightweightHint lightweightHint = new LightweightHint(component);
