@@ -104,29 +104,24 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 			return super.getBeforeCheckinConfigurationPanel();
 		}
 
-
-//        public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
-//            return super.getAfterCheckinConfigurationPanel(parentDisposable);    //To change body of overridden methods use File | Settings | File Templates.
-//        }
-
-        
 		public RefreshableOnComponent getAfterCheckinConfigurationPanel() {
 			return afterCheckinConfig;
 		}
 
         //           @Override     -- different definition for ides X and 9 do not uncomment
-        public ReturnResult beforeCheckin(@Nullable CommitExecutor executor, PairConsumer<Object, Object> additionalDataConsumer) {
+        public ReturnResult beforeCheckin(@Nullable CommitExecutor executor,
+                                          PairConsumer<Object, Object> additionalDataConsumer) {
             return beforeCheckin(executor);
         }
 //           @Override     -- different definition for ides X and 9 do not uncomment
         //@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
-            Project project = checkinProjectPanel.getProject();
+            Project pr = checkinProjectPanel.getProject();
 			if (cbCreateReview.isSelected()) {
                 LoggerImpl.getInstance().info(
                         "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
 				commitForm =
-						new CrucibleCreatePostCommitReviewDelayedForm(project,
+						new CrucibleCreatePostCommitReviewDelayedForm(pr,
 								IntelliJCrucibleServerFacade.getInstance(), projectCfgManager, cruciblePluginConfig,
 								checkinProjectPanel.getCommitMessage(), checkinProjectPanel.getVirtualFiles());
 				commitForm.show();
@@ -155,10 +150,10 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		}
 
         private void addChangesetToReview() {
-            final Project project = checkinProjectPanel.getProject();
+            final Project pr = checkinProjectPanel.getProject();
 
             final ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
-            CommittedChangesCache.getInstance(project).getProjectChangesAsync(
+            CommittedChangesCache.getInstance(pr).getProjectChangesAsync(
                     changeBrowserSettings, REVISIONS_COUNT, false,
                     new Consumer<List<CommittedChangeList>>() {
                         public void consume(List<CommittedChangeList> list) {
@@ -171,9 +166,9 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
                                         ChangeList[] chlist = new ChangeList[1];
                                         chlist[0] = changeList;
                                         CrucibleHelperForm form = new CrucibleHelperForm(
-                                                project, IntelliJFishEyeServerFacade.getInstance(),
+                                                pr, IntelliJFishEyeServerFacade.getInstance(),
                                                 IntelliJCrucibleServerFacade.getInstance(),
-                                                chlist, IdeaHelper.getProjectCfgManager(project));
+                                                chlist, IdeaHelper.getProjectCfgManager(pr));
                                         form.setChangesetAddTimeout(cruciblePluginConfig.getReviewCreationTimeout());
                                         form.show();
                                         break;
