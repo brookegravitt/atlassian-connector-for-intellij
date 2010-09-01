@@ -29,7 +29,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JLabel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -206,5 +206,7 @@ public final class PluginUtil {
                 }
             }
         }
+
+
 }
 

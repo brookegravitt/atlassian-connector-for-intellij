@@ -64,8 +64,9 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -351,7 +352,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 		try {
 			final FileWriter writer = new FileWriter(filepath);
-			new XMLOutputter(Format.getPrettyFormat()).output(element, writer);
+
+            final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+            //outputter.setLineSeparator(System.getProperty("line.separator"));
+            outputter.output(element, writer);
 			writer.close();
 		} catch (IOException e) {
 			Messages.showWarningDialog(project, "Cannot save project configuration settings to [" + filepath + ":\n"
