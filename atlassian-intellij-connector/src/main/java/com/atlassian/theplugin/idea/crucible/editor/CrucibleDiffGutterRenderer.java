@@ -448,7 +448,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 			EditorFragmentComponent editorFragmentComponent =
 					EditorFragmentComponent
-							.createEditorFragmentComponent(uEditor.getEditor(), aRange.getUOffset1(), aRange.getUOffset2(), false, false);
+							.createEditorFragmentComponent(uEditor.getEditor(), aRange.getUOffset1(),
+                                    aRange.getUOffset2(), false, false);
 
 			component.add(editorFragmentComponent, BorderLayout.CENTER);
 		}
