@@ -25,6 +25,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
@@ -63,6 +64,7 @@ public final class IdeaVersionFacade {
     private static final int IDEA_X_EAP_GR4 = 96;
     private static final int IDEA_9_GR4 = 95;
 
+    private boolean isIdea7;
     private boolean isIdea8;
     private boolean isIdea9;
     private boolean isIdeaX;
@@ -70,6 +72,7 @@ public final class IdeaVersionFacade {
 
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
+
 
     private IdeaVersionFacade() {
         // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
@@ -91,7 +94,8 @@ public final class IdeaVersionFacade {
             try {
                 int v = Integer.parseInt(ver);
                 isIdea8 = v > IDEA_8_0;
-                isIdea9 = v > IDEA_9_EAP;                
+                isIdea9 = v > IDEA_9_EAP;
+                isIdea7 = v < IDEA_8_0;
 
             } catch (NumberFormatException e) {
                 LoggerImpl.getInstance().error(e);
@@ -106,6 +110,24 @@ public final class IdeaVersionFacade {
             instance = new IdeaVersionFacade();
         }
         return instance;
+    }
+
+    public String getChangeListId(LocalChangeList changeList) {
+        try {
+            Class localChangeListClass = Class.forName("com.intellij.openapi.vcs.changes.LocalChangeListImpl");
+            if (!isIdea7) {
+                Method getIdMethod = localChangeListClass.getMethod("getId");
+                return (String) getIdMethod.invoke(changeList);
+            } else {
+                Method getNameMethod = localChangeListClass.getMethod("getName");
+                return (String) getNameMethod.invoke(changeList);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
     }
 
     public PsiClass findClass(String name, Project project) {

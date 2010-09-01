@@ -18,6 +18,7 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
@@ -180,6 +181,7 @@ public final class PluginUtil {
 
     public static void removeChangeList(Project project, LocalChangeList currentChangeList) {
         ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+        IdeaVersionFacade ivf = IdeaVersionFacade.getInstance();
 
         if (changeListManager.getChangeLists().size() <= 1) {
             return;
@@ -187,7 +189,7 @@ public final class PluginUtil {
 
         if (currentChangeList.isDefault()) {
             for (LocalChangeList list : changeListManager.getChangeLists()) {
-                if (!list.getId().equals(currentChangeList.getId())) {
+                if (!ivf.getChangeListId(list).equals(ivf.getChangeListId(currentChangeList))) {
                     //switch to first as default
                     changeListManager.setDefaultChangeList(list);
                     break;
