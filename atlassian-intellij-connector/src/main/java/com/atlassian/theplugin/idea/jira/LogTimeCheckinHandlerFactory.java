@@ -187,11 +187,6 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 
 		@Override
-		public ReturnResult beforeCheckin() {
-			return beforeCheckin();
-		}
-
-		@Override
 		public void checkinSuccessful() {
 			if (cbLogTime.isEnabled() && cbLogTime.isSelected()) {
 				SwingUtilities.invokeLater(new Runnable() {
