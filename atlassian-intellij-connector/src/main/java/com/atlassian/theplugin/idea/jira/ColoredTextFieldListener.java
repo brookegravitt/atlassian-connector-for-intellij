@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
-import javax.swing.*;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,55 +26,72 @@ import java.util.regex.Pattern;
  * @author Jacek Jaroczynski
  */
 public class ColoredTextFieldListener implements DocumentListener {
-	private JTextField field;
-	private String regexp;
-	private boolean emptyOk;
+    private JTextField field;
+    private String regexp;
+    private boolean emptyOk;
 
-	public ColoredTextFieldListener(final JTextField textField, final String regexp, final boolean emptyOk) {
-		this.field = textField;
-		this.regexp = regexp;
-		this.emptyOk = emptyOk;
-	}
+    public ColoredTextFieldListener(final JTextField textField, final String regexp, final boolean emptyOk) {
+        this.field = textField;
+        this.regexp = regexp;
+        this.emptyOk = emptyOk;
+    }
 
-	public JTextField getField() {
-		return field;
-	}
+    public JTextField getField() {
+        return field;
+    }
 
-	public void insertUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
+    public void insertUpdate(final DocumentEvent e) {
+        stateChanged();
+    }
 
-	public void removeUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
+    public void removeUpdate(final DocumentEvent e) {
+        stateChanged();
+    }
 
-	public void changedUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
+    public void changedUpdate(final DocumentEvent e) {
+        stateChanged();
+    }
 
-	/**
-	 * Makes the color of input text red in case of wrong syntax
-	 *
-	 * @return true if there is no syntaxt error
-	 */
-	public boolean stateChanged() {
+    /**
+     * Makes the color of input text red in case of wrong syntax
+     *
+     * @return true if there is no syntaxt error
+     */
+    public boolean stateChanged() {
 
-		boolean correct = isCorrect(field.getText());
+        boolean correct = isCorrect(field.getText());
 
-		Color c = correct ? Color.BLACK : Color.RED;
-		field.setForeground(c);
+        Color c = correct ? Color.BLACK : Color.RED;
+        field.setForeground(c);
 
-		return correct;
-	}
+        return correct;
+    }
 
-	private boolean isCorrect(final String text) {
+    private boolean isCorrect(final String text) {
 
-		if (emptyOk && (text == null || text.length() == 0)) {
-			return true;
-		}
+        if (emptyOk && (text == null || text.length() == 0)) {
+            return true;
+        }
 
-		Pattern p = Pattern.compile(regexp);
-		Matcher m = p.matcher(text);
-		return m.matches() && text.length() > 0;
-	}
+
+        Pattern p = Pattern.compile(regexp);
+        Matcher m = p.matcher(text);
+        boolean matches = m.matches();
+        int noOfGroups = m.groupCount();
+        int totalGroupsLength = 0;
+        if (matches) {
+            for (int i = 1; i <= m.groupCount(); i++) {
+                if (m.group(i) != null) {
+                    totalGroupsLength += m.group(i).length();
+                } else {
+                    noOfGroups--;
+                }
+            }
+
+            int numberOfSpaces = text.length() - totalGroupsLength;
+            return (numberOfSpaces == noOfGroups - 1) && text.length() > 0;
+        }
+
+        return false;
+    }
 }
