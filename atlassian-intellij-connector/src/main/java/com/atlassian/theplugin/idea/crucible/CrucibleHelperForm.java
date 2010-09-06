@@ -447,7 +447,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
         Task.Backgroundable changesTask = new Task.Backgroundable(project,
                 "Adding " + (mode == AddMode.ADDREVISION ? "change set" : "patch") + " to review...", true) {
-            @Override
+            
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
                     switch (mode) {
@@ -500,6 +500,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                                                 }
                                                 askedQuestionAboutDeletedFiles[0] = true;
                                             }
+                                            
                                         }, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
                                         if (abort[0]) {
                                             return;

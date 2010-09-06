@@ -133,7 +133,7 @@ public final class IdeaVersionFacade {
     public PsiClass findClass(String name, Project project) {
         PsiClass cls = null;
         try {
-            if (isIdea8 || isIdea9) {
+            if (isIdea8 || isIdea9 || isIdeaX) {
                 Class javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
                 Method getInstance = javaPsiFacadeClass.getMethod("getInstance", Project.class);
                 Object inst = getInstance.invoke(null, project);
@@ -161,7 +161,7 @@ public final class IdeaVersionFacade {
     public PsiFile[] getFiles(String filePath, Project project) {
         PsiFile[] psiFiles = null;
         try {
-            if (isIdea8 || isIdea9) {
+            if (isIdea8 || isIdea9 || isIdeaX) {
                 Class fileNameIndexClass = Class.forName("com.intellij.psi.search.FilenameIndex");
                 Method getFilesByName = fileNameIndexClass.getMethod("getFilesByName", Project.class,
                         String.class, GlobalSearchScope.class);
@@ -288,7 +288,7 @@ public final class IdeaVersionFacade {
     }
 
     public void addActionToDiffGroup(@NotNull AnAction action) {
-        if (isIdea8 || isIdea9) {
+        if (isIdea8 || isIdea9 || isIdeaX) {
             DefaultActionGroup diffToolbar =
                     (DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
             if (diffToolbar != null) {
@@ -303,7 +303,7 @@ public final class IdeaVersionFacade {
             Method getInstance = hintManagerClass.getMethod("getInstance");
             Object inst = getInstance.invoke(null);
             Class mgrClass;
-            if (isIdea8 || isIdea9) {
+            if (isIdea8 || isIdea9 || isIdeaX) {
                 Class hintManagerImplClass = Class.forName("com.intellij.codeInsight.hint.HintManagerImpl");
                 mgrClass = hintManagerImplClass;
                 inst = hintManagerImplClass.cast(inst);
@@ -338,7 +338,7 @@ public final class IdeaVersionFacade {
 
     public void runTests(RunnerAndConfigurationSettings settings, DataContext dataContext, boolean debug) {
         try {
-            if (isIdea8 || isIdea9) {
+            if (isIdea8 || isIdea9 || isIdeaX) {
                 Class executorClass = Class.forName("com.intellij.execution.Executor");
                 Class defaultDebugExecutorClass = Class.forName("com.intellij.execution.executors.DefaultDebugExecutor");
                 Class defaultRunExecutorClass = Class.forName("com.intellij.execution.executors.DefaultRunExecutor");
@@ -448,7 +448,7 @@ public final class IdeaVersionFacade {
             if (setItems == null) {
                 return;
             }
-            if (isIdea8 || isIdea9) {
+            if (isIdea8 || isIdea9 || isIdeaX) {
                 Class enumClass = Class.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase");
                 Method valueOf = enumClass.getMethod("valueOf", String.class);
                 setItems.invoke(browser, list, flag, valueOf.invoke(null, "COMMITTED"));
@@ -543,7 +543,7 @@ public final class IdeaVersionFacade {
     }
 
     public boolean openStackTrace(@NotNull Project project, String stracktrace, String title) {
-        if (isIdea8 || isIdea9) {
+        if (isIdea8 || isIdea9 || isIdeaX) {
             try {
                 final Class<?> analyzeStackTraceUtil = Class.forName("com.intellij.unscramble.AnalyzeStacktraceUtil");
                 for (Method method : analyzeStackTraceUtil.getMethods()) {
