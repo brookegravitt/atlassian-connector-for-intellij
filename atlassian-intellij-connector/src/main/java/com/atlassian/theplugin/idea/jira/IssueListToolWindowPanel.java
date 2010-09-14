@@ -1592,7 +1592,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
 
-        @Override
         public void run(@NotNull final ProgressIndicator indicator) {
             getStatusBarPane().setInfoMessage("Loading issues...", false);
             try {
