@@ -1571,8 +1571,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             }
                         }
                     } catch (JIRAException e) {
+                        if (e.getMessage().contains("Authentication failed")) {
+                             MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
+                                    (JiraServerCfg) projectCfgManager.getServer(srvcfg.getServerId()), project));
+                        } else {
                         setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. "
                                 + e.getMessage(), e);
+                        }
                     }
                     issueTreeBuilder.setProjectKeysToNames(projectMap);
                     issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
