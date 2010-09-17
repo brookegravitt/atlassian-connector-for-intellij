@@ -27,6 +27,7 @@ import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFa
 import com.atlassian.theplugin.commons.util.Logger;
 import org.apache.axis.AxisProperties;
 import org.apache.axis.components.net.BooleanHolder;
+import org.apache.axis.components.net.DefaultHTTPSTransportClientProperties;
 import org.apache.axis.components.net.SecureSocketFactory;
 import org.apache.axis.components.net.SocketFactoryFactory;
 import org.apache.axis.components.net.TransportClientProperties;
@@ -45,6 +46,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -112,16 +114,19 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			sslPort = EasySSLProtocolSocketFactory.SSL_PORT;
 		}
 
+         boolean hostInNonProxyList = false;
 		TransportClientProperties tcp = TransportClientPropertiesFactory.create("https");
-
+        
+        if (tcp instanceof DefaultHTTPSTransportClientProperties) {
+            hostInNonProxyList  =  ((DefaultHTTPSTransportClientProperties)tcp).getNonProxyHosts().contains("host");
+        }
 		//boolean hostInNonProxyList = super.isHostInNonPxyList(host, tcp.getNonProxyHosts());
 
 		Socket sslSocket;
-		if (!config.getGeneralConfigurationData().getUseIdeaProxySettings()
-				|| tcp.getProxyHost().length() == 0) { // || hostInNonProxyList) {
+		if (!config.getGeneralConfigurationData().getUseIdeaProxySettings() || hostInNonProxyList) {
 			// direct SSL connection
 			sslSocket = super.createSocket(host, sslPort);
-		} else {
+		} else {            
 			int tunnelPort = (tcp.getProxyPort().length() != 0)
 					? Integer.parseInt(tcp.getProxyPort())
 					: DEFAULT_PROXY_PORT;
@@ -129,8 +134,10 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 				tunnelPort = DEFAULT_PROXY_PORT;
 			}
 
+            
 			// Create the regular socket connection to the proxy
-			Socket tunnel = new Socket(tcp.getProxyHost(), tunnelPort);
+            //Socket l = new Socket(new InetAddressImpl(tcp.getProxyHost()), tunnelPort);
+			Socket tunnel = new Socket(InetAddress.getByName(tcp.getProxyHost()), tunnelPort);
 
 			// The tunnel handshake method (condensed and made reflexive)
 			OutputStream tunnelOutputStream = tunnel.getOutputStream();
@@ -197,7 +204,7 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 				}
 			}
 			if (!StringUtils.startsWithIgnoreWhitespaces("HTTP/1.0 200", replyStr)
-					|| !StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
+					&& !StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
 				throw new IOException(Messages.getMessage("cantTunnel00",
 						new String[]{
 								tcp.getProxyHost(),
