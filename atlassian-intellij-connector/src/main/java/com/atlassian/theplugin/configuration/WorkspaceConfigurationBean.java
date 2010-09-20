@@ -34,9 +34,7 @@ public class WorkspaceConfigurationBean implements PersistentStateComponent<Work
 	private UserCfgBean defaultCredentials = new UserCfgBean();
 	private boolean defaultCredentialsAsked;
 
-
 	public WorkspaceConfigurationBean() {
-
 	}
 
 
@@ -90,7 +88,7 @@ public class WorkspaceConfigurationBean implements PersistentStateComponent<Work
 		this.defaultCredentialsAsked = defaultCredentialsAsked;
 	}
 
-	@NotNull
+    @NotNull
 	public UserCfgBean getDefaultCredentials() {
 		return defaultCredentials;
 	}

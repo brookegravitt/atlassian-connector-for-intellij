@@ -34,7 +34,10 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,14 +112,29 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	@NotNull
 	public UserCfg getDefaultCredentials() {
-		return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
-				StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
+        Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
+
+        String password = PasswordStorage.getPassword(project);
+        if (password == null) {
+            password = StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword());
+            PasswordStorage.setPassword(project, password);
+        } else {
+            workspaceConfiguration.setDefaultCredentials(
+                    new UserCfgBean(workspaceConfiguration.getDefaultCredentials().getUsername(), ""));
+        }
+		return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(), password);
 	}
 
 	void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
-		workspaceConfiguration.setDefaultCredentials(
-				new UserCfgBean(defaultCredentials.getUsername(),
-						StringUtil.encode(defaultCredentials.getPassword())));
+        Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
+
+        if (PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
+            workspaceConfiguration.setDefaultCredentials(new UserCfgBean(defaultCredentials.getUsername(), ""));
+        } else {
+            workspaceConfiguration.setDefaultCredentials(
+                    new UserCfgBean(defaultCredentials.getUsername(),
+                            StringUtil.encode(defaultCredentials.getPassword())));
+        }
 	}
 
 	//////////////////////////////////////////////////////////////////

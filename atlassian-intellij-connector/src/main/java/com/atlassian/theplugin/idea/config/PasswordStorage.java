@@ -75,6 +75,21 @@ public class PasswordStorage {
         }
     }
 
+    public static boolean setPassword(Project project, String password) {
+        if (!hasPasswordSafe() || project == null) {
+            return false;
+        }
+        store(project, project.getLocationHash(), password);
+        return true;
+    }
+
+    public static String getPassword(Project project) {
+        if (!hasPasswordSafe() || project == null) {
+            return null;
+        }
+        return load(project, project.getLocationHash());
+    }
+
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
     private static final int IDEA_9_GR4 = 95;
