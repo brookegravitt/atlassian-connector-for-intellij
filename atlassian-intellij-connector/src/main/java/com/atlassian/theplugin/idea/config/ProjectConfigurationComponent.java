@@ -64,9 +64,8 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import java.awt.EventQueue;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -182,6 +181,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		try {
 			final ProjectConfiguration projectConfiguration;
 			projectConfiguration = cfgFactory.load();
+
+            PasswordStorage.loadPasswordsFromSecureStore(project, projectConfiguration, cfgFactory);
+
 			if (projectConfiguration.getDefaultFishEyeServer() == null) {
 				//means that configuration holds Crucible as FishEye server.
 				//in the future this code should be removed
@@ -335,8 +337,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				shouldSaveConfiguration = true;
 			}
 
-			if (shouldSaveConfiguration) {
-				cfgFactory.save(configuration);
+            if (shouldSaveConfiguration) {
+
+                PasswordStorage.savePasswordsToSecureStore(project, configuration, cfgFactory);
+                
 				final String publicCfgFile = getCfgFilePath();
 
 				writeXmlFile(element, publicCfgFile);
