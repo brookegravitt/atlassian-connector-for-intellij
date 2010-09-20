@@ -123,7 +123,8 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 		//boolean hostInNonProxyList = super.isHostInNonPxyList(host, tcp.getNonProxyHosts());
 
 		Socket sslSocket;
-		if (!config.getGeneralConfigurationData().getUseIdeaProxySettings() || hostInNonProxyList) {
+		if (!config.getGeneralConfigurationData().getUseIdeaProxySettings() || hostInNonProxyList
+                || tcp.getProxyHost().length() == 0) {
 			// direct SSL connection
 			sslSocket = super.createSocket(host, sslPort);
 		} else {            
