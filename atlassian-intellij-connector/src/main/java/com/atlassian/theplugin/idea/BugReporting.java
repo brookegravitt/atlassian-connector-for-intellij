@@ -82,7 +82,7 @@ public final class BugReporting {
         versionMap.put("2.4.1", "11900");
 	}
 
-    private static final int MAX_URI_LENGTH = 4096;
+    private static final int MAX_URI_LENGTH = 2048;
 	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
 	private static final String PROJECT_ID = "10024";
 	private static final String TICKET_TYPE_BUG = "1";
