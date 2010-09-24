@@ -105,7 +105,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 			return super.getBeforeCheckinConfigurationPanel();
 		}
 
-        @Override
+       
         public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
             return afterCheckinConfig;
         }
