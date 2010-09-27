@@ -51,7 +51,7 @@
 	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
 	<!-- jjaroczynski: official build of 7.0 was 7361.  -->
 	<!--jgorycki: officil build of 7.0.4 is 7941. -->
-	<idea-version since-build="7361"/>
+	<idea-version since-build="9952"/>
 
 	<change-notes>
 		<![CDATA[
