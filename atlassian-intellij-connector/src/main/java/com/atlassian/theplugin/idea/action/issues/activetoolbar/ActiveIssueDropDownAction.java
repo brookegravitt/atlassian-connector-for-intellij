@@ -22,6 +22,8 @@ import javax.swing.*;
  * Time: 12:11:02 PM
  */
 public class ActiveIssueDropDownAction extends ComboBoxAction {
+    public ActiveIssueDropDownAction() {
+    }
 
     @Override
     public void update(AnActionEvent event) {
