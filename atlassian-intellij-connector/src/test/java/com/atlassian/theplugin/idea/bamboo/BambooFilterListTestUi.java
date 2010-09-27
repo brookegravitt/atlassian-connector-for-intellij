@@ -31,8 +31,9 @@ import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerIdImpl());
 	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerIdImpl());
 	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerIdImpl());
-	private static ProjectCfgManagerImpl projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
+	private static ProjectCfgManagerImpl projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean(), null);
 
 	private BambooFilterListTestUi() {
 	}

@@ -15,7 +15,15 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import junit.framework.TestCase;
@@ -36,7 +44,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
+		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean(), null);
 
 		listener = EasyMock.createMock(ConfigurationListener.class);
 		projectCfgManager.addProjectConfigurationListener(listener);

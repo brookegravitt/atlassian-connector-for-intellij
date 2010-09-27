@@ -108,7 +108,7 @@ public class ProjectCfgManagerImplTest extends TestCase {
 	}
 
 	protected ProjectCfgManager createCfgManager() {
-		return new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
+		return new ProjectCfgManagerImpl(new WorkspaceConfigurationBean(), null);
 	}
 
 	public void testAddServer() throws Exception {

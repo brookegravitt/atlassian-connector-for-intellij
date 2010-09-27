@@ -54,16 +54,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     private Collection<ConfigurationListener> listeners = new ArrayList<ConfigurationListener>(100);
 
     /**
-     * Do NOT use the constructor is used for test purposes inly
-     *
-     * @param workspaceConfiguration used for default credentials purposes only (can be null for tests)
-     */
-    public ProjectCfgManagerImpl(WorkspaceConfigurationBean workspaceConfiguration) {
-        this.workspaceConfiguration = workspaceConfiguration;
-        this.project = null;
-    }
-
-    /**
      * Do NOT use the constructor. It is called by PICO.
      *
      * @param workspaceConfiguration used for default credentials purposes only (can be null for tests)
@@ -121,21 +111,21 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
     @NotNull
     public UserCfg getDefaultCredentials() {
-        String password = null;
-        if (project != null) {
-            password = PasswordStorage.getPassword(project);
-        }
 
-        if (password == null && project != null) {
-            password = StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword());
-            PasswordStorage.setPassword(project, password);
-            return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(), password);
-        } else {
+        if (project == null) {
             return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
                     StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
+        } else {
+            String password = PasswordStorage.getPassword(project);
+            if (password == null) {
+                password = StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword());
+                PasswordStorage.setPassword(project, password);
+            }
+                        
+            return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(), password);
         }
-
     }
+
 
     void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
         if (project != null && PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
