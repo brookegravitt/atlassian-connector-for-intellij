@@ -79,9 +79,8 @@ public final class IdeaVersionFacade {
         // deprecated getBuildNumber() method here...
         @SuppressWarnings("deprecation")
         String ver = ApplicationInfo.getInstance().getBuildNumber();
-        Matcher m = IDEA_9_REGEX.matcher(ver);
-        m.matches();
-        final int group4 = m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
+        Matcher m = IDEA_9_REGEX.matcher(ver);        
+        final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
 
         if (m.matches() && group4 == IDEA_9_GR4) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now

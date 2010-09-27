@@ -41,7 +41,7 @@ public class CfgManagerNotificationTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
+		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean(), null);
 		populateServerCfgs();
 	}
 
