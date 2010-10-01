@@ -1,0 +1,21 @@
+<atlassian-ide-plugin>
+  <project-configuration>
+    <servers>
+      <crucible>
+        <server-id>9538b116-c4a7-4afd-bf33-f45a738dce2e</server-id>
+        <name>Unnamed_1</name>
+        <url>http://lech:5225/crucible</url>
+        <shared>false</shared>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <jira>
+        <server-id>c2f78497-e859-444b-9995-5c0e50315cbd</server-id>
+        <name>Studio</name>
+        <url>https://studio.atlassian.com</url>
+        <shared>false</shared>
+      </jira>
+    </servers>
+    <default-crucible-server>9538b116-c4a7-4afd-bf33-f45a738dce2e</default-crucible-server>
+    <default-jira-server>c2f78497-e859-444b-9995-5c0e50315cbd</default-jira-server>
+  </project-configuration>
+</atlassian-ide-plugin>

@@ -1,0 +1,1448 @@
+<!--
+
+    Copyright (C) 2008 Atlassian
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License. 
+                                                                                                                     
+-->
+
+<!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
+<!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
+<!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
+<idea-plugin url="http://www.atlassian.com/software/ideplugin/">
+
+	<name>Atlassian Connector for IntelliJ IDEA</name>
+	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
+	<!--
+															  todo lguminski/jjaroczynski check if there is some decent way of getting artifactId from pom.xml
+															  <plugin-id>${project.artifactId}</plugin-id>
+														  -->
+	<plugin-id>atlassian-idea-plugin</plugin-id>
+	<description>
+		<![CDATA[
+		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
+		<ul>
+			<li>Bamboo</li>
+			<li>Crucible 1.6 and above</li>
+			<li>JIRA 3.7 and above</li>
+			<li>Fisheye</li>
+		</ul>
+		]]>
+	</description>
+
+    
+	<version>${project.version}, SVN:${buildNumber}</version>
+
+	<!-- no email link for now - we don't have the plugin email alias yet-->
+	<!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
+	<vendor url="http://www.atlassian.com">Atlassian</vendor>
+
+	<!--we will only support IDEAs 7.x for now - the one we are testing on -->
+	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
+	<!-- jjaroczynski: official build of 7.0 was 7361.  -->
+	<!--jgorycki: officil build of 7.0.4 is 7941. -->
+	<idea-version since-build="9952"/>
+
+	<change-notes>
+		<![CDATA[
+		<ul>
+		    <li>2.3.0: In-place JIRA issue editing, Preset filters for JIRA, Basic Authentication for JIRA, integration with IDEA Task plugin, Crucible iterative reviews</li>
+			<li>2.2.2: Bugfix release</li>
+			<li>2.2.1: Bugfix release</li>
+			<li>2.2: A lot of incrementally added awesomeness</li>
+			<li>2.1.1: Bugfix release</li>
+		    <li>2.1.0: Many significant improvements. Issue workflow actions, activation; improved handling of reviews</li>
+			<li>2.0.1: Bugfix release</li>
+			<li>2.0.0: Brand spanking new! Awesome new Features! New exciting bugs! Drama! Excitement! Fresh fruit!</li>
+			<li>2.0.0-beta-12: Almost home stretch to 2.0</li>
+			<li>2.0.0-beta-11: New Bamboo tab and build tool window; JIRA issue panel</li>
+			<li>2.0.0-beta-10: More work new Crucible panel</li>
+			<li>2.0.0-beta-9: New Crucible panel</li>
+			<li>2.0.0-beta-8: More work on new JIRA issues panel</li>
+			<li>2.0.0-beta-7: New layout of the JIRA issues panel</li>
+			<li>2.0.0-beta-6: Bug fixes. Support for IDEA 8. Opening fisheye links in IDEA</li>
+			<li>2.0.0-beta-5: Bug fixes. Fisheye server support. Build information inside the IDE. Re-run failed tests from the build in IDE. Create changelist, assign to myself and start progress in one click</li>
+			<li>2.0.0-beta-4: Bug fixes. Started redesign of the UI</li>
+			<li>2.0.0-beta-3: Bug fixes</li>
+			<li>2.0.0-beta-2: Bug fixes</li>
+			<li>2.0.0-beta-1: Crucible review support, numerous enhancements</li>
+			<li>1.7.0: Bamboo build stack traces; bamboo build commit list</li>
+			<li>1.6.1: Plugin upgrade window change, added support for ALPHA and BETA versions</li>
+			<li>1.6.0: Bug fix release - better multiframe support, check now button works in presence of proxy, improved JIRA issue view</li>
+			<li>1.5.0: Crucible:Create review upon commit with a single click from different IDE places,
+					   JIRA:An in IDE view of the issue, focussing on stack traces and related code pieces, logging work,
+					   Bugs: Many bugs fixed</li>
+			<li>1.4.1: errata release</li>
+		    <li>1.4.0: Crucible 1.6 integration "dashboard", JIRA action support</li>
+            <li>1.3.1: errata release</li>
+		    <li>1.3.0: Several new JIRA features (logging work, assigning issues, etc.)</li>
+		    <li>1.2.1: Errata release - restored saved filters functionality (bug PL-329)</li>
+			<li>1.2.0: proxy support, work loging for JIRA, switched from XMLRPC to SOAP</li>
+		    <li>1.1.0: Bug fix release</li>
+			<li>1.0.1: Errata release</li>
+			<li>1.0.0: first public release. With advanced JIRA filtering capabilities</li>
+			<li>0.5.0: even more small improvements and bugfixes. UI looks really nice now</li>
+			<li>0.4.0: many small improvements and bugfixes</li>
+			<li>0.3.1: now with basic JIRA support! And autoupdate</li>
+			<li>0.3.0: broken :(</li>
+			<li>0.2.0: Look&feel improvements, bug fixes and initial support for Crucible</li>
+			<li>0.1.0: A much more stable version with a nicely working bamboo build status support,
+			but crappy visuals</li>
+			<li>0.0.1: Initial version with minimal functionality and many annoyng bugs</li>
+		</ul>
+		]]>
+	</change-notes>    
+    <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
+	<depends>JUnit</depends>
+    <depends>Subversion</depends>
+
+
+	<extensions defaultExtensionNs="com.intellij">		
+		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
+
+		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
+		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
+
+		<projectService serviceInterface="com.atlassian.connector.cfg.ProjectCfgManager"
+						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"/>
+		<!-- PLUGIN WORKSPACE CONFIGURATION -->
+		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"
+						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.configuration.WorkspaceConfigurationBean"
+						serviceImplementation="com.atlassian.theplugin.configuration.WorkspaceConfigurationBean"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"
+						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache"
+						serviceImplementation="com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModel"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow"
+						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow"
+						serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration"
+						serviceImplementation="com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel"
+						serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel"/>
+		<!--<projectService serviceInterface="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration" -->
+		<!--serviceImplementation="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration"/>-->
+
+		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
+						serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
+
+
+		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
+						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildToolWindow"
+						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildToolWindow"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"
+						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"
+						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
+						serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
+
+
+		<applicationService serviceInterface="com.atlassian.theplugin.commons.UiTaskExecutor"
+							serviceImplementation="com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor"/>
+
+		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao"
+							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
+
+        <applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.xstream.UserSharedConfigurationDao"
+							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirSharedConfigurationImpl"/>
+
+
+        <applicationService serviceInterface="com.atlassian.theplugin.commons.UIActionScheduler"
+                            serviceImplementation="com.atlassian.theplugin.idea.IdeaActionScheduler"/>
+        
+        <applicationService serviceInterface="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"
+                            serviceImplementation="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"/>
+
+        <projectService serviceInterface="com.atlassian.theplugin.crucible.model.ReviewListModelBuilder"
+                        serviceImplementation="com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl"/>
+
+        <projectService serviceInterface="com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker"
+                        serviceImplementation="com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker"/>
+        	
+		<!--<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"-->
+		<!--serviceImplementation="com.atlassian.theplugin.commons.cfg.CfgManagerImpl"/>-->
+
+		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
+		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>
+
+
+	</extensions>
+
+	<application-components>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
+		</component>
+		<component>
+			<implementation-class>com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean</implementation-class>
+		</component>
+        <component>
+            <implementation-class>com.atlassian.theplugin.jira.model.JIRAServerModelIdea</implementation-class>            		
+        </component>
+
+	</application-components>
+	<project-components>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
+			<headless-implementation-class/>
+		</component>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.config.ProjectConfigurationComponent</implementation-class>
+		</component>
+        <component>
+            <implementation-class>com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderProxy</implementation-class>
+        </component>
+	</project-components>
+
+	<actions>
+		<action id="ThePlugin.ShowHideMainToolWindow"
+				class="com.atlassian.theplugin.idea.action.ShowHideMainPluginWindowAction"
+				text="Show/Hide Main Plugin Tool Window" description="Shows/Hides main plugin tool window">
+			<keyboard-shortcut first-keystroke="shift control p" keymap="$default"/>
+		</action>
+
+		<action id="ThePlugin.AddServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add New Server"
+				description="Add a new server" icon="/general/add.png"/>
+		<action id="ThePlugin.RemoveServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction"
+				text="Remove Server" description="Remove an existing server" icon="/general/remove.png"/>
+
+		<action id="ThePlugin.AddBambooServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
+				text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
+		<action id="ThePlugin.AddCrucibleServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
+				text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
+		<action id="ThePlugin.AddJIRAServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction"
+				text="Add JIRA Server"
+				description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
+
+		<action id="ThePlugin.AddFishEyeServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddFishEyeServerAction"
+				text="Add FishEye Server" description="Add a new FishEye Server" icon="/icons/fisheye-16.png"/>
+
+        <action id="ThePlugin.AddStudioServerSetAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddStudioServerSetAction"
+                text="Connect to JIRA Studio"
+                description="Add a new JIRA Studio Server Set"
+                icon="/icons/jirastudio-blue-16.png"/>
+
+		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+			<reference id="ThePlugin.AddServerAction"/>
+			<reference id="ThePlugin.RemoveServerAction"/>
+		</group>
+		<group id="ThePlugin.AddRemoveServerPopup">
+			<reference id="ThePlugin.AddBambooServerAction"/>
+			<reference id="ThePlugin.AddCrucibleServerAction"/>
+			<reference id="ThePlugin.AddJIRAServerAction"/>
+			<reference id="ThePlugin.AddFishEyeServerAction"/>
+			<reference id="ThePlugin.RemoveServerAction"/>
+		</group>
+
+		<group id="ThePlugin.ServerTypePopup">
+			<reference id="ThePlugin.AddBambooServerAction"/>
+			<reference id="ThePlugin.AddCrucibleServerAction"/>
+			<reference id="ThePlugin.AddJIRAServerAction"/>
+			<reference id="ThePlugin.AddFishEyeServerAction"/>
+            <separator/>
+            <reference id="ThePlugin.AddStudioServerSetAction"/>
+		</group>
+
+		<action id="ThePlugin.ShowProjectSettings" class="com.atlassian.theplugin.idea.action.ShowProjectSettingsAction"
+				text="Project Settings" description="Show plugin project configuration">
+			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.ShowGlobalSettings" class="com.atlassian.theplugin.idea.action.ShowGlobalSettingsAction"
+				text="Global Settings" description="Show plugin shared configuration">
+			<keyboard-shortcut first-keystroke="shift control h" keymap="$default"/>
+		</action>
+
+		<group id="ThePlugin.ShowSettingsGroup" popup="true" icon="/general/ideOptions.png" text="Configure Project Settings"
+			   description="Show plugin project configuration">
+			<reference id="ThePlugin.ShowProjectSettings"/>
+			<reference id="ThePlugin.ShowGlobalSettings"/>
+		</group>
+
+		<action id="ThePlugin.HelpBamboo" class="com.atlassian.theplugin.idea.action.bamboo.BambooHelpAction"
+				text="Help" description="Help" icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpCrucible" class="com.atlassian.theplugin.idea.action.crucible.CrucibleHelpAction"
+				text="Help" description="Help" icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help"
+				description="Help" icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpBuild"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.BuildHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpReview"
+				class="com.atlassian.theplugin.idea.action.crucible.ReviewHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpIssue"
+				class="com.atlassian.theplugin.idea.action.jira.IssueHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
+
+
+		<!-- Bamboo tool window panel related actions -->
+		<action id="ThePlugin.Bamboo.FilterBy" class="com.atlassian.theplugin.idea.bamboo.FilterByAction"
+				text="Filter Bamboo Plans" description="Filter Bamboo Plans"/>
+
+		<action id="ThePlugin.Bamboo.RefreshStatus"
+				class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh"
+				description="Refresh" icon="/actions/sync.png"/>
+		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction"
+				text="View in Browser" description="View in Browser" icon="/icons/crucible/pin_viewinbrowser.png"/>
+		<action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction"
+				text="Run Build" description="Run Bamboo build" icon="/actions/execute.png">
+			<keyboard-shortcut first-keystroke="control R" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Bamboo.AddLabelToBuild"
+				class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add Label to Build"
+				description="Add label to Bamboo build" icon="/icons/icn_label.gif"/>
+		<action id="ThePlugin.Bamboo.AddCommentToBuild"
+				class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add Comment to Build"
+				description="Add comment to Bamboo build" icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.Bamboo.ShowHideBambooTab"
+				class="com.atlassian.theplugin.idea.action.bamboo.ShowHideBambooTabAction" text="Show/Hide Bamboo Tab"
+				description="Shows or hides Bamboo tab in main plugin window">
+			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Bamboo.OpenBuild" class="com.atlassian.theplugin.idea.action.bamboo.OpenBuildActionNew"
+				text="Open Build" description="Open Build Details" icon="/actions/showChangesOnly.png">
+			<keyboard-shortcut first-keystroke="control B" keymap="$default"/>
+		</action>
+        <action id="ThePlugin.Bamboo.OpenBuildFromHistory"
+                class="com.atlassian.theplugin.idea.action.bamboo.OpenBuildFromHistoryAction"
+                text="Open Build" description="Open Build Details"
+                icon="/actions/showChangesOnly.png"/>
+		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Bamboo.CollapseTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.Bamboo.RunTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.RunTestsAction"
+				text="Run Tests"
+				icon="/actions/execute.png"/>
+		<action id="ThePlugin.Bamboo.DebugTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.DebugTestsAction"
+				text="Debug Tests"
+				icon="/actions/startDebugger.png"/>
+		<action id="ThePlugin.Bamboo.JumpToSource"
+				class="com.atlassian.theplugin.idea.action.bamboo.JumpToSourceAction"
+				text="Jump to Source"/>
+		<action id="ThePlugin.Bamboo.ToggleAllTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction"
+				text="Hide Passed"
+				icon="/runConfigurations/hidePassed.png"/>
+
+		<action id="ThePlugin.Build.View"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.ViewBuildAction"
+				text="View Build"
+				description="View build in the browser" icon="/icons/crucible/pin_viewinbrowser.png"/>
+		<action id="ThePlugin.Build.Run"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.RunBuildAction"
+				text="Run Build"
+				description="Run Build" icon="/actions/execute.png"/>
+		<action id="ThePlugin.Build.Comment"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CommentBuildAction"
+				text="Comment Build"
+				description="Add Comment to Build" icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.Build.Label"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.LabelBuildAction"
+				text="Label Build"
+				description="Add Label to Build" icon="/icons/icn_label.gif"/>
+		<action id="ThePlugin.Build.Close"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CloseBuildAction"
+				text="Close"
+				description="Close Build panel" icon="/actions/cancel.png"/>
+
+		<action id="ThePlugin.Bamboo.Changes.GoToSource"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.GoToSourceAction" text="Jump to Source"
+				icon="/actions/export.png">
+			<keyboard-shortcut first-keystroke="F4" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Bamboo.Changes.DiffWithLocal"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffAction"
+				text="Show Diff with Local" icon="/actions/diffWithCurrent.png">
+			<keyboard-shortcut first-keystroke="control D" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Bamboo.Changes.DiffWithPrevious"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffWithPreviousAction"
+				text="Show Diff with Previous" icon="/actions/diff.png">
+		</action>
+		<action id="ThePlugin.Bamboo.Changes.OpenRepoVersion"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
+				text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
+		<action id="ThePlugin.Bamboo.Changes.JumpToFisheye"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.JumpToFisheyeAction"
+				text="Open File in Fisheye" icon="/icons/fisheye-16.png"/>
+
+
+		<action id="ThePlugin.Tree.File.Filter"
+				class="com.atlassian.theplugin.idea.action.tree.file.ToggleFilterFilesAction"
+				text="Show Files with Comments Only" icon="/actions/unselectall.png"/>
+
+		<action id="ThePlugin.Tree.File.GroupByDir"
+				class="com.atlassian.theplugin.idea.action.tree.file.ToggleViewAction"
+				text="Group by Directory" icon="/nodes/folder.png"/>
+		<action id="ThePlugin.Tree.File.ExpandFiles"
+				class="com.atlassian.theplugin.idea.action.tree.file.ExpandFilesAction"
+				text="Expand All"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Tree.File.CollapseFiles"
+				class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.Crucible.ShowFileAction"
+				class="com.atlassian.theplugin.idea.action.crucible.ShowFileAction"
+				text="Open Revision for Review" icon="/actions/menu-open.png">
+			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Crucible.ShowCommentAction"
+				class="com.atlassian.theplugin.idea.action.crucible.ShowCommentAction"
+				text="Open Revision on Comment" icon="/actions/menu-open.png">
+			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
+		</action>
+
+		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction"
+				class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction"
+				text="Open Diff View for Review"
+				icon="/actions/diff.png">
+			<keyboard-shortcut first-keystroke="control D" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Crucible.GoToLocalSource"
+				class="com.atlassian.theplugin.idea.action.crucible.GoToLocalSourceAction" text="Jump to Source"
+				icon="/actions/export.png">
+			<keyboard-shortcut first-keystroke="F4" keymap="$default"/>
+		</action>
+
+
+		<action id="ThePlugin.Crucible.Comment.Reply"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
+				text="Add Comment" icon="/icons/crucible/comments/ico_comment_right.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+		</action>
+		<action id="ThePlugin.Crucible.Comment.AddGeneralComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.AddGeneralCommentAction"
+				text="Add General Comment" icon="/icons/crucible/comments/ico_comment_add.png"/>
+		<action id="ThePlugin.Crucible.Comment.Edit"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
+				text="Edit Comment" icon="/actions/editSource.png"/>
+		<action id="ThePlugin.Crucible.Comment.Remove"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
+				text="Remove Comment" icon="/general/remove.png"/>
+		<action id="ThePlugin.Crucible.Comment.Publish"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PublishAction"
+				text="Publish Comment" icon="/actions/menu-saveall.png"/>
+
+		<action id="ThePlugin.Crucible.Comment.Gutter.Reply"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.ReplyAction"
+				text="Reply" icon="/icons/crucible/comments/ico_comment_right.png"/>
+		<action id="ThePlugin.Crucible.Comment.Gutter.Edit"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.EditAction"
+				text="Edit" icon="/actions/editSource.png"/>
+		<action id="ThePlugin.Crucible.Comment.Gutter.Remove"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.RemoveAction"
+				text="Remove" icon="/general/remove.png"/>
+		<action id="ThePlugin.Crucible.Comment.Gutter.Publish"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.PublishAction"
+				text="Publish" icon="/actions/menu-saveall.png"/>
+
+		<action id="ThePlugin.Crucible.Comment.NextComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
+				text="Next Comment"
+				icon="/icons/crucible/comments/ico_comment_down.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="shift control alt PAGE_DOWN"/>
+		</action>
+		<action id="ThePlugin.Crucible.Comment.PrevComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PrevCommentAction"
+				text="Previous Comment"
+				icon="/icons/crucible/comments/ico_comment_up.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="shift control alt PAGE_UP"/>
+		</action>
+        <action id="ThePlugin.Crucible.Comment.OnlyUnread"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.OnlyNavigateToUnreadAction"
+                text="Skip Read Comments"
+                icon="/icons/crucible/comments/ico_comment_toggle_skip.png"/>
+        <action id="ThePlugin.Crucible.Comment.MarkAllRead"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkAllCommentsReadAction"
+                text="Mark All Comments Read"
+                icon="/icons/crucible/comments/ico_comment_read.png"/>
+        <action id="ThePlugin.Crucible.Comment.MarkRead"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentReadAction"
+                text="Mark Read"
+                icon="/icons/crucible/comments/ico_comment_toggle_read.png"/>
+                />
+        <action id="ThePlugin.Crucible.Comment.MarkLeaveUnread"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentLeaveUnreadAction"
+                text="Leave Unread"
+                icon="/icons/crucible/comments/ico_comment_toggle_unread.png"/>
+                />
+		<action id="ThePlugin.Crucible.Comment.NextDiff"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
+				text="Next Difference"
+				icon="/actions/moveDown.png">
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</action>
+		<action id="ThePlugin.Crucible.Comment.PrevDiff"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PrevDiffAction"
+				text="Previous Difference"
+				icon="/actions/moveUp.png">
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</action>
+
+		<action id="ThePlugin.Crucible.Add.Comment.In.Editor" class="com.atlassian.theplugin.idea.action.CommentAction"
+				text="Add Crucible Comment"
+				description="Review lines of code with Crucible" icon="/icons/crucible/comments/ico_comment_add.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+			<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
+			<!-- version specific, have to add this group from code -->
+			<!--<add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>-->
+		</action>
+
+        <action id="ThePlugin.Crucible.Edit.ManualFilter"
+                class="com.atlassian.theplugin.idea.action.crucible.EditManualFilterAction"
+                text="Edit"
+                icon="/actions/editSource.png"
+                description="Change manual filter details">
+         </action>
+         <group id="ThePlugin.Crucible.ManualFilterPopupGroup" popup="true">
+			<reference id="ThePlugin.Crucible.Edit.ManualFilter"/>
+		</group>
+		<!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
+		<!--class="com.atlassian.theplugin.idea.action.crucible.review.PreCommitReviewFromEditor"-->
+		<!--text="Create Pre-commit Review"-->
+		<!--description="Create Pre-commit review" icon="/icons/add_crucible-pre.png">-->
+		<!--<add-to-group group-id="EditorPopupMenu" anchor="last"/>-->
+		<!--</action>-->
+
+		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
+				text="Open FishEye Link in Browser"
+				description="Open FishEye Link in Browser">
+		</action>
+
+		<action id="CopyFisheyeLink"
+				class="com.atlassian.theplugin.idea.action.fisheye.CopyFisheyeLinkToClipboardAction"
+				text="Copy Fisheye Link to Clipboard"
+				description="Copy Fisheye Link to Clipboard">
+		</action>
+
+		<action id="AnnotateInFisheye"
+				class="com.atlassian.theplugin.idea.action.fisheye.AnnotateAction"
+				text="Annotate via Fisheye"
+				description="Annotate via Fisheye">
+			<!--<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>-->
+		</action>
+
+		<action id="OpenFisheyeLinkInEditor"
+				class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInEditorAction"
+				text="Open FishEye URL"
+				description="Open FishEye URL in Editor"
+				icon="/icons/fisheye-16.png">
+		</action>
+
+		<action id="ThePlugin.JiraIssues.QuickSearch"
+				class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
+				text="Search JIRA"
+				icon="/icons/find-jira.png">
+			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
+		</action>
+
+        <action id="ThePlugin.JiraIssues.QuickSearchForReviews"
+                class="com.atlassian.theplugin.idea.action.crucible.SearchReviewsForIssueAction"
+                text="Search for Reviews"
+                icon="/icons/find-crucible.png">
+            <keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+                </action>
+
+		<!--<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"-->
+				<!--class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"-->
+				<!--text=""-->
+				<!-->-->
+		<!--</action>-->
+
+		<action id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.OpenActiveJiraIssue"
+				text="Open Active Issue"
+				icon="/icons/jira-blue-16.png"
+				>
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
+				text="Start/Stop Work"
+				icon="/icons/ico_activateissue.png">
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
+				text="Start/Stop Work"
+				icon="/icons/ico_activateissue.png">
+		</action>
+		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
+				text="Stop Work"
+				icon="/icons/ico_inactiveissue.png">
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
+				text="Stop Work"
+				icon="/icons/ico_inactiveissue.png">
+		</action>
+
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssue"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueDetails"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueDetailsAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueInToolbarAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueLogWorkAction"
+				text="Log Work"
+				icon="/general/todoDefault.png">
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActiveIssueComment"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueCommentAction"
+				text="Add Comment"
+				icon="/icons/icn_comment.gif">
+		</action>
+
+        <action id="ThePlugin.ActiveTaskBar.ActiveIssueBox"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueButtonAction"
+                text="Active Issue">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction"
+                text="Active Issue Drop Down">
+        </action>
+
+
+		<action id="ThePlugin.JiraIssues.CreateIssue"
+				class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
+				text="Create JIRA Issue"
+				icon="/icons/add_jira.png">
+			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
+		</action>
+
+		<action id="ThePlugin.Reviews.QuickSearch"
+				class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
+				text="Search Review"
+				icon="/icons/find-crucible.png">
+			<keyboard-shortcut first-keystroke="control shift alt r" keymap="$default"/>
+		</action>
+
+        <action id="ThePlugin.Bamboo.QuickSearch"
+                class="com.atlassian.theplugin.idea.action.bamboo.QuickSearchBuildAction"
+                text="Search Build"
+                icon="/icons/find-bamboo.png">
+            <keyboard-shortcut first-keystroke="control shift alt b" keymap="$default"/>
+        </action>
+
+		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
+			<reference id="OpenFisheyeLink"/>
+			<reference id="CopyFisheyeLink"/>
+			<!--<reference id="AnnotateInFisheye"/>-->
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</group>
+
+         <action id="ShowAllReviewsForFileAction"
+                 class="com.atlassian.theplugin.idea.action.crucible.ShowAllReviewsForFileAction"
+                 text="Show Related Reviews"
+                 icon="/icons/crucible-16.png">
+          </action>
+        <group id="ThePlugin.CrucibleEditorMenu" popup="true" text="Crucible">
+            <reference id="ShowAllReviewsForFileAction"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </group>
+		<group id="ThePlugin.GoToMenu">
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
+			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
+			<add-to-group group-id="GoToMenu" anchor="last"/>
+		</group>
+
+		<!--Remember to have only one group added to MainToolBar-->
+		<group id="ThePlugin.ActiveToolbar">
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
+			<separator/>
+            <reference id="ThePlugin.ActiveTaskBar.ActiveIssueBox"/>
+            <reference id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"/>
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
+			<add-to-group group-id="MainToolBar" anchor="last"/>
+		</group>
+
+
+        <!-- we use it only for IDEA 9 and above -->
+        <group id="ThePlugin.TasksToolbar">
+            <reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
+            <separator/>
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
+
+        </group>
+
+		<action id="ThePlugin.CommittedChanges.Refresh"
+				text="Refresh Committed Changes"
+				class="com.atlassian.theplugin.idea.action.crucible.RefreshCommittedChanges"
+				icon="/vcs/refresh.png"/>
+
+		<group id="ThePlugin.CommittedChangesToolbar">
+			<reference ref="ThePlugin.CommittedChanges.Refresh"/>
+			<reference ref="CommittedChanges.Details"/>
+		</group>
+
+		<group id="ThePlugin.BuildToolWindowToolBar" popup="false">
+			<reference id="ThePlugin.Build.View"/>
+			<reference id="ThePlugin.Build.Run"/>
+			<reference id="ThePlugin.Build.Label"/>
+			<reference id="ThePlugin.Build.Comment"/>
+			<reference id="ThePlugin.Build.Close"/>
+			<separator/>
+			<reference id="ThePlugin.HelpBuild"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.TestResultsToolBar" popup="false">
+			<reference id="ThePlugin.Bamboo.ToggleAllTests"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.ExpandTests"/>
+			<reference id="ThePlugin.Bamboo.CollapseTests"/>
+			<reference id="ThePlugin.Bamboo.RunTests"/>
+			<reference id="ThePlugin.Bamboo.DebugTests"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.TestResultsPopupMenu" popup="true">
+			<reference id="ThePlugin.Bamboo.RunTests"/>
+			<reference id="ThePlugin.Bamboo.DebugTests"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.JumpToSource"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
+			<reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
+			<reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
+			<reference id="ThePlugin.Bamboo.Changes.DiffWithPrevious"/>
+			<reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
+			<reference id="ThePlugin.Bamboo.Changes.JumpToFisheye"/>
+			<separator/>
+		</group>
+
+		<group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
+			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
+			<reference id="ThePlugin.Crucible.ShowFileAction"/>
+			<reference id="ThePlugin.Crucible.ShowCommentAction"/>
+			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
+			<separator/>
+			<reference id="ThePlugin.Crucible.Comment.Reply"/>
+			<reference id="ThePlugin.Crucible.Comment.Edit"/>
+			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<separator/>
+			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+            <reference id="ThePlugin.Crucible.Comment.OnlyUnread"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkAllRead"/>
+            <separator/>
+			<reference id="ThePlugin.Crucible.Comment.PrevDiff"/>
+			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
+			<separator/>
+			<reference id="ThePlugin.Tree.File.Filter"/>
+		</group>
+
+		<group id="ThePlugin.TreeOperations" popup="false" text="">
+			<add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
+			<add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
+			<reference id="ThePlugin.Tree.File.GroupByDir"/>
+			<reference id="ThePlugin.Tree.File.ExpandFiles"/>
+			<reference id="ThePlugin.Tree.File.CollapseFiles"/>
+		</group>
+
+		<!-- Crucible tool window panel related actions -->
+		<action id="ThePlugin.Crucible.ShowHideCrucibleTab"
+				class="com.atlassian.theplugin.idea.action.crucible.ShowHideCrucibleTabAction"
+				text="Show/Hide Crucible Tab" description="Shows or hides Crucuble tab in main plugin window">
+			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
+		</action>
+
+		<action id="ThePlugin.Crucible.PostCommitReview"
+				class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
+				icon="/icons/add_crucible.png"/>
+		<action id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"
+				class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewActionNoRevisionSelected"
+				text="Create Review from Commits"
+				icon="/icons/add_crucible.png"/>
+		<action id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"
+				class="com.atlassian.theplugin.idea.action.crucible.PreCommitReviewActionNoChangeSelected"
+				text="Create Pre-commit Review"
+				icon="/icons/add_crucible-pre.png"/>
+		<action id="ThePlugin.Crucible.AddRevisionToReview"
+				class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction"
+				text="Add Revision to Review" icon="/icons/fisheye-16-plus.png"/>
+		<action id="ThePlugin.Crucible.ViewFisheyeChangeset"
+				class="com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetAction"
+				text="View Changeset in Fisheye"
+				icon="/icons/fisheye-16.png"/>
+		<action id="ThePlugin.Crucible.ViewFisheyeChangesetItem"
+				class="com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction"
+				text="View in Fisheye"
+				icon="/icons/fisheye-16.png"/>
+
+		<action id="ThePlugin.Crucible.PreCommitReview"
+				class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit Review"
+				icon="/icons/add_crucible-pre.png"/>
+		<action id="ThePlugin.Crucible.AddPatchToReview"
+				class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add Patch to Review"
+				icon="/icons/fisheye-16-plus.png"/>
+
+		<action id="ThePlugin.Crucible.CreateCrucibleReview"
+				class="com.atlassian.theplugin.idea.action.crucible.CreateCrucibleReviewAction"
+				text="Create Review"
+				icon="/icons/add_crucible.png"/>
+
+		<group id="ThePlugin.Crucible.CreateCrucibleReviewGroup"
+			   popup="true"
+			   text="Create Review"
+			   description="Create Crucible Review">
+			<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>
+			<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
+		</group>
+
+		<group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
+			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
+			<reference id="ThePlugin.Crucible.ShowFileAction"/>
+			<reference id="ThePlugin.Crucible.ShowCommentAction"/>
+			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
+			<reference id="ThePlugin.Crucible.Comment.Reply"/>
+			<reference id="ThePlugin.Crucible.Comment.Edit"/>
+			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+			<reference id="ThePlugin.Crucible.Comment.Publish"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkRead"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkLeaveUnread"/>
+		</group>
+
+		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
+			<reference id="ThePlugin.Crucible.PostCommitReview"/>
+			<reference id="ThePlugin.Crucible.AddRevisionToReview"/>
+			<reference id="ThePlugin.Crucible.ViewFisheyeChangeset"/>
+			<add-to-group anchor="last" group-id="CommittedChangesToolbar"/>
+		</group>
+
+		<group id="ThePlugin.Crucible.PreCommit" popup="false" text="Crucible">
+			<reference id="ThePlugin.Crucible.PreCommitReview"/>
+			<reference id="ThePlugin.Crucible.AddPatchToReview"/>
+			<add-to-group anchor="last" group-id="ChangesViewToolbar"/>
+		</group>
+
+		<group id="ThePlugin.Crucible.PreCommitPopup" popup="true" text="Crucible">
+			<reference id="ThePlugin.Crucible.PreCommitReview"/>
+			<reference id="ThePlugin.Crucible.AddPatchToReview"/>
+			<add-to-group anchor="last" group-id="ChangesViewPopupMenu"/>
+		</group>
+
+		<group id="ThePlugin.Fisheye.Incoming" popup="false" text="Fisheye">
+			<reference id="ThePlugin.Crucible.ViewFisheyeChangeset"/>
+			<add-to-group anchor="last" group-id="IncomingChangesToolbar"/>
+		</group>
+
+		<group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
+
+		<group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
+			<reference id="ThePlugin.Crucible.Comment.Reply"/>
+			<reference id="ThePlugin.Crucible.Comment.Edit"/>
+			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+			<reference id="ThePlugin.Crucible.Comment.Publish"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+
+		</group>
+
+		<!-- [START] Issues window related actions -->
+
+		<action id="ThePlugin.JiraIssues.RefreshServers"
+				class="com.atlassian.theplugin.idea.action.issues.RefreshServersAction"
+				text="Refresh Servers"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.ExpandServers"
+				class="com.atlassian.theplugin.idea.action.issues.ExpandServersAction"
+				text="Expand All Servers"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.JiraIssues.CollapseServers"
+				class="com.atlassian.theplugin.idea.action.issues.CollapseServersAction"
+				text="Collapse All Servers"
+				icon="/actions/collapseall.png"/>
+
+
+          <!-- JIRA Server Popup -->
+         <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
+                text="Remove Custom Filter"
+                icon="/icons/jira/nodes/ico_jira_remove_filter.png"
+                description="Remove Custom filter">
+        </action>
+
+        <action id="ThePlugin.JiraIssues.CustomFilter.AddAction"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.AddAction"
+                text="Add Custom Filter"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Add Custom Filter">
+         </action>
+
+        <action id="ThePlugin.JiraIssues.PresetFilter.SetProjectAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.SetProjectAction"
+                text="Set Project"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Set Project For Selected Preset Filter">
+        </action>
+
+         <action id="ThePlugin.JiraIssues.PresetFilter.ClearProjectAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.ClearProjectAction"
+                text="Clear Project"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Clear Project For Selected Preset Filter">
+        </action>
+
+    <action id="ThePlugin.JiraIssues.PresetFilter.SetProjectForAllAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.SetProjectForAllAction"
+                text="Set Project on All Filters"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Set Project For All Preset Filters">
+        </action>
+
+         <action id="ThePlugin.JiraIssues.PresetFilter.ClearProjectForAllAction"
+                class="com.atlassian.theplugin.idea.action.jira.PresetFilter.ClearProjectForAllAction"
+                text="Clear Project on All Filters"
+                icon="/icons/jira/nodes/ico_jira_add_filter.png"
+                description="Clear Project For All Preset FIlters">
+        </action>
+
+         <action id="ThePlugin.JiraIssues.CustomFilter.Edit"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
+                text="Edit Custom Filter"
+                icon="/actions/editSource.png"
+                description="Change manual filter details">
+         </action>
+        
+		<group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettingsGroup"/>
+			<reference id="ThePlugin.JiraIssues.RefreshServers"/>
+			<reference id="ThePlugin.JiraIssues.ExpandServers"/>
+			<reference id="ThePlugin.JiraIssues.CollapseServers"/>
+			<separator/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.Remove"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.Edit"/> 
+		</group>
+		<!-- [END] Issues window related actions -->
+
+		<!--<action id="ThePlugin.GroupByText" text="Group By"/>-->
+		<action id="ThePlugin.JiraIssues.GroupByCombo"
+				class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.JiraIssues.GroupSubtasks"
+				class="com.atlassian.theplugin.idea.action.issues.GroupSubtasksAction"
+				text="Collapse Sub Issues Under Parent"
+				icon="/icons/inspector/sortByCategory.png"/>
+		<action id="ThePlugin.JiraIssues.Refresh"
+				class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction"
+				text="Refresh Issue List"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.ExpandIssues"
+				class="com.atlassian.theplugin.idea.action.issues.ExpandIssuesAction"
+				text="Expand All Issues"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.JiraIssues.CollapseIssues"
+				class="com.atlassian.theplugin.idea.action.issues.CollapseIssuesAction"
+				text="Collapse All Issues"
+				icon="/actions/collapseall.png"/>
+
+		<action id="ThePlugin.JiraIssues.CopyIssueKey"
+				class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeyAction"
+				text="Key"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueUrl"
+				class="com.atlassian.theplugin.idea.action.issues.CopyIssueUrlAction"
+				text="Url"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueSummary"
+				class="com.atlassian.theplugin.idea.action.issues.CopyIssueSummaryAction"
+				text="Summary"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueKeySummary"
+				class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeySummaryAction"
+				text="Key and Summary"/>
+
+		<action id="ThePlugin.JiraIssues.OpenIssue"
+				class="com.atlassian.theplugin.idea.action.issues.OpenIssueAction"
+				text="Open Issue"
+				icon="/actions/showChangesOnly.png"/>
+		<action id="ThePlugin.JiraIssues.ViewIssue"
+				class="com.atlassian.theplugin.idea.action.issues.ViewIssueAction"
+				text="View in Browser"
+				icon="/icons/crucible/pin_viewinbrowser.png"/>
+		<action id="ThePlugin.JiraIssues.EditIssue"
+				class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
+				text="Edit in Browser"
+				icon="/actions/editSource.png"/>
+		<action id="ThePlugin.JiraIssues.AssignIssueToMyself"
+				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
+				icon="/icons/pin_assigntome.png"
+				text="Assign to Me"/>
+		<action id="ThePlugin.JiraIssues.AssignIssueToUser"
+				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
+				icon="/icons/pin_assignuser.png"
+				text="Assign to User"/>
+		<action id="ThePlugin.JiraIssues.AddComment"
+				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
+				text="Add Comment"
+				icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.JiraIssues.AddAttachment"
+				class="com.atlassian.theplugin.idea.action.issues.AddAttachmentAction"
+				text="Add Attachment"
+				icon="/icons/icon_addattachment.png"/>
+		<action id="ThePlugin.JiraIssues.LogWork"
+				class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
+				icon="/general/todoDefault.png"
+				text="Log Work"/>
+		<action id="ThePlugin.JiraIssues.CreateChangeList"
+				class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction"
+				text="Create Change List"
+				icon="/general/toolWindowChanges.png"/>
+
+		<action id="ThePlugin.JiraIssues.RefreshComments"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.RefreshCommentsAction"
+				text="Refresh"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.ExpandComments"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.ExpandCommentsAction"
+				text="Expand All Comments"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.JiraIssues.CollapseComments"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.CollapseCommentsAction"
+				text="Collapse All Comments"
+				icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.JiraIssues.EditorAddComment"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
+				text="Add Comment"
+				icon="/icons/icn_comment.gif"/>
+		<action id="ThePlugin.JiraIssues.EditorEditDescription"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditDescriptionAction"
+				text="Edit Description"
+				icon="/actions/editSource.png"/>
+		<action id="ThePlugin.JiraIssues.EditorAddAttachment"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddAttachmentAction"
+				text="Add Attachment"
+				icon="/icons/icon_addattachment.png"/>
+		<action id="ThePlugin.JiraIssues.EditorRefresh"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
+				text="Refresh"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.EditorClose"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorCloseAction"
+				text="Close Issue View"
+				icon="/actions/cancel.png"/>
+
+
+		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
+			<!--<reference id="ThePlugin.GroupByText"/>-->
+			<reference id="ThePlugin.JiraIssues.GroupByCombo"/>
+			<reference id="ThePlugin.JiraIssues.GroupSubtasks"/>
+			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
+			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+            <reference id="ThePlugin.JiraIssues.QuickSearchForReviews"/>
+			<reference id="ThePlugin.JiraIssues.Refresh"/>
+			<separator/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+			<separator/>
+			<reference id="ThePlugin.HelpJIRA"/>
+			<separator/>
+		</group>
+
+		<group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" icon="/actions/menu-copy.png"
+			   popup="true">
+			<reference id="ThePlugin.JiraIssues.CopyIssueKey"/>
+			<reference id="ThePlugin.JiraIssues.CopyIssueUrl"/>
+			<reference id="ThePlugin.JiraIssues.CopyIssueSummary"/>
+			<reference id="ThePlugin.JiraIssues.CopyIssueKeySummary"/>
+		</group>
+
+		<group id="ThePlugin.JiraIssues.IssuePopupMenu" popup="true">
+			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssue"/>
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<reference id="ThePlugin.JiraIssues.EditIssue"/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.AddComment"/>
+			<reference id="ThePlugin.JiraIssues.AddAttachment"/>
+			<reference id="ThePlugin.JiraIssues.LogWork"/>
+			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
+			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
+			<separator/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
+			<separator/>
+		</group>
+
+		<group id="ThePlugin.JiraIssues.RunActionGroup"
+			   class="com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup"
+			   icon="/icons/pin_other.png"
+			   text="Issue Workflow Actions"
+			   popup="true"/>
+
+		<group id="ThePlugin.JiraIssues.OneIssueToolBar" popup="false">
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<reference id="ThePlugin.JiraIssues.EditIssue"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.JiraIssues.EditorAddComment"/>
+			<reference id="ThePlugin.JiraIssues.EditorAddAttachment"/>
+			<reference id="ThePlugin.JiraIssues.LogWork"/>
+			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
+			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueDetails"/>
+
+			<!--<separator/>-->
+			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.JiraIssues.RunActionGroup"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.JiraIssues.EditorRefresh"/>
+			<reference id="ThePlugin.JiraIssues.EditorClose"/>
+			<separator/>
+			<reference id="ThePlugin.HelpIssue"/>
+		</group>
+
+		<group id="ThePlugin.JiraIssues.CommentsToolBar" popup="false">
+			<reference id="ThePlugin.JiraIssues.EditorEditDescription"/>
+			<reference id="ThePlugin.JiraIssues.RefreshComments"/>
+			<reference id="ThePlugin.JiraIssues.ExpandComments"/>
+			<reference id="ThePlugin.JiraIssues.CollapseComments"/>
+			<reference id="ThePlugin.JiraIssues.EditorAddComment"/>
+		</group>
+
+
+        <group id="ThePlugin.JiraIssues.PresetFilterGroup" popup="true">
+            <reference id="ThePlugin.JiraIssues.PresetFilter.SetProjectAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.ClearProjectAction"/>
+
+        </group>
+
+        <group id="ThePlugin.JiraIssues.ServerPopupGroup" popup="true">
+            <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.SetProjectForAllAction"/>
+            <reference id="ThePlugin.JiraIssues.PresetFilter.ClearProjectForAllAction"/>
+        </group>
+
+        <!-- Manual Filter popup menu -->
+        <action id="ThePlugin.JIRAIssues.CustomFilter.ViewInBrowser"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.ViewInBrowserAction"
+                text="View In Browser"
+                icon="/icons/crucible/pin_viewinbrowser.png"
+                description="View In Browser">
+         </action>
+
+        <group id="ThePlugin.JiraIssues.ManualFilterPopupGroup" popup="true">
+			<reference id="ThePlugin.JiraIssues.CustomFilter.Edit"/>
+            <reference id="ThePlugin.JIRAIssues.CustomFilter.ViewInBrowser"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.Remove"/>
+		</group>
+
+		<!-- JIRA tool window panel related actions -->
+		<action id="ThePlugin.JIRA.ShowHideJIRATab"
+				class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira Tab"
+				description="Shows or hides Jira tab in main plugin window">
+			<keyboard-shortcut first-keystroke="shift control k" keymap="$default"/>
+		</action>
+
+		<group id="ThePlugin.JIRA.ServerToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettingsGroup"/>
+			<reference id="ThePlugin.HelpJIRA"/>
+		</group>
+
+		<action id="ThePlugin.Reviews.EditorClose"
+				class="com.atlassian.theplugin.idea.action.reviews.EditorCloseAction"
+				text="Close Review View"
+				icon="/actions/cancel.png"/>
+
+		<action id="ThePlugin.Reviews.ViewReview"
+				class="com.atlassian.theplugin.idea.action.reviews.ViewReviewAction"
+				text="View Review in Browser"
+				icon="/icons/crucible/pin_viewinbrowser.png"/>
+		<action id="ThePlugin.Reviews.GetComments"
+				class="com.atlassian.theplugin.idea.action.reviews.OpenReviewAction"
+				text="Open Review"
+				icon="/actions/showChangesOnly.png"/>
+		<action id="ThePlugin.Reviews.CompleteReview"
+				class="com.atlassian.theplugin.idea.action.reviews.CompleteReviewAction"
+				text="Complete Review"
+				icon="/icons/crucible/pin_complete.png"/>
+		<action id="ThePlugin.Reviews.UncompleteReview"
+				class="com.atlassian.theplugin.idea.action.reviews.UncompleteReviewAction"
+				text="Uncomplete Review"
+				icon="/icons/crucible/pin_uncomplete.png"/>
+		<action id="ThePlugin.Reviews.ApproveReview"
+				class="com.atlassian.theplugin.idea.action.reviews.ApproveReviewAction"
+				text="Approve Review"
+				icon="/icons/crucible/pin_approve.png"/>
+		<action id="ThePlugin.Reviews.SubmitReview"
+				class="com.atlassian.theplugin.idea.action.reviews.SubmitReviewAction"
+				text="Submit Review"
+				icon="/icons/crucible/pin_submit.png"/>
+		<action id="ThePlugin.Reviews.CloseReview"
+				class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction"
+				text="Close Review"
+				icon="/icons/crucible/pin_close.png"/>
+		<action id="ThePlugin.Reviews.ReopenReview"
+				class="com.atlassian.theplugin.idea.action.reviews.ReopenReviewAction"
+				text="Reopen Review"
+				icon="/icons/crucible/pin_reopen.png"/>
+		<action id="ThePlugin.Reviews.SummarizeReview"
+				class="com.atlassian.theplugin.idea.action.reviews.SummarizeReviewAction"
+				text="Summarize and Close Review"
+				icon="/icons/crucible/pin_summarise.png"/>
+		<action id="ThePlugin.Reviews.AbandonReview"
+				class="com.atlassian.theplugin.idea.action.reviews.AbandonReviewAction"
+				text="Abandon Review"
+				icon="/icons/crucible/pin_abandon.png"/>
+		<action id="ThePlugin.Reviews.RecoverReview"
+				class="com.atlassian.theplugin.idea.action.reviews.RecoverReviewAction"
+				text="Recover Abandoned Review"
+				icon="/icons/crucible/pin_recover.png"/>
+		<action id="ThePlugin.Reviews.JoinReview"
+				class="com.atlassian.theplugin.idea.action.reviews.JoinReviewAction"
+				text="Join Review"
+				icon="/icons/crucible/pin_join.png"/>
+		<action id="ThePlugin.Reviews.SetReviewers"
+				class="com.atlassian.theplugin.idea.action.reviews.SetReviewersAction"
+				text="Set Reviewers"
+				icon="/icons/crucible/pin_setreviewers.png"/>
+
+		<action id="ThePlugin.Reviews.Refresh"
+				class="com.atlassian.theplugin.idea.action.reviews.RefreshReviewsFromServersAction"
+				text="Refresh"
+				icon="/actions/sync.png"/>
+
+		<action id="ThePlugin.Reviews.GroupByCombo"
+				class="com.atlassian.theplugin.idea.action.reviews.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.Reviews.ExpandAll"
+				class="com.atlassian.theplugin.idea.action.reviews.ExpandAllAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Reviews.CollapseAll"
+				class="com.atlassian.theplugin.idea.action.reviews.CollapseAllAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+
+		<group id="ThePlugin.Reviews.ReviewPopupMenu" popup="true">
+			<reference id="ThePlugin.Reviews.GetComments"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.ViewReview"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.CompleteReview"/>
+			<reference id="ThePlugin.Reviews.UncompleteReview"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.ApproveReview"/>
+			<reference id="ThePlugin.Reviews.SubmitReview"/>
+			<reference id="ThePlugin.Reviews.CloseReview"/>
+			<reference id="ThePlugin.Reviews.ReopenReview"/>
+			<reference id="ThePlugin.Reviews.SummarizeReview"/>
+			<reference id="ThePlugin.Reviews.AbandonReview"/>
+			<reference id="ThePlugin.Reviews.RecoverReview"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.JoinReview"/>
+			<reference id="ThePlugin.Reviews.SetReviewers"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.SingleReview.ToolBar" popup="false" text="">
+			<reference id="ThePlugin.Reviews.ViewReview"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.Reviews.Refresh"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.Reviews.CompleteReview"/>
+			<reference id="ThePlugin.Reviews.UncompleteReview"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.Reviews.ApproveReview"/>
+			<reference id="ThePlugin.Reviews.SubmitReview"/>
+			<!--<reference id="ThePlugin.Reviews.CloseReview"/>-->
+			<reference id="ThePlugin.Reviews.ReopenReview"/>
+			<reference id="ThePlugin.Reviews.SummarizeReview"/>
+			<reference id="ThePlugin.Reviews.AbandonReview"/>
+			<reference id="ThePlugin.Reviews.RecoverReview"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.Reviews.JoinReview"/>
+			<reference id="ThePlugin.Reviews.SetReviewers"/>
+			<!--<separator/>-->
+			<reference id="ThePlugin.Reviews.EditorClose"/>
+			<separator/>
+			<reference id="ThePlugin.HelpReview"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.LeftToolBar" popup="false" text="">
+			<reference id="ThePlugin.ShowSettingsGroup"/>
+			<reference id="ThePlugin.Reviews.Refresh"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.RightToolBar" popup="false" text="">
+			<reference id="ThePlugin.Reviews.GroupByCombo"/>
+			<reference id="ThePlugin.Reviews.ExpandAll"/>
+			<reference id="ThePlugin.Reviews.CollapseAll"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.GetComments"/>
+			<reference id="ThePlugin.Reviews.ViewReview"/>
+			<separator/>
+			<!--<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>-->
+			<!--<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>-->
+			<reference id="ThePlugin.Crucible.CreateCrucibleReview"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
+			<separator/>
+			<reference id="ThePlugin.HelpCrucible"/>
+		</group>
+
+		<action id="ThePlugin.Builds.GroupByCombo"
+				class="com.atlassian.theplugin.idea.action.builds.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.Builds.ExpandAll"
+				class="com.atlassian.theplugin.idea.action.builds.ExpandAllAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Builds.CollapseAll"
+				class="com.atlassian.theplugin.idea.action.builds.CollapseAllAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+
+		<group id="ThePlugin.Bamboo.LeftToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettingsGroup"/>
+			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.FilterBy"/>
+			<reference id="ThePlugin.Builds.GroupByCombo"/>
+			<reference id="ThePlugin.Builds.ExpandAll"/>
+			<reference id="ThePlugin.Builds.CollapseAll"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
+			<separator/>
+			<reference id="ThePlugin.HelpBamboo"/>
+		</group>
+
+        <group id="ThePlugin.Bamboo.RightToolBar" popup="false">
+            <reference id="ThePlugin.Bamboo.OpenBuildFromHistory"/>
+        </group>
+
+		<group id="ThePlugin.Bamboo.BuildPopupMenuNew" popup="true">
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+		</group>
+
+
+		<group id="ThePlugin.Bamboo.BuildPopupMenuNewGroup" popup="true">
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+		</group>
+        
+		<action id="ThePlugin.Reviews.RecentlyOpen"
+				class="com.atlassian.theplugin.idea.action.reviews.RecentlyOpenReviewsAction"
+				text="RecentlyOpenReviews">
+			<keyboard-shortcut first-keystroke="shift alt k" keymap="$default"/>
+		</action>
+
+		<action id="ThePlugin.Issues.RecentlyOpen"
+				class="com.atlassian.theplugin.idea.action.issues.RecentlyOpenIssuesAction"
+				text="RecentlyOpenIssues">
+			<keyboard-shortcut first-keystroke="shift alt j" keymap="$default"/>
+		</action>
+
+	</actions>
+</idea-plugin>

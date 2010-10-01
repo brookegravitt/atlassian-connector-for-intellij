@@ -1,0 +1,10 @@
+ ---------
+Download ThePlugin
+ ---------
+
+Download ThePlugin version ${currentVersion}
+
+  Currently the plugin is available for download as ZIP archive. Download and install in IDEA accordingly.
+
+
+  {{{${downloadDir}/${artifactZip}}${artifactZip}}}

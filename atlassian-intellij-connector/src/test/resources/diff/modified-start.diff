@@ -1,0 +1,12 @@
+Index: modified-start
+===================================================================
+--- modified-start	(revision 1000)
++++ modified-start	(working copy)
+@@ -1,4 +1,6 @@
+-third-orig
++first (new)
++second (new)
++third-new
+ fourth
+ fifth
+ sixth
