@@ -70,7 +70,7 @@ public class SearchReviewsForIssueAction extends AnAction {
 
             ProgressManager.getInstance().run(
                     new Task.Backgroundable(project, "Searching for reviews (" + defaultCrucibleServer.getName() + ")") {
-                        @Override
+                        
                         public void run(@NotNull ProgressIndicator progressIndicator) {
                             if (defaultCrucibleServer != null) {
                                 try {
