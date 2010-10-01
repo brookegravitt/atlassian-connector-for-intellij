@@ -13,7 +13,6 @@
     <version>2.4.1-SNAPSHOT</version>
 
 	<scm>
-	
 		<connection>scm:hg:file:///${basedir}</connection>
 		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
 	</scm>
@@ -233,6 +232,13 @@
             </resource>
         </resources>
         <plugins>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.4</version>
+			</plugin>
+	  
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <!-- newest version 2.7 fails to merge resources -->
@@ -313,12 +319,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-1</version>
+                <version>1.0-beta-4</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
                         <goals>
-                            <goal>create</goal>
+                            <goal>hgchangeset</goal>
                         </goals>
                     </execution>
                 </executions>
