@@ -12,11 +12,11 @@
     <artifactId>atlassian-idea-plugin</artifactId>
     <version>2.4.1-SNAPSHOT</version>
 
-    <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</developerConnection>
-        <url>https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/</url>
-    </scm>
+	<scm>
+		<connection>scm:hg:file:///${basedir}</connection>
+		<developerConnection>scm:hg:file:///${basedir}</developerConnection>
+	</scm>
+
     <issueManagement>
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL</url>
