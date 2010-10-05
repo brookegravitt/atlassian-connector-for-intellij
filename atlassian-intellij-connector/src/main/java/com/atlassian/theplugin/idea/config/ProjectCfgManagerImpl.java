@@ -61,6 +61,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     public ProjectCfgManagerImpl(WorkspaceConfigurationBean workspaceConfiguration, Project project) {
         this.workspaceConfiguration = workspaceConfiguration;
         this.project = project;
+
     }
 
     /**
@@ -112,7 +113,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     @NotNull
     public UserCfg getDefaultCredentials() {
 
-        if (project == null) {
+        if (!isGoodProject(project)) {
             return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
                     StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
         } else {
@@ -128,13 +129,17 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 
     void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
-        if (project != null && PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
+        if (isGoodProject(project) && PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
             workspaceConfiguration.setDefaultCredentials(new UserCfgBean(defaultCredentials.getUsername(), ""));
         } else {
             workspaceConfiguration.setDefaultCredentials(
                     new UserCfgBean(defaultCredentials.getUsername(),
                             StringUtil.encode(defaultCredentials.getPassword())));
         }
+    }
+
+    private boolean isGoodProject(Project project) {
+        return project != null  && project.isInitialized() && !project.isDisposed();
     }
 
     //////////////////////////////////////////////////////////////////
@@ -854,7 +859,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
         public void run(ConfigurationListener projectListener) {
             if (oldConfiguration == null || newConfiguration == null) {
                 return;
-            }
+            }                 
 
             for (ServerCfg oldServer : oldConfiguration.getServers()) {
                 ServerCfg newServer = newConfiguration.getServerCfg(oldServer.getServerId());
