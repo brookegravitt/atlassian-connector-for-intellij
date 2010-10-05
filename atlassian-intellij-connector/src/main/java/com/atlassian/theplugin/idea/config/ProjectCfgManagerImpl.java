@@ -61,7 +61,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     public ProjectCfgManagerImpl(WorkspaceConfigurationBean workspaceConfiguration, Project project) {
         this.workspaceConfiguration = workspaceConfiguration;
         this.project = project;
-
     }
 
     /**
