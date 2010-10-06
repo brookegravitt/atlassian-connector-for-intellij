@@ -17,8 +17,6 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.connector.commons.jira.JIRAServerFacade2;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
@@ -67,20 +65,15 @@ public class TestDefaultCredentials {
 	private final Project project;
 	private final JComponent parentComponent;
 	private final JIRAServerFacade2 jiraServerFacade;
-	private final CrucibleServerFacade crucibleServerFacade;
-	private final FishEyeServerFacade fishEyeServerFacade;
 	private final BambooServerFacade bambooServerFacade;
 	private Map<ServerData, String> errors = new HashMap<ServerData, String>();
 
 	public TestDefaultCredentials(final Project project, final JComponent parentComponent,
-			JIRAServerFacade2 jiraServerFacade, final CrucibleServerFacade crucibleServerFacade,
-			final FishEyeServerFacade fishEyeServerFacade, final BambooServerFacade bambooServerFacade) {
+			JIRAServerFacade2 jiraServerFacade, final BambooServerFacade bambooServerFacade) {
 
 		this.project = project;
 		this.parentComponent = parentComponent;
 		this.jiraServerFacade = jiraServerFacade;
-		this.crucibleServerFacade = crucibleServerFacade;
-		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.bambooServerFacade = bambooServerFacade;
 	}
 
@@ -93,12 +86,6 @@ public class TestDefaultCredentials {
 
 					case BAMBOO_SERVER:
 						testGenericConnection(server.getServerData(), bambooServerFacade);
-						break;
-					case CRUCIBLE_SERVER:
-						testGenericConnection(server.getServerData(), crucibleServerFacade);
-						break;
-					case FISHEYE_SERVER:
-						testGenericConnection(server.getServerData(), fishEyeServerFacade);
 						break;
 					case JIRA_SERVER:
 						testGenericConnection(server.getServerData(), jiraServerFacade);

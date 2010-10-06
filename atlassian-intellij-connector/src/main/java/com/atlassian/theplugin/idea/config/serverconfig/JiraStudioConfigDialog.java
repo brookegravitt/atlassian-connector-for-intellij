@@ -1,13 +1,12 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
@@ -145,7 +144,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
 
             public void onSuccess() {
                 if (counter-- > 0) {
-                    testCrucibleConnection(this);
+                    testJiraConnection(this);
                 } else {
                     showResultDialog();
                 }
@@ -154,7 +153,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
             public void onError(String errorMessage, Throwable exception, String helpUrl) {
                 connectionErrors.put(errorMessage, exception);
                 if (counter-- > 0) {
-                    testCrucibleConnection(this);
+                    testJiraConnection(this);
                 } else {
                     showResultDialog();
                 }
@@ -185,24 +184,9 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         JiraServerData.Builder builder = new JiraServerData.Builder(generateJiraServerCfg());
         builder.defaultUser(defaultUser);
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
-                new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
+                new ProductConnector(IntelliJJiraServerFacade.getInstance()),
                 builder.build(),
                 processor, "Testing JIRA Connection", true, false, false);
-        testConnectionTask.setCancelText("Stop");
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ProgressManager.getInstance().run(testConnectionTask);
-            }
-        });
-    }
-
-    private void testCrucibleConnection(final TestConnectionProcessor processor) {
-        JiraServerData.Builder builder = new JiraServerData.Builder(generateCrucibleServerCfg());
-        builder.defaultUser(defaultUser);
-        final Task.Modal testConnectionTask = new TestConnectionTask(project,
-                new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
-                builder.build(),
-                processor, "Testing Crucible Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -251,29 +235,10 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         return jira;
     }
 
-    private @NotNull CrucibleServerCfg generateCrucibleServerCfg() {
-        ServerIdImpl idCrucible = new ServerIdImpl();
 
-        String name = serverName.getText().trim() + JIRA_STUDIO_SUFFIX;
-        CrucibleServerCfg cru = new CrucibleServerCfg(true, name, idCrucible);
-
-        cru.setUrl(serverUrl.getText() + "/source");
-
-        String user = userName.getText();
-        if (user.length() > 0) {
-            cru.setUsername(user);
-        }
-        cru.setPassword(new String(password.getPassword()));
-        cru.setPasswordStored(rememberPassword.isSelected());
-        cru.setUseDefaultCredentials(useDefaultCredentials.isSelected());
-        cru.setFisheyeInstance(true);
-
-        return cru;
-    }
 
     private void generateAllStudioServers() {
         serverTree.addNewServerCfg(ServerType.JIRA_SERVER, generateJiraServerCfg());
-        serverTree.addNewServerCfg(ServerType.CRUCIBLE_SERVER, generateCrucibleServerCfg());
     }
 
     private class ConfigPanel extends JPanel {

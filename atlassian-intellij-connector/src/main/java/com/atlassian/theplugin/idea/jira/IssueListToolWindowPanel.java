@@ -5,7 +5,6 @@ import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
@@ -35,7 +34,6 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
-import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
@@ -1372,31 +1370,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                    /////////
                     if (dialog.isCreateReviewAfterCommit()) {
 
-                        
+
                         final Collection<VirtualFile> vFiles =
                                 IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
                         LoggerImpl.getInstance().info(
                                 "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
-
-                        SwingUtilities.invokeLater(new Runnable() {
-
-                            public void run() {
-                                final CrucibleCreatePostCommitReviewDelayedForm commitForm;
-                                commitForm =
-                                        new CrucibleCreatePostCommitReviewDelayedForm(project,
-                                                IntelliJCrucibleServerFacade.getInstance(),
-                                                projectCfgManager, pluginConfiguration.getCrucibleConfigurationData(),
-                                                dialog.getComment(), vFiles);
-                                commitForm.show();
-                                if (commitForm.isDoCreateReview()) {
-                                    commitForm.startReviewCreation();
-                                }
-                            }
-                        });
-
                     }
-/////////
-
 
                 ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                     public void run() {

@@ -47,8 +47,6 @@ public final class Util {
 		switch (panel) {
 			case BUILDS:
 				return ServerType.BAMBOO_SERVER;
-			case CRUCIBLE:
-				return ServerType.CRUCIBLE_SERVER;
 			case ISSUES:
 				return ServerType.JIRA_SERVER;
 			default:

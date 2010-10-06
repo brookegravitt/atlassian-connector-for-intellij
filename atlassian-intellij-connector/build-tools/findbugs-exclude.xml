@@ -55,7 +55,6 @@
 	<!--method name the same as in SOAP-generated stubs, ignoring-->
 	<Match>
 		<Or>
-			<Class name="com.atlassian.theplugin.commons.crucible.api.ReviewDataBean"/>
 			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm" />
 			<Class name="com.atlassian.theplugin.util.Connector" />
 			<Class name="com.atlassian.theplugin.idea.PasswordDialog" />

@@ -65,12 +65,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllBambooServers()),
 				ServerType.BAMBOO_SERVER, defaultCredentials);
 
-		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllCrucibleServers()),
-				ServerType.CRUCIBLE_SERVER, defaultCredentials);
-
-		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllFisheyeServers()),
-				ServerType.FISHEYE_SERVER, defaultCredentials);
-
 		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllJIRAServers()),
 				ServerType.JIRA_SERVER, defaultCredentials);
 

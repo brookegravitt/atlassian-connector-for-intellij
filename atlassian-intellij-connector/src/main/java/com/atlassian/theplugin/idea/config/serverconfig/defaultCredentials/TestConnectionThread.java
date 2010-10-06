@@ -16,8 +16,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
@@ -51,13 +49,6 @@ public class TestConnectionThread extends Thread {
 				case BAMBOO_SERVER:
 					productConnector = new ProductConnector(IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()));
 					break;
-                case FISHEYE_SERVER:
-                    productConnector = new ProductConnector(IntelliJFishEyeServerFacade.getInstance());
-                 break;
-				case CRUCIBLE_SERVER:
-					productConnector = new ProductConnector(IntelliJCrucibleServerFacade.getInstance());
-					break;
-
 				default:
 					return;
 
