@@ -17,15 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
-import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
-import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
-import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
-import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
-import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.bamboo.*;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -33,7 +25,6 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.TaskActionOrganizer;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
@@ -42,34 +33,23 @@ import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.InformationDialogWithCheckBox;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
-import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
@@ -99,22 +79,15 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final ProjectCfgManager projectCfgManager;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
-	private CrucibleStatusIcon statusBarCrucibleIcon;
 
-	private CrucibleNotificationTooltip crucibleTooltip;
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private final BuildListModelImpl bambooModel;
-	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-	private final IntelliJCrucibleServerFacade crucibleServerFacade;
-
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
-	private final CrucibleReviewNotifier crucibleReviewNotifier;
-	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
@@ -125,7 +98,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
 
-	private CrucibleEditorFactoryListener crucibleEditorFactoryListener;
 
 	private FileEditorListenerImpl fileEditorListener;
 
@@ -135,9 +107,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
-			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
-			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
-			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
@@ -148,10 +117,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.bambooModel = bambooModel;
-		this.crucibleStatusChecker = crucibleStatusChecker;
-		this.crucibleReviewNotifier = crucibleReviewNotifier;
-		this.crucibleReviewListModel = crucibleReviewListModel;
-		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 
@@ -169,7 +134,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		 */
 		// make findBugs happy
 		statusBarBambooIcon = null;
-		statusBarCrucibleIcon = null;
 		statusPluginUpdateIcon = null;
 		created = false;
 		StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
@@ -206,11 +170,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 
 		if (!created) {
+            IconLoader.activate();
             TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
-
-			ChangeListManager.getInstance(project).registerCommitExecutor(
-					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
 			final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
 					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
@@ -277,17 +239,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// add bamboo icon to status bar
 			statusBarBambooIcon.showOrHideIcon();
 
-			// setup Crucible status checker and listeners
-			IdeaHelper.getAppComponent().getSchedulableCheckers().add(crucibleStatusChecker);
-			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(project, projectCfgManager, toolWindow);
-
-			//registerCrucibleNotifier();
-
-			// add crucible icon to status bar
-			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
-			statusBarCrucibleIcon.showOrHideIcon();
-
 			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration, projectCfgManager);
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
 			//statusPluginUpdateIcon.showOrHideIcon();
@@ -313,38 +264,15 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			created = true;
 
-			crucibleEditorFactoryListener = new CrucibleEditorFactoryListener(project,
-					crucibleReviewListModel);
-			EditorFactory.getInstance()
-					.addEditorFactoryListener(crucibleEditorFactoryListener);
-
-			// added here not in plugin.xml - only for Idea 8
-			ActionManager aManager = ActionManager.getInstance();
-			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
-			if (changesToolBar != null) {
-				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
-				changesToolBar.remove(action);
-				changesToolBar.add(action, aManager);
-			}
-
-			registerCrucibleNotifier();
 			issuesToolWindowPanel.init();
 			checkDefaultServerValues();
             informAboutIdea9TaskIntegrationAsExperimental();
 
-            projectCfgManager.addProjectConfigurationListener(IntelliJCrucibleServerFacade.getInstance());
 		}
 
 
 
 
-	}
-
-	private void registerCrucibleNotifier() {
-		crucibleReviewListModel.addListener(crucibleReviewNotifier);
-		crucibleTooltip = new CrucibleNotificationTooltip(statusBarCrucibleIcon, project, toolWindow, pluginConfiguration);
-
-		crucibleReviewNotifier.registerListener(crucibleTooltip);
 	}
 
 
@@ -382,14 +310,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
         }
 
 
-        if (projectCfgManager.getDefaultFishEyeServer() == null && (projectCfgManager.getAllFishEyeServerss().size() > 0
-                || projectCfgManager.getAllEnabledCrucibleServersContainingFisheye().size() > 0)) {
-            if (text.length() > 0) {
-                text += " and FishEye";
-            } else {
-                text = "FishEye";
-            }
-        }
 
         if (text.length() > 0 && !pluginConfiguration.getGeneralConfigurationData().isAskedAboutDefaultServers()) {
             final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
@@ -479,20 +399,16 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// remove icon from status bar
 			statusBarBambooIcon.hideIcon();
 			statusBarBambooIcon = null;
-			statusBarCrucibleIcon.hideIcon();
-			statusBarCrucibleIcon = null;
 			statusPluginUpdateIcon.hideIcon();
 			statusPluginUpdateIcon = null;
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().remove(bambooStatusChecker);
-			IdeaHelper.getAppComponent().getSchedulableCheckers().remove(crucibleStatusChecker);
 			IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
 			// unregister listeners
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			//unregister form model
-			//crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			projectCfgManager.removeProjectConfigurationListener(configurationListener);
 			configurationListener = null;
 			projectCfgManager.removeProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
@@ -500,18 +416,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 
-			EditorFactory.getInstance().removeEditorFactoryListener(crucibleEditorFactoryListener);
-
-			//remove Crucible listeners
-			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
-			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
-
-			ActionManager aManager = ActionManager.getInstance();
-			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
-			if (changesToolBar != null) {
-				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
-				changesToolBar.remove(action);
-			}
 
 			created = false;
 		}
@@ -519,10 +423,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public WorkspaceConfigurationBean getProjectConfigurationBean() {
 		return projectConfigurationBean;
-	}
-
-	public CrucibleStatusChecker getCrucibleStatusChecker() {
-		return crucibleStatusChecker;
 	}
 
 	public BambooStatusChecker getBambooStatusChecker() {
@@ -539,7 +439,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 			// show-hide icons if necessary
 			statusBarBambooIcon.showOrHideIcon();
-			statusBarCrucibleIcon.showOrHideIcon();
 			// show-hide panels if necessary
 			toolWindow.showHidePanels();
 		}

@@ -17,22 +17,9 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.cfg.xstream.UserSharedConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
@@ -256,12 +243,6 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	 */
 	private void cleanupDom(final Document root) throws JDOMException {
 		@SuppressWarnings("unchecked")
-		List<Element> nodes = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration/servers/crucible");
-		for (Element e : nodes) {
-			e.removeChild("projectName");
-			e.removeChild("repositoryName");
-		}
-		@SuppressWarnings("unchecked")
 		final List<Element> prjCfgNode = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration");
 		for (Element e : prjCfgNode) {
 			e.removeChild("isPrivateConfigurationMigrated");
@@ -392,8 +373,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 
 		projectConfigurationPanel =
-				new ProjectConfigurationPanel(project, configuration.getClone(), IntelliJCrucibleServerFacade.getInstance(),
-						IntelliJFishEyeServerFacade.getInstance(), 
+				new ProjectConfigurationPanel(project, configuration.getClone(),
 						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
 						IntelliJJiraServerFacade.getInstance(), uiTaskExecutor, selectedServer, projectCfgManager
 								.getDefaultCredentials().getClone(),
@@ -501,14 +481,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			case BAMBOO_SERVER:
 				serverCfg = new BambooServerCfg(name, id);
 				break;
-			case CRUCIBLE_SERVER:
-				serverCfg = new CrucibleServerCfg(name, id);
-				break;
 			case JIRA_SERVER:
 				serverCfg = new JiraServerCfg(name, id, true);
-				break;
-			case FISHEYE_SERVER:
-				serverCfg = new FishEyeServerCfg(name, id);
 				break;
 			case JIRA_STUDIO_SERVER:
 				break;

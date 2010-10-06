@@ -19,17 +19,7 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -313,6 +303,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
         return ret;
     }
 
+    public Collection<ServerData> getAllEnabledCrucibleServersContainingFisheye() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public Collection<ServerData> getAllEnabledServerss(final ServerType serverType) {
         Collection<ServerCfg> tmp = getAllEnabledServers();
         Collection<ServerData> ret = new ArrayList<ServerData>();
@@ -396,19 +390,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     }
 
 
-    public Collection<ServerData> getAllFishEyeServerss() {
-
-        Collection<ServerCfg> tmp = getAllServers();
-
-        ArrayList<ServerData> ret = new ArrayList<ServerData>();
-
-        for (ServerCfg serverCfg : tmp) {
-            if (serverCfg.getServerType() == ServerType.FISHEYE_SERVER && serverCfg instanceof FishEyeServerCfg) {
-                ret.add(getServerData(serverCfg));
-            }
-        }
-        return ret;
-    }
 
 
     public Collection<BambooServerData> getAllBambooServerss() {
@@ -511,21 +492,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
     }
 
-    public Collection<ServerData> getAllEnabledCrucibleServersContainingFisheye() {
-        Collection<ServerCfg> tmp = getAllEnabledServers();
-        Collection<ServerData> ret = new ArrayList<ServerData>();
-
-        for (ServerCfg serverCfg : tmp) {
-            if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER
-                    && serverCfg instanceof CrucibleServerCfg
-                    && ((CrucibleServerCfg) serverCfg).isFisheyeInstance()) {
-                CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
-                ret.add(getServerData(crucibleServerCfg));
-            }
-        }
-        return ret;
-
-    }
     ///////////////////////////////////////////////////////////////
     ///////////////////// DEFAULT SERVERS /////////////////////////
     ///////////////////////////////////////////////////////////////
@@ -568,25 +534,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
         return null;
     }
 
-    @Nullable
     public ServerData getDefaultFishEyeServer() {
-        ProjectConfiguration prjCfg = getProjectConfiguration();
-        if (prjCfg != null) {
-            FishEyeServer fishEyeServer = prjCfg.getDefaultFishEyeServer();
-            if (fishEyeServer != null) {
-                return getServerData(fishEyeServer);
-            }
-        }
-
-        // PL-1697
-        Collection<ServerData> allFisheyeServers = getAllEnabledServerss(ServerType.FISHEYE_SERVER);
-        if (allFisheyeServers == null || allFisheyeServers.size() == 0) {
-            allFisheyeServers = getAllEnabledCrucibleServersContainingFisheye();
-        }
-        if (allFisheyeServers != null && allFisheyeServers.size() == 1) {
-            return allFisheyeServers.iterator().next();
-        }
-
         return null;
     }
 
@@ -602,6 +550,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
         return allServers != null && allServers.size() == 1;
     }
 
+    public Collection<ServerData> getAllFishEyeServerss() {
+        return null;
+    }
+
     public String getDefaultCrucibleRepo() {
         return getProjectConfiguration().getDefaultCrucibleRepo();
     }
@@ -611,11 +563,11 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     }
 
     public String getDefaultFishEyeRepo() {
-        return getProjectConfiguration().getDefaultFishEyeRepo();
+        return null;
     }
 
     public String getFishEyeProjectPath() {
-        return getProjectConfiguration().getFishEyeProjectPath();
+        return null;
     }
 
     private static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {
@@ -1009,20 +961,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
             if (!newBambooServers.containsAll(oldBambooServers) || !oldBambooServers.containsAll(newBambooServers)) {
                 projectListener.bambooServersChanged(newConfiguration);
             }
-
-            // Crucible servers changed
-            Collection<CrucibleServerCfg> newCrucibleServers = newConfiguration.getAllCrucibleServers();
-            Collection<CrucibleServerCfg> oldCrucibleServers = oldConfiguration.getAllCrucibleServers();
-            if (!newCrucibleServers.containsAll(oldCrucibleServers) || !oldCrucibleServers.containsAll(newCrucibleServers)) {
-                projectListener.crucibleServersChanged(newConfiguration);
-            }
-
-            // Fisheye servers changed
-            Collection<FishEyeServerCfg> newFisheyeServers = newConfiguration.getAllFisheyeServers();
-            Collection<FishEyeServerCfg> oldFisheyeServers = oldConfiguration.getAllFisheyeServers();
-            if (!newFisheyeServers.containsAll(oldFisheyeServers) || !oldFisheyeServers.containsAll(newFisheyeServers)) {
-                projectListener.fisheyeServersChanged(newConfiguration);
-			}
 		}
 	}
 

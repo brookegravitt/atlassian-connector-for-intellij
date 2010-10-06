@@ -16,9 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -28,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 public final class CodeNavigationUtil {
 
@@ -100,46 +97,6 @@ public final class CodeNavigationUtil {
 		return match;
 	}
 
-	public static CrucibleFileInfo getBestMatchingCrucibleFileInfo(String path, Set<CrucibleFileInfo> files) {
-		path = path.replace('\\', '/');
-
-		CrucibleFileInfo bestMatch = null;
-		int difference = 0;
-
-		for (CrucibleFileInfo file : files) {
-			String pathname = "";
-			switch (file.getCommitType()) {
-				case Added:
-				case Modified:
-				case Copied:
-				case Moved:
-					pathname = file.getFileDescriptor().getAbsoluteUrl();
-					break;
-				case Deleted:
-					pathname = file.getOldFileDescriptor().getAbsoluteUrl();
-					break;
-				default:
-					pathname = file.getOldFileDescriptor().getAbsoluteUrl();
-					break;
-
-			}
-			int diff = StringUtils.indexOfDifference(StringUtils.reverse(path)
-					, StringUtils.reverse(pathname));
-			if (diff == -1 || (diff >= FilenameUtils.getName(pathname).length()
-					&& (diff > difference || pathname.equals(path)))) {
-				difference = diff;
-				bestMatch = file;
-				if (pathname.equals(path)) {
-					break;
-				}
-			}
-		}
-		if (difference < StringUtils.reverse(path).indexOf('/')) {
-			return null;
-		}
-		return bestMatch;
-	}
-
 	/**
 	 * Note: must be run from event dispatch thread or inside read-action only!
 	 */
@@ -169,26 +126,4 @@ public final class CodeNavigationUtil {
 		return CodeNavigationUtil.getMatchingFiles(filePath, psifiles);
 	}
 
-	/**
-	 * In the collection of provided files looks for those which match vcs url
-	 *
-	 * @param psiFiles collection of files to search
-	 * @param vcsUrl   searched vcs url
-	 * @param project  project
-	 * @return collection of found PsiFiles
-	 */
-	public static Collection<PsiFile> findPsiFilesWithVcsUrl(final Collection<PsiFile> psiFiles, final String vcsUrl,
-			final Project project) {
-		Collection<PsiFile> retFiles = new ArrayList<PsiFile>();
-		if (psiFiles != null && vcsUrl != null && project != null) {
-			for (PsiFile psiFile : psiFiles) {
-				String repositoryUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, psiFile.getVirtualFile());
-				if (repositoryUrl != null && repositoryUrl.equals(vcsUrl) || repositoryUrl == null) {
-					retFiles.add(psiFile);
-				}
-			}
-		}
-
-		return retFiles;
-	}
 }

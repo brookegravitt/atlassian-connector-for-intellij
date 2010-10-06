@@ -20,7 +20,6 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
@@ -49,7 +48,6 @@ public class PluginToolWindow {
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
-	private final ReviewListToolWindowPanel reviewsToolWindowPanel;
 	private final IssueListToolWindowPanel issuesToolWindowPanel;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
@@ -83,12 +81,10 @@ public class PluginToolWindow {
 
 	public PluginToolWindow(@NotNull Project project, @NotNull ProjectCfgManager cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
-			@NotNull ReviewListToolWindowPanel reviewsToolWindowPanel,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
-		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 	}
 
@@ -297,8 +293,6 @@ public class PluginToolWindow {
 		switch (component) {
 			case BUILDS:
 				return createBamboo2Content();
-			case CRUCIBLE:
-				return createCrucibleContentNew();
 			case ISSUES:
 				return createIssuesContent();
 			default:
@@ -312,15 +306,6 @@ public class PluginToolWindow {
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo-white.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-	public Content createCrucibleContentNew() {
-		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		final Content content = contentManager.getFactory().createContent(
-				reviewsToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_crucible-white.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
 	}

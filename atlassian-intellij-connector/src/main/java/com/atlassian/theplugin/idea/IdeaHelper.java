@@ -17,8 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.crucible.content.FileContentExpiringCache;
-import com.atlassian.connector.intellij.crucible.content.providers.FileContentProviderProxy;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -26,9 +24,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
-import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -96,34 +91,6 @@ public final class IdeaHelper {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
 
-//	@Nullable
-//	public static CfgManager getCfgManager(final AnActionEvent event) {
-//		ThePluginProjectComponent ppc = getCurrentProjectComponent(event);
-//		if (ppc != null) {
-//			return ppc.getCfgManager();
-//		}
-//
-//		return null;
-//	}
-//
-//	@Nullable
-//	public static CfgManager getCfgManager(final Project project) {
-//		ThePluginProjectComponent ppc = getCurrentProjectComponent(project);
-//		if (ppc != null) {
-//			return ppc.getCfgManager();
-//		}
-//
-//		return null;
-//	}
-
-    public static FileContentExpiringCache getFileContentExpiringCache(Project p) {
-        return getProjectComponent(p, FileContentExpiringCache.class);
-    }
-
-    public static FileContentProviderProxy getFileContentProviderProxy(Project p) {
-        return getProjectComponent(p, FileContentProviderProxy.class);
-    }
-
 	public static ProjectCfgManager getProjectCfgManager(Project p) {
 		return getProjectComponent(p, ProjectCfgManager.class);
 	}
@@ -148,24 +115,6 @@ public final class IdeaHelper {
 
 	public static IssueDetailsToolWindow getIssueDetailsToolWindow(@NotNull final Project project) {
 		return getProjectComponent(project, IssueDetailsToolWindow.class);
-	}
-
-	public static ReviewDetailsToolWindow getReviewDetailsToolWindow(@NotNull final Project project) {
-		return getProjectComponent(project, ReviewDetailsToolWindow.class);
-	}
-
-	@Nullable
-	public static ReviewDetailsToolWindow getReviewDetailsToolWindow(@NotNull final AnActionEvent event) {
-		return getProjectComponent(getCurrentProject(event), ReviewDetailsToolWindow.class);
-	}
-
-	@Nullable
-	public static ReviewListToolWindowPanel getReviewListToolWindowPanel(AnActionEvent event) {
-		return getProjectComponent(event, ReviewListToolWindowPanel.class);
-	}
-
-	public static ReviewListToolWindowPanel getReviewListToolWindowPanel(@NotNull final Project project) {
-		return getProjectComponent(project, ReviewListToolWindowPanel.class);
 	}
 
 	@Nullable
@@ -246,11 +195,6 @@ public final class IdeaHelper {
 	@Nullable
 	public static <T> T getApplicationComponent(final Class<T> clazz) {
 		return clazz.cast(ApplicationManager.getApplication().getPicoContainer().getComponentInstanceOfType(clazz));
-	}
-
-	public static CrucibleStatusChecker getCrucibleStatusChecker(Project project) {
-
-		return getCurrentProjectComponent(project).getCrucibleStatusChecker();
 	}
 
 	public static JIRAIssueListModelBuilder getJIRAIssueListModelBuilder(final AnActionEvent event) {

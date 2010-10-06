@@ -22,7 +22,6 @@ import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
-import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
 
 import javax.swing.*;
@@ -35,7 +34,6 @@ public final class ConfigPanel extends JPanel {
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final BambooGeneralForm bambooConfigPanel;
-	private final CrucibleGeneralForm crucibleConfigPanel;
 	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 	private final AboutForm aboutBox;
@@ -46,7 +44,6 @@ public final class ConfigPanel extends JPanel {
 
 	public ConfigPanel(PluginConfiguration globalConfigurationBean, NewVersionChecker newVersionChecker) {
 		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
-		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
 		this.generalConfigPanel = new GeneralConfigPanel(globalConfigurationBean, newVersionChecker);
 		this.globalConfigurationBean = globalConfigurationBean;
@@ -66,9 +63,6 @@ public final class ConfigPanel extends JPanel {
 		// add Bamboo option tab
 		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
 
-		// add Crucible option tab
-		contentPanel.add(crucibleConfigPanel.getTitle(), crucibleConfigPanel);
-
 		// add Jira option tab
 		contentPanel.add(jiraConfigPanel.getTitle(), jiraConfigPanel);
 
@@ -85,7 +79,6 @@ public final class ConfigPanel extends JPanel {
 	public boolean isModified() {
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
 				|| bambooConfigPanel.isModified()
-				|| crucibleConfigPanel.isModified()
 				|| jiraConfigPanel.isModified()
 				|| generalConfigPanel.isModified();
 	}
@@ -95,7 +88,6 @@ public final class ConfigPanel extends JPanel {
 			generalConfigPanel.saveData();
 			bambooConfigPanel.saveData();
 			jiraConfigPanel.saveData();
-			crucibleConfigPanel.saveData();
 		}
 	}
 
@@ -104,6 +96,5 @@ public final class ConfigPanel extends JPanel {
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(localPluginConfigurationCopy);
 		jiraConfigPanel.setData(localPluginConfigurationCopy);
-		crucibleConfigPanel.setData(localPluginConfigurationCopy);
 	}
 }
