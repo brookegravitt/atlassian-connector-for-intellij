@@ -1,20 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.commons.jira.JIRAAction;
-import com.atlassian.connector.commons.jira.JIRAActionField;
-import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
-import com.atlassian.connector.commons.jira.JiraCustomField;
-import com.atlassian.connector.commons.jira.JiraTImeFormatter;
-import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+import com.atlassian.connector.commons.jira.*;
 import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
 import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
@@ -23,7 +15,6 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -31,15 +22,8 @@ import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
-import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
-import com.atlassian.theplugin.idea.ui.BoldLabel;
-import com.atlassian.theplugin.idea.ui.CommentPanel;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.ui.EditableIssueField;
-import com.atlassian.theplugin.idea.ui.ScrollablePanel;
-import com.atlassian.theplugin.idea.ui.StackTracePanel;
-import com.atlassian.theplugin.idea.ui.UserLabel;
+import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -49,11 +33,7 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -68,7 +48,6 @@ import com.intellij.ui.content.ContentManagerListener;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -81,12 +60,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,12 +69,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 /**
  * User: jgorycki
  * Date: Dec 23, 2008
@@ -651,34 +621,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private IssueLinksPanel issueLinksPanel;
             private static final int ISSUELINKS_LABEL_HEIGHT = 14;
 
-            private JLabel relatedReviewsLabel;
-            private final JPanel relatedReviewsPanel = new JPanel(new FlowLayout());
-
             public void fillIssueLinksPanelWithIssues(Collection<JiraIssueAdapter> issues) {
                 issueLinksPanel.fillPanelWithIssues(issues);
             }
-            public void fillReviews(final List<ReviewAdapter> reviews) {
-                relatedReviewsPanel.removeAll();
-                if (reviews != null) {
-                    for (ReviewAdapter r : reviews) {
-                        final HyperlinkLabel label = new HyperlinkLabel(r.getPermId().getId());
-                        label.addHyperlinkListener(new HyperlinkReviewLabelListener(r));
-                        relatedReviewsPanel.add(label);
-                    }
-                }
-            }
-            private class HyperlinkReviewLabelListener implements HyperlinkListener {
-                private final ReviewAdapter review;
 
-                public HyperlinkReviewLabelListener(ReviewAdapter review) {
-                    this.review = review;
-                }
-                    public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
-                            ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
-                            panel.openReview(this.review, false);
-                        }
-
-            }
             protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
                                                              final String displayName) {
                 component.setBackground(Color.WHITE);
@@ -705,7 +651,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 remainingEstimateEditLabel = createEditableField(remainingEstimate, "timetracking", "Remaining Estimate");
                 remainingEstimateEditLabel.setButtonVisible(false);
                 add(createBody(), BorderLayout.CENTER);
-                relatedReviewsPanel.setBackground(Color.WHITE);
             }
             private JPanel createBody() {
                 boolean hasSubTasks = params.issue.getSubTaskKeys().size() > 0;
@@ -1076,12 +1021,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 panel.add(new BoldLabel("Time Spent"), gbc1);
                 panel.add(timeSpent, gbc2);
 
-                if (IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer() != null) {
-                    gbc1.gridy++;
-                    gbc2.gridy++;
-                    panel.add(new BoldLabel("Reviews"), gbc1);
-                    panel.add(relatedReviewsPanel, gbc2);
-                }
                 for (JiraCustomField field : params.issue.getCustomFields()) {
                     gbc1.gridy++;
                     gbc2.gridy++;
@@ -1209,30 +1148,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             private class IssueDetailsRunnable implements Runnable {
                 private String[] errorString = null;
 
-                @Nullable
-                private List<ReviewAdapter> getRelatedReviews() {
-                  final CrucibleServerFacade crucibleFacade = IntelliJCrucibleServerFacade.getInstance();
-                    final ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(project);
-                    final ServerData defaultCrucibleServer = cfgManager.getDefaultCrucibleServer();
-
-                    if (defaultCrucibleServer != null) {
-                        try {
-
-                            return crucibleFacade.getReviewsForIssue(defaultCrucibleServer,
-                                    params.issue.getKey());
-
-                        } catch (Exception e) {
-                            PluginUtil.getLogger().error("Cannot fetch reviews from ("
-                                    + defaultCrucibleServer.getUrl() + ") for issue "
-                                    + params.issue.getKey()
-                                    + e.getMessage());
-                        }
-                    }
-
-                    return null;
-                }
                 public void run() {
-                    List<ReviewAdapter> reviews = null;
                     try {
                         if (params != null && params.issue != null && params.issue.getJiraServerData() != null) {
                             // damn it! the XML view of the list of issues does not
@@ -1243,13 +1159,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                             params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
                             params.issue.setFixVersions(issueDetails.getFixVersions());
                             params.issue.setComponents(issueDetails.getComponents());
-                            reviews = getRelatedReviews();
                         }
                     } catch (JIRAException e) {
                         errorString = new String[]{"Unable to retrieve"};
                     }
 
-                    final List<ReviewAdapter> fReviews = reviews;
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             removeAll();
@@ -1277,8 +1191,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 setRemainingEstimate(errorString[0]);
                                 setTimeSpent(errorString[0]);
                             }
-
-                            fillReviews(fReviews);
                         }
                     });
                 }

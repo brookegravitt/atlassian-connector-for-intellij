@@ -15,15 +15,7 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import junit.framework.TestCase;
@@ -59,19 +51,13 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerIdImpl());
 	private final BambooServerCfg bamboo2 = new BambooServerCfg("bamboo2", new ServerIdImpl());
-	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerIdImpl());
-	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerIdImpl());
 	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl(), true);
 	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerIdImpl(), true);
-	private final FishEyeServerCfg fisheye1 = new FishEyeServerCfg("fisheye1", new ServerIdImpl());
-	private final FishEyeServerCfg fisheye2 = new FishEyeServerCfg("fisheye2", new ServerIdImpl());
 
 	private void populateServerCfgs() {
 
 		projectCfgManager.addServer(bamboo1);
 		projectCfgManager.addServer(jira1);
-		projectCfgManager.addServer(crucible1);
-		projectCfgManager.addServer(fisheye1);
 
 		newConf = new ProjectConfiguration(projectCfgManager.getProjectConfiguration());
 	}
@@ -79,20 +65,14 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerAdded() {
 
 		newConf.getServers().add(bamboo2);
-		newConf.getServers().add(crucible2);
 		newConf.getServers().add(jira2);
-		newConf.getServers().add(fisheye2);
 
 		// record
 		listener.configurationUpdated(newConf);
 		listener.serverAdded(getServerData(bamboo2));
-		listener.serverAdded(getServerData(crucible2));
 		listener.serverAdded(getServerData(jira2));
-		listener.serverAdded(getServerData(fisheye2));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test
 		EasyMock.replay(listener);
@@ -108,20 +88,14 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerRemoved() {
 
 		newConf.getServers().remove(bamboo1);
-		newConf.getServers().remove(crucible1);
 		newConf.getServers().remove(jira1);
-		newConf.getServers().remove(fisheye1);
 
 		// record
 		listener.configurationUpdated(newConf);
 		listener.serverRemoved(getServerData(bamboo1));
-		listener.serverRemoved(getServerData(crucible1));
 		listener.serverRemoved(getServerData(jira1));
-		listener.serverRemoved(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test
 		EasyMock.replay(listener);
@@ -133,24 +107,16 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerDisabledEnabled() {
 
 		newConf.getServerCfg(bamboo1.getServerId()).setEnabled(false);
-		newConf.getServerCfg(crucible1.getServerId()).setEnabled(false);
 		newConf.getServerCfg(jira1.getServerId()).setEnabled(false);
-		newConf.getServerCfg(fisheye1.getServerId()).setEnabled(false);
 
 		// record
 		listener.configurationUpdated(newConf);
 		listener.serverDisabled(bamboo1.getServerId());
-		listener.serverDisabled(crucible1.getServerId());
 		listener.serverDisabled(jira1.getServerId());
-		listener.serverDisabled(fisheye1.getServerId());
 		listener.serverDataChanged(getServerData(bamboo1));
-		listener.serverDataChanged(getServerData(crucible1));
 		listener.serverDataChanged(getServerData(jira1));
-		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test disabled
 		EasyMock.replay(listener);
@@ -164,24 +130,16 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		ProjectConfiguration conf = new ProjectConfiguration(newConf);
 
 		conf.getServerCfg(bamboo1.getServerId()).setEnabled(true);
-		conf.getServerCfg(crucible1.getServerId()).setEnabled(true);
 		conf.getServerCfg(jira1.getServerId()).setEnabled(true);
-		conf.getServerCfg(fisheye1.getServerId()).setEnabled(true);
 
 		// record
 		listener.configurationUpdated(conf);
 		listener.serverEnabled(getServerData(bamboo1));
-		listener.serverEnabled(getServerData(crucible1));
 		listener.serverEnabled(getServerData(jira1));
-		listener.serverEnabled(getServerData(fisheye1));
 		listener.serverDataChanged(getServerData(bamboo1));
-		listener.serverDataChanged(getServerData(crucible1));
 		listener.serverDataChanged(getServerData(jira1));
-		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(conf);
 		listener.bambooServersChanged(conf);
-		listener.crucibleServersChanged(conf);
-		listener.fisheyeServersChanged(conf);
 
 		// test enabled
 		EasyMock.replay(listener);
@@ -193,24 +151,16 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerLabelChanged() {
 
 		newConf.getServerCfg(bamboo1.getServerId()).setName(bamboo1.getName() + SUFFIX);
-		newConf.getServerCfg(crucible1.getServerId()).setName(crucible1.getName() + SUFFIX);
 		newConf.getServerCfg(jira1.getServerId()).setName(jira1.getName() + SUFFIX);
-		newConf.getServerCfg(fisheye1.getServerId()).setName(fisheye1.getName() + SUFFIX);
 
 		// record
 		listener.configurationUpdated(newConf);
 		listener.serverNameChanged(bamboo1.getServerId());
-		listener.serverNameChanged(crucible1.getServerId());
 		listener.serverNameChanged(jira1.getServerId());
-		listener.serverNameChanged(fisheye1.getServerId());
 		listener.serverDataChanged(getServerData(bamboo1));
-		listener.serverDataChanged(getServerData(crucible1));
 		listener.serverDataChanged(getServerData(jira1));
-		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test
 		EasyMock.replay(listener);
@@ -222,24 +172,16 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerConnectionDataChanged() {
 
 		newConf.getServerCfg(bamboo1.getServerId()).setUrl(bamboo1.getUrl() + SUFFIX);
-		newConf.getServerCfg(crucible1.getServerId()).setUsername(crucible1.getUsername() + SUFFIX);
 		newConf.getServerCfg(jira1.getServerId()).setPassword(jira1.getPassword() + SUFFIX);
-		newConf.getServerCfg(fisheye1.getServerId()).setPassword(fisheye1.getPassword() + SUFFIX);
 
 		// record
 		listener.configurationUpdated(newConf);
 		listener.serverConnectionDataChanged(bamboo1.getServerId());
-		listener.serverConnectionDataChanged(crucible1.getServerId());
 		listener.serverConnectionDataChanged(jira1.getServerId());
-		listener.serverConnectionDataChanged(fisheye1.getServerId());
 		listener.serverDataChanged(getServerData(bamboo1));
-		listener.serverDataChanged(getServerData(crucible1));
 		listener.serverDataChanged(getServerData(jira1));
-		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test
 		EasyMock.replay(listener);
@@ -254,9 +196,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		newConf.getServerCfg(bamboo1.getServerId()).setName(bamboo1.getName() + SUFFIX);
 		newConf.getServerCfg(bamboo1.getServerId()).setEnabled(false);
 
-		newConf.getServers().remove(crucible1);
 		newConf.getServers().remove(jira1);
-		newConf.getServers().remove(fisheye1);
 		newConf.getServers().add(bamboo2);
 
 		// record
@@ -265,14 +205,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverNameChanged(bamboo1.getServerId());
 		listener.serverDisabled(bamboo1.getServerId());
 		listener.serverDataChanged(getServerData(bamboo1));
-		listener.serverRemoved(getServerData(crucible1));
 		listener.serverRemoved(getServerData(jira1));
-		listener.serverRemoved(getServerData(fisheye1));
 		listener.serverAdded(getServerData(bamboo2));
 		listener.bambooServersChanged(newConf);
-		listener.crucibleServersChanged(newConf);
 		listener.jiraServersChanged(newConf);
-		listener.fisheyeServersChanged(newConf);
 
 		// test
 		EasyMock.replay(listener);

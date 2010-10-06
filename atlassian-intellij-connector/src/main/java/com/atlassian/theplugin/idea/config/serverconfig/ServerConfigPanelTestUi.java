@@ -37,16 +37,13 @@ public final class ServerConfigPanelTestUi {
 		final Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList(
 				new BambooServerCfg(true, "mybamboo", new ServerIdImpl()),
 				bambooServerCfg,
-				new CrucibleServerCfg("Crucible EAC", new ServerIdImpl()),
 				new JiraServerCfg("My Jira Server", new ServerIdImpl(), true),
-				new JiraServerCfg("Second Jira", new ServerIdImpl(), true),
-				new FishEyeServerCfg("FishEye1 Server", new ServerIdImpl())
+				new JiraServerCfg("Second Jira", new ServerIdImpl(), true)
 		);
 
 		final Collection<ServerCfg> serverCfgs2 = MiscUtil.buildArrayList(
 				new BambooServerCfg(true, "2-mybamboo", new ServerIdImpl()),
 				bambooServerCfg,
-				new CrucibleServerCfg("2-Crucible EAC Very Very long name", new ServerIdImpl()),
 				new JiraServerCfg("2-My Jira Server", new ServerIdImpl(), true),
 				new JiraServerCfg("2-Second Jira", new ServerIdImpl(), true)
 		);

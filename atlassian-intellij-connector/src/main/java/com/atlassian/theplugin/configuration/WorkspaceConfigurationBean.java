@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 public class WorkspaceConfigurationBean implements PersistentStateComponent<WorkspaceConfigurationBean> {
 
 	private BambooWorkspaceConfiguration bambooConfiguration = new BambooWorkspaceConfiguration();
-	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
 
 	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
 
@@ -46,17 +45,8 @@ public class WorkspaceConfigurationBean implements PersistentStateComponent<Work
 		this.bambooConfiguration = bambooConfiguration;
 	}
 
-	public CrucibleWorkspaceConfiguration getCrucibleConfiguration() {
-		return crucibleConfiguration;
-	}
-
-	public void setCrucibleConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
-		this.crucibleConfiguration = crucibleConfiguration;
-	}
-
 	public void copyConfiguration(WorkspaceConfigurationBean state) {
 		bambooConfiguration.copyConfiguration(state.getBambooConfiguration());
-		crucibleConfiguration.copyConfiguration(state.getCrucibleConfiguration());
 		this.activeToolWindowTab = state.getActiveToolWindowTab();
 		defaultCredentials = new UserCfgBean(state.defaultCredentials.getUsername(),
 				state.defaultCredentials.getEncodedPassword());

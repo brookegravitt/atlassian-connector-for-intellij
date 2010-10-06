@@ -16,15 +16,12 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
 
@@ -66,17 +63,6 @@ public final class Constants {
 
 	public static final Color FAIL_COLOR = new Color(255, 100, 100);
 
-	public static final String FILE_TREE = "theplugin.tree";
-	public static final String CRUCIBLE_COMMENT_TREE = "theplugin.crucible.comment.tree";
-	public static final String BUILD_CHANGES_WINDOW = "theplugin.build_changes_window";
-	public static final String CRUCIBLE_BOTTOM_WINDOW = "theplugin.crucible_bottom_window";
-	public static final String REVIEW_TOOL_WINDOW = "theplugin.crucible.bottom.crucible_tool_window";
-	public static final String CRUCIBLE_FILE_NODE = "theplugin.crucible_file_node";
-    public static final String CRUCIBLE_VERSIONED_COMMENT_NODE =  "theplugin.crucible_versioned_comment_node";
-
-	public static final Icon CRUCIBLE_ICON = IconLoader.getIcon("/icons/crucible-16.png");
-	public static final DataKey<Boolean> REVIEW_TOOL_WINDOW_KEY = DataKey.create(REVIEW_TOOL_WINDOW);
-
 	public static final String SERVER_CONFIG_PANEL = "theplugin.server_config_panel";
 	public static final String SERVER = "theplugin.server";
 	public static final String SERVER_TYPE = "theplugin.servertype";
@@ -85,9 +71,6 @@ public final class Constants {
 	public static final DataKey<Collection<ServerCfg>> SERVERS_KEY = DataKey.create(SERVERS);
 	public static final DataKey<ServerConfigPanel> SERVER_CONFIG_PANEL_KEY = DataKey.create(SERVER_CONFIG_PANEL);
 	public static final DataKey<ServerData> SERVER_KEY = DataKey.create(SERVER);
-	public static final DataKey<CrucibleFileNode> CRUCIBLE_FILE_NODE_KEY = DataKey.create(CRUCIBLE_FILE_NODE);
-    public static final DataKey<VersionedCommentTreeNode> CRUCIBLE_VERSIONED_COMMENT_NODE_KEY =
-            DataKey.create(CRUCIBLE_VERSIONED_COMMENT_NODE);
 	public static final DataKey<ServerCfg> SERVER_CFG_KEY = DataKey.create("com.atlassian.connector.cfg.server");
 
 
@@ -97,10 +80,6 @@ public final class Constants {
     public static final DataKey<StatusBarPane> STATUS_BAR_PANE_KEY = DataKey.create(STATUS_BAR_PANE);    
 	public static final String ISSUE = "com.atlassian.connector.issue";
 	public static final DataKey<JiraIssueAdapter> ISSUE_KEY = DataKey.create(ISSUE);
-	public static final String REVIEW = "com.atlassian.connector.review";
-	public static final DataKey<ReviewAdapter> REVIEW_KEY = DataKey.create(REVIEW);
-	public static final String REVIEW_WINDOW_ENABLED = "com.atlassian.connector.review_window_enabled";
-	public static final DataKey<Boolean> REVIEW_WINDOW_ENABLED_KEY = DataKey.create(REVIEW_WINDOW_ENABLED);
 
 	private Constants() {
 	}
@@ -122,7 +101,6 @@ public final class Constants {
 
 	public static final String HELP_ISSUE = "theplugin.issue";
 	public static final String HELP_BUILD = "theplugin.build";
-	public static final String HELP_REVIEW = "theplugin.review";
 
 	public static final Icon HELP_ICON = IconLoader.getIcon("/actions/help.png");
 	public static final Icon JIRA_ISSUE_TAB_ICON = IconLoader.getIcon("/icons/tab_jira-white.png");
@@ -131,12 +109,6 @@ public final class Constants {
 	public static final Icon BAMBOO_BUILD_PANEL_ICON = IconLoader.getIcon("/icons/tab_bamboo.png");
 	public static final Icon BAMBOO_TRACE_ICON = IconLoader.getIcon("/icons/bamboo-traces.png");
 	public static final Icon BAMBOO_COMMITS_ICON = IconLoader.getIcon("/icons/bamboo-commits.png");
-	public static final Icon CRUCIBLE_REVIEW_TAB_ICON = IconLoader.getIcon("/icons/tab_crucible-white.png");
-	public static final Icon CRUCIBLE_REVIEW_PANEL_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
-    public static final Icon CRUCIBLE_UNREAD_COMMENT_ICON =
-            IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_unskip.png");
-    public static final Icon CRUCIBLE_COMMENT_READ_ICON =
-            IconLoader.getIcon("/icons/crucible/comments/ico_comment_toggle_read.png");
 
 	public static final String ACTIVE_TOOLBAR_NAME = "ThePlugin.ActiveToolbar";
 	public static final String ACTIVE_JIRA_ISSUE_ACTION = "ThePlugin.ActiveTaskBar.ShowActiveJiraIssue";
