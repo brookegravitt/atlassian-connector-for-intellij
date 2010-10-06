@@ -10,11 +10,10 @@
     <description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
     <groupId>com.atlassian.connector.tasks</groupId>
     <artifactId>atlassian-idea9-integration</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.4-SNAPSHOT</version>
     <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</connection>
-        <url>https://studio.atlassian.com/svn/PL/tags/atlassian-idea9-integration-0.1.1</url>
-      <developerConnection>scm:svn:https://studio.atlassian.com/svn/ACC/tags/atlassian-idea9-integration-0.1.1</developerConnection>
+	<connection>scm:hg:file:///${basedir}</connection>
+	<developerConnection>scm:hg:file:///${basedir}</developerConnection>
   </scm>
     <issueManagement>
         <system>Jira</system>
@@ -33,14 +32,6 @@
             <version>9.0.2-95.4</version>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>extensions</artifactId>
-            <version>7.0</version>
-            <classifier>7590</classifier>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.picocontainer</groupId>
             <artifactId>picocontainer</artifactId>
@@ -49,54 +40,41 @@
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
+            <artifactId>extensions</artifactId>
+            <version>8.1.4</version>
+            <classifier>9952</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>util</artifactId>
+            <version>8.1.4</version>
+            <classifier>9952</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
             <artifactId>openapi</artifactId>
-            <version>7.0</version>
-            <classifier>7590</classifier>
-            <!--artifactId>openapi</artifactId>
-                           <version>8.0</version>
-                           <classifier>9013</classifier-->
+            <version>8.1.4</version>
+            <classifier>9952</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.0.0-m2</version>
+            <version>4.0.0-m4</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-idea-plugin</artifactId>
-            <version>2.3.0-SNAPSHOT</version>
+            <version>2.4.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>
-        <!--<resources>-->
-        <!--<resource>-->
-        <!--<directory>src/main/resources</directory>-->
-        <!--<excludes>-->
-        <!--<exclude>**/*.xml</exclude>-->
-        <!--</excludes>-->
-        <!--</resource>-->
-        <!--<resource>-->
-        <!--<directory>src/main/resources</directory>-->
-        <!--<includes>-->
-        <!--<include>**/*.xml</include>-->
-        <!--</includes>-->
-        <!--<filtering>true</filtering>-->
-        <!--</resource>-->
-        <!--</resources>-->
         <plugins>
-            <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<!--preparationGoals>assembly:directory-single</preparationGoalas-->
-					<arguments>-DallowTimestampedSnapshots=true -DupdateReleaseInfo -Prelease</arguments>
-					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
-				</configuration>
-			</plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
@@ -108,12 +86,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-1</version>
-                <executions>
+                <version>1.0-beta-4</version>
+		 <executions>
                     <execution>
                         <phase>validate</phase>
                         <goals>
-                            <goal>create</goal>
+                            <goal>hgchangeset</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -136,6 +114,169 @@
                 </configuration>
             </plugin>
 
+                  <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <ideaPlugin>true</ideaPlugin>
+                    <jdkName>IDEA 9952</jdkName>
+                    <jdkLevel>${jdkLevel}</jdkLevel>
+                    <wildcardResourcePatterns>!?*.java</wildcardResourcePatterns>
+                    <downloadSources>true</downloadSources>
+                    <libraries>
+                        <library>
+                            <name>Clover</name>
+                            <exclude>false</exclude>
+                        </library>
+                        <library>
+                            <name>openapi</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>idea</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>picocontainer</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>util</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>idea-junit</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-httpclient</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-logging</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-codec</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>spartez-junit3-util</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>junit</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>easymock</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>ddsteps-httpserver-mock</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>jetty</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>jetty-util</name>
+                            <exclude>true</exclude>
+                        </library>
+                         <library>
+                            <name>jetty-mock</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>junit-addons</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>htmlunit</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>jaxen</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-collections</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-lang</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>js</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>nekohtml</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-io</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>mockito-all</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>axis</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>axis-jaxrpc</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>axis-saaj</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>axis-wsdl4j</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>commons-discovery</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>xstream</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>xpp3_min</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>annotations</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>servlet-api-2.5</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>xercesImpl</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>xmlParserAPIs</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>jdom</name>
+                            <exclude>true</exclude>
+                        </library>
+
+                    </libraries>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <repositories>
