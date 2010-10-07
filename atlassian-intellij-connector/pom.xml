@@ -24,7 +24,7 @@
     </issueManagement>
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <buildNumber>${maven.build.timestamp}</buildNumber>
+        <buildNumber>${timestamp}</buildNumber>
     </properties>
 
     <dependencies>
@@ -286,7 +286,7 @@
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
-           <!-- <plugin>
+            <!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.0-beta-4</version>
@@ -305,8 +305,31 @@
                     </items>
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>2010010101</revisionOnScmFailure>
+                    &lt;!&ndash;<providerImplementations>hg</providerImplementations>&ndash;&gt;
                 </configuration>
             </plugin>-->
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                import java.util.Date
+                                import java.text.MessageFormat
+                                def vartimestamp = MessageFormat.format("{0,date,yyyyMMddHHmmss}", new Date())
+                                project.properties['buildNumber'] = vartimestamp
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
