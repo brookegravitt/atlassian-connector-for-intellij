@@ -22,6 +22,11 @@
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL</url>
     </issueManagement>
+    <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <buildNumber>${maven.build.timestamp}</buildNumber>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.connector.tasks</groupId>
@@ -281,26 +286,27 @@
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.0-beta-4</version>
-                <configuration>
-                    <format>{0,number,integer}{1,number}</format>
-                    <items>
-                        <item implementation="java.lang.Integer">1200</item>
-                        <item>buildNumber\d*</item>
-                    </items>
-                </configuration>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>initialize</phase>
                         <goals>
-                            <goal>hgchangeset</goal>
+                            <goal>create</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+                <configuration>
+                    <format>{0, date, yyyyMMddHHmmss}</format>
+                    <items>
+                        <item>timestamp</item>
+                    </items>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
