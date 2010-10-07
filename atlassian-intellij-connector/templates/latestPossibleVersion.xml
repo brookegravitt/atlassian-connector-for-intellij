@@ -1,6 +1,6 @@
 <response>
 	<version>
-		<number>${project.version}, SVN:${changeSet}</number>
+		<number>${project.version}, SVN:${buildNumber}</number>
 		<downloadUrl>http://update.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}-plugin-zip.zip</downloadUrl>
 		<releaseNotes><![CDATA[
               <html><body>
