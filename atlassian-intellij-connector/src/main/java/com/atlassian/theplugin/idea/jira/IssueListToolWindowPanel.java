@@ -7,12 +7,7 @@ import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
@@ -22,6 +17,7 @@ import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.remoteapi.jira.JiraCaptchaRequiredException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -34,40 +30,16 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
-import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
-import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
-import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
-import com.atlassian.theplugin.idea.jira.tree.JIRAManualFilterTreeNode;
-import com.atlassian.theplugin.idea.jira.tree.JIRAServerTreeNode;
-import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
-import com.atlassian.theplugin.idea.jira.tree.JiraPresetFilterTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.jira.model.FrozenModel;
-import com.atlassian.theplugin.jira.model.FrozenModelListener;
-import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
-import com.atlassian.theplugin.jira.model.JiraCustomFilter;
-import com.atlassian.theplugin.jira.model.JiraPresetFilter;
-import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -88,27 +60,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
@@ -1608,8 +1571,19 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraFilterTree.expandTree();
                     }
                 });
-            } catch (JIRAException e) {
-                setStatusErrorMessage(e.getMessage(), e);
+            } catch (JiraCaptchaRequiredException e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        DialogWithDetails.showExceptionDialog(project, "Captcha required", "Please login via browser. Captcha authentication is required.");
+                    }
+                });
+            } catch (final JIRAException e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        DialogWithDetails.showExceptionDialog(project, "Remote JIRA Exception", e);
+                    }
+                });
+
             } catch (InterruptedException e) {
                 setStatusErrorMessage(e.getMessage(), e);
             } catch (InvocationTargetException e) {
