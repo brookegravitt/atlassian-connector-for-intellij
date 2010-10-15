@@ -45,11 +45,9 @@ public class AboutForm {
 				"work with the Atlassian products within your IDE. Now you don't "
 				+ "have to switch between websites, email messages and news feeds to " +
 				"see what's happening to your project and your code. Instead, you "
-				+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues, " +
-				"<a href=\"http://www.atlassian.com/software/crucible\">Crucible</a> reviews "
-				+ "and <a href=\"http://www.atlassian.com/software/bamboo\">Bamboo</a> build " +
-				"information right there in your development environment. Viewing your "
-				+ "code in <a href=\"http://www.atlassian.com/software/fisheye\">FishEye</a> is just a click away." +
+				+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues" +
+				" and <a href=\"http://www.atlassian.com/software/bamboo\">Bamboo</a> build " +
+				"information right there in your development environment. " +
 				"<br><br><br><br>" + "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
 				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>" +
 				"<br><br><br><br>Licensed under the Apache License, Version 2.2.2 Copyright (c) Atlassian 2009"
