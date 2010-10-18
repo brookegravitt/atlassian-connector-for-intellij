@@ -62,6 +62,7 @@ public final class IdeaVersionFacade {
     private static final int IDEA_8_1_3 = 9886;
     private static final int IDEA_9_EAP = 10000;
     private static final int IDEA_X_EAP_GR4 = 96;
+    private static final int IDEA_X_EAP1_GR4 = 98;
     private static final int IDEA_9_GR4 = 95;
     private static final int IDEA_9_COMMUNITY_1 = 93;
 
@@ -86,7 +87,7 @@ public final class IdeaVersionFacade {
         if (m.matches() && (group4 == IDEA_9_GR4 || group4 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && group4 == IDEA_X_EAP_GR4) {
+        } else if (m.matches() && (group4 == IDEA_X_EAP_GR4 || group4 == IDEA_X_EAP1_GR4)) {
             isIdeaX = true;
             communityEdition = m.group(3) != null;
         } else {
