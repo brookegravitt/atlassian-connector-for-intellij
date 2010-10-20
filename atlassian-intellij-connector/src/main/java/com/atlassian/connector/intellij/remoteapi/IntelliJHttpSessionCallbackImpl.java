@@ -5,6 +5,7 @@ import com.atlassian.connector.intellij.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.idea.BugReporting;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -17,7 +18,7 @@ import java.util.Map;
 /**
  * @author Wojciech Seliga, Piotr Maruszak
  */
-public class IntelliJHttpSessionCallbackImpl extends IntelliJHttpSessionCallback {
+public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
 	private static final String USER_AGENT = "Atlassian Connector for IntelliJ/" + BugReporting.getVersionString();
     private final Map<ConnectionCfg, HttpClient> httpClients =
             Collections.synchronizedMap(new HashMap<ConnectionCfg, HttpClient>());
