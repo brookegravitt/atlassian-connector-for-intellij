@@ -1,0 +1,3 @@
+atlassian-intellij-connector/target
+atlassian-intellij-connector/atlassian-idea-plugin.*
+task-integration-module-idea9/atlassian-idea9-integration.*
