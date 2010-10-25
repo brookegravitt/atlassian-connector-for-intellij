@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.idea.BugReporting;
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -39,7 +40,7 @@ public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
         super.configureHttpMethod(session, method);
     }
 
-    @Override
+
     public void disposeClient(ConnectionCfg server) {
        httpClients.remove(server);
     }
@@ -57,5 +58,15 @@ public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
        if (toRemove != null) {
                httpClients.remove(toRemove);
         }
+    }
+
+    public Cookie[] getCookiesHeaders(ConnectionCfg server) {
+        Cookie[] cookies = new Cookie[0];
+
+        if (httpClients.containsKey(server)) {
+            cookies = httpClients.get(server).getState().getCookies();
+        }
+
+        return cookies;
     }
 }
