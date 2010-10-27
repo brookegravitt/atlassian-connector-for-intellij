@@ -168,7 +168,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// swap listener for dataretrievedlistener and datachangelisteners
 		// store bamboo between runs in UDC
 		// clean up object model confusion
-
 		if (!created) {
             IconLoader.activate();
             TaskActionOrganizer.organizeTaskActionsInToolbar();

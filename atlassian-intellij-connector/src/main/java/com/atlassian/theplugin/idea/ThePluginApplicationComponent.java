@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
@@ -43,11 +42,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
@@ -79,7 +75,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
         this.schedulableCheckers.add(newVersionChecker);
 
-        JIRAServerFacade2Impl.setLogger(PluginUtil.getLogger());
+        LoggerImpl.setInstance(
+                new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(LoggerImpl.LOGGER_CATEGORY)));
 
         ConfigurationFactory.setConfiguration(configuration);
         PluginSSLProtocolSocketFactory.initializeSocketFactory(configuration.getGeneralConfigurationData(),
@@ -93,6 +90,26 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         addActionToDiffToolbar();
         //FileContentCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
         //providers.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());
+        printLocalVariables();
+    }
+
+
+    private void printLocalVariables() {
+        final String classPathMsg = "java.class.path: " + System.getProperty("java.class.path");
+        PluginUtil.getLogger().error(classPathMsg);
+        System.out.println(classPathMsg);
+        // extension directories whose jars are included on the classpath
+        final String extDirsMsg = "java.ext.dirs: " + System.getProperty("java.ext.dirs");
+        PluginUtil.getLogger().info(extDirsMsg);
+         System.out.println(extDirsMsg);
+        // low level classpath, includes system jars
+        final String libraryPathMsg = "java.library.path: " + System.getProperty("java.library.path");
+        PluginUtil.getLogger().info(libraryPathMsg);
+        System.out.println(libraryPathMsg);
+        // character to separate (not terminate!) entries on the classpath, ; for Windows : for unix.
+        final String pathSeparatorMsg = "path.separator: " + System.getProperty("path.separator");
+        PluginUtil.getLogger().info(pathSeparatorMsg);
+        System.out.println(pathSeparatorMsg);
     }
 
     private void addActionToDiffToolbar() {
@@ -129,7 +146,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     }
 
     public void initComponent() {
-        new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(LoggerImpl.LOGGER_CATEGORY));
     }
 
     public void disposeComponent() {
@@ -226,7 +242,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
                 return;
             }
         } catch (IOException e) {
-            PluginUtil.getLogger().error("Failed to load icon for http server");            
+            PluginUtil.getLogger().error("Failed to load icon for http server");
             return;
         }
 

@@ -1498,7 +1498,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 // oh well, no comments in XML - can it even happen? Fall back to SOAP
                                 cmts = facade.getComments(params.issue.getJiraServerData(), params.issue);
                             }
-
                             for (JIRAComment c : cmts) {
                                 try {
                                     JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()

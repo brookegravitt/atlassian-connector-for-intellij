@@ -31,10 +31,54 @@ public class IdeaLoggerImpl extends LoggerImpl {
     public IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger ideaLog) {
         super();
         this.ideaLog = ideaLog;
-
+        ideaLog.isDebugEnabled();
 		setInstance(this);
 	}
 
+    @Override
+    public void info(String msg) {
+        this.log(LoggerImpl.LOG_INFO, msg, null);
+    }
+
+    @Override
+    public void error(String msg) {
+        log(LoggerImpl.LOG_ERR, msg, null);
+    }
+
+    @Override
+    public void error(String msg, Throwable t) {
+        log(LoggerImpl.LOG_ERR, msg, t);
+    }
+
+    @Override
+    public void error(Throwable t) {
+        log(LoggerImpl.LOG_ERR, "", t);
+    }
+
+    @Override
+    public void warn(String msg, Throwable t) {
+        log(LoggerImpl.LOG_WARN, msg, t);
+    }
+
+    @Override
+    public void warn(String msg) {
+        log(LoggerImpl.LOG_WARN, msg, null);
+    }
+
+    @Override
+    public void warn(Throwable t) {
+        log(LoggerImpl.LOG_WARN, "", t);
+    }
+
+    @Override
+    public void info(String msg, Throwable t) {
+       log(LoggerImpl.LOG_INFO, msg, t);
+    }
+
+    @Override
+    public void info(Throwable t) {
+        log(LoggerImpl.LOG_INFO, "", t);
+    }
 
     public void log(int level, String aMsg, Throwable t) {
 
