@@ -21,18 +21,18 @@ import java.util.Map;
  */
 public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
 	private static final String USER_AGENT = "Atlassian Connector for IntelliJ/" + BugReporting.getVersionString();
-    private final Map<ConnectionCfg, HttpClient> httpClients =
-            Collections.synchronizedMap(new HashMap<ConnectionCfg, HttpClient>());
+    private final Map<String, HttpClient> httpClients =
+            Collections.synchronizedMap(new HashMap<String, HttpClient>());
 
 	public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
-        if (httpClients.get(server) == null) {
+        if (httpClients.get(server.getId()) == null) {
 		    final HttpClient client = HttpClientFactory.getClient();
             client.getParams().setParameter(HttpMethodParams.USER_AGENT, USER_AGENT);
             client.getParams().setParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1048576);
-            httpClients.put(server, client);
+            httpClients.put(server.getId(), client);
         }
 
-		return httpClients.get(server);
+		return httpClients.get(server.getId());
 	}
 
     @Override
@@ -42,15 +42,15 @@ public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
 
 
     public void disposeClient(ConnectionCfg server) {
-       httpClients.remove(server);
+       httpClients.remove(server.getId());
     }
 
     public void disposeClient(ServerId serverId) {
-       ConnectionCfg toRemove = null;
-       for (ConnectionCfg connection : httpClients.keySet()) {
-           if (connection.getId().equals(serverId.toString())) {
+       String toRemove = null;
+       for (String id : httpClients.keySet()) {
+           if (id.equals(serverId.toString())) {
 
-               toRemove = connection;
+               toRemove = id;
                break;
            }
        }
@@ -63,8 +63,8 @@ public class IntelliJHttpSessionCallbackImpl extends HttpSessionCallbackImpl {
     public Cookie[] getCookiesHeaders(ConnectionCfg server) {
         Cookie[] cookies = new Cookie[0];
 
-        if (httpClients.containsKey(server)) {
-            cookies = httpClients.get(server).getState().getCookies();
+        if (httpClients.containsKey(server.getId())) {
+            cookies = httpClients.get(server.getId()).getState().getCookies();
         }
 
         return cookies;
