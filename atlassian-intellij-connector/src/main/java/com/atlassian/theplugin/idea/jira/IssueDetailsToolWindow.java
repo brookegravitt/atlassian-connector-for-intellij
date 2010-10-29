@@ -71,6 +71,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.List;
+
 /**
  * User: jgorycki
  * Date: Dec 23, 2008
@@ -87,6 +88,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
     private ProjectCfgManager projectCfgManager;
     private final JIRAServerModelIdea jiraCache;
     private ContentPanel selectedContent = null;
+
     public IssueDetailsToolWindow(@NotNull final Project project,
                                   @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
                                   @NotNull final PluginConfiguration pluginConfiguration,
@@ -201,6 +203,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         }
     }
     // used to determine where to show errors caused by adding attachment failures:
+
     public enum AttachmentAddedFrom {
         ISSUE_DETAILS_WINDOW, ISSUE_LIST_WINDOW
     }
@@ -635,6 +638,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 );
             }
+
             public DetailsPanel() {
                 super(new BorderLayout());
                 issueAssigneeEditLabel = createEditableField(issueAssignee, "assignee", "Assignee");
@@ -652,6 +656,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 remainingEstimateEditLabel.setButtonVisible(false);
                 add(createBody(), BorderLayout.CENTER);
             }
+
             private JPanel createBody() {
                 boolean hasSubTasks = params.issue.getSubTaskKeys().size() > 0;
                 boolean hasIssueLinks = params.issue.getIssueLinks() != null
@@ -1052,13 +1057,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                         SwingConstants.LEFT);
                 issuePriority = createEditableField(priority, "priority", "Priority");
                 // bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
-                if (params.issue.getAssigneeId().equals("-1")) {
+
+                if (params.issue.getAssigneeId() == null || params.issue.getAssigneeId().equals("-1")) {
                     issueAssignee.setText("Unassigned");
                 } else {
                     issueAssignee.setUserName(params.issue.getServerUrl(), params.issue.getAssignee(),
                             params.issue.getAssigneeId(), true);
                 }
-                if (params.issue.getReporterId().equals("-1")) {
+
+
+                if (params.issue.getReporterId() == null || params.issue.getReporterId().equals("-1")) {
                     issueReporter.setText("Anonymous");
                 } else {
                     issueReporter.setUserName(params.issue.getServerUrl(), params.issue.getReporter(),
@@ -1751,6 +1759,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 validate();
             }
+
             private void fillPreview(JIRAAttachment a) {
                 previewEditor.setContentType("text/html");
                 if (a == null) {
@@ -1776,9 +1785,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                     + "\">Click here to open the attachment in the browser</a></center></body></html>");
                 }
             }
+
             private void launchAttachment(JIRAAttachment a) {
                 BrowserUtil.launchBrowser(constructAttachmentUrl(a, false));
             }
+
             private String constructAttachmentUrl(JIRAAttachment a, boolean appendAuth) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(params.issue.getServerUrl())
@@ -1804,6 +1815,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 });
             }
         }
+
         private final class MyHyperlinkLabel extends JPanel {
             private MyHyperlinkLabel(String label, HyperlinkListener listener) {
                 super(new GridBagLayout());
@@ -1824,6 +1836,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 addFillerPanel(this, gbc, true);
             }
         }
+
         private class DescriptionPanel extends JPanel {
             private JEditorPane body;
 
@@ -1877,6 +1890,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
             }
         }
+
         private class LocalModelListener implements JIRAIssueListModelListener {
             public void issueUpdated(final JiraIssueAdapter issue) {
             }
@@ -1894,7 +1908,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
         }
     }
+
     private static final AttachmentRendererPanel ATTACHMENT_RENDERER_PANEL = new AttachmentRendererPanel();
+
     private static final class AttachmentRendererPanel extends JPanel {
         private SelectableLabel name = new SelectableLabel(true, true, "NOTHING YET", ROW_HEIGHT, false, false);
         private SelectableLabel author = new SelectableLabel(true, true, "NOTHING HERE ALSO", ROW_HEIGHT, true, false);
