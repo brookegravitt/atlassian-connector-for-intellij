@@ -49,7 +49,8 @@ public final class PluginTaskManagerFacade {
     }
 
     public static boolean isValidIdeaVersion() {
-        return IdeaVersionFacade.getInstance().isIdea9()
+        return !IdeaVersionFacade.getInstance().isIdea7()
+                && !IdeaVersionFacade.getInstance().isIdea8()
                 && !IdeaVersionFacade.getInstance().isCommunityEdition()
                 && isTaskPluginEnabled()
                 && IdeaHelper.getPluginConfiguration().getJIRAConfigurationData().isSynchronizeWithIntelliJTasks();

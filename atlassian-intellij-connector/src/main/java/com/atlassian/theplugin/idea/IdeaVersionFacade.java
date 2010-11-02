@@ -101,6 +101,7 @@ public final class IdeaVersionFacade {
                 LoggerImpl.getInstance().error(e);
             }
         }
+
     }
 
     private static IdeaVersionFacade instance;
@@ -528,6 +529,14 @@ public final class IdeaVersionFacade {
             }
         });
 //		}
+    }
+
+    public boolean isIdea7() {
+        return isIdea7;
+    }
+
+    public boolean isIdea8() {
+        return isIdea8;
     }
 
     public boolean isIdea9() {
