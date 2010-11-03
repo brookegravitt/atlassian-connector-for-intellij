@@ -132,7 +132,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 						try {
 							JiraIssueAdapter issue = ActiveIssueUtils.getJIRAIssue(server, ai);
 							WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
-									server, issue, checkinProjectPanel.getProject(), txtTimeSpent.getText(), false, config);
+									server, issue, checkinProjectPanel.getProject(), txtTimeSpent.getText().trim(), false, config);
 							dlg.setRemainingEstimateUpdateMode(config.getRemainingEstimateUpdateMode());
 							dlg.setRemainingEstimateString(txtReminingEstimateHidden.getText());
 							dlg.show();
@@ -210,7 +210,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 					final JiraIssueAdapter issue = ActiveIssueUtils.getJIRAIssue(server, activeIssue);
 					WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
 							server, issue, checkinProjectPanel.getProject(),
-							txtTimeSpent.getText(), false, config);
+							txtTimeSpent.getText().trim(), false, config);
 					cal.setTime(dlg.getStartDate());
 
 					final String newRemainingEstimate = config.getRemainingEstimateUpdateMode()

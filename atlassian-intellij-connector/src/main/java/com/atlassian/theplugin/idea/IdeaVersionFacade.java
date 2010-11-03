@@ -63,6 +63,7 @@ public final class IdeaVersionFacade {
     private static final int IDEA_9_EAP = 10000;
     private static final int IDEA_X_EAP_GR4 = 96;
     private static final int IDEA_9_GR4 = 95;
+    private static final int IDEA_9_COMMUNITY_1 = 93;
 
     private boolean isIdea7;
     private boolean isIdea8;
@@ -82,10 +83,10 @@ public final class IdeaVersionFacade {
         Matcher m = IDEA_9_REGEX.matcher(ver);        
         final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
 
-        if (m.matches() && group4 == IDEA_9_GR4) {
+        if (m.matches() && (group4 == IDEA_9_GR4 || group4 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && group4 == IDEA_X_EAP_GR4) {
+        } else if (m.matches() && (group4 >= IDEA_X_EAP_GR4)) {
             isIdeaX = true;
             communityEdition = m.group(3) != null;
         } else {
@@ -100,6 +101,7 @@ public final class IdeaVersionFacade {
                 LoggerImpl.getInstance().error(e);
             }
         }
+
     }
 
     private static IdeaVersionFacade instance;
@@ -527,6 +529,14 @@ public final class IdeaVersionFacade {
             }
         });
 //		}
+    }
+
+    public boolean isIdea7() {
+        return isIdea7;
+    }
+
+    public boolean isIdea8() {
+        return isIdea8;
     }
 
     public boolean isIdea9() {

@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
+import com.atlassian.theplugin.commons.remoteapi.jira.JiraCaptchaRequiredException;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -73,8 +74,13 @@ public class RecentlyOpenIssuesCache {
 					if (loadedIssue != null) {
 					items.put(i, loadedIssue);
 					}
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().warn(e.getMessage());
+                } catch (JIRAException e) {
+                    if (e instanceof JiraCaptchaRequiredException) {
+                        PluginUtil.getLogger().warn("Please login via Web interface. Captcha required.\n" + e.getMessage());
+                    } else {
+					    PluginUtil.getLogger().warn(e.getMessage());
+                    }
+
 				}
 			}
 		}

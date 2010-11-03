@@ -92,7 +92,12 @@ public class JIRAFilterTree extends AbstractTree {
             }
 
         }
-        return lastSelectedServer;
+       JiraServerData selectedServer = null;
+       if (lastSelectedServer != null) {
+           selectedServer = projectCfgManager.getJiraServerr(lastSelectedServer.getServerId());
+       }
+        
+       return (selectedServer != null && selectedServer.isEnabled() ? selectedServer : null);
     }
 
     @Nullable

@@ -206,6 +206,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 
 		if (!created) {
+            IconLoader.activate();
             TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
 

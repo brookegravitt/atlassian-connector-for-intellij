@@ -34,6 +34,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredExceptio
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import junit.framework.TestCase;
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -130,6 +131,14 @@ public class JIRARssClientTest extends TestCase {
                 return new HttpClient();
             }
             public void configureHttpMethod(AbstractHttpSession session, HttpMethod method) {
+            }
+
+            public void disposeClient(ConnectionCfg connectionCfg) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public Cookie[] getCookiesHeaders(ConnectionCfg connectionCfg) {
+                return new Cookie[0];  //To change body of implemented methods use File | Settings | File Templates.
             }
         });
 

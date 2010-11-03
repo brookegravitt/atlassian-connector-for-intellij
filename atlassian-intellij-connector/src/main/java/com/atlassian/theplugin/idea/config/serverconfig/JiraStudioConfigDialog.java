@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
@@ -145,7 +146,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
 
             public void onSuccess() {
                 if (counter-- > 0) {
-                    testCrucibleConnection(this);
+                    testJiraConnection(this);
                 } else {
                     showResultDialog();
                 }
@@ -154,7 +155,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
             public void onError(String errorMessage, Throwable exception, String helpUrl) {
                 connectionErrors.put(errorMessage, exception);
                 if (counter-- > 0) {
-                    testCrucibleConnection(this);
+                    testJiraConnection(this);
                 } else {
                     showResultDialog();
                 }
@@ -185,7 +186,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         JiraServerData.Builder builder = new JiraServerData.Builder(generateJiraServerCfg());
         builder.defaultUser(defaultUser);
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
-                new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
+                new ProductConnector(IntelliJJiraServerFacade.getInstance()),
                 builder.build(),
                 processor, "Testing JIRA Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");
