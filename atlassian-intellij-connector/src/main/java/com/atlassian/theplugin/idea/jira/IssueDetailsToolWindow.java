@@ -1119,7 +1119,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     issueAssignee.setUserName(params.issue.getServerUrl(), params.issue.getAssignee(),
                             params.issue.getAssigneeId(), true);
                 }
-                if (params.issue.getReporterId().equals("-1")) {
+
+
+                if (params.issue.getReporterId() == null || params.issue.getReporterId().equals("-1")) {
                     issueReporter.setText("Anonymous");
                 } else {
                     issueReporter.setUserName(params.issue.getServerUrl(), params.issue.getReporter(),

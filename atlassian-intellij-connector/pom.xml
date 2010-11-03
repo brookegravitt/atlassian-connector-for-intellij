@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.atlassian.connector</groupId>
@@ -21,11 +22,16 @@
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL</url>
     </issueManagement>
+    <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <buildNumber>${timestamp}</buildNumber>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.connector.tasks</groupId>
             <artifactId>atlassian-idea9-integration</artifactId>
-            <version>0.1.3</version>
+            <version>0.1.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -65,12 +71,12 @@
             <artifactId>openapi</artifactId>
             <version>8.1.4</version>
             <classifier>9952</classifier>
-             <scope>compile</scope>
+            <scope>compile</scope>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jgoodies-forms</artifactId>
-            <version>8.1.4</version>            
+            <version>8.1.4</version>
             <classifier>9952</classifier>
             <scope>compile</scope>
         </dependency>
@@ -196,13 +202,13 @@
             </resource>
         </resources>
         <plugins>
-		
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.4</version>
-			</plugin>
-	  
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.4</version>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <!-- newest version 2.7 fails to merge resources -->
@@ -280,19 +286,50 @@
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.0-beta-4</version>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>initialize</phase>
                         <goals>
-                            <goal>hgchangeset</goal>
+                            <goal>create</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <format>{0, date, yyyyMMddHHmmss}</format>
+                    <items>
+                        <item>timestamp</item>
+                    </items>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>2010010101</revisionOnScmFailure>
+                    &lt;!&ndash;<providerImplementations>hg</providerImplementations>&ndash;&gt;
+                </configuration>
+            </plugin>-->
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                import java.util.Date
+                                import java.text.MessageFormat
+                                def vartimestamp = MessageFormat.format("{0,date,yyMMddHHmm}", new Date())
+                                project.properties['buildNumber'] = vartimestamp
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

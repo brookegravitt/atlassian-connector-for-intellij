@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.remoteapi.jira.JiraCaptchaRequiredException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -90,6 +91,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
@@ -1629,8 +1631,19 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraFilterTree.expandTree();
                     }
                 });
-            } catch (JIRAException e) {
-                setStatusErrorMessage(e.getMessage(), e);
+            } catch (JiraCaptchaRequiredException e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        DialogWithDetails.showExceptionDialog(project, "Captcha required", "Please login via browser. Captcha authentication is required.");
+                    }
+                });
+            } catch (final JIRAException e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        DialogWithDetails.showExceptionDialog(project, "Remote JIRA Exception", e);
+                    }
+                });
+
             } catch (InterruptedException e) {
                 setStatusErrorMessage(e.getMessage(), e);
             } catch (InvocationTargetException e) {
