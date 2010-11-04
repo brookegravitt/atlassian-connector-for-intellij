@@ -254,7 +254,7 @@
                         </goals>
                         <configuration>
                             <resourceSrc>
-                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml
+                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion-2.4.xml
                             </resourceSrc>
                             <resourceDest>${pom.artifactId}</resourceDest>
                             <serverId>atlassian-documentation</serverId>
@@ -269,7 +269,7 @@
                         </goals>
                         <configuration>
                             <resourceSrc>
-                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml
+                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion-2.4.xml
                             </resourceSrc>
                             <resourceDest>${pom.artifactId}</resourceDest>
                             <serverId>atlassian-documentation</serverId>
