@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -125,5 +126,29 @@ public final class CodeNavigationUtil {
 
 		return CodeNavigationUtil.getMatchingFiles(filePath, psifiles);
 	}
+
+    /**
+     * In the collection of provided files looks for those which match vcs url
+     *
+     * @param psiFiles collection of files to search
+     * @param vcsUrl   searched vcs url
+     * @param project  project
+     * @return collection of found PsiFiles
+     */
+    public static Collection<PsiFile> findPsiFilesWithVcsUrl(final Collection<PsiFile> psiFiles, final String vcsUrl,
+            final Project project) {
+        Collection<PsiFile> retFiles = new ArrayList<PsiFile>();
+        if (psiFiles != null && vcsUrl != null && project != null) {
+            for (PsiFile psiFile : psiFiles) {
+                String repositoryUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, psiFile.getVirtualFile());
+                if (repositoryUrl != null && repositoryUrl.equals(vcsUrl) || repositoryUrl == null) {
+                    retFiles.add(psiFile);
+                }
+            }
+        }
+
+        return retFiles;
+    }
+
 
 }
