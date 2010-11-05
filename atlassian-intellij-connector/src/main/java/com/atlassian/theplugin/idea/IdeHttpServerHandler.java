@@ -18,15 +18,28 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.openapi.ui.popup.PopupStep;
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.NotNull;
 import org.veryquick.embweb.HttpRequestHandler;
 import org.veryquick.embweb.Response;
 
-import java.awt.*;
+import javax.swing.Icon;
+import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +50,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 	private final Map<String, AbstractDirectClickThroughHandler> registeredHandlers
 			= new HashMap<String, AbstractDirectClickThroughHandler>() { {
+        put("file", new OpenFileHandler());        
 		put("issue", new OpenIssueHandler());
 		put("build", new OpenBuildHandler());
 		put("stacktraceEntry", new OpenStackTraceEntryHandler());
@@ -192,5 +206,141 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 		}
 	}
+
+
+    private static class OpenFileHandler extends AbstractDirectClickThroughHandler {
+
+        public void handle(final Map<String, String> parameters) {
+            final String file = StringUtil.removePrefixSlashes(parameters.get("file"));
+            final String path = StringUtil.removeSuffixSlashes(parameters.get("path"));
+            final String vcsRoot = StringUtil.removeSuffixSlashes(parameters.get("vcs_root"));
+            final String line = parameters.get("line");
+            if (isDefined(file)) {
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        openRequestedFile(path, file, vcsRoot, line);
+                    }
+                });
+            } else {
+                reportProblem("No file parameter provided.");
+            }
+        }
+
+        private void openRequestedFile(String path, String file, String vcsRoot, String line) {
+            boolean found = false;
+            // try to open requested file in all open projects
+            for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+                String filePath = (path == null ? file : path + "/" + file);
+                // find file by name (and path if provided)
+                Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
+                if (psiFiles == null || psiFiles.size() == 0) {
+                    psiFiles = new ArrayList<PsiFile>();
+                    PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
+                    if (psiFile != null) {
+                        psiFiles.add(psiFile);
+                    }
+                }
+
+                // narrow found list of files by VCS
+                if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
+                    Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
+                    // if VCS narrowed to empty list then return without narrowing
+                    // VCS could not match because of different configuration in IDE and web client (JIRA, FishEye, etc)
+                    if (pf != null && pf.size() > 0) {
+                        psiFiles = pf;
+                    }
+                }
+                // open file or show popup if more than one file found
+                if (psiFiles != null && psiFiles.size() > 0) {
+                    found = true;
+                    if (psiFiles.size() == 1) {
+                        openFile(project, psiFiles.iterator().next(), line);
+                    } else if (psiFiles.size() > 1) {
+                        ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
+                                "Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
+                        popup.showCenteredInCurrentWindow(project);
+                    }
+                    bringIdeaToFront(project);
+                }
+            }
+            // message box showed only if the file was not found at all (in all project)
+            if (!found) {
+                String msg = "";
+                if (ProjectManager.getInstance().getOpenProjects().length > 0) {
+                    msg = "Project does not contain requested file " + file;
+                } else {
+                    msg = "Please open a project in order to indicate search path for file " + file;
+                }
+                Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
+            }
+        }
+
+        private static void openFile(final Project project, final PsiFile psiFile, final String line) {
+            if (psiFile != null) {
+                psiFile.navigate(true);	// open file
+
+                final VirtualFile virtualFile = psiFile.getVirtualFile();
+
+                if (virtualFile != null && line != null && line.length() > 0) {	//place cursor in specified line
+                    try {
+                        Integer iLine = Integer.valueOf(line);
+                        if (iLine != null) {
+                            OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, iLine, 0);
+                            if (display.canNavigateToSource()) {
+                                display.navigate(false);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        PluginUtil.getLogger().warn(
+                                "Wrong line number format when requesting to open file in the IDE ["
+                                        + line + "]", e);
+                    }
+                }
+            }
+        }
+
+        private static class FileListPopupStep extends BaseListPopupStep<PsiFile> {
+            private final String line;
+            private final Project project;
+
+            public FileListPopupStep(final String title, final ArrayList<PsiFile> psiFiles, final String line,
+                    final Project project) {
+                super(title, psiFiles);
+                this.line = line;
+                this.project = project;
+            }
+
+            @Override
+            public PopupStep onChosen(final PsiFile selectedValue, final boolean finalChoice) {
+                openFile(project, selectedValue, line);
+                return null;
+            }
+
+            @Override
+            @NotNull
+            public String getTextFor(final PsiFile value) {
+                String display = value.getName();
+                final VirtualFile virtualFile = value.getVirtualFile();
+
+                if (virtualFile != null) {
+                    display += " (" + virtualFile.getPath() + ")";
+                }
+                return display;
+            }
+
+            @Override
+            public Icon getIconFor(final PsiFile value) {
+                final VirtualFile virtualFile = value.getVirtualFile();
+
+                if (virtualFile != null) {
+                    return virtualFile.getIcon();
+                }
+
+                return null;
+            }
+        }
+    }
+
+    
 
 }
