@@ -200,7 +200,9 @@ public final class FileContentExpiringCache implements ProjectComponent {
                 try {
                     //System.out.println("Downloading file:" + versionedVirtualFile.getAbsoluteUrl());
                     fileContent = provider.getContent(review, versionedVirtualFile);
-                    incrementMemoryConsumed(fileContent.getContent().length);
+                    if (fileContent != null) {
+                        incrementMemoryConsumed(fileContent.getContent().length);
+                    }
                 } catch (ReviewFileContentException e) {
                     throw new InterruptedException(e.getMessage());
                 }
