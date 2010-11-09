@@ -7,6 +7,30 @@
         <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
+      <jira>
+        <server-id>9c7fa385-faa9-4e9c-bfbb-85c71e33188e</server-id>
+        <name>xBox</name>
+        <url>http://192.168.157.158:8077</url>
+        <shared>false</shared>
+      </jira>
+      <bamboo>
+        <server-id>ea5dfd90-96f3-490c-9dff-7051aa2b59b6</server-id>
+        <name>gb2</name>
+        <url>https://gdansk.bamboo2.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="ACC-CS" grouped="0" />
+          <plan key="ACC-DPL" grouped="0" />
+          <plan key="ACC-TST" grouped="0" />
+          <plan key="INT-CS" grouped="0" />
+          <plan key="INT-DPL" grouped="0" />
+          <plan key="INT-DPLFOUR" grouped="0" />
+          <plan key="INT-TKINT" grouped="0" />
+          <plan key="INT-TST" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
     <default-jira-server>b7624d9e-fbe9-4220-846b-f96aebeb636c</default-jira-server>
   </project-configuration>
