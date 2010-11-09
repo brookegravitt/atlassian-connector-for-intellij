@@ -10,7 +10,11 @@ import org.apache.log4j.Logger;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -104,7 +108,12 @@ public final class EmbeddedServer {
 			ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 			serverSocket = ssocketFactory.createServerSocket(this.serverPort);
 		} else {
+            try {
 			serverSocket = new ServerSocket(this.serverPort);
+            } catch (final IOException e) {
+                LOGGER.warn("Cannot start HTTP server on port:" + this.serverPort + ". Disabling direct click through.");
+                return;                
+            }
 		}
 		LOGGER.info("Server up on " + this.serverPort);
 		while (alive) {
