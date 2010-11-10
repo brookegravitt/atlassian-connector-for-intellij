@@ -21,6 +21,7 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
@@ -36,6 +37,7 @@ import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.cfg.xstream.UserSharedConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -64,8 +66,9 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -495,20 +498,24 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			}
 		}
 		ServerCfg serverCfg = null;
-
+        ServerData data = null;
 		//beautiful switch: :/
 		switch (serverType) {
 			case BAMBOO_SERVER:
 				serverCfg = new BambooServerCfg(name, id);
+                data =  new BambooServerData((BambooServerCfg)serverCfg);
 				break;
 			case CRUCIBLE_SERVER:
 				serverCfg = new CrucibleServerCfg(name, id);
-				break;
+				data = new ServerData(serverCfg);
+				break;				
 			case JIRA_SERVER:
 				serverCfg = new JiraServerCfg(name, id, true);
+                data =  new JiraServerData(serverCfg);
 				break;
 			case FISHEYE_SERVER:
 				serverCfg = new FishEyeServerCfg(name, id);
+				data = new ServerData(serverCfg);
 				break;
 			case JIRA_STUDIO_SERVER:
 				break;
@@ -521,7 +528,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		configurationClone.getServers().add(serverCfg);
 		component.updateConfiguration(configurationClone);
-		component.setSelectedServer(new ServerData(serverCfg));
+
+        component.setSelectedServer(data);
 
 		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 		if (settingsUtil != null) {
