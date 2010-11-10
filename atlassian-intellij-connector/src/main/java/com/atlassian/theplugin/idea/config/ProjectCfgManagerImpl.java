@@ -112,7 +112,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     @NotNull
     public UserCfg getDefaultCredentials() {
 
-        if (project == null) {
+        if (!isGoodProject(project)) {
             return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
                     StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
         } else {
@@ -128,13 +128,17 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 
     void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
-        if (project != null && PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
+        if (isGoodProject(project) && PasswordStorage.setPassword(project, defaultCredentials.getPassword())) {
             workspaceConfiguration.setDefaultCredentials(new UserCfgBean(defaultCredentials.getUsername(), ""));
         } else {
             workspaceConfiguration.setDefaultCredentials(
                     new UserCfgBean(defaultCredentials.getUsername(),
                             StringUtil.encode(defaultCredentials.getPassword())));
         }
+    }
+
+    private boolean isGoodProject(Project project) {
+        return project != null  && project.isInitialized() && !project.isDisposed();
     }
 
     //////////////////////////////////////////////////////////////////
@@ -441,7 +445,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
         for (ServerCfg serverCfg : tmp) {
             if (serverCfg.getServerType() == ServerType.BAMBOO_SERVER && serverCfg instanceof BambooServerCfg) {
-                ret.add(getServerData((BambooServerCfg) serverCfg));
+                ret.add(new BambooServerData((BambooServerCfg) serverCfg));
             }
         }
         return ret;
