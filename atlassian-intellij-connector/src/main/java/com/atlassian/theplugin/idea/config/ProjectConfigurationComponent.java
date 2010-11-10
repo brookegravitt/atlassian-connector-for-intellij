@@ -19,10 +19,21 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
+import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.cfg.xstream.UserSharedConfigurationDao;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -51,8 +62,9 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -475,16 +487,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			}
 		}
 		ServerCfg serverCfg = null;
-
+        final ServerData data;
 		//beautiful switch: :/
 		switch (serverType) {
 			case BAMBOO_SERVER:
 				serverCfg = new BambooServerCfg(name, id);
+                data =  new BambooServerData((BambooServerCfg)serverCfg);
 				break;
 			case JIRA_SERVER:
 				serverCfg = new JiraServerCfg(name, id, true);
-				break;
-			case JIRA_STUDIO_SERVER:
+                data =  new JiraServerData(serverCfg);
 				break;
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
@@ -495,7 +507,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		configurationClone.getServers().add(serverCfg);
 		component.updateConfiguration(configurationClone);
-		component.setSelectedServer(new ServerData(serverCfg));
+
+        component.setSelectedServer(data);
 
 		final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 		if (settingsUtil != null) {

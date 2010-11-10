@@ -426,7 +426,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
         for (ServerCfg serverCfg : tmp) {
             if (serverCfg.getServerType() == ServerType.BAMBOO_SERVER && serverCfg instanceof BambooServerCfg) {
-                ret.add(getServerData((BambooServerCfg) serverCfg));
+                ret.add(new BambooServerData((BambooServerCfg) serverCfg));
             }
         }
         return ret;
