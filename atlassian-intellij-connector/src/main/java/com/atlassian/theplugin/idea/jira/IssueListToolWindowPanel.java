@@ -1196,25 +1196,30 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private class LocalJiraFilterTreeSelectionListener implements JiraFilterTreeSelectionListener {
 
         public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
-
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
-            refreshIssues(true);
+            if (jiraServerData != null && savedFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
+                refreshIssues(true);
+            }
         }
 
         public void selectedPresetFilterNode(JiraPresetFilter presetFilter, JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.PRESET_FILTER);
-            jiraWorkspaceConfiguration.getView().setViewFilterId(presetFilter.getClass().getCanonicalName());
-            refreshIssues(true);
+            if (jiraServerData != null && presetFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.PRESET_FILTER);
+                jiraWorkspaceConfiguration.getView().setViewFilterId(presetFilter.getClass().getCanonicalName());
+                refreshIssues(true);
+            }
         }
 
         public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
-            jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
-            refreshIssues(true);
+            if (jiraServerData != null && manualFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
+                jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
+                refreshIssues(true);
+            }
         }
 
         public void selectionCleared() {
@@ -1330,15 +1335,15 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 list.setComment(dialog.getComment());
                 final List<Change> selectedChanges = dialog.getSelectedChanges();
 
-                   /////////
-                    if (dialog.isCreateReviewAfterCommit()) {
+                /////////
+                if (dialog.isCreateReviewAfterCommit()) {
 
 
-                        final Collection<VirtualFile> vFiles =
-                                IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
-                        LoggerImpl.getInstance().info(
-                                "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
-                    }
+                    final Collection<VirtualFile> vFiles =
+                            IdeaVersionFacade.getInstance().getLocalChangeListVirtualFiles(project, selectedChanges);
+                    LoggerImpl.getInstance().info(
+                            "PostCommitReviewCheckinHandlerFactory.beforeCheckin() - showing post-commit form");
+                }
 
                 ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                     public void run() {
@@ -1432,7 +1437,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
 
-      
+
     }
 
     private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
@@ -1514,11 +1519,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         }
                     } catch (JIRAException e) {
                         if (e.getMessage().contains("Authentication failed")) {
-                             MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
+                            MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
                                     (JiraServerCfg) projectCfgManager.getServer(srvcfg.getServerId()), project));
                         } else {
-                        setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. "
-                                + e.getMessage(), e);
+                            setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. "
+                                    + e.getMessage(), e);
                         }
                     }
                     issueTreeBuilder.setProjectKeysToNames(projectMap);
