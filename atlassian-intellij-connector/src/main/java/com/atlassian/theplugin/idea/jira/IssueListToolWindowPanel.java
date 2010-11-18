@@ -1329,8 +1329,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         private void commitChanges() {
+            final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
             if (dialog.isCommitChanges()) {
-                final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+
                 final LocalChangeList list = dialog.getCurrentChangeList();
                 list.setComment(dialog.getComment());
                 final List<Change> selectedChanges = dialog.getSelectedChanges();
@@ -1355,10 +1356,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                     }
                 }, ModalityState.defaultModalityState());
 
+                WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+                        dialog.getAfterCommitChangeSetAction();
                 if (commitSuccess) {
-                    WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
-                            dialog.getAfterCommitChangeSetAction();
-
                     switch (afterCommit) {
                         case DEACTIVATE_CHANGESET:
 
@@ -1386,6 +1386,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         default:
                             break;
                     }
+
                     setStatusInfoMessage("Deactivated issue " + issue.getKey());
 
                 } else {
@@ -1393,6 +1394,28 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             "Failed to commit change list while deactivating issue " + issue.getKey());
                 }
             } else {
+                WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+                        dialog.getAfterCommitChangeSetAction();
+                if (!dialog.isCreateReviewAfterCommit()
+                        && afterCommit == WorkLogCreateAndMaybeDeactivateDialog.AfterCommit.REMOVE_CHANGESET) {
+                    PluginUtil.activateDefaultChangeList(changeListManager);
+                    if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())
+                            && !(changeListManager.getChangeLists().size() <= 1)) {
+                        // PL-1612 - belt and suspenders probably, but just to be sure
+                        try {
+//                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                            PluginUtil.removeChangeList(project, dialog.getCurrentChangeList());
+
+                        } catch (Exception e) {
+                            // stupid IDEA 7 API. I hate you
+                            if (e instanceof IncorrectOperationException) {
+                                LoggerImpl.getInstance().warn(e);
+                            } else {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
                 // oh well, not having to commit is also a sort of success :) - yeah, I know, I suck
                 commitSuccess = true;
             }
