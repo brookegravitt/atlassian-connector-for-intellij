@@ -122,8 +122,7 @@ public class PluginToolWindow {
 		//stopTabChangeListener();
 
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		if (cfgManager.getAllEnabledCrucibleServerss().size() == 0
-				&& cfgManager.getAllEnabledJiraServerss().size() == 0
+		if (cfgManager.getAllEnabledJiraServerss().size() == 0
 				&& cfgManager.getAllEnabledBambooServerss().size() == 0) {
 			// no servers defined, show config panel
 			if (contentManager.findContent(CONFIGURE_TAB_NAME) == null) {
@@ -335,8 +334,8 @@ public class PluginToolWindow {
 	 */
 	public enum ToolWindowPanels {
 		ISSUES("Issues - JIRA", 1),
-		BUILDS("Builds - Bamboo", 2),
-		CRUCIBLE("Reviews - Crucible", 3);
+		BUILDS("Builds - Bamboo", 2);
+//		CRUCIBLE("Reviews - Crucible", 3);
 
 		private final String title;
 
