@@ -592,6 +592,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 // if we can not read actions, group will be disabled
                                 LoggerImpl.getInstance()
                                         .error("Unable to read available actions for issue: " + issue.getKey());
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        DialogWithDetails.showExceptionDialog(project, "Unable to read available actions.", e.getCause());
+                                    }
+                                });
+
                             }
                         }
                     };
