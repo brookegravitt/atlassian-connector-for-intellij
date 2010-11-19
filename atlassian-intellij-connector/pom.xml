@@ -13,10 +13,12 @@
     <version>2.5.0</version>
 
     <scm>
-        <connection>scm:hg:file:///${basedir}</connection>
-        <developerConnection>scm:hg:file:///${basedir}</developerConnection>
-    </scm>
+        <!--connection>scm:hg:file:///${basedir}</connection>
+        <developerConnection>scm:hg:file:///${basedir}</developerConnection-->
+        <connection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</connection>
+        <developerConnection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</developerConnection>
 
+    </scm>
     <issueManagement>
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL</url>
