@@ -1235,29 +1235,33 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     private class LocalJiraFilterTreeSelectionListener implements JiraFilterTreeSelectionListener {
-
         public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerData) {
-
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
-            refreshIssues(true);
+            if (jiraServerData != null && savedFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
+                refreshIssues(true);
+            }
         }
 
         public void selectedPresetFilterNode(JiraPresetFilter presetFilter, JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.PRESET_FILTER);
-            jiraWorkspaceConfiguration.getView().setViewFilterId(presetFilter.getClass().getCanonicalName());
-            refreshIssues(true);
+            if (jiraServerData != null && presetFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.PRESET_FILTER);
+                jiraWorkspaceConfiguration.getView().setViewFilterId(presetFilter.getClass().getCanonicalName());
+                refreshIssues(true);
+            }
         }
 
         public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerData) {
-            jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
-            jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
-            jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
-            refreshIssues(true);
+            if (jiraServerData != null && manualFilter != null) {
+                jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerData.getServerId());
+                jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
+                jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
+                refreshIssues(true);
+            }
         }
-
+      
         public void selectionCleared() {
             enableGetMoreIssues(false);
             jiraWorkspaceConfiguration.getView().setViewServerIdd(null);

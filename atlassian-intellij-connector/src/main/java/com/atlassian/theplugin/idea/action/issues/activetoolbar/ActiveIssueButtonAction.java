@@ -97,7 +97,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         if (issue != null) {
             Icon icon = CachedIconLoader.getIcon(issue.getTypeIconUrl());
             // PL-1862 - a Throwable (!) is thrown if icon has bad size (how's that for meaningful error handling :))
-            if (ImageLoader.isGoodSize(icon)) {
+            if (icon != null && ImageLoader.isGoodSize(icon)) {
                 event.getPresentation().setIcon(icon);
             }
         } else {

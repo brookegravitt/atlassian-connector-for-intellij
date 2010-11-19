@@ -68,6 +68,9 @@ public class BambooServerConfigForm {
 
     public void saveData() {
         genericServerConfigForm.saveData();
+        if (bambooServerCfg != null ) {
+            ((BambooServerCfg)genericServerConfigForm.getServerCfg()).setIsBamboo2(bambooServerCfg.isBamboo2());
+        }
         planList.saveData();
     }
 

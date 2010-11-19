@@ -520,7 +520,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			case JIRA_STUDIO_SERVER:
 				break;
 			default:
-				throw new AssertionError("switch not implemented for [" + serverType + "]");
+				throw new AssertionError("switch not implemented for [" + serverType + "]");   //PL-1234
 		}
 
 		serverCfg.setUrl(serverUrl);
@@ -540,7 +540,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				configurationClone.getServers().remove(toRemoveCfg);
 				component.updateConfiguration(configurationClone);
 			}
-			return hasClickedOkButton;
+			return hasClickedOkButton; //PL-1234
 		}
 		return false;
 	}
