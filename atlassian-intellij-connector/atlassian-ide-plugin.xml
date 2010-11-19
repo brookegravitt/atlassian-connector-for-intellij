@@ -13,8 +13,12 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
+        <bamboo2>true</bamboo2>
         <plans>
+          <plan key="ACC-CS" grouped="0" />
+          <plan key="INT-CS" grouped="0" />
+          <plan key="INT-DPL" grouped="0" />
+          <plan key="INT-TST" grouped="0" />
           <plan key="ACC-CS-JOB1" grouped="0" />
           <plan key="ACC-DPL-JOB1" grouped="0" />
           <plan key="ACC-TST-JOB1" grouped="0" />

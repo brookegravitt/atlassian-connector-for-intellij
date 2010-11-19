@@ -154,7 +154,7 @@ public class BuildHistoryPanel extends JPanel {
                     @Override
                     public void run(@NotNull ProgressIndicator progressIndicator) {
                         try {
-                            builds = facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),
+                            builds = facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),                                    
                                     buildDetailsInfo.getServer().getTimezoneOffset());
                         } catch (ServerPasswordNotProvidedException e) {
                             PluginUtil.getLogger().error(e);
