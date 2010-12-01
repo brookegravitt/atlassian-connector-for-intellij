@@ -126,6 +126,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 
 		public void run() throws Exception {
 			commitedChangesBrowser.setEmptyText("Fetching recent commits...");
+
 			IdeaVersionFacade.getInstance()
 					.setCommitedChangesList(commitedChangesBrowser, Collections.<CommittedChangeList>emptyList(), false);
 			final VirtualFile baseDir = project.getBaseDir();
@@ -141,7 +142,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 				if (committedChangesProvider == null) {
 					throw new RuntimeException("Cannot determine VCS support for the project");
 				}
-				ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
+				ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();                
 				RepositoryLocation repositoryLocation = committedChangesProvider
 						.getLocationFor(VcsUtil.getFilePath(baseDir.getPath()));
 				try {

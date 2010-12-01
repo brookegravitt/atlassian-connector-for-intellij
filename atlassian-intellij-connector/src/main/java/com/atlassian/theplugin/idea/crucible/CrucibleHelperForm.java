@@ -564,6 +564,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                         case ADDITEMS:
                             Collection<UploadItem> uploadItems = CrucibleHelper
                                     .getUploadItemsFromChanges(project, localChanges);
+
                             crucibleServerFacade.addItemsToReview(server, permId, uploadItems);
                             break;
                     }

@@ -247,9 +247,9 @@ public final class CrucibleHelper {
                 ContentRevision revNew = change.getAfterRevision();
 
                 byte[] byteOld = revOld != null && revOld.getContent() != null
-                        ? revOld.getContent().getBytes() : null;
+                        ? revOld.getContent().getBytes() : new byte[0];
                 byte[] byteNew = revNew != null && revNew.getContent() != null
-                        ? revNew.getContent().getBytes() : null;
+                        ? revNew.getContent().getBytes() : new byte[0];
 
                 // @todo implement it handling of binary files
                 uploadItems.add(new UploadItem(fileUrl, byteOld, byteNew));
