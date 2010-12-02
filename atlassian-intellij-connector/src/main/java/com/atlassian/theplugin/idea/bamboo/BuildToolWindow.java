@@ -12,7 +12,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionExcept
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
-import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NonNls;
@@ -221,17 +220,15 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
             bdp = new BuildDetailsPanel(project, params.build);
 			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
-			final BuildLogPanel blp = new BuildLogPanel(project, params.build);
+
 			timer = new Timer(ONE_MINUTE, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					bdp.actionPerformed(e);
 					tdp.actionPerformed(e);
-					blp.actionPerformed(e);
 				}
 			});
 			tabs.addTab("Details", bdp);
 			tabs.addTab("Tests", tdp);
-			tabs.addTab("Build Log", blp);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
