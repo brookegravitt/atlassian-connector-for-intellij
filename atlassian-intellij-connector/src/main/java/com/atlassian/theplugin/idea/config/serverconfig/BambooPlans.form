@@ -37,7 +37,12 @@
                 <children>
                   <component id="16680" class="javax.swing.JList" binding="list" custom-create="true">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <dropMode value="USE_SELECTION"/>
+                      <selectionBackground color="-338294"/>
+                      <selectionForeground color="-16777216"/>
+                      <selectionMode value="0"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
@@ -62,48 +67,15 @@
                   <text value="Use &amp;Favourite Builds For Server"/>
                 </properties>
               </component>
-              <component id="ebf36" class="javax.swing.JButton" binding="btRefresh">
+              <component id="ebf36" class="javax.swing.JButton" binding="btUpdate">
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                   <gridbag weightx="0.0" weighty="1.0"/>
                 </constraints>
                 <properties>
-                  <text value="Refresh"/>
+                  <text value="Update"/>
                 </properties>
               </component>
-            </children>
-          </grid>
-          <grid id="f0b97" binding="statusPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <gridbag top="0" left="12" bottom="12" right="12" weightx="0.0" weighty="0.0"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <scrollpane id="6dba1">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="40"/>
-                    <maximum-size width="-1" height="40"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <enabled value="true"/>
-                  <horizontalScrollBarPolicy value="31"/>
-                  <verticalScrollBarPolicy value="20"/>
-                </properties>
-                <border type="none"/>
-                <children>
-                  <component id="50279" class="javax.swing.JEditorPane" binding="statusPane">
-                    <constraints/>
-                    <properties>
-                      <editable value="false"/>
-                    </properties>
-                  </component>
-                </children>
-              </scrollpane>
             </children>
           </grid>
         </children>

@@ -40,9 +40,11 @@ public class PlanListCellRenderer implements ListCellRenderer {
 		panel.setLayout(new FormLayout("pref, 5dlu, pref, pref:grow, pref, 5dlu", "pref"));
 		JLabel label = new JLabel();
 		panel.add(label, cc.xy(1, 1));
-        Color background =
-                isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238, 229, 222)
-                        : list.getBackground();
+        Color background = new Color(-1);
+
+        //PL-2371 lines are not necessary
+//                isSelected ? list.getSelectionBackground() : index % 2 == 0 ? new Color(238, 229, 222)
+//                        : list.getBackground();
 
 		if (value instanceof BambooPlanItem) {
 
