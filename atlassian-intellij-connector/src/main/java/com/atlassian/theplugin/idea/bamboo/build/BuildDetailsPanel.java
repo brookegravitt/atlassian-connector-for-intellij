@@ -91,15 +91,38 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
 		gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 
-
-		body.add(new BoldLabel("State"), gbc1);
+        body.add(new BoldLabel("Plan"), gbc1);
+        HyperlinkLabel planLink = new HyperlinkLabel(build.getPlanName());
+        planLink.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                BrowserUtil.launchBrowser(build.getBuildUrl());
+            }
+        });
+        planLink.setOpaque(false);
+        body.add(planLink, gbc2);
+		gbc1.gridy++;
+		gbc2.gridy++;
+        gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+        final BoldLabel boldLabel = new BoldLabel("State");
+        body.add(boldLabel, gbc1);
 		body.add(new JLabel(build.getAdjustedStatus().getName(), build.getIcon(), SwingConstants.LEFT), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		body.add(new BoldLabel("Last Build"), gbc1);
-		body.add(new JLabel(build.getBuildNumberAsString()), gbc2);
+
+        HyperlinkLabel link = new HyperlinkLabel("#" + build.getBuildNumberAsString());
+        link.setOpaque(false);
+        link.addHyperlinkListener(new HyperlinkListener() {
+
+            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                BrowserUtil.launchBrowser(build.getResultUrl());
+            }
+        });
+//		body.add(new JLabel("<html><a href=\"" + build.getResultUrl() + "\">&#35;" + build.getBuildNumberAsString() +"<a></html>"), gbc2);
+        body.add(link, gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		body.add(new BoldLabel("When"), gbc1);

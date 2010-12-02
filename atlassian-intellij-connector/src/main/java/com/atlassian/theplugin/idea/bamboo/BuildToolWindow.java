@@ -1,22 +1,19 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -26,16 +23,15 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -273,7 +269,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
         private class SummaryPanel extends JPanel {
 
-            private final JEditorPane summary;
+//            private final JEditorPane summary;
 
             public SummaryPanel() {
                 setLayout(new GridBagLayout());
@@ -284,33 +280,33 @@ public class BuildToolWindow extends MultiTabToolWindow {
                 gbc.anchor = GridBagConstraints.LINE_START;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.weightx = 1.0;
-                summary = new JEditorPane();
-                summary.setContentType("text/html");
-                summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-                setSummaryText();
-                summary.setEditable(false);
-                summary.addHyperlinkListener(new HyperlinkListener() {
-                    public void hyperlinkUpdate(HyperlinkEvent e) {
-                        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                            BrowserUtil.launchBrowser(e.getURL().toString());
-                        }
-                    }
-                });
+//                summary = new JEditorPane();
+//                summary.setContentType("text/html");
+//                summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+//                setSummaryText();
+//                summary.setEditable(false);
+//                summary.addHyperlinkListener(new HyperlinkListener() {
+//                    public void hyperlinkUpdate(HyperlinkEvent e) {
+//                        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+//                            BrowserUtil.launchBrowser(e.getURL().toString());
+//                        }
+//                    }
+//                });
+//
+//                summary.setFont(summary.getFont().deriveFont(Font.BOLD));
+//                summary.setOpaque(false);
+//                JPanel p = new JPanel();
+//                p.setLayout(new GridBagLayout());
+//                GridBagConstraints gbcp = new GridBagConstraints();
+//                gbcp.fill = GridBagConstraints.BOTH;
+//                gbcp.weightx = 1.0;
+//                gbcp.weighty = 1.0;
+//                gbcp.gridx = 0;
+//                gbcp.gridy = 0;
+//                p.add(summary, gbcp);
+//                add(p, gbc);
 
-                summary.setFont(summary.getFont().deriveFont(Font.BOLD));
-                summary.setOpaque(false);
-                JPanel p = new JPanel();
-                p.setLayout(new GridBagLayout());
-                GridBagConstraints gbcp = new GridBagConstraints();
-                gbcp.fill = GridBagConstraints.BOTH;
-                gbcp.weightx = 1.0;
-                gbcp.weighty = 1.0;
-                gbcp.gridx = 0;
-                gbcp.gridy = 0;
-                p.add(summary, gbcp);
-                add(p, gbc);
-
-                gbc.gridy++;
+//                gbc.gridy++;
 
                 ActionManager manager = ActionManager.getInstance();
                 ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.BuildToolWindowToolBar");
@@ -320,12 +316,12 @@ public class BuildToolWindow extends MultiTabToolWindow {
                 add(comp, gbc);
             }
 
-            public void setSummaryText() {
-                String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
-                        + params.build.getPlanKey() + "</a> "
-                        + params.build.getProjectName() + " - " + params.build.getPlanName() + "</body></html>";
-                summary.setText(txt);
-            }
+//            public void setSummaryText() {
+//                String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
+//                        + params.build.getPlanKey() + "</a> "
+//                        + params.build.getProjectName() + " - " + params.build.getPlanName() + "</body></html>";
+//                summary.setText(txt);
+//            }
 
         }
 
