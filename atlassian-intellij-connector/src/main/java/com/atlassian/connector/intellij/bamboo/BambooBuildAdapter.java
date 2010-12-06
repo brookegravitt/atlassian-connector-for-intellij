@@ -63,7 +63,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
         return true;
     }
 
-    public boolean isGrouped() {              
+    public boolean isGrouped() {
         for (SubscribedPlan plan : getServer().getPlans()) {
             if (plan.getKey().equals(build.getPlanKey())) {
                 return plan.isGrouped();
@@ -212,6 +212,23 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
         return BambooBuildIcons.ICON_GREY;
     }
 
+    public Icon getBuildIcon() {
+        if (build.getEnabled()) {
+            switch (getStatus()) {
+                case FAILURE:
+                    return BambooBuildIcons.ICON_RED;
+                case SUCCESS:
+                    return BambooBuildIcons.ICON_GREEN;
+                case UNKNOWN:
+                    return BambooBuildIcons.ICON_GREY;
+                default:
+                    break;
+            }
+        }
+        return BambooBuildIcons.ICON_GREY;
+
+    }
+
     @NotNull
     public AdjustedBuildStatus getAdjustedStatus() {
         if (build.getEnabled()) {
@@ -234,6 +251,7 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
     }
 
     // PL-1857 - some actions should be allowed for disabled builds (e.g. open, view in browser)
+
     public boolean areActionsAllowed(boolean allowDisabledBuilds) {
         final AdjustedBuildStatus buildStatus = getAdjustedStatus();
         return buildStatus != AdjustedBuildStatus.UNKNOWN
