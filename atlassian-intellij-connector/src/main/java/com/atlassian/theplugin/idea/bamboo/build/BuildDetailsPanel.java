@@ -106,7 +106,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
         final BoldLabel boldLabel = new BoldLabel("State");
         body.add(boldLabel, gbc1);
-		body.add(new JLabel(build.getAdjustedStatus().getName(), build.getIcon(), SwingConstants.LEFT), gbc2);
+		body.add(new JLabel(build.getAdjustedStatus().getName(), build.getBuildIcon(), SwingConstants.LEFT), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
