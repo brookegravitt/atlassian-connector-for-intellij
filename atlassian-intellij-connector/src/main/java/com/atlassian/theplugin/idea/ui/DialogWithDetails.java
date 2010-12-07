@@ -50,7 +50,7 @@ public class DialogWithDetails extends DialogWrapper {
     private JTextArea ctrlDetailsText;
     private JPanel rootPane;
     private JScrollPane ctrlDetailsPane;
-    private static final int MAX_DESCRIPTION_LENGTH = 80;
+    private static final int MAX_DESCRIPTION_LENGTH = 1024;
 
     protected DialogWithDetails(Project project, String description, Throwable exception) {
         super(project, false);
@@ -162,7 +162,7 @@ public class DialogWithDetails extends DialogWrapper {
     protected void init() {
         super.init();
 
-        ctrlDescription.setText(description);
+        ctrlDescription.setText("<html>" + description + "</html>");
         ctrlDescription.setIcon(getIcon());
 
         ctrlDetailsText.setText(exceptionStr);

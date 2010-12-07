@@ -76,7 +76,10 @@ public class RecentlyOpenIssuesCache {
 					}
                 } catch (JIRAException e) {
                     if (e instanceof JiraCaptchaRequiredException) {
-                        PluginUtil.getLogger().warn("Please login via Web interface. Captcha required.\n" + e.getMessage());
+                        PluginUtil.getLogger().warn("Due to multiple failed login attempts,"
+                                + " you have been temporarily banned from using the remote API."
+                                + " To re-enable the remote API please log into your server via the web interface.\n"
+                                + e.getMessage());
                     } else {
 					    PluginUtil.getLogger().warn(e.getMessage());
                     }
