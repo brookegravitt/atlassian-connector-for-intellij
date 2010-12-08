@@ -279,7 +279,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private class SummaryPanel extends JPanel {
 
-			private final JEditorPane summary;
+//			private final JEditorPane summary;
 
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
@@ -290,33 +290,33 @@ public class BuildToolWindow extends MultiTabToolWindow {
 				gbc.anchor = GridBagConstraints.LINE_START;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 				gbc.weightx = 1.0;
-				summary = new JEditorPane();
-				summary.setContentType("text/html");
-				summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				setSummaryText();
-				summary.setEditable(false);
-				summary.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-							BrowserUtil.launchBrowser(e.getURL().toString());
-						}
-					}
-				});
-
-				summary.setFont(summary.getFont().deriveFont(Font.BOLD));
-				summary.setOpaque(false);
-				JPanel p = new JPanel();
-				p.setLayout(new GridBagLayout());
-				GridBagConstraints gbcp = new GridBagConstraints();
-				gbcp.fill = GridBagConstraints.BOTH;
-				gbcp.weightx = 1.0;
-				gbcp.weighty = 1.0;
-				gbcp.gridx = 0;
-				gbcp.gridy = 0;
-				p.add(summary, gbcp);
-				add(p, gbc);
-
-				gbc.gridy++;
+//				summary = new JEditorPane();
+//				summary.setContentType("text/html");
+//				summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+//				setSummaryText();
+//				summary.setEditable(false);
+//				summary.addHyperlinkListener(new HyperlinkListener() {
+//					public void hyperlinkUpdate(HyperlinkEvent e) {
+//						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+//							BrowserUtil.launchBrowser(e.getURL().toString());
+//						}
+//					}
+//				});
+//
+//				summary.setFont(summary.getFont().deriveFont(Font.BOLD));
+//				summary.setOpaque(false);
+//				JPanel p = new JPanel();
+//				p.setLayout(new GridBagLayout());
+//				GridBagConstraints gbcp = new GridBagConstraints();
+//				gbcp.fill = GridBagConstraints.BOTH;
+//				gbcp.weightx = 1.0;
+//				gbcp.weighty = 1.0;
+//				gbcp.gridx = 0;
+//				gbcp.gridy = 0;
+//				p.add(summary, gbcp);
+//				add(p, gbc);
+//
+//				gbc.gridy++;
 
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.BuildToolWindowToolBar");
@@ -326,12 +326,12 @@ public class BuildToolWindow extends MultiTabToolWindow {
 				add(comp, gbc);
 			}
 
-			public void setSummaryText() {
-				String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
-						+ params.build.getPlanKey() + "</a> "
-						+ params.build.getProjectName() + " - " + params.build.getPlanName() + "</body></html>";
-				summary.setText(txt);
-			}
+//			public void setSummaryText() {
+//				String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
+//						+ params.build.getPlanKey() + "</a> "
+//						+ params.build.getProjectName() + " - " + params.build.getPlanName() + "</body></html>";
+//				summary.setText(txt);
+//			}
 
 		}
 

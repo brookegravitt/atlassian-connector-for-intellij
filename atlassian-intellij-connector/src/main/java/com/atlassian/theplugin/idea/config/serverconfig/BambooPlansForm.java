@@ -52,13 +52,11 @@ public class BambooPlansForm extends JPanel {
     private static final int MIN_TIMEZONE_DIFF = -24;
     private static final int MAX_TIMEZONE_DIFF = 24;
 
-    private JPanel statusPanel;
     private JPanel toolbarPanel;
     private JCheckBox cbUseFavouriteBuilds;
-    private JButton btRefresh;
+    private JButton btUpdate;
     private JList list;
     private JPanel rootComponent;
-    private JEditorPane statusPane;
     private JScrollPane scrollList;
     private JPanel listPanel;
     private JPanel plansPanel;
@@ -122,7 +120,7 @@ public class BambooPlansForm extends JPanel {
             }
         });
 
-        btRefresh.addActionListener(new ActionListener() {
+        btUpdate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 refreshServerPlans();
             }
@@ -246,7 +244,7 @@ public class BambooPlansForm extends JPanel {
         } else {
             cbUseFavouriteBuilds.setSelected(queryServer.isUseFavourites());
         }
-        statusPane.setText("Waiting for server plans...");
+
 
         new Thread(new Runnable() {
             public void run() {
@@ -369,8 +367,7 @@ public class BambooPlansForm extends JPanel {
                 }
                 serverPlans.put(server.getServerId(), modelPlans);
             }
-            statusPane.setText(message);
-            statusPane.setCaretPosition(0);
+
             setVisible(true);
             //	cbUseFavouriteBuilds.setEnabled(true);
             list.setEnabled(!cbUseFavouriteBuilds.isSelected());
@@ -493,30 +490,21 @@ public class BambooPlansForm extends JPanel {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         toolbarPanel.add(cbUseFavouriteBuilds, gbc);
-        btRefresh = new JButton();
-        btRefresh.setText("Refresh");
+        btUpdate = new JButton();
+        btUpdate.setText("Refresh");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        toolbarPanel.add(btRefresh, gbc);
-        statusPanel = new JPanel();
-        statusPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        toolbarPanel.add(btUpdate, gbc);
+
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 12, 12, 12);
-        plansPanel.add(statusPanel, gbc);
-        final JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setEnabled(true);
-        scrollPane1.setHorizontalScrollBarPolicy(31);
-        scrollPane1.setVerticalScrollBarPolicy(20);
-        statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
-        statusPane = new JEditorPane();
-        statusPane.setEditable(false);
-        scrollPane1.setViewportView(statusPane);
+
         timezonePanel = new JPanel();
         timezonePanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
