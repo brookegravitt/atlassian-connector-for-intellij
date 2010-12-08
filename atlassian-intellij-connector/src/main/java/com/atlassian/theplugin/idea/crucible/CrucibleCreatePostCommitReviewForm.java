@@ -125,7 +125,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 		}
 
 		public void run() throws Exception {
-			commitedChangesBrowser.setEmptyText("Fetching recent commits...");
+			IdeaVersionFacade.getInstance().setEmptyText(commitedChangesBrowser, "Fetching recent commits...");
 
 			IdeaVersionFacade.getInstance()
 					.setCommitedChangesList(commitedChangesBrowser, Collections.<CommittedChangeList>emptyList(), false);
@@ -158,7 +158,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 
 		@Override
 		public void onSuccess() {
-			commitedChangesBrowser.setEmptyText("No recent commits");
+			IdeaVersionFacade.getInstance().setEmptyText(commitedChangesBrowser, "No recent commits");
 			if (list == null) {
 				list = Collections.emptyList();
 			}

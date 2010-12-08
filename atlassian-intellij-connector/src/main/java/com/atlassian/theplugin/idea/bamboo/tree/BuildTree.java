@@ -25,7 +25,7 @@ import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeCellRenderer;
@@ -102,6 +102,7 @@ public class BuildTree extends AbstractTree {
 
         return null;
     }
+
     @Nullable
     public List<BambooBuildAdapter> getSelectedBuilds() {
         final TreePath[] selectionPaths = getSelectionPaths();
@@ -177,17 +178,17 @@ public class BuildTree extends AbstractTree {
             try {
                 buildTreeUiSetup.setTreeRebuilding(true);
                 Set<TreePath> collapsedPaths = getCollapsedPaths();
-				BambooBuildAdapter build = getSelectedBuild();
+                BambooBuildAdapter build = getSelectedBuild();
 
                 // rebuild the tree
-                buildTreeModel.update();
+               // update();
 
                 // expand entire tree
                 expandTree();
 
                 // restore selection and collapse state
                 collapsePaths(collapsedPaths);
-				selectBuildNode(build);
+                selectBuildNode(build);
             } finally {
                 buildTreeUiSetup.setTreeRebuilding(false);
                 buildTreeUiSetup.forceTreePrefSizeRecalculation(BuildTree.this);
@@ -195,4 +196,37 @@ public class BuildTree extends AbstractTree {
             //			System.out.println("Time: " + (System.currentTimeMillis() - begin));
         }
     }
+
+//    private void update() {
+//
+//        timer.cancel();
+//        timer = new java.util.Timer("animate building nodes");
+//
+//        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModel().getRoot();
+//        final BuildTreeModel model = (BuildTreeModel) getModel();
+//
+//        root.removeAllChildren();
+//        model.nodeStructureChanged(root);
+//
+//        // find nodes in 'building' state
+//        final Collection<BuildTreeNode> nodes = model.getBuildingNodes();
+//
+//        // start timer to refresh 'building' nodes in the background (to animate them)
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                EventQueue.invokeLater(new Runnable() {
+//                    public void run() {
+//                        Set<TreePath> expandedPaths = getExpandedPaths();
+//                        for (BuildTreeNode node : nodes) {
+//                            model.nodeStructureChanged(node);
+//                        }
+//                        expandPaths(expandedPaths);
+//                    }
+//                }
+//                );
+//            }
+//        } , 10, 200);
+//
+//    }
 }

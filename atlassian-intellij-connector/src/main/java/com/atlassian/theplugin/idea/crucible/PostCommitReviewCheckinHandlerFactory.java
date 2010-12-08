@@ -9,6 +9,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.Disposable;
@@ -62,7 +63,8 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
         // PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
         // "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
-        if (((CommitChangeListDialog) checkinProjectPanel).getAffectedVcses().size() > 0) {
+        if (IdeaVersionFacade.getInstance().getAffectedVcsesSize((CommitChangeListDialog) checkinProjectPanel) > 0) {
+
     		return new Handler(checkinProjectPanel);
         }
         return new NullCheckinHandler();

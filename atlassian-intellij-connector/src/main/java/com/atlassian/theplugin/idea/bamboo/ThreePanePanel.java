@@ -16,11 +16,17 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.intellij.openapi.ui.Splitter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -132,15 +138,12 @@ public abstract class ThreePanePanel extends JPanel {
 	}
 
 	public void expandAllRightTreeNodes() {
-		for (int i = 0; i < getRightTree().getRowCount(); i++) {
-			getRightTree().expandRow(i);
-		}
+			((BuildTree)getRightTree()).expandTree();
+
 	}
 
 	public void collapseAllRightTreeNodes() {
-		for (int i = 0; i < getRightTree().getRowCount(); i++) {
-			getRightTree().collapseRow(i);
-		}
+		((BuildTree)getRightTree()).collapseTree();
 	}
 
 	public JScrollPane getLeftScrollPane() {
