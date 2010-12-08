@@ -58,6 +58,32 @@ public abstract class AbstractTree extends JTree {
 		return collapsedNodes;
 	}
 
+    protected Set<TreePath> getExpandedPaths() {
+		Set<TreePath> expandedNodes = new HashSet<TreePath>();
+
+		for (int i = 0; i < getRowCount(); ++i) {
+			TreePath path = getPathForRow(i);
+
+			if (isExpanded(path)) {
+				expandedNodes.add(path);
+			}
+		}
+		return expandedNodes;
+	}
+
+    protected void expandPaths(Set<TreePath> expandPaths) {
+		for (TreePath path : expandPaths) {
+			for (int i = 0; i < getRowCount(); ++i) {
+				TreePath treePath = getPathForRow(i);
+
+				if (treePath.toString().equals(path.toString())) {
+					expandPath(treePath);
+					break;
+				}
+			}
+		}
+	}
+
 	protected void collapsePaths(Set<TreePath> collapsedPaths) {
 		for (TreePath path : collapsedPaths) {
 			for (int i = 0; i < getRowCount(); ++i) {

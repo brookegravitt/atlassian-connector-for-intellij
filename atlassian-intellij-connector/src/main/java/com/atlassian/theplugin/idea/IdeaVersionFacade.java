@@ -27,6 +27,7 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
+import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -52,6 +53,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,7 +82,7 @@ public final class IdeaVersionFacade {
         // deprecated getBuildNumber() method here...
         @SuppressWarnings("deprecation")
         String ver = ApplicationInfo.getInstance().getBuildNumber();
-        Matcher m = IDEA_9_REGEX.matcher(ver);        
+        Matcher m = IDEA_9_REGEX.matcher(ver);
         final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
 
         if (m.matches() && (group4 == IDEA_9_GR4 || group4 == IDEA_9_COMMUNITY_1)) {
@@ -111,6 +113,28 @@ public final class IdeaVersionFacade {
             instance = new IdeaVersionFacade();
         }
         return instance;
+    }
+
+    public int getAffectedVcsesSize(final CommitChangeListDialog dialog) {
+        if (isIdea7 || isIdea8 || isIdea9) {
+            try {
+                Class commitChangeListDialogClass = Class.forName("com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog");
+                Method getAffectedVcsesMethod = commitChangeListDialogClass.getMethod("getAffecetedVcses");
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) getAffectedVcsesMethod.invoke(dialog);
+
+                if (list != null) {
+                    return list.size();
+                } else {
+                    return 0;
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        //todo Implement for IdeaX or above if possible see http://youtrack.jetbrains.net/issue/IDEA-58018
+        return 1;
     }
 
     public String getChangeListId(LocalChangeList changeList) {
@@ -157,6 +181,19 @@ public final class IdeaVersionFacade {
             e.printStackTrace();
         }
         return cls;
+    }
+
+    public void setEmptyText(CommittedChangesTreeBrowser tb, String text) {
+        if (isIdea7 || isIdea8 || isIdea9) {
+            try {
+                Class commitedChagesTreeBrowserClass =
+                        Class.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser");
+                Method setEmptyTextMethod = commitedChagesTreeBrowserClass.getMethod("seEmptyText", String.class);
+                setEmptyTextMethod.invoke(tb, text);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public PsiFile[] getFiles(String filePath, Project project) {
@@ -452,7 +489,11 @@ public final class IdeaVersionFacade {
             if (isIdea8 || isIdea9 || isIdeaX) {
                 Class enumClass = Class.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase");
                 Method valueOf = enumClass.getMethod("valueOf", String.class);
-                setItems.invoke(browser, list, flag, valueOf.invoke(null, "COMMITTED"));
+                if (!isIdeaX) {
+                    setItems.invoke(browser, list, flag, valueOf.invoke(null, "COMMITTED"));
+                } else {
+                    setItems.invoke(browser, list, valueOf.invoke(null, "COMMITTED"));
+                }
             } else {
                 setItems.invoke(browser, list, flag);
             }

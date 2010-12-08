@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -62,7 +63,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
         //reflection
 		// PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
 		// "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
-        if (((CommitChangeListDialog) checkinProjectPanel).getAffectedVcses().size() > 0) {
+        if (IdeaVersionFacade.getInstance().getAffectedVcsesSize((CommitChangeListDialog) checkinProjectPanel) > 0) {
 			return new Handler(checkinProjectPanel);
 		}
 		return new NullCheckinHandler();

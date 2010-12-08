@@ -1,28 +1,35 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
-import com.atlassian.theplugin.commons.util.DateUtil;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.HyperlinkLabel;
+import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkEvent;
-import java.awt.*;
+import javax.swing.event.HyperlinkListener;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * User: jgorycki
@@ -84,15 +91,38 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
 		gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 
-
-		body.add(new BoldLabel("State"), gbc1);
-		body.add(new JLabel(build.getAdjustedStatus().getName(), build.getIcon(), SwingConstants.LEFT), gbc2);
+        body.add(new BoldLabel("Plan"), gbc1);
+        HyperlinkLabel planLink = new HyperlinkLabel(build.getPlanName());
+        planLink.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                BrowserUtil.launchBrowser(build.getBuildUrl());
+            }
+        });
+        planLink.setOpaque(false);
+        body.add(planLink, gbc2);
+		gbc1.gridy++;
+		gbc2.gridy++;
+        gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+        final BoldLabel boldLabel = new BoldLabel("State");
+        body.add(boldLabel, gbc1);
+		body.add(new JLabel(build.getAdjustedStatus().getName(), build.getBuildIcon(), SwingConstants.LEFT), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		body.add(new BoldLabel("Last Build"), gbc1);
-		body.add(new JLabel(build.getBuildNumberAsString()), gbc2);
+
+        HyperlinkLabel link = new HyperlinkLabel("#" + build.getBuildNumberAsString());
+        link.setOpaque(false);
+        link.addHyperlinkListener(new HyperlinkListener() {
+
+            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                BrowserUtil.launchBrowser(build.getResultUrl());
+            }
+        });
+//		body.add(new JLabel("<html><a href=\"" + build.getResultUrl() + "\">&#35;" + build.getBuildNumberAsString() +"<a></html>"), gbc2);
+        body.add(link, gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		body.add(new BoldLabel("When"), gbc1);
