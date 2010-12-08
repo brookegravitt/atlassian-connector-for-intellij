@@ -212,6 +212,11 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
         return BambooBuildIcons.ICON_GREY;
     }
 
+    public String getPlanStateString() {
+        return build.getPlanState() == PlanState.BUILDING ? "Building" : "";
+
+    }
+
     public Icon getBuildIcon() {
         if (build.getEnabled()) {
             switch (getStatus()) {

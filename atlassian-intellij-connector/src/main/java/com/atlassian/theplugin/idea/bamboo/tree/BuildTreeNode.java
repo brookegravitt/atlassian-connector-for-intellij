@@ -27,8 +27,14 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToolTip;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.Collection;
@@ -49,6 +55,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
     private double reasonWidth;
     private double serverWidth;
     private double dateWidth;
+    private double planInProgressWidth;
     private static final int LABEL_PADDING = 5;
     private boolean hover = false;
     private RendererPanel renderer;
@@ -66,7 +73,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
     private final class RendererPanel extends JPanel {
         private JPanel detailsPanel;
         private SelectableHoverLabel descriptionLabel;
+        private SelectableHoverLabel planIsBuilding;
         ///details
+        private SelectableHoverLabel empty0;
         private SelectableHoverLabel empty1;
         private SelectableHoverLabel reason;
         private SelectableHoverLabel empty2;
@@ -79,6 +88,8 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         RendererPanel() {
             super(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
             CellConstraints cc = new CellConstraints();
+            planIsBuilding =  new SelectableHoverLabel(false, hover, true, build.getPlanStateString(), null,
+                    SwingConstants.TRAILING, ICON_HEIGHT);
 
             reason = new SelectableHoverLabel(false, hover, true, getBuildReasonString(build), null,
                     SwingConstants.LEADING, ICON_HEIGHT);
@@ -86,10 +97,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
                     SwingConstants.LEADING, ICON_HEIGHT);
             empty1 = new SelectableHoverLabel(false, hover, true, "", null,
                     SwingConstants.LEADING, ICON_HEIGHT);
+            empty0 = new SelectableHoverLabel(false, hover, true, "", null,
+                    SwingConstants.LEADING, ICON_HEIGHT);
             
             setBackground(UIUtil.getTreeTextBackground());
 
-            buildStatusIcon = new JLabel(build.getIcon());
+            buildStatusIcon = new JLabel(build.getBuildIcon());
             add(buildStatusIcon, cc.xy(1, 1));
 
 
@@ -104,10 +117,15 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         }
 
         void reformatPanel(boolean selected, boolean enabled) {
-            buildStatusIcon.setIcon(build.getIcon());
+            buildStatusIcon.setIcon(build.getBuildIcon());
             descriptionLabel.setBackground(SelectableHoverLabel.getBgColor(selected, hover));
             descriptionLabel.setEnabled(enabled);
+            planIsBuilding.setText(build.getPlanStateString());
 
+            planIsBuilding.setSelected(selected, hover, enabled);
+            setFixedComponentSize(planIsBuilding,
+                    Double.valueOf(planInProgressWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
+            empty0.setSelected(selected, hover, enabled);
             empty1.setSelected(selected, hover, enabled);
             reason.setSelected(selected, hover, enabled);
             empty2.setSelected(selected, hover, enabled);
@@ -140,6 +158,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 
         private JPanel createPanelForOtherBuildDetails(boolean selected, boolean aHover, boolean enabled) {
+
+
+
             detailsPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
 
@@ -155,7 +176,21 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             empty1.setSelected(selected, aHover, enabled);
             setFixedComponentSize(empty1, 2 * GAP, ICON_HEIGHT);
             detailsPanel.add(empty1, gbc);
+            // is plan buiding
+            gbc.gridx++;
+            gbc.weightx = 0.0;
+            gbc.fill = GridBagConstraints.NONE;
+            planIsBuilding.setSelected(selected, aHover, enabled);
+            detailsPanel.add(planIsBuilding, gbc);
+            setFixedComponentSize(planIsBuilding, Double.valueOf(planInProgressWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
+            // gap
+            gbc.gridx++;
+            gbc.weightx = 0.0;
+            gbc.fill = GridBagConstraints.NONE;
+            empty0.setSelected(selected, aHover, enabled);
 
+            detailsPanel.add(empty0, gbc);
+            setFixedComponentSize(empty0, 2 * GAP, ICON_HEIGHT);
             // reason
             gbc.gridx++;
             gbc.weightx = 0.0;
@@ -236,6 +271,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         reasonWidth = 0.0;
         serverWidth = 0.0;
         dateWidth = 0.0;
+        planInProgressWidth = 0.0;
 
         for (BambooBuildAdapter b : buildModel.getBuilds()) {
             // PL-1202 - argument to TextLayout must be a non-empty string
@@ -251,6 +287,11 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
             TextLayout layoutDate = new TextLayout(date.length() > 0 ? date : ".",
                     l.getFont(), new FontRenderContext(null, true, true));
             dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
+
+            TextLayout planStatus = new TextLayout(
+                    build.getPlanStateString().length() > 0 ? build.getPlanStateString() : " ",
+                    l.getFont(), new FontRenderContext(null, true, true));
+            planInProgressWidth =  Math.max(planStatus.getBounds().getWidth(), planInProgressWidth);
         }
     }
 
