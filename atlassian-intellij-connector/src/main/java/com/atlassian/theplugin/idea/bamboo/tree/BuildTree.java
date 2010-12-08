@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.JScrollPane;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
 
 /**
  * @author Jacek Jaroczynski
@@ -182,7 +182,8 @@ public class BuildTree extends AbstractTree {
                 BambooBuildAdapter build = getSelectedBuild();
 
                 // rebuild the tree
-               // update();
+               update();
+
 
                 // expand entire tree
                 expandTree();
@@ -198,20 +199,20 @@ public class BuildTree extends AbstractTree {
         }
     }
 
-//    private void update() {
-//
+    private void update() {
+
 //        timer.cancel();
 //        timer = new java.util.Timer("animate building nodes");
-//
-//        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModel().getRoot();
-//        final BuildTreeModel model = (BuildTreeModel) getModel();
-//
-//        root.removeAllChildren();
-//        model.nodeStructureChanged(root);
-//
-//        // find nodes in 'building' state
-//        final Collection<BuildTreeNode> nodes = model.getBuildingNodes();
-//
+
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) getModel().getRoot();
+        final BuildTreeModel model = (BuildTreeModel) getModel();
+
+        root.removeAllChildren();
+        model.nodeStructureChanged(root);
+
+        // find nodes in 'building' state
+        final Collection<BuildTreeNode> nodes = model.getBuildingNodes();
+
 //        // start timer to refresh 'building' nodes in the background (to animate them)
 //        timer.schedule(new TimerTask() {
 //            @Override
@@ -228,6 +229,6 @@ public class BuildTree extends AbstractTree {
 //                );
 //            }
 //        } , 10, 200);
-//
-//    }
+
+    }
 }
