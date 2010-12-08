@@ -94,13 +94,13 @@
             <classifier>9952</classifier>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>util</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.intellij.idea</groupId>-->
+            <!--<artifactId>util</artifactId>-->
+            <!--<version>8.1.4</version>-->
+            <!--<classifier>9952</classifier>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>extensions</artifactId>
@@ -380,7 +380,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.2</version>
                 <configuration>
                     <ideaPlugin>true</ideaPlugin>
                     <jdkName>IDEA 9952</jdkName>

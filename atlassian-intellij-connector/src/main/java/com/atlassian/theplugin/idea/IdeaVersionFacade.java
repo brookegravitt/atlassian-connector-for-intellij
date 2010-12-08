@@ -116,10 +116,10 @@ public final class IdeaVersionFacade {
     }
 
     public int getAffectedVcsesSize(final CommitChangeListDialog dialog) {
-        if (isIdea7 || isIdea8 || isIdea9) {
+
             try {
                 Class commitChangeListDialogClass = Class.forName("com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog");
-                Method getAffectedVcsesMethod = commitChangeListDialogClass.getMethod("getAffecetedVcses");
+                Method getAffectedVcsesMethod = commitChangeListDialogClass.getMethod("getAffectedVcses");
                 @SuppressWarnings("unchecked")
                 List<Object> list = (List<Object>) getAffectedVcsesMethod.invoke(dialog);
 
@@ -129,11 +129,12 @@ public final class IdeaVersionFacade {
                     return 0;
                 }
             } catch (final Exception e) {
-                e.printStackTrace();
+               //for some IDEA X versions 96.X, 97.X, 98.X (preview, EAPs) this method is not available
+               // but is present in stable version since 99.5
             }
-        }
 
-        //todo Implement for IdeaX or above if possible see http://youtrack.jetbrains.net/issue/IDEA-58018
+
+        //CommitChangeListDialog.getAffectedVcsesImplement not implemented for Idea X EAP
         return 1;
     }
 

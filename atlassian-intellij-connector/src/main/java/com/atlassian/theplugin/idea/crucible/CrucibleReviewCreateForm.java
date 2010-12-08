@@ -992,8 +992,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                     return e != null
                             && e.getMessage() != null
                             && (e.getMessage().contains("Specified change set id does not exist") ||
-                            (e.getMessage().contains(" Change set id")
+                            ((e.getMessage().contains(" Change set id") || e.getMessage().contains("Changeset id"))
                                     && e.getMessage().contains(" does not exist in repository")));
+
 
                 }
 
