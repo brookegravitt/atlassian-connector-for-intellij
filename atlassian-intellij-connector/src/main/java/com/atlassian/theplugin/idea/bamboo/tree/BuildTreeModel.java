@@ -24,229 +24,199 @@ import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class BuildTreeModel extends DefaultTreeModel {
 
-	private final BuildListModel buildListModel;
+    private final BuildListModel buildListModel;
 
-	private BuildGroupBy groupBy = BuildGroupBy.NONE;
+    private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
-	private final BuildNodeManipulator generalNodeManipulator;
-	private final BuildNodeManipulator stateNodeManipulator;
-	private final BuildNodeManipulator serverNodeManipulator;
-	private final BuildNodeManipulator dateNodeManipulator;
-	private final BuildNodeManipulator projectNodeManipulator;
-	private Timer timer = new Timer("animate building nodes");
+    private final BuildNodeManipulator generalNodeManipulator;
+    private final BuildNodeManipulator stateNodeManipulator;
+    private final BuildNodeManipulator serverNodeManipulator;
+    private final BuildNodeManipulator dateNodeManipulator;
+    private final BuildNodeManipulator projectNodeManipulator;
 
-	public BuildTreeModel(ProjectCfgManager projectCfgManager, final BuildListModel buildListModel) {
-		super(new DefaultMutableTreeNode());
+    public BuildTreeModel(ProjectCfgManager projectCfgManager, final BuildListModel buildListModel) {
+        super(new DefaultMutableTreeNode());
 
-		this.buildListModel = buildListModel;
+        this.buildListModel = buildListModel;
 
-		generalNodeManipulator = new GeneralBuildNodeManipulator(buildListModel, getRoot());
-		stateNodeManipulator = new StateBuildNodeManipulator(buildListModel, getRoot());
-		serverNodeManipulator = new ServerBuildNodeManipulator(projectCfgManager, buildListModel, getRoot());
-		dateNodeManipulator = new DateBuildNodeManipulator(buildListModel, getRoot());
-		projectNodeManipulator = new ProjectBuildNodeManipulator(buildListModel, getRoot());
+        generalNodeManipulator = new GeneralBuildNodeManipulator(buildListModel, getRoot());
+        stateNodeManipulator = new StateBuildNodeManipulator(buildListModel, getRoot());
+        serverNodeManipulator = new ServerBuildNodeManipulator(projectCfgManager, buildListModel, getRoot());
+        dateNodeManipulator = new DateBuildNodeManipulator(buildListModel, getRoot());
+        projectNodeManipulator = new ProjectBuildNodeManipulator(buildListModel, getRoot());
 
-	}
+    }
 
-	/**
-	 * Sets groupBy field used to group the tree and triggers tree to rebuild
-	 * Only tree should use that method.
-	 *
-	 * @param aGroupBy group by option
-	 */
-	public void groupBy(BuildGroupBy aGroupBy) {
-		setGroupBy(aGroupBy);
+    /**
+     * Sets groupBy field used to group the tree and triggers tree to rebuild
+     * Only tree should use that method.
+     *
+     * @param aGroupBy group by option
+     */
+    public void groupBy(BuildGroupBy aGroupBy) {
+        setGroupBy(aGroupBy);
 
-		// clear entire tree
-		getRoot().removeAllChildren();
+        // clear entire tree
+        getRoot().removeAllChildren();
 
-		// redraw tree
-		nodeStructureChanged(getRoot());
-	}
+        // redraw tree
+        nodeStructureChanged(getRoot());
+    }
 
-	/**
-	 * Simple setter (does not trigger tree to rebuild)
-	 * Used when initializig tree (before first load of builds status)
-	 *
-	 * @param groupBy group by option
-	 */
-	public void setGroupBy(BuildGroupBy groupBy) {
-		if (groupBy != null) {
-			this.groupBy = groupBy;
-		}
-	}
+    /**
+     * Simple setter (does not trigger tree to rebuild)
+     * Used when initializig tree (before first load of builds status)
+     *
+     * @param groupBy group by option
+     */
+    public void setGroupBy(BuildGroupBy groupBy) {
+        if (groupBy != null) {
+            this.groupBy = groupBy;
+        }
+    }
 
-	/*
-	Override TreeModel methods
-	 */
+    /*
+     Override TreeModel methods
+      */
 
-	@Override
-	public DefaultMutableTreeNode getRoot() {
-		return (DefaultMutableTreeNode) super.getRoot();
-	}
+    @Override
+    public DefaultMutableTreeNode getRoot() {
+        return (DefaultMutableTreeNode) super.getRoot();
+    }
 
-	@Override
-	public Object getChild(Object parent, int index) {
+    @Override
+    public Object getChild(Object parent, int index) {
 
-		switch (groupBy) {
-			case DATE:
-				return dateNodeManipulator.getChild(parent, index);
-			case PROJECT:
-				return projectNodeManipulator.getChild(parent, index);
-			case SERVER:
-				return serverNodeManipulator.getChild(parent, index);
-			case STATE:
-				return stateNodeManipulator.getChild(parent, index);
-			case NONE:
-			default:
-				return generalNodeManipulator.getChild(parent, index);
-		}
-	}
+        switch (groupBy) {
+            case DATE:
+                return dateNodeManipulator.getChild(parent, index);
+            case PROJECT:
+                return projectNodeManipulator.getChild(parent, index);
+            case SERVER:
+                return serverNodeManipulator.getChild(parent, index);
+            case STATE:
+                return stateNodeManipulator.getChild(parent, index);
+            case NONE:
+            default:
+                return generalNodeManipulator.getChild(parent, index);
+        }
+    }
 
-	@Override
-	public int getChildCount(Object parent) {
+    @Override
+    public int getChildCount(Object parent) {
 
-		switch (groupBy) {
-			case DATE:
-				return dateNodeManipulator.getChildCount(parent);
-			case PROJECT:
-				return projectNodeManipulator.getChildCount(parent);
-			case SERVER:
-				return serverNodeManipulator.getChildCount(parent);
-			case STATE:
-				return stateNodeManipulator.getChildCount(parent);
-			case NONE:
-			default:
-				return generalNodeManipulator.getChildCount(parent);
-		}
-	}
+        switch (groupBy) {
+            case DATE:
+                return dateNodeManipulator.getChildCount(parent);
+            case PROJECT:
+                return projectNodeManipulator.getChildCount(parent);
+            case SERVER:
+                return serverNodeManipulator.getChildCount(parent);
+            case STATE:
+                return stateNodeManipulator.getChildCount(parent);
+            case NONE:
+            default:
+                return generalNodeManipulator.getChildCount(parent);
+        }
+    }
 
-	@Override
-	public boolean isLeaf(Object node) {
-		if (node == getRoot()
-				|| node instanceof BuildProjectTreeNode
-				|| node instanceof BuildStateTreeNode
-				|| node instanceof BuildDateTreeNode
-				|| node instanceof BuildServerTreeNode) {
-			return false;
-		}
+    @Override
+    public boolean isLeaf(Object node) {
+        if (node == getRoot()
+                || node instanceof BuildProjectTreeNode
+                || node instanceof BuildStateTreeNode
+                || node instanceof BuildDateTreeNode
+                || node instanceof BuildServerTreeNode) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public void valueForPathChanged(TreePath path, Object newValue) {
-		System.out.println("valueForPathChanged");
-	}
+    @Override
+    public void valueForPathChanged(TreePath path, Object newValue) {
+        System.out.println("valueForPathChanged");
+    }
 
-	@Override
-	// todo add group by handling if necessary
-	public int getIndexOfChild(Object parent, Object child) {
-		if (parent == getRoot()) {
-			if (child instanceof BuildTreeNode) {
-				BambooBuildAdapter build = ((BuildTreeNode) child).getBuild();
-				return new ArrayList<BambooBuildAdapter>(buildListModel.getBuilds()).indexOf(build);
-			}
-		}
+    @Override
+    // todo add group by handling if necessary
+    public int getIndexOfChild(Object parent, Object child) {
+        if (parent == getRoot()) {
+            if (child instanceof BuildTreeNode) {
+                BambooBuildAdapter build = ((BuildTreeNode) child).getBuild();
+                return new ArrayList<BambooBuildAdapter>(buildListModel.getBuilds()).indexOf(build);
+            }
+        }
 
-		return -1;
-	}
+        return -1;
+    }
 
-	public void update() {
-		timer.cancel();
-		timer = new Timer("animate building nodes");
+    Collection<BuildTreeNode> getBuildingNodes
+            () {
+        Collection<BuildTreeNode> nodes = new ArrayList<BuildTreeNode>();
 
-		getRoot().removeAllChildren();
-		nodeStructureChanged(getRoot());
+        collectBuildingNodes(getRoot(), nodes);
 
-		// find nodes in 'building' state
-		final Collection<BuildTreeNode> nodes = getBuildingNodes();
+        return nodes;
+    }
 
-		// start timer to refresh 'building' nodes in the background (to animate them)
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						for (BuildTreeNode node : nodes) {
-							nodeStructureChanged(node);
-						}
-					}
-				});
-			}
-		}, 10, 100);
+    private void collectBuildingNodes(final DefaultMutableTreeNode node, Collection<BuildTreeNode> nodes) {
+        if (node instanceof BuildTreeNode) {
+            BuildTreeNode buildNode = (BuildTreeNode) node;
+            if (buildNode.getBuild().getBuild().getPlanState() == PlanState.BUILDING) {
+                nodes.add((BuildTreeNode) node);
+            }
+        }
 
+        for (int i = 0; i < getChildCount(node); ++i) {
+            if (getChild(node, i) instanceof DefaultMutableTreeNode) {
+                collectBuildingNodes((DefaultMutableTreeNode) getChild(node, i), nodes);
+            }
+        }
+    }
 
-	}
+    public BuildListModel getBuildListModel() {
+        return buildListModel;
+    }
 
-	private Collection<BuildTreeNode> getBuildingNodes() {
-		Collection<BuildTreeNode> nodes = new ArrayList<BuildTreeNode>();
+    /**
+     * @param node Node to mark as hovered. Other nodes are cleared. If null all nodes are cleared.
+     */
+    public void setHoeverNode(final BuildTreeNode node) {
+        Collection<DefaultMutableTreeNode> changedNodes = clearHoverNodes(getRoot());
+        for (DefaultMutableTreeNode changedNode : changedNodes) {
+            nodeStructureChanged(changedNode);
+        }
+        if (node != null) {
+            node.setHover(true);
+            nodeStructureChanged(node);
+        }
+    }
 
-		collectBuildingNodes(getRoot(), nodes);
+    private Collection<DefaultMutableTreeNode> clearHoverNodes(final DefaultMutableTreeNode node) {
+        Collection<DefaultMutableTreeNode> ret = new ArrayList<DefaultMutableTreeNode>();
+        if (node instanceof BuildTreeNode) {
+            BuildTreeNode buildNode = (BuildTreeNode) node;
+            if (buildNode.isHover()) {
+                buildNode.setHover(false);
+                ret.add(node);
+            }
+        }
 
-		return nodes;
-	}
+        for (int i = 0; i < getChildCount(node); ++i) {
+            if (getChild(node, i) instanceof DefaultMutableTreeNode) {
+                ret.addAll(clearHoverNodes((DefaultMutableTreeNode) getChild(node, i)));
+            }
+        }
 
-	private void collectBuildingNodes(final DefaultMutableTreeNode node, Collection<BuildTreeNode> nodes) {
-		if (node instanceof BuildTreeNode) {
-			BuildTreeNode buildNode = (BuildTreeNode) node;
-			if (buildNode.getBuild().getBuild().getPlanState() == PlanState.BUILDING) {
-				nodes.add((BuildTreeNode) node);
-			}
-		}
-
-		for (int i = 0; i < getChildCount(node); ++i) {
-			if (getChild(node, i) instanceof DefaultMutableTreeNode) {
-				collectBuildingNodes((DefaultMutableTreeNode) getChild(node, i), nodes);
-			}
-		}
-	}
-
-	public BuildListModel getBuildListModel() {
-		return buildListModel;
-	}
-
-	/**
-	 * @param node Node to mark as hovered. Other nodes are cleared. If null all nodes are cleared.
-	 */
-	public void setHoeverNode(final BuildTreeNode node) {
-		Collection<DefaultMutableTreeNode> changedNodes = clearHoverNodes(getRoot());
-		for (DefaultMutableTreeNode changedNode : changedNodes) {
-			nodeStructureChanged(changedNode);
-		}
-		if (node != null) {
-			node.setHover(true);
-			nodeStructureChanged(node);
-		}
-	}
-
-	private Collection<DefaultMutableTreeNode> clearHoverNodes(final DefaultMutableTreeNode node) {
-		Collection<DefaultMutableTreeNode> ret = new ArrayList<DefaultMutableTreeNode>();
-		if (node instanceof BuildTreeNode) {
-			BuildTreeNode buildNode = (BuildTreeNode) node;
-			if (buildNode.isHover()) {
-				buildNode.setHover(false);
-				ret.add(node);
-			}
-		}
-
-		for (int i = 0; i < getChildCount(node); ++i) {
-			if (getChild(node, i) instanceof DefaultMutableTreeNode) {
-				ret.addAll(clearHoverNodes((DefaultMutableTreeNode) getChild(node, i)));
-			}
-		}
-
-		return ret;
-	}
+        return ret;
+    }
 }
