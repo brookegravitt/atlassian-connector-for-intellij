@@ -37,7 +37,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
 			boolean isSelected, boolean cellHasFocus) {
 		JPanel panel = new JPanel();
         CellConstraints cc = new CellConstraints();
-		panel.setLayout(new FormLayout("pref, 5dlu, pref, pref:grow, pref, 5dlu", "pref"));
+		panel.setLayout(new FormLayout("pref, 5dlu, pref:grow, pref, 5dlu", "pref"));
 		JLabel label = new JLabel();
 		panel.add(label, cc.xy(1, 1));
         Color background = new Color(-1);
@@ -60,7 +60,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
 					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON)
 					: DISABLED_ICON);
             label.setBackground(background);
-			checkBox.setText(pi.getPlan().getKey());
+			checkBox.setText(pi.getPlan().getName() + " (" + pi.getPlan().getKey() + ")");
 			checkBox.setSelected(pi.isSelected());
             checkBox.setBackground(background);
 
@@ -74,11 +74,11 @@ public class PlanListCellRenderer implements ListCellRenderer {
 			checkBox.setFocusPainted(false);
 			checkBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
 
-            final JPanel growPanel = new JPanel();
-            growPanel.setBackground(background);
-            growPanel.setPreferredSize(checkBox.getPreferredSize());
-            panel.add(growPanel, cc.xy(4, 1));
-            panel.add(groupedBox, cc.xy(5, 1));
+//            final JPanel growPanel = new JPanel();
+//            growPanel.setBackground(background);
+//            //growPanel.setPreferredSize(checkBox.getPreferredSize());
+//            panel.add(growPanel, cc.xy(4, 1));
+            panel.add(groupedBox, cc.xy(4, 1));
             
             groupedBox.setEnabled(list.isEnabled());
             groupedBox.setBackground(background);
@@ -90,7 +90,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
             final JPanel finalPanel = new JPanel();
             finalPanel.setBackground(background);
             finalPanel.setPreferredSize(checkBox.getPreferredSize());
-            panel.add(finalPanel, cc.xy(6, 1));
+            panel.add(finalPanel, cc.xy(5, 1));
 
 		} else {
 			label.setText(value.toString());
