@@ -55,9 +55,9 @@ public final class PluginUtil {
 
 	private static Document doc;
 	public static final String STABLE_VERSION_INFO_URL =
-			"http://update.atlassian.com/atlassian-idea-plugin/latestStableVersion-2.4.xml";
+			"http://update.atlassian.com/atlassian-idea-plugin/latestStableVersion.xml";
 	public static final String LATEST_VERSION_INFO_URL =
-			"http://update.atlassian.com/atlassian-idea-plugin/latestPossibleVersion-2.4.xml";
+			"http://update.atlassian.com/atlassian-idea-plugin/latestPossibleVersion.xml";
 	private static PluginUtil instance;
 
 	static {
