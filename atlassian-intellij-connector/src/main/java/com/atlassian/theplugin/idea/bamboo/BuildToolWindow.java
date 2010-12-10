@@ -28,6 +28,7 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -51,245 +52,245 @@ import java.util.Collection;
  */
 public class BuildToolWindow extends MultiTabToolWindow {
 
-	private final Project project;
-	private final PluginConfiguration pluginConfiguration;
-	private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
+    private final Project project;
+    private final PluginConfiguration pluginConfiguration;
+    private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
 
-	public BuildToolWindow(@NotNull final Project project, @NotNull final PluginConfiguration pluginConfiguration) {
-		super(false);
-		this.project = project;
-		this.pluginConfiguration = pluginConfiguration;
-	}
+    public BuildToolWindow(@NotNull final Project project, @NotNull final PluginConfiguration pluginConfiguration) {
+        super(false);
+        this.project = project;
+        this.pluginConfiguration = pluginConfiguration;
+    }
 
-	public void runTests(AnActionEvent ev, boolean debug) {
-		BuildPanel bp = getContentPanel(ev.getPlace());
-		if (bp != null) {
-			bp.getTestDetailsPanel().runSelectedTests(ev.getDataContext(), debug);
-		}
-	}
+    public void runTests(AnActionEvent ev, boolean debug) {
+        BuildPanel bp = getContentPanel(ev.getPlace());
+        if (bp != null) {
+            bp.getTestDetailsPanel().runSelectedTests(ev.getDataContext(), debug);
+        }
+    }
 
-	public boolean canRunTests(String key) {
-		BuildPanel bp = getContentPanel(key);
-		return bp != null && bp.getTestDetailsPanel().canRunTests();
-	}
+    public boolean canRunTests(String key) {
+        BuildPanel bp = getContentPanel(key);
+        return bp != null && bp.getTestDetailsPanel().canRunTests();
+    }
 
-	public void jumpToSource(String key) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			bp.getTestDetailsPanel().jumpToSource();
-		}
-	}
+    public void jumpToSource(String key) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            bp.getTestDetailsPanel().jumpToSource();
+        }
+    }
 
-	public boolean canJumpToSource(String key) {
-		BuildPanel bp = getContentPanel(key);
-		return bp != null && bp.getTestDetailsPanel().canJumpToSource();
-	}
+    public boolean canJumpToSource(String key) {
+        BuildPanel bp = getContentPanel(key);
+        return bp != null && bp.getTestDetailsPanel().canJumpToSource();
+    }
 
-	public void setPassedTestsVisible(String key, boolean visible) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			bp.getTestDetailsPanel().setPassedTestsVisible(visible);
-		}
-	}
+    public void setPassedTestsVisible(String key, boolean visible) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            bp.getTestDetailsPanel().setPassedTestsVisible(visible);
+        }
+    }
 
-	public boolean isPassedTestsVisible(String key) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			return bp.getTestDetailsPanel().isPassedTestsVisible();
-		}
-		return false;
-	}
+    public boolean isPassedTestsVisible(String key) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            return bp.getTestDetailsPanel().isPassedTestsVisible();
+        }
+        return false;
+    }
 
-	public void expandTests(String key) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			bp.getTestDetailsPanel().expand();
-		}
-	}
+    public void expandTests(String key) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            bp.getTestDetailsPanel().expand();
+        }
+    }
 
-	public void collapseTestTree(String key) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			bp.getTestDetailsPanel().collapse();
-		}
-	}
+    public void collapseTestTree(String key) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            bp.getTestDetailsPanel().collapse();
+        }
+    }
 
-	private final class BuildContentParameters implements ContentParameters {
-		private final BambooBuildAdapter build;
+    private final class BuildContentParameters implements ContentParameters {
+        private final BambooBuildAdapter build;
 
-		private BuildContentParameters(BambooBuildAdapter build) {
-			this.build = build;
-		}
-	}
+        private BuildContentParameters(BambooBuildAdapter build) {
+            this.build = build;
+        }
+    }
 
-	public void showBuild(BambooBuildAdapter build) {
-		if (build != null) {
-			showToolWindow(project, new BuildContentParameters(build),
-					TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
-		}
-	}
+    public void showBuild(BambooBuildAdapter build) {
+        if (build != null) {
+            showToolWindow(project, new BuildContentParameters(build),
+                    TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
+        }
+    }
 
-	public void showBuildAndRunTest(BambooBuildAdapter build,
-			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
-		if (build != null) {
-			final BuildContentParameters params = new BuildContentParameters(build);
-			final String contentKey = getContentKey(params);
+    public void showBuildAndRunTest(BambooBuildAdapter build,
+                                    @NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
+        if (build != null) {
+            final BuildContentParameters params = new BuildContentParameters(build);
+            final String contentKey = getContentKey(params);
 
-			final DataContext dataContext = new DataContext() {
-				@Nullable
-				public Object getData(@NonNls final String dataId) {
-					if (dataId.equalsIgnoreCase("project")) {
-						return project;
-					}
-					return null;
-				}
-			};
+            final DataContext dataContext = new DataContext() {
+                @Nullable
+                public Object getData(@NonNls final String dataId) {
+                    if (dataId.equalsIgnoreCase("project")) {
+                        return project;
+                    }
+                    return null;
+                }
+            };
 
-			BuildPanel bp = getContentPanel(contentKey);
+            BuildPanel bp = getContentPanel(contentKey);
 
-			if (bp != null) {
-				showToolWindow(project, params,
-						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
+            if (bp != null) {
+                showToolWindow(project, params,
+                        TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
 
-				bp.selectTestTab();
-				bp.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
+                bp.selectTestTab();
+                bp.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
 
-			} else {
-				showToolWindow(project, params,
-						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON,
-						new ToolWindowHandler() {
+            } else {
+                showToolWindow(project, params,
+                        TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON,
+                        new ToolWindowHandler() {
 
-							public void dataLoaded() {
-								BuildPanel bp2 = getContentPanel(contentKey);
-								if (bp2 != null) {
-									bp2.selectTestTab();
-									bp2.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
-								}
+                            public void dataLoaded() {
+                                BuildPanel bp2 = getContentPanel(contentKey);
+                                if (bp2 != null) {
+                                    bp2.selectTestTab();
+                                    bp2.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
+                                }
 
-							}
-						});
-			}
-		}
-	}
+                            }
+                        });
+            }
+        }
+    }
 
-	@Override
-	protected String getContentKey(ContentParameters params) {
-		BuildContentParameters bcp = (BuildContentParameters) params;
-		return bcp.build.getResultUrl();
-	}
+    @Override
+    protected String getContentKey(ContentParameters params) {
+        BuildContentParameters bcp = (BuildContentParameters) params;
+        return bcp.build.getResultUrl();
+    }
 
-	@Override
-	protected ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler) {
-		pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
-		BuildContentParameters bcp = (BuildContentParameters) params;
-		return new BuildPanel(bcp, handler);
-	}
+    @Override
+    protected ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler) {
+        pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
+        BuildContentParameters bcp = (BuildContentParameters) params;
+        return new BuildPanel(bcp, handler);
+    }
 
-	public void closeToolWindow(AnActionEvent e) {
-		closeToolWindow(TOOL_WINDOW_TITLE, e);
-	}
+    public void closeToolWindow(AnActionEvent e) {
+        closeToolWindow(TOOL_WINDOW_TITLE, e);
+    }
 
-	public void viewBuildInBrowser(String key) {
-		BuildPanel bp = getContentPanel(key);
-		if (bp != null) {
-			BrowserUtil.launchBrowser(bp.params.build.getResultUrl());
-		}
-	}
+    public void viewBuildInBrowser(String key) {
+        BuildPanel bp = getContentPanel(key);
+        if (bp != null) {
+            BrowserUtil.launchBrowser(bp.params.build.getResultUrl());
+        }
+    }
 
-	public BambooBuildAdapter getBuild(String key) {
-		BuildPanel p = getContentPanel(key);
-		if (p != null) {
-			return p.params.build;
-		}
-		return null;
-	}
+    public BambooBuildAdapter getBuild(String key) {
+        BuildPanel p = getContentPanel(key);
+        if (p != null) {
+            return p.params.build;
+        }
+        return null;
+    }
 
-	private class BuildPanel extends ContentPanel {
+    private class BuildPanel extends ContentPanel {
 
-		private static final int ONE_MINUTE = 60000;
+        private static final int ONE_MINUTE = 60000;
 
-		private final TestDetailsPanel tdp;
+        private final TestDetailsPanel tdp;
 
-		private final JTabbedPane tabs = new JTabbedPane();
-		private final BuildContentParameters params;
+        private final JTabbedPane tabs = new JTabbedPane();
+        private final BuildContentParameters params;
 
-		private final Timer timer;
-		private final CommitDetailsPanel cdp;
+        private final Timer timer;
+        private final CommitDetailsPanel cdp;
         private final BuildDetailsPanel bdp;
 
         public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
-			this.params = params;
+            this.params = params;
 
             bdp = new BuildDetailsPanel(project, params.build);
-			cdp = new CommitDetailsPanel(project, params.build);
-			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
-			final BuildLogPanel blp = new BuildLogPanel(project, params.build);
-			timer = new Timer(ONE_MINUTE, new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					bdp.actionPerformed(e);
-					cdp.actionPerformed(e);
-					tdp.actionPerformed(e);
-					blp.actionPerformed(e);
-				}
-			});
-			tabs.addTab("Details", bdp);
-			tabs.addTab("Changes", cdp);
-			tabs.addTab("Tests", tdp);
-			tabs.addTab("Build Log", blp);
+            cdp = new CommitDetailsPanel(project, params.build);
+            tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
+            final BuildLogPanel blp = new BuildLogPanel(project, params.build);
+            timer = new Timer(ONE_MINUTE, new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    bdp.actionPerformed(e);
+                    cdp.actionPerformed(e);
+                    tdp.actionPerformed(e);
+                    blp.actionPerformed(e);
+                }
+            });
+            tabs.addTab("Details", bdp);
+            tabs.addTab("Changes", cdp);
+            tabs.addTab("Tests", tdp);
+            tabs.addTab("Build Log", blp);
 
-			setLayout(new GridBagLayout());
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 1.0;
-			gbc.weighty = 0.0;
-			gbc.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN, 0, 0);
-			add(new SummaryPanel(), gbc);
-			gbc.gridy++;
-			gbc.weighty = 1.0;
-			gbc.insets = new Insets(0, 0, 0, 0);
-			add(tabs, gbc);
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 1.0;
+            gbc.weighty = 0.0;
+            gbc.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN, 0, 0);
+            add(new SummaryPanel(), gbc);
+            gbc.gridy++;
+            gbc.weighty = 1.0;
+            gbc.insets = new Insets(0, 0, 0, 0);
+            add(tabs, gbc);
 
-			timer.setRepeats(true);
-			timer.setInitialDelay(ONE_MINUTE);
-			timer.start();
+            timer.setRepeats(true);
+            timer.setInitialDelay(ONE_MINUTE);
+            timer.start();
 
-			new BuildDetailsFetcher(handler).queue();
-		}
+            new BuildDetailsFetcher(handler).queue();
+        }
 
-		public TestDetailsPanel getTestDetailsPanel() {
-			return tdp;
-		}
+        public TestDetailsPanel getTestDetailsPanel() {
+            return tdp;
+        }
 
-		@Override
-		public void unregister() {
-			timer.stop();
-		}
+        @Override
+        public void unregister() {
+            timer.stop();
+        }
 
-		@Override
-		public String getTitle() {
-			return params.build.getPlanKey() + "-" + params.build.getBuildNumberAsString();
-		}
+        @Override
+        public String getTitle() {
+            return params.build.getPlanKey() + "-" + params.build.getBuildNumberAsString();
+        }
 
-		public void selectTestTab() {
-			tabs.setSelectedComponent(tdp);
-			setPassedTestsVisible(getContentKey(params), true);
-		}
+        public void selectTestTab() {
+            tabs.setSelectedComponent(tdp);
+            setPassedTestsVisible(getContentKey(params), true);
+        }
 
-		private class SummaryPanel extends JPanel {
+        private class SummaryPanel extends JPanel {
 
 //			private final JEditorPane summary;
 
-			public SummaryPanel() {
-				setLayout(new GridBagLayout());
-				GridBagConstraints gbc = new GridBagConstraints();
+            public SummaryPanel() {
+                setLayout(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
 
-				gbc.gridy = 0;
-				gbc.gridx = 0;
-				gbc.anchor = GridBagConstraints.LINE_START;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.weightx = 1.0;
+                gbc.gridy = 0;
+                gbc.gridx = 0;
+                gbc.anchor = GridBagConstraints.LINE_START;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.weightx = 1.0;
 //				summary = new JEditorPane();
 //				summary.setContentType("text/html");
 //				summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -318,13 +319,13 @@ public class BuildToolWindow extends MultiTabToolWindow {
 //
 //				gbc.gridy++;
 
-				ActionManager manager = ActionManager.getInstance();
-				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.BuildToolWindowToolBar");
-				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
+                ActionManager manager = ActionManager.getInstance();
+                ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.BuildToolWindowToolBar");
+                ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
 
-				JComponent comp = toolbar.getComponent();
-				add(comp, gbc);
-			}
+                JComponent comp = toolbar.getComponent();
+                add(comp, gbc);
+            }
 
 //			public void setSummaryText() {
 //				String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
@@ -333,29 +334,29 @@ public class BuildToolWindow extends MultiTabToolWindow {
 //				summary.setText(txt);
 //			}
 
-		}
+        }
 
-		private class BuildDetailsFetcher extends Task.Backgroundable {
-			private final ToolWindowHandler handler;
+        private class BuildDetailsFetcher extends Task.Backgroundable {
+            private final ToolWindowHandler handler;
 
-			public BuildDetailsFetcher(final ToolWindowHandler handler) {
-				super(project, "Retrieving Build Details", false);
-				this.handler = handler;
-			}
+            public BuildDetailsFetcher(final ToolWindowHandler handler) {
+                super(project, "Retrieving Build Details", false);
+                this.handler = handler;
+            }
 
-			@Override
-			public void run(@NotNull final ProgressIndicator indicator) {
+            @Override
+            public void run(@NotNull final ProgressIndicator indicator) {
 
-				indicator.setIndeterminate(true);
+                indicator.setIndeterminate(true);
 
-				BambooBuildAdapter build = params.build;
+                BambooBuildAdapter build = params.build;
 
-				final BambooServerFacade bambooFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
+                final BambooServerFacade bambooFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 
                 Collection<BuildIssue> issues = null;
-				try {
-					final BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getPlanKey(), build.getNumber());
+                try {
+                    final BuildDetails details = bambooFacade.getBuildDetails(
+                            build.getServer(), build.getPlanKey(), build.getNumber());
 
                     try {
                         issues = bambooFacade.getIssuesForBuild(build.getServer(), build.getPlanKey(), build.getNumber());
@@ -365,26 +366,34 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
                     final Collection<BuildIssue> issuesFinal = issues;
                     SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
+                        public void run() {
                             bdp.setIssues(issuesFinal);
-							cdp.fillContent(details.getCommitInfo());
-							tdp.fillContent(details);
-							if (handler != null) {
-								handler.dataLoaded();
-							}
-						}
-					});
+                            cdp.fillContent(details.getCommitInfo());
+                            tdp.fillContent(details);
+                            if (handler != null) {
+                                handler.dataLoaded();
+                            }
+                        }
+                    });
 
-				} catch (ServerPasswordNotProvidedException e) {
-                    bdp.setIssues(null);
-					cdp.showError(e);
-					tdp.showError(e);
-				} catch (RemoteApiException e) {
-                    bdp.setIssues(null);
-					cdp.showError(e);
-					tdp.showError(e);
-				}
-			}
-		}
-	}
+                } catch (final ServerPasswordNotProvidedException e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            bdp.setIssues(null);
+                            cdp.showError(e);
+                            tdp.showError(e);
+                        }
+                    });
+                } catch (final RemoteApiException e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            bdp.setIssues(null);
+                            cdp.showError(e);
+                            tdp.showError(e);
+                        }
+                    });
+                }
+            }
+        }
+    }
 }
