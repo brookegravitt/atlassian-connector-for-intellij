@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.Color;
@@ -191,9 +190,11 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
     }
 
     public void setIssues(@Nullable Collection<BuildIssue> issues) {
+
         issuesPanel.removeAll();
         issuesPanel.validate();
         body.validate();
+
         if (issues == null) {
             issuesPanel.add(new JLabel("No issue information available"));
         } else {
@@ -237,12 +238,10 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
                 }
             }
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                issuesPanel.validate();
-                body.validate();
-            }
-        });
+
+        issuesPanel.validate();
+        body.validate();
+
 
     }
 }
