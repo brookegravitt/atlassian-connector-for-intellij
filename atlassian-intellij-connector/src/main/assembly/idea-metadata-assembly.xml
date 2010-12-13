@@ -24,12 +24,12 @@
   </formats>
   <files>
     <file>
-      <source>templates/latestStableVersion-2.4.xml</source>
+      <source>templates/latestStableVersion.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
     <file>
-      <source>templates/latestPossibleVersion-2.4.xml</source>
+      <source>templates/latestPossibleVersion.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
