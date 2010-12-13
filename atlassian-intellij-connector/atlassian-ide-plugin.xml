@@ -19,7 +19,7 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
+        <bamboo2>false</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
           <plan key="ACC-DPL" grouped="0" />
@@ -31,7 +31,14 @@
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
+      <crucible>
+        <server-id>2ac71492-324d-4bfa-8549-bd8bfe3ddd5b</server-id>
+        <name>lech</name>
+        <url>http://lech:5240/crucible</url>
+        <shared>false</shared>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
     </servers>
-    <default-jira-server>b7624d9e-fbe9-4220-846b-f96aebeb636c</default-jira-server>
+    <default-crucible-server>2ac71492-324d-4bfa-8549-bd8bfe3ddd5b</default-crucible-server>
   </project-configuration>
 </atlassian-ide-plugin>
