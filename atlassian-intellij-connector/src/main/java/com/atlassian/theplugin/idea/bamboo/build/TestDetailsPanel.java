@@ -278,7 +278,13 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		@Override
 		public String getTestStats() {
-			return " (" + failedTests + " out of " + totalTests + " failed)";
+            final String msg ;
+             if (failedTests == 0) {
+                 msg = " " + totalTests + " tests passed";
+             } else {
+                 msg = " " + failedTests + "/" + totalTests + " tests failed";
+             }
+            return msg;
 		}
 
 		public void addFailedTest() {
@@ -325,7 +331,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 	private class AllTestsNode extends PackageNode {
 		public AllTestsNode(final int totalTests, final int failedTests) {
-			super("All Tests", totalTests, failedTests);
+			super("All", totalTests, failedTests);
 		}
 
 		@Override
