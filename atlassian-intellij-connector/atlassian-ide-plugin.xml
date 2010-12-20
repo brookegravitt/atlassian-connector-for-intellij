@@ -16,6 +16,11 @@
         <bamboo2>true</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
+          <plan key="ECL-TST" grouped="0" />
+          <plan key="ECL-DPL" grouped="0" />
+          <plan key="ECL-REL" grouped="0" />
+          <plan key="ECL-WKL" grouped="0" />
+          <plan key="ECL-MIR" grouped="0" />
           <plan key="INT-CS" grouped="0" />
           <plan key="INT-DPL" grouped="0" />
           <plan key="INT-TST" grouped="0" />
