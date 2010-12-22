@@ -19,7 +19,7 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
+        <bamboo2>true</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
           <plan key="ACC-DPL" grouped="0" />
@@ -31,13 +31,36 @@
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
-      <crucible>
-        <server-id>2ac71492-324d-4bfa-8549-bd8bfe3ddd5b</server-id>
-        <name>lech</name>
-        <url>http://lech:5240/crucible</url>
+      <bamboo>
+        <server-id>47cb916b-267a-4a15-a87b-4bddadbb1b7f</server-id>
+        <name>tardigrade</name>
+        <url>http://tardigrade.sydney.atlassian.com:8085/bamboo</url>
         <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="BAM-FC" grouped="0" />
+          <plan key="BAM-HG" grouped="0" />
+        </plans>
+      </bamboo>
+      <bamboo>
+        <server-id>cdfb6fc5-0725-4eee-ab1f-fd132a6b3e01</server-id>
+        <name>jira</name>
+        <url>https://jira.bamboo.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="PLUGINS-JIMTST" grouped="0" />
+          <plan key="PLUGINS-JIM4X2M" grouped="0" />
+          <plan key="PLUGINS-JIM4X3" grouped="0" />
+          <plan key="PLUGINS-JRJC" grouped="0" />
+          <plan key="PLUGINS-RPCHEAD" grouped="0" />
+          <plan key="PLUGINS-SUBPLUGBRA" grouped="0" />
+          <plan key="PLUGINS-SUBPLUGHEAD" grouped="0" />
+          <plan key="PLUGINS-TOOLKIT" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
     <default-crucible-server>2ac71492-324d-4bfa-8549-bd8bfe3ddd5b</default-crucible-server>
   </project-configuration>
