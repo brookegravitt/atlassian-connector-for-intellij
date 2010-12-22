@@ -1,10 +1,11 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BambooJob;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.PsiLocation;
@@ -18,7 +19,12 @@ import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
@@ -30,7 +36,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,6 +73,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	private static final Icon TEST_FAILED_ICON = IconLoader.getIcon("/runConfigurations/testFailed.png");
 
 	private static final boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
+	private BuildDetails buildDetails = null;
 
 	public TestDetailsPanel(Project project, final BambooBuildAdapter build, String contentKey) {
 		this.project = project;
@@ -80,6 +91,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	public void fillContent(final BuildDetails buildDetails) {
+		this.buildDetails = buildDetails;
 
 		failedTests = buildDetails.getFailedTestDetails();
 		succeededTests = buildDetails.getSuccessfulTestDetails();
@@ -278,13 +290,13 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		@Override
 		public String getTestStats() {
-            final String msg ;
-             if (failedTests == 0) {
-                 msg = " " + totalTests + " tests passed";
-             } else {
-                 msg = " " + failedTests + "/" + totalTests + " tests failed";
-             }
-            return msg;
+			final String msg;
+			if (failedTests == 0) {
+				msg = " " + totalTests + " tests passed";
+			} else {
+				msg = " " + failedTests + "/" + totalTests + " tests failed";
+			}
+			return msg;
 		}
 
 		public void addFailedTest() {
@@ -301,6 +313,31 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		public int getTotalTests() {
 			return totalTests;
+		}
+
+		public void addFailedTest(int tests) {
+			this.failedTests += tests;
+
+		}
+
+		public void addTest(int tests) {
+			this.totalTests += tests;
+		}
+	}
+
+	private class JobNode extends NonLeafNode {
+		private JobNode(String s, int totalTests, int failedTests) {
+			super(s, totalTests, failedTests);
+		}
+
+		@Override
+		public boolean navigate(boolean testOnly) {
+			return false;
+		}
+
+		@Override
+		public boolean createTestConfiguration(RunConfiguration configuration) {
+			return false;
 		}
 	}
 
@@ -480,13 +517,14 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return pkgidx > -1 ? fqcn.substring(0, pkgidx) : "<default>";
 	}
 
-	private JTree createTestTree() {
-		NonLeafNode root = new AllTestsNode(
-				failedTests.size() + succeededTests.size(), failedTests.size());
 
-		Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
-		for (TestDetails d : succeededTests) {
-			String fqcn = d.getTestClassName();
+	private Map<String, PackageNode> getPackagesNodes(List<TestDetails> failedTests, List<TestDetails> successfulTests) {
+		Map<String, PackageNode> packages = new LinkedHashMap<String, PackageNode>();
+		Map<String, NonLeafNode> classes = new LinkedHashMap<String, NonLeafNode>();
+
+		//add packages and count SUCCESSFUL tests
+		for (TestDetails test : successfulTests) {
+			String fqcn = test.getTestClassName();
 			String pkg = getPackageFromClassName(fqcn);
 			NonLeafNode n = packages.get(pkg);
 			if (n == null) {
@@ -495,6 +533,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				n.addTest();
 			}
 		}
+		//add packages and count FAILED tests
 		for (TestDetails d : failedTests) {
 			String fqcn = d.getTestClassName();
 			String pkg = getPackageFromClassName(fqcn);
@@ -507,14 +546,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			}
 		}
 
-		for (Map.Entry<String, NonLeafNode> p : packages.entrySet()) {
-			NonLeafNode n = p.getValue();
-			if (n.isFailed() || passedTestsVisible) {
-				root.add(n);
-			}
-		}
 
-		Map<String, NonLeafNode> classes = new LinkedHashMap<String, NonLeafNode>();
 		for (TestDetails d : succeededTests) {
 			String fqcn = d.getTestClassName();
 			NonLeafNode n = classes.get(fqcn);
@@ -535,6 +567,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			}
 		}
 
+		//add class to package NODES
 		for (Map.Entry<String, NonLeafNode> c : classes.entrySet()) {
 			String fqcn = c.getKey();
 			String pkg = getPackageFromClassName(fqcn);
@@ -544,7 +577,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				packages.get(pkg).add(n);
 			}
 		}
-
+		//add Ssuccessful test to class name
 		if (passedTestsVisible) {
 			for (TestDetails d : succeededTests) {
 				String fqcn = d.getTestClassName();
@@ -552,10 +585,60 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				node.add(new TestSuccessInfoNode(d));
 			}
 		}
+
+		//add failed test to class name
 		for (TestDetails d : failedTests) {
 			String fqcn = d.getTestClassName();
 			AbstractTreeNode node = classes.get(fqcn);
 			node.add(new TestErrorInfoNode(d));
+		}
+
+		return packages;
+
+	}
+
+	private JTree createTestTree() {
+		NonLeafNode root;
+
+		if (buildDetails.getJobs() != null) {
+			root = new AllTestsNode(0, 0);
+
+			for (BambooJob job : buildDetails.getJobs()) {
+
+				JobNode jobNode = new JobNode(job.getShortName().equals("") ? job.getName() : job.getShortName(),
+						job.getFailedTests().size() + job.getSuccessfulTests().size(),
+						job.getFailedTests().size());
+
+				root.addFailedTest(job.getFailedTests().size());
+				root.addTest(job.getSuccessfulTests().size());
+
+				if (!passedTestsVisible && job.getFailedTests().size() == 0) {
+					continue;
+				}
+				root.add(jobNode);
+				for (Map.Entry<String, PackageNode> e : getPackagesNodes(job.getFailedTests(), job.getSuccessfulTests()).entrySet()) {
+					PackageNode n = e.getValue();
+					if (n.isFailed() || passedTestsVisible) {
+						//if no jobs then add to root !!!!!
+						jobNode.add(n);
+					}
+				}
+			}
+		} else {//no jobs old Bamboo version
+
+			List<TestDetails> failedTests = buildDetails.getFailedTestDetails();
+			List<TestDetails> successfulTests = buildDetails.getSuccessfulTestDetails();
+
+					root = new AllTestsNode(
+					failedTests.size() + successfulTests.size(), failedTests.size());
+			for (Map.Entry<String, PackageNode> e : getPackagesNodes(failedTests, successfulTests).entrySet()) {
+				PackageNode n = e.getValue();
+				if (n.isFailed() || passedTestsVisible) {
+					//if no jobs then add to root !!!!!
+					root.add(n);
+				}
+			}
+
 		}
 
 		DefaultTreeModel tm = new DefaultTreeModel(root);
