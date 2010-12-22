@@ -157,7 +157,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
         gbc1.gridy++;
         gbc2.gridy++;
         body.add(new BoldLabel("Tests"), gbc1);
-        body.add(new JLabel(build.getTestsPassedSummary() + " failed"), gbc2);
+        body.add(new JLabel(build.getTestsPassedSummary()), gbc2);
 
         gbc1.gridy++;
         gbc2.gridy++;
