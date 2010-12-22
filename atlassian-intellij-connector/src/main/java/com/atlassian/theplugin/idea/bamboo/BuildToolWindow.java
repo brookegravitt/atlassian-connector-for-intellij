@@ -1,24 +1,20 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
-import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.atlassian.theplugin.util.PluginUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -28,19 +24,12 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -224,19 +213,17 @@ public class BuildToolWindow extends MultiTabToolWindow {
             bdp = new BuildDetailsPanel(project, params.build);
             cdp = new CommitDetailsPanel(project, params.build);
             tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
-            final BuildLogPanel blp = new BuildLogPanel(project, params.build);
+
             timer = new Timer(ONE_MINUTE, new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     bdp.actionPerformed(e);
                     cdp.actionPerformed(e);
                     tdp.actionPerformed(e);
-                    blp.actionPerformed(e);
                 }
             });
             tabs.addTab("Details", bdp);
             tabs.addTab("Changes", cdp);
             tabs.addTab("Tests", tdp);
-            tabs.addTab("Build Log", blp);
 
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -344,7 +331,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
                 this.handler = handler;
             }
 
-            @Override
+
             public void run(@NotNull final ProgressIndicator indicator) {
 
                 indicator.setIndeterminate(true);
