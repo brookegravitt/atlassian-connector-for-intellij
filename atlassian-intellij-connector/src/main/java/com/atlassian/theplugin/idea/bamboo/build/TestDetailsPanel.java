@@ -600,12 +600,13 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	private JTree createTestTree() {
 		NonLeafNode root;
 
-		if (buildDetails.getJobs() != null) {
+		if (buildDetails.getJobs() != null && buildDetails.getJobs().size() > 0) {
 			root = new AllTestsNode(0, 0);
 
 			for (BambooJob job : buildDetails.getJobs()) {
 
-				JobNode jobNode = new JobNode(job.getShortName().equals("") ? job.getName() : job.getShortName(),
+				JobNode jobNode = new JobNode(
+						job.getShortName() != null && job.getShortName().equals("") ? job.getName() : job.getShortName(),
 						job.getFailedTests().size() + job.getSuccessfulTests().size(),
 						job.getFailedTests().size());
 
