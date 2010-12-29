@@ -339,13 +339,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         actionGroup.addAll(configActionGroup);
 
         final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
-        addIssueActionsSubmenu(actionGroup, popup);
+        addIssueActionsSubmenu(actionGroup, popup, e);
 
         final JPopupMenu jPopupMenu = popup.getComponent();
         jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
-    private void addIssueActionsSubmenu(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
+    private void addIssueActionsSubmenu(DefaultActionGroup actionGroup, final ActionPopupMenu popup, final MouseEvent e) {
         final DefaultActionGroup submenu = new DefaultActionGroup("Querying for Actions... ", true) {
             @Override
             public void update(AnActionEvent event) {
@@ -353,6 +353,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 if (getChildrenCount() > 0) {
                     event.getPresentation().setText("Issue Workflow Actions");
+                    event.getPresentation().setEnabled(true);
                 }
             }
         };
@@ -378,15 +379,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     JPopupMenu pMenu = popup.getComponent();
-                                    if (pMenu.isVisible()) {
+                                    if (pMenu.isVisible() && pMenu.isShowing() && pMenu.isValid()) {
                                         for (JIRAAction a : actions) {
                                             submenu.add(new RunIssueActionAction(IssueListToolWindowPanel.this,
                                                     jiraServerFacade, issue, a, jiraIssueListModelBuilder));
                                         }
 
                                         // magic that makes the popup update itself. Don't ask - it is some sort of voodoo
+                                        //pMenu.setVisible(false);
+                                        //pMenu.setVisible(true);
                                         pMenu.setVisible(false);
-                                        pMenu.setVisible(true);
+                                        ///final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Context menu", pMenu.getAc);
+                                        popup.getComponent().show(e.getComponent(), e.getX(), e.getY());
                                     }
                                 }
                             });
