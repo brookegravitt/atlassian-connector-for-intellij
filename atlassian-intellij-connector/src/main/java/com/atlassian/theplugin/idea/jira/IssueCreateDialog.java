@@ -586,7 +586,7 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private void createIssueAndCloseOnSuccess(final JIRAIssueBean newIssue) {
         Task createTask = new Task.Modal(project, "Creating Issue", false) {
-            @Override
+
             public void run(@NotNull final ProgressIndicator indicator) {
                 String message;
 
