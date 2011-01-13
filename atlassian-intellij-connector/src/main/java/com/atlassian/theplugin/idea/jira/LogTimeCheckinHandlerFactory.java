@@ -167,7 +167,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			lblRemainingEstimateAdjust.setEnabled(enabled);
 			btnChange.setEnabled(enabled);
 		}
-        @Override
+
         public RefreshableOnComponent getAfterCheckinConfigurationPanel(Disposable parentDisposable) {
 			return afterCheckinConfig;
 		}
