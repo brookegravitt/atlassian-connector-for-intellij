@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.intellij.openapi.diff.impl.patch.IdeaTextPatchBuilder;
 import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
@@ -99,17 +99,18 @@ public final class CrucibleHelper {
 		return uploadItems;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static String getPatchFromChanges(final Project project, final Collection<Change> changes)
 			throws VcsException, IOException {
 		final StringWriter sw = new StringWriter();
 
-		List list1 = IdeaTextPatchBuilder.buildPatch(project, changes,
-				project.getBaseDir() != null
-						&& project.getBaseDir().getPresentableUrl() != null ? project.getBaseDir().getPresentableUrl()
-						: "",
-				false);
-		String s1 = CodeStyleSettingsManager.getInstance(project).getCurrentSettings().getLineSeparator();
-		UnifiedDiffWriter.write(list1, sw, s1);
+		List list = IdeaVersionFacade.getInstance().buildPatch(project,
+				changes, project != null
+						&& project.getBaseDir() != null ? project.getBaseDir().getPresentableUrl() : "");
+		if (list != null) {
+			String s1 = CodeStyleSettingsManager.getInstance(project).getCurrentSettings().getLineSeparator();
+			UnifiedDiffWriter.write(list, sw, s1);
+		}
 		return sw.toString();
 	}
 
