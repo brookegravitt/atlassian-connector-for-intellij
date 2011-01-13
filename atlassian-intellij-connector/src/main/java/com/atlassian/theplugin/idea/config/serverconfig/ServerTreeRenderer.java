@@ -29,6 +29,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 	private static Icon bambooServersIcon;
 	private static Icon bambooServerEnabledIcon;
 	private static Icon bambooServerDisabledIcon;
+	private static Icon crucibleServersIcon;
+	private static Icon crucibleServerEnabledIcon;
+	private static Icon crucibleServerDisabledIcon;
 	private static Icon jiraServersIcon;
 	private static Icon jiraServerEnabledIcon;
 	private static Icon jiraServerDisabledIcon;
@@ -39,6 +42,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		bambooServersIcon = IconLoader.getIcon("/icons/bamboo-blue-16.png");
 		bambooServerEnabledIcon = IconLoader.getIcon("/icons/bamboo-blue-16.png");
 		bambooServerDisabledIcon = IconLoader.getIcon("/icons/bamboo-grey-16.png");
+		crucibleServersIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
+		crucibleServerEnabledIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
+		crucibleServerDisabledIcon = IconLoader.getIcon("/icons/crucible-grey-16.png");
 		jiraServersIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
 		jiraServerEnabledIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
 		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-grey-16.png");
@@ -56,6 +62,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 			switch (serverTypeNode.getServerType()) {
 				case BAMBOO_SERVER:
 					label.setIcon(bambooServersIcon);
+					break;
+				case CRUCIBLE_SERVER:
+					label.setIcon(crucibleServersIcon);
 					break;
 				case JIRA_SERVER:
 					label.setIcon(jiraServersIcon);
@@ -76,6 +85,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 				case BAMBOO_SERVER:
 
 					labelText = "Find out more about Bamboo";
+					break;
+				case CRUCIBLE_SERVER:
+					labelText = "Find out more about Crucible";
 					break;
 				case JIRA_SERVER:
 					labelText = "Find out more about JIRA";
@@ -98,6 +110,13 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 						label.setIcon(bambooServerEnabledIcon);
 					} else {
 						label.setIcon(bambooServerDisabledIcon);
+					}
+					break;
+				case CRUCIBLE_SERVER:
+					if (serverNode.getServer().isEnabled()) {
+						label.setIcon(crucibleServerEnabledIcon);
+					} else {
+						label.setIcon(crucibleServerDisabledIcon);
 					}
 					break;
 				case JIRA_SERVER:

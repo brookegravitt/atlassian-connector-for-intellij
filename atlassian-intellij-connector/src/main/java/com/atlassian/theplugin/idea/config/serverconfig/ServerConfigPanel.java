@@ -18,8 +18,15 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -55,6 +62,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private Collection<ServerCfg> serverCfgs;
 	private final BambooServerConfigForm bambooServerConfigForm;
 	private final JiraServerConfigForm jiraServerConfigForm;
+	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final UserCfg defaultUser;
 	private boolean isDefaultCredentialsAsked = false;
 
@@ -64,13 +72,14 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel(project, defaultUser);
+		final CrucibleServerFacade crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		final BambooServerFacade bambooServerFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 		final JiraServerFacade jiraServerFacade = IntelliJJiraServerFacade.getInstance();
 		this.isDefaultCredentialsAsked = isDefaultCredentialsAsked;
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new JiraServerConfigForm(project, defaultUser, jiraServerFacade);
-
+		crucibleServerConfigForm = new CrucibleServerConfigForm(project, defaultUser, crucibleServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, defaultUser, bambooServerFacade);
 		initLayout();
         cleanServers(serverCfgs);
@@ -83,8 +92,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
     private void cleanServers(Collection<ServerCfg> serversCfg) {
         ArrayList<ServerCfg> servers = new ArrayList<ServerCfg>();
         for (ServerCfg server : serversCfg) {
-            if (!server.getServerType().equals(ServerType.CRUCIBLE_SERVER)
-                    && !server.getServerType().equals(ServerType.FISHEYE_SERVER)) {
+            if (!server.getServerType().equals(ServerType.FISHEYE_SERVER)) {
                 servers.add(server);
             }
         }
@@ -150,6 +158,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		editPane.setLayout(editPaneCardLayout);
 		editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
 		editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
+		editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
 		return editPane;
@@ -190,11 +199,13 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			case BAMBOO_SERVER:
 				bambooServerConfigForm.saveData();
 				break;
+			case CRUCIBLE_SERVER:
+				crucibleServerConfigForm.saveData();
+				break;
 			case JIRA_SERVER:
 				jiraServerConfigForm.saveData();
 				break;
             case JIRA_STUDIO_SERVER:
-            case CRUCIBLE_SERVER:
             case FISHEYE_SERVER:
                 break;
 			default:
@@ -219,6 +230,11 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 				bambooServerConfigForm.saveData();
 				bambooServerConfigForm.setData(bambooServerCfg);
 				break;
+			case CRUCIBLE_SERVER:
+				CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
+				crucibleServerConfigForm.saveData();
+				crucibleServerConfigForm.setData(crucibleServerCfg);
+				break;
 			case JIRA_SERVER:
 				jiraServerConfigForm.saveData();
 				jiraServerConfigForm.setData((JiraServerCfg) serverCfg);
@@ -234,6 +250,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	public void finalizeData() {
 		bambooServerConfigForm.finalizeData();
+		crucibleServerConfigForm.finalizeData();
 		jiraServerConfigForm.finalizeData();
 	}
 

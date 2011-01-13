@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.*;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -33,6 +34,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
+import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.InformationDialogWithCheckBox;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
@@ -50,6 +52,7 @@ import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
@@ -85,6 +88,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final BuildListModelImpl bambooModel;
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
+	private final IntelliJCrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
@@ -120,6 +124,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 
+		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		jiraIssueListModelBuilder.setProject(project);
 //		jiraIssueListModelBuilder.setProjectCfgManager(projectCfgManager);
 		/*
@@ -172,6 +177,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
             IconLoader.activate();
             TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
+
+			ChangeListManager.getInstance(project).registerCommitExecutor(
+					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
 			final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
 					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),

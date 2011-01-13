@@ -44,8 +44,7 @@ public class ServerTreeModelTest extends TestCase {
 	public void testDefaultValue() {
         int types = 0;
         for (ServerType st : ServerType.values()) {
-            if (!st.isPseudoServer() && !st.equals(ServerType.CRUCIBLE_SERVER)
-                    && !st.equals(ServerType.FISHEYE_SERVER)) {
+            if (!st.isPseudoServer() && !st.equals(ServerType.FISHEYE_SERVER)) {
                 ++types;
             }
         }

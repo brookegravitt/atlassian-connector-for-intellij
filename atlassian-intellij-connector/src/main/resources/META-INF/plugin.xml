@@ -214,6 +214,10 @@
 		<action id="ThePlugin.AddBambooServerAction"
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
 				text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
+		<action id="ThePlugin.AddCrucibleServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
+				text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
+
 		<action id="ThePlugin.AddJIRAServerAction"
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction"
 				text="Add JIRA Server"
@@ -230,12 +234,14 @@
 		</group>
 		<group id="ThePlugin.AddRemoveServerPopup">
 			<reference id="ThePlugin.AddBambooServerAction"/>
+			<reference id="ThePlugin.AddCrucibleServerAction"/>
 			<reference id="ThePlugin.AddJIRAServerAction"/>
 			<reference id="ThePlugin.RemoveServerAction"/>
 		</group>
 
 		<group id="ThePlugin.ServerTypePopup">
 			<reference id="ThePlugin.AddBambooServerAction"/>
+			<reference id="ThePlugin.AddCrucibleServerAction"/>
 			<reference id="ThePlugin.AddJIRAServerAction"/>
             <separator/>
             <reference id="ThePlugin.AddStudioServerSetAction"/>
