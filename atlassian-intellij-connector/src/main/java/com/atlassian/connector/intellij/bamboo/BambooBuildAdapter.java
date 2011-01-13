@@ -135,9 +135,12 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
     public String getTestsPassedSummary() {
         if (getStatus() == BuildStatus.UNKNOWN) {
             return "-/-";
+        } else if (getTestsFailed() == 0) {
+
+            return "All "  + getTestsNumber() + " tests passed";
         } else {
-            return getTestsFailed() + "/" + getTestsNumber();
-        }
+			return getTestsFailed() + "/" + getTestsNumber() + " tests failed";
+		}
     }
 
     public Date getCompletionDate() {
