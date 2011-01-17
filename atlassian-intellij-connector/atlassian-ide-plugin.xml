@@ -35,6 +35,26 @@
           <plan key="INT-TST-JOB1" grouped="0" />
         </plans>
       </bamboo>
+      <bamboo>
+        <server-id>01a8ce3a-50a2-4667-926b-f0ff1143f49e</server-id>
+        <name>jira</name>
+        <url>https://jira.bamboo.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>false</bamboo2>
+        <plans>
+          <plan key="PLUGINS-JIMTST" grouped="0" />
+          <plan key="JIRATEST-UNITDEPLOY" grouped="0" />
+          <plan key="JIRATEST-SRCTEST" grouped="0" />
+          <plan key="JIRATEST-WARBATCH" grouped="0" />
+          <plan key="JIRATEST-FINDBUGS" grouped="0" />
+          <plan key="JIRATEST-FUNCTEST" grouped="0" />
+          <plan key="JIRATEST-GH" grouped="0" />
+          <plan key="JIRATEST-DARIUSZ" grouped="0" />
+          <plan key="JIRATEST-TESTSAND" grouped="0" />
+          <plan key="JIRATEST-TPC" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
     <default-jira-server>c2f78497-e859-444b-9995-5c0e50315cbd</default-jira-server>
   </project-configuration>

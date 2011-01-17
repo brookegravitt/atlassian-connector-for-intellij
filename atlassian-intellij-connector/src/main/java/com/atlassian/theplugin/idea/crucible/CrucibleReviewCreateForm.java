@@ -47,7 +47,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.VcsException;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,16 +76,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private JComboBox projectsComboBox;
 	private JComboBox authorComboBox;
 	private JComboBox moderatorComboBox;
-	private JCheckBox allowCheckBox;
 	private JCheckBox leaveAsDraftCheckBox;
 	private JPanel customComponentPanel;
 	private JPanel anchorPanel;
 	private JCheckBox includeAnchorDataCheckBox;
-	private JCheckBox addAnchorCheckBox;
-	private JLabel anchorPathLabel;
-	private JLabel anchorStripCountLabel;
-	private JTextField anchorPathText;
-	private JTextField anchorStripCountText;
+
 	private JComboBox anchorRepoComboBox;
 
 	private final UserListCellRenderer cellRenderer = new UserListCellRenderer();
@@ -122,8 +116,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		includeAnchorDataCheckBox.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent changeEvent) {
-				anchorPathText.setEnabled(includeAnchorDataCheckBox.isSelected());
-				anchorStripCountText.setEnabled(includeAnchorDataCheckBox.isSelected());
 				anchorRepoComboBox.setEnabled(includeAnchorDataCheckBox.isSelected());
 			}
 		});
@@ -139,7 +131,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 					try {
 						CrucibleVersionInfo info = CrucibleReviewCreateForm.this.crucibleServerFacade
 								.getServerVersion(boxItem.getServer());
-						anchorPanel.setVisible(info.isVersion24OrGrater() && isPatchForm());
+						final boolean enable = info.isVersion24OrGrater() && isPatchForm();
+						anchorPanel.setVisible(enable);
+						includeAnchorDataCheckBox.setSelected(enable);
 
 					} catch (final RemoteApiException e1) {
 						SwingUtilities.invokeLater(new Runnable() {
@@ -189,34 +183,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		includeAnchorDataCheckBox.addActionListener(enableOkActionListener);
 
-		anchorStripCountText.getDocument().addDocumentListener(new DocumentListener() {
-			public void insertUpdate(DocumentEvent documentEvent) {
-				validate();
-			}
-
-			public void removeUpdate(DocumentEvent documentEvent) {
-
-			}
-
-			public void changedUpdate(DocumentEvent documentEvent) {
-				validate();
-			}
-
-			private void validate() {
-				if (!isStripCountValid()) {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							anchorStripCountText.setText("");
-							Messages.showWarningDialog(CrucibleReviewCreateForm.this.project,
-									"Invalid Strip Count value", "Strip Count");
-						}
-					});
-
-				}
-
-			}
-		});
-
 		authorComboBox.addActionListener(enableOkActionListener);
 		anchorRepoComboBox.addActionListener(enableOkActionListener);
 		projectsComboBox.addActionListener(enableOkActionListener);
@@ -239,37 +205,22 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private boolean isAnchorDataValid() {
-		return !isPatchForm() || !isAnchorDataAvailable() || isStripCountValid() && isAnchorRepoValid();
+		return !isPatchForm() || !isAnchorDataAvailable() || isAnchorRepoValid();
 	}
 
 	private boolean isAnchorRepoValid() {
 		String repoName = getSelectedAnchorRepoName();
 		return repoName.length() > 0;
 	}
-	private boolean isStripCountValid() {
 
-		if (includeAnchorDataCheckBox.isSelected() && anchorStripCountText.getText().length() > 0) {
-			try {
-				Integer i = Integer.valueOf(anchorStripCountText.getText());
-				return StringUtils.countMatches(anchorPathText.getText(), "/")
-						+ StringUtils.countMatches(anchorPathText.getText(), "\\") >= i;
-
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
-
-		return true;
-
-	}
 
 	public boolean isAnchorDataAvailable() {
 		return includeAnchorDataCheckBox.isSelected();
 	}
 
 	public PatchAnchorData getPatchAnchorData() {
-		return new PatchAnchorDataBean(getSelectedAnchorRepoName(), anchorPathText.getText(),
-				anchorStripCountText.getText());
+		return new PatchAnchorDataBean(getSelectedAnchorRepoName(), "",
+				"");
 	}
 
 	private void refreshUserModel() {
@@ -363,10 +314,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		final JLabel label6 = new JLabel();
 		label6.setText("Reviewers: ");
 		panel1.add(label6, cc.xy(5, 1, CellConstraints.RIGHT, CellConstraints.TOP));
-		allowCheckBox = new JCheckBox();
-		allowCheckBox.setEnabled(true);
-		allowCheckBox.setText("Allow anyone to join");
-		panel1.add(allowCheckBox, cc.xy(7, 11));
 		final JLabel label7 = new JLabel();
 		label7.setText("Selected: ");
 		panel1.add(label7, cc.xy(5, 9, CellConstraints.RIGHT, CellConstraints.DEFAULT));
@@ -748,13 +695,10 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		final User moderator = getSelectedModerator();
 		final String prjKey = getSelectedProjectKey();
 
-		boolean isAllowedAnyoneToJoin = allowCheckBox.isSelected();
-
 		final Review review = new Review(server.getUrl(), prjKey, author, moderator);
 		review.setCreator(creator);
 		review.setDescription(description);
 		review.setName(name);
-		review.setAllowReviewerToJoin(isAllowedAnyoneToJoin);
 
 		return review;
 	}
