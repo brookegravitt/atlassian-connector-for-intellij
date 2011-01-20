@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
@@ -101,7 +102,7 @@ public final class CrucibleHelper {
 
 	@SuppressWarnings("unchecked")
 	public static String getPatchFromChanges(final Project project, final Collection<Change> changes)
-			throws VcsException, IOException {
+			throws VcsException, IOException, PatchCreateErrorException {
 		final StringWriter sw = new StringWriter();
 
 		List list = IdeaVersionFacade.getInstance().buildPatch(project,

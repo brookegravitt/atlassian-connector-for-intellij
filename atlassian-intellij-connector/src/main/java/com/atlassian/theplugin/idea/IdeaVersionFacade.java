@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -377,7 +378,8 @@ public final class IdeaVersionFacade {
 	}
 
 
-	public List buildPatch(Project project, Collection<Change> changes, String basePresentalbeUrl) {
+	public List buildPatch(Project project, Collection<Change> changes, String basePresentalbeUrl)
+			throws PatchCreateErrorException {
 		List list = null;
 		try {
 			if (isIdea8()) {
@@ -396,6 +398,7 @@ public final class IdeaVersionFacade {
 			}
 		} catch (Exception e) {
 			PluginUtil.getLogger().error("Cannot create patch", e.getCause());
+			throw new PatchCreateErrorException("Cannot create patch", e.getCause());
 		}
 		return null;
 	}

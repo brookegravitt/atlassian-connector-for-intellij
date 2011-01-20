@@ -32,6 +32,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -737,7 +738,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	protected abstract ReviewAdapter createReview(ServerData server, Review reviewBeingConstructed)
 			throws RemoteApiException,
-			ServerPasswordNotProvidedException, VcsException, IOException;
+			ServerPasswordNotProvidedException, VcsException, IOException, PatchCreateErrorException;
 
 	@Override
 	protected void doOKAction() {
