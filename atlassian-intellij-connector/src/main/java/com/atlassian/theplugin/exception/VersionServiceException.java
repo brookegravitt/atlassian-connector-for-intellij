@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+
 package com.atlassian.theplugin.exception;
 
 import com.atlassian.theplugin.commons.exception.ThePluginException;

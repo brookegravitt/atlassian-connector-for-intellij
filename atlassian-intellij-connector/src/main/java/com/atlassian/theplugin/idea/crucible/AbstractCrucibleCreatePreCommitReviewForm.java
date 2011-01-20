@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
@@ -55,7 +56,8 @@ public abstract class AbstractCrucibleCreatePreCommitReviewForm extends Crucible
 
 	protected ReviewAdapter createReviewImpl(final ServerData server, final Review reviewBeingConstructed,
 			final List<Change> changes)
-			throws RemoteApiException, ServerPasswordNotProvidedException, VcsException, IOException {
+			throws RemoteApiException, ServerPasswordNotProvidedException, VcsException, IOException,
+			PatchCreateErrorException {
 
 		PatchAnchorData anchorData = isAnchorDataAvailable() ? getPatchAnchorData() : null;
 		return crucibleServerFacade
