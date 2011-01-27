@@ -388,6 +388,12 @@ public final class IdeaVersionFacade {
 						.getMethod("buildPatch", Collection.class, String.class, boolean.class, boolean.class);
 				list = (List) buildPatchMethod.invoke(null, changes, basePresentalbeUrl, false, false);
 				return list;
+			} else if (isIdea9()) {
+				Class patchBuilderClass = Class.forName("com.intellij.openapi.diff.impl.patch.TextPatchBuilder");
+				Method buildPatchMethod = patchBuilderClass
+						.getMethod("buildPatch", Collection.class, String.class, boolean.class);
+				list = (List) buildPatchMethod.invoke(null, changes, basePresentalbeUrl, false);
+				return list;
 
 			} else if (!isIdea7() && !isIdea8()) {
 				Class patchBuilderClass = Class.forName("com.intellij.openapi.diff.impl.patch.IdeaTextPatchBuilder");
