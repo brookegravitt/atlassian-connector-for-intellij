@@ -563,13 +563,15 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		moderatorComboBox.removeAllItems();
 //		userListModel.removeAllElements();
 
-		if (crucibleServerData.getProjects().isEmpty()) {
+		final List<BasicProject> projects = crucibleServerData.getProjects();
+		if (projects.isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");
 			getOKAction().setEnabled(false);
 		} else {
 			projectsComboBox.setEnabled(true);
-			for (BasicProject myProject : crucibleServerData.getProjects()) {
+			Collections.sort(projects, new ProjectComparator());
+			for (BasicProject myProject : projects) {
 				projectsComboBox.addItem(new ProjectComboBoxItem(myProject));
 			}
 
@@ -987,6 +989,19 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				return 1;
 			} else {
 			return repository.getName().compareToIgnoreCase(repository1.getName());}
+		}
+	}
+
+	static class ProjectComparator implements Comparator<BasicProject> {
+		public int compare(BasicProject project, BasicProject project1) {
+			if (project == null && project1 == null) {
+				return 0;
+			} else if (project == null) {
+				return -1;
+			} else if (project1 == null) {
+				return 1;
+			} else {
+			return project.getName().compareToIgnoreCase(project1.getName());}
 		}
 	}
 }
