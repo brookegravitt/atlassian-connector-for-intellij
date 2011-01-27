@@ -62,6 +62,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -588,8 +590,10 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		}
 
-		if (!crucibleServerData.getRepositories().isEmpty() && isPatchForm()) {
-			for (Repository repo : crucibleServerData.getRepositories()) {
+		final List<Repository> repositories = crucibleServerData.getRepositories();
+		Collections.sort(repositories, new RepositoryComparator());
+		if (!repositories.isEmpty() && isPatchForm()) {
+			for (Repository repo : repositories) {
 				anchorRepoComboBox
 						.addItem(new com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem(repo));
 
@@ -972,6 +976,18 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 	}
 
+	static class RepositoryComparator implements Comparator<Repository> {
 
+		public int compare(Repository repository, Repository repository1) {
+			if (repository == null && repository1 == null) {
+				return 0;
+			} else if (repository == null) {
+				return -1;
+			} else if (repository1 == null) {
+				return 1;
+			} else {
+			return repository.getName().compareToIgnoreCase(repository1.getName());}
+		}
+	}
 }
   
