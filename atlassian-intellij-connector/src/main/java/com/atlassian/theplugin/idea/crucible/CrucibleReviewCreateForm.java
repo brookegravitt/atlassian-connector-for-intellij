@@ -105,7 +105,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	protected abstract boolean isPatchForm();
 
-	public CrucibleReviewCreateForm(Project project, IntelliJCrucibleServerFacade crucibleServerFacade, String commitMessage,
+	public CrucibleReviewCreateForm(final Project project, IntelliJCrucibleServerFacade crucibleServerFacade, String commitMessage,
 			@NotNull final ProjectCfgManager projectCfgManager, @NotNull String dialogTitle) {
 		super(false);
 		this.project = project;
@@ -128,35 +128,43 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		getOKAction().putValue(NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
-						crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
-					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-					try {
-						CrucibleVersionInfo info = CrucibleReviewCreateForm.this.crucibleServerFacade
-								.getServerVersion(boxItem.getServer());
-						final boolean enable = info.isVersion24OrGrater() && isPatchForm();
-						anchorPanel.setVisible(enable);
-						includeAnchorDataCheckBox.setSelected(enable);
+				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Fetching Crucible version...") {
 
-					} catch (final RemoteApiException e1) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								DialogWithDetails.showExceptionDialog(
-										CrucibleReviewCreateForm.this.project,
-										"Cannot determine Crucible version", e1.getCause());
+					public void run(@NotNull ProgressIndicator progressIndicator) {
+						if (crucibleServersComboBox.getItemCount() > 0
+								&& crucibleServersComboBox.getSelectedItem() != null &&
+								crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+							final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox
+									.getSelectedItem();
+							try {
+								CrucibleVersionInfo info = CrucibleReviewCreateForm.this.crucibleServerFacade
+										.getServerVersion(boxItem.getServer());
+								final boolean enable = info.isVersion24OrGrater() && isPatchForm();
+								anchorPanel.setVisible(enable);
+								includeAnchorDataCheckBox.setSelected(enable);
+
+							} catch (final RemoteApiException e1) {
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										DialogWithDetails.showExceptionDialog(
+												CrucibleReviewCreateForm.this.project,
+												"Cannot determine Crucible version", e1.getCause());
+									}
+								});
+							} catch (final ServerPasswordNotProvidedException e1) {
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										DialogWithDetails.showExceptionDialog(
+												CrucibleReviewCreateForm.this.project,
+												"Invalid password or user name", e1.getCause());
+									}
+								});
 							}
-						});
-					} catch (final ServerPasswordNotProvidedException e1) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								DialogWithDetails.showExceptionDialog(
-										CrucibleReviewCreateForm.this.project,
-										"Invalid password or user name", e1.getCause());
-							}
-						});
+							fillServerRelatedCombos(boxItem.getServer());
+						}
 					}
-					fillServerRelatedCombos(boxItem.getServer());
-				}
+				});
+
 			}
 		});
 
@@ -988,7 +996,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			} else if (repository1 == null) {
 				return 1;
 			} else {
-			return repository.getName().compareToIgnoreCase(repository1.getName());}
+				return repository.getName().compareToIgnoreCase(repository1.getName());
+			}
 		}
 	}
 
@@ -1001,7 +1010,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			} else if (project1 == null) {
 				return 1;
 			} else {
-			return project.getName().compareToIgnoreCase(project1.getName());}
+				return project.getName().compareToIgnoreCase(project1.getName());
+			}
 		}
 	}
 }
