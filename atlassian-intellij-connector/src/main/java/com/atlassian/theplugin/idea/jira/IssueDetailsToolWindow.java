@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -1880,7 +1881,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 StringBuilder sb = new StringBuilder();
                 sb.append(params.issue.getServerUrl())
                         .append("/secure/attachment/").append(a.getId())
-                        .append("/").append(a.getFilename());
+                        .append("/").append(StringUtil.encode(a.getFilename()));
                 if (appendAuth) {
                     sb.append("?os_username=").append(params.issue.getJiraServerData().getUsername());
                     sb.append("&os_password=").append(params.issue.getJiraServerData().getPassword());
