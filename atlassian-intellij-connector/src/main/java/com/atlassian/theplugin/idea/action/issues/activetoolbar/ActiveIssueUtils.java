@@ -182,6 +182,7 @@ public final class ActiveIssueUtils {
                                         }
                                         public void cancel(String problem) {
                                             setActiveJiraIssue(project, newActiveIssue, null);
+											newActiveIssue.resetTimeSpent();
                                         }
                                     });
                         }
