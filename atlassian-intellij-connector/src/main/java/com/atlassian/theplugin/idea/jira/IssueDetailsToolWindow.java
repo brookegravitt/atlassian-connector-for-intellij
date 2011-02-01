@@ -1,7 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.commons.jira.*;
+import com.atlassian.connector.commons.jira.JIRAAction;
+import com.atlassian.connector.commons.jira.JIRAActionField;
+import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
+import com.atlassian.connector.commons.jira.JiraCustomField;
+import com.atlassian.connector.commons.jira.JiraTImeFormatter;
+import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
 import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
@@ -16,6 +21,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -23,7 +29,13 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
-import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.CommentPanel;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.EditableIssueField;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
+import com.atlassian.theplugin.idea.ui.StackTracePanel;
+import com.atlassian.theplugin.idea.ui.UserLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -33,7 +45,11 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -60,7 +76,12 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,8 +90,12 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -1799,7 +1824,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 StringBuilder sb = new StringBuilder();
                 sb.append(params.issue.getServerUrl())
                         .append("/secure/attachment/").append(a.getId())
-                        .append("/").append(a.getFilename());
+                        .append("/").append(StringUtil.encode(a.getFilename()));
                 if (appendAuth) {
                     sb.append("?os_username=").append(params.issue.getJiraServerData().getUsername());
                     sb.append("&os_password=").append(params.issue.getJiraServerData().getPassword());
