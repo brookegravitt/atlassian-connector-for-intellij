@@ -20,7 +20,6 @@ import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.BasicProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PatchAnchorData;
 import com.atlassian.theplugin.commons.crucible.api.model.PatchAnchorDataBean;
@@ -79,7 +78,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private JComboBox projectsComboBox;
 	private JComboBox authorComboBox;
 	private JComboBox moderatorComboBox;
-	private JCheckBox leaveAsDraftCheckBox;
 	private JPanel customComponentPanel;
 	private JPanel anchorPanel;
 	private JCheckBox includeAnchorDataCheckBox;
@@ -140,8 +138,14 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								CrucibleVersionInfo info = CrucibleReviewCreateForm.this.crucibleServerFacade
 										.getServerVersion(boxItem.getServer());
 								final boolean enable = info.isVersion24OrGrater() && isPatchForm();
-								anchorPanel.setVisible(enable);
-								includeAnchorDataCheckBox.setSelected(enable);
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										anchorPanel.setVisible(enable);
+										includeAnchorDataCheckBox.setSelected(enable);
+									}
+								}
+
+								);
 
 							} catch (final RemoteApiException e1) {
 								SwingUtilities.invokeLater(new Runnable() {
@@ -340,9 +344,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		customComponentPanel = new JPanel();
 		customComponentPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(customComponentPanel, cc.xy(1, 11, CellConstraints.DEFAULT, CellConstraints.FILL));
-		leaveAsDraftCheckBox = new JCheckBox();
-		leaveAsDraftCheckBox.setText("Save review as Draft");
-		rootComponent.add(leaveAsDraftCheckBox, cc.xy(1, 13));
 		label1.setLabelFor(titleText);
 		label2.setLabelFor(crucibleServersComboBox);
 		label5.setLabelFor(scrollPane1);
@@ -793,7 +794,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						ModalityState modalityState = ModalityState
 								.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
 
-						ReviewAdapter newlyCreated = null;
 						try {
 
 							LoggerImpl.getInstance().info("runCreateReviewTask.run() - before createReview()");
@@ -808,65 +808,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								return;
 							}
 							submissionSuccess = true;
-
-//							Set<String> users = new HashSet<String>();
-//							for (int i = 0; i < userListModel.getSize(); ++i) {
-//								UserListItem item = (UserListItem) userListModel.get(i);
-//								if (item.isSelected()) {
-//									users.add(item.getUser().getUsername());
-//								}
-//							}
-
 							LoggerImpl.getInstance().info("runCreateReviewTask.run() - before addReviewers()");
-
-//							if (!users.isEmpty()) {
-//								crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
-//							}
-
-							if (!leaveAsDraftCheckBox.isSelected()) {
-								ReviewAdapter newReview = crucibleServerFacade
-										.getReview(server, draftReview.getPermId());
-								if (newReview.getModerator() != null
-										&& newReview.getModerator().getUsername().equals(server.getUsername())) {
-									if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
-										LoggerImpl.getInstance()
-												.info("runCreateReviewTask.run() - before approveReview()");
-										Review tmpReview = crucibleServerFacade
-												.changeReviewState(draftReview.getServerData(),
-														draftReview.getPermId(), CrucibleAction.APPROVE);
-										newlyCreated = new ReviewAdapter(tmpReview, draftReview.getServerData(),
-												draftReview.getCrucibleProject());
-
-
-									} else {
-										errorMessage = "Permission denied: " + newReview.getAuthor().getDisplayName() +
-												" is not authorized to approve review.\n"
-												+ "Leaving review in draft state.";
-										return;
-									}
-								} else {
-									if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
-										LoggerImpl.getInstance()
-												.info("runCreateReviewTask.run() - before submitReview()");
-										Review tmpReview = crucibleServerFacade
-												.changeReviewState(draftReview.getServerData(),
-														draftReview.getPermId(), CrucibleAction.SUBMIT);
-										newlyCreated = new ReviewAdapter(tmpReview, draftReview.getServerData(),
-												draftReview.getCrucibleProject());
-									} else {
-										errorMessage = "Permission denied: " + newReview.getAuthor().getDisplayName()
-												+ " is not authorized submit review.\n"
-												+ "Leaving review in draft state.";
-									}
-								}
-							} else {
-								newlyCreated = draftReview;
-							}
-
 							LoggerImpl.getInstance().info("runCreateReviewTask.run() - before getReview()");
 
-							final ReviewAdapter newRevewFinal = newlyCreated != null
-									? crucibleServerFacade.getReview(server, newlyCreated.getPermId()) : null;
+							final ReviewAdapter newRevewFinal = draftReview != null
+									? crucibleServerFacade.getReview(server, draftReview.getPermId()) : null;
 
 							ApplicationManager.getApplication().invokeLater(new Runnable() {
 								public void run() {
