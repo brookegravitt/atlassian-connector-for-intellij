@@ -32,8 +32,10 @@
 		<![CDATA[
 		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
 		<ul>
-			<li>Bamboo</li>
-			<li>JIRA 3.7 and above</li>
+			<li>JIRA 3.12 and above</li>
+			<li>Bamboo 2.2.4 and above</li>
+			<li>Crucible 2.0 and above</li>
+			<li>FishEye 2.0 and above</li>
 		</ul>
 		]]>
 	</description>
@@ -53,51 +55,22 @@
 
 	<change-notes>
 		<![CDATA[
-		<ul>
-		    <li>2.3.0: In-place JIRA issue editing, Preset filters for JIRA, Basic Authentication for JIRA, integration with IDEA Task plugin, Crucible iterative reviews</li>
-			<li>2.2.2: Bugfix release</li>
-			<li>2.2.1: Bugfix release</li>
-			<li>2.2: A lot of incrementally added awesomeness</li>
-			<li>2.1.1: Bugfix release</li>
-		    <li>2.1.0: Many significant improvements. Issue workflow actions, activation; improved handling of reviews</li>
-			<li>2.0.1: Bugfix release</li>
-			<li>2.0.0: Brand spanking new! Awesome new Features! New exciting bugs! Drama! Excitement! Fresh fruit!</li>
-			<li>2.0.0-beta-12: Almost home stretch to 2.0</li>
-			<li>2.0.0-beta-11: New Bamboo tab and build tool window; JIRA issue panel</li>
-			<li>2.0.0-beta-10: More work new Crucible panel</li>
-			<li>2.0.0-beta-9: New Crucible panel</li>
-			<li>2.0.0-beta-8: More work on new JIRA issues panel</li>
-			<li>2.0.0-beta-7: New layout of the JIRA issues panel</li>
-			<li>2.0.0-beta-6: Bug fixes. Support for IDEA 8. Opening fisheye links in IDEA</li>
-			<li>2.0.0-beta-5: Bug fixes. Fisheye server support. Build information inside the IDE. Re-run failed tests from the build in IDE. Create changelist, assign to myself and start progress in one click</li>
-			<li>2.0.0-beta-4: Bug fixes. Started redesign of the UI</li>
-			<li>2.0.0-beta-3: Bug fixes</li>
-			<li>2.0.0-beta-2: Bug fixes</li>
-			<li>2.0.0-beta-1: Crucible review support, numerous enhancements</li>
-			<li>1.7.0: Bamboo build stack traces; bamboo build commit list</li>
-			<li>1.6.1: Plugin upgrade window change, added support for ALPHA and BETA versions</li>
-			<li>1.6.0: Bug fix release - better multiframe support, check now button works in presence of proxy, improved JIRA issue view</li>
-			<li>1.5.0: Crucible:Create review upon commit with a single click from different IDE places,
-					   JIRA:An in IDE view of the issue, focussing on stack traces and related code pieces, logging work,
-					   Bugs: Many bugs fixed</li>
-			<li>1.4.1: errata release</li>
-		    <li>1.4.0: Crucible 1.6 integration "dashboard", JIRA action support</li>
-            <li>1.3.1: errata release</li>
-		    <li>1.3.0: Several new JIRA features (logging work, assigning issues, etc.)</li>
-		    <li>1.2.1: Errata release - restored saved filters functionality (bug PL-329)</li>
-			<li>1.2.0: proxy support, work loging for JIRA, switched from XMLRPC to SOAP</li>
-		    <li>1.1.0: Bug fix release</li>
-			<li>1.0.1: Errata release</li>
-			<li>1.0.0: first public release. With advanced JIRA filtering capabilities</li>
-			<li>0.5.0: even more small improvements and bugfixes. UI looks really nice now</li>
-			<li>0.4.0: many small improvements and bugfixes</li>
-			<li>0.3.1: now with basic JIRA support! And autoupdate</li>
-			<li>0.3.0: broken :(</li>
-			<li>0.2.0: Look&feel improvements, bug fixes and initial support for Crucible</li>
-			<li>0.1.0: A much more stable version with a nicely working bamboo build status support,
-			but crappy visuals</li>
-			<li>0.0.1: Initial version with minimal functionality and many annoyng bugs</li>
-		</ul>
+<h3>Important Note when Upgrading</h3>
+<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
+<ol>
+	<li>Create Pre-commit Reviews in Crucible</li>
+	<li>Open files in IntelliJ IDEA from FishEye</li>
+</ol>
+<p>For more details, please read the <a target="_blank" href="http://blogs.atlassian.com/devtools/2011/02/atlassian-ide-connector-30.html" rel="nofollow">announcement</a>.</p>
+<h3>New Features</h3>
+<ol>
+	<li>Compatibility with IDEA X - the connector works in IDEA 10.0.1 and above</li>
+	<li>Multiple Bamboo jobs - unit tests are shown grouped by Job for plans with multiple jobs in Bamboo</li>
+	<li>Added support for Bamboo 2.7 and above</li>
+	<li>Easier pre-commit review creation - you can now easily create pre-commmit reviews in one step</li>
+	<li>Lots of bug fixes</li>
+</ol>
+<p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes" rel="nofollow">Release Notes</a>.</p>
 		]]>
 	</change-notes>    
     <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
