@@ -4,6 +4,7 @@
         <downloadUrl>http://update.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}-plugin-zip.zip</downloadUrl>
         <releaseNotes><![CDATA[
    <html><body>
+<b><font color="red">UPGRADE NOTE: FishEye and Crucible are no longer supported. Please see below.</font></b>
 <h2>Description</h2>
 <p>Atlassian Connector for IntelliJ IDEA provides integration for the following Atlassian products:</p>
 
