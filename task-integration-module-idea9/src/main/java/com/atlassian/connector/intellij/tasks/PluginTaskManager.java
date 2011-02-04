@@ -58,8 +58,7 @@ public class PluginTaskManager implements ProjectComponent {
         BaseRepository jiraRepository = getJiraRepository(server);
         if (foundTask != null) {
             LocalTask activeTask = taskManager.getActiveTask();
-            if ((activeTask.getIssueUrl() != null
-                    && !activeTask.getIssueUrl().equals(foundTask.getIssueUrl()))) {
+            if (activeTask.getIssueUrl() == null || !foundTask.getIssueUrl().equals(activeTask.getIssueUrl())) {
                 try {
                     taskManager.activateTask(foundTask, true, false);
                 } catch (Exception e) {
@@ -70,7 +69,6 @@ public class PluginTaskManager implements ProjectComponent {
             }
         } else {
             Task newTask = (Task) TaskHelper.findJiraTask((JiraRepository) jiraRepository, issue.getIssueKey());
-
             if (newTask != null) {
                 try {
                     taskManager.activateTask(newTask, true, true);
