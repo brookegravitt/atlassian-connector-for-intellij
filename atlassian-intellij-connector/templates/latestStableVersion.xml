@@ -4,7 +4,6 @@
         <downloadUrl>http://update.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}-plugin-zip.zip</downloadUrl>
         <releaseNotes><![CDATA[
    <html><body>
-<b><font color="red">UPGRADE NOTE: FishEye and Crucible are no longer supported. Please see below.</font></b>
 <h2>Description</h2>
 <p>Atlassian Connector for IntelliJ IDEA provides integration for the following Atlassian products:</p>
 
@@ -20,7 +19,7 @@
 
 <h2>Change Notes</h2>
 
-<h3>Important Note when Upgrading</h3>
+<h3><font color="red">Important Note when Upgrading</font></h3>
 
 <p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
 <ol>
