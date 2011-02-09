@@ -62,7 +62,7 @@
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.0.0-m4</version>
+            <version>4.0.0-m7</version>
             <scope>compile</scope>
         </dependency>
 
