@@ -32,13 +32,13 @@
         <dependency>
             <groupId>com.atlassian.connector.tasks</groupId>
             <artifactId>atlassian-idea9-integration</artifactId>
-            <version>0.1.4-SNAPSHOT</version>
+            <version>0.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0-m7</version>
         </dependency>
         <dependency>
             <groupId>org.ddsteps</groupId>
