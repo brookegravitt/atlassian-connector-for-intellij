@@ -41,8 +41,9 @@
         <url>https://jira.bamboo.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
+        <bamboo2>true</bamboo2>
         <plans>
+          <plan key="JIRA42-SELENIUMCI" grouped="0" />
           <plan key="PLUGINS-JIMTST" grouped="0" />
           <plan key="JIRATEST-UNITDEPLOY" grouped="0" />
           <plan key="JIRATEST-SRCTEST" grouped="0" />
@@ -55,7 +56,32 @@
           <plan key="JIRATEST-TPC" grouped="0" />
         </plans>
       </bamboo>
+      <jira>
+        <server-id>4ac8f6e9-41a7-4d34-a017-d32735139cb2</server-id>
+        <name>java.net</name>
+        <url>https://java.net/jira</url>
+        <shared>false</shared>
+      </jira>
+      <jira>
+        <server-id>4f7c25b6-7bfa-49d8-a7bc-d94df9fef03e</server-id>
+        <name>water</name>
+        <url>http://192.168.157.158:8078</url>
+        <shared>false</shared>
+      </jira>
+      <crucible>
+        <server-id>0aefbc76-e0c7-48c8-ba3b-c90ce0b1d0cb</server-id>
+        <name>localhost</name>
+        <url>http://localhost:5244/crucible</url>
+        <shared>false</shared>
+        <isFisheyeInstance>false</isFisheyeInstance>
+      </crucible>
+      <crucible>
+        <server-id>8c670a4c-27dd-4352-aa38-894700e48bfd</server-id>
+        <name>lech</name>
+        <url>http://lech:5244/crucible</url>
+        <shared>false</shared>
+        <isFisheyeInstance>false</isFisheyeInstance>
+      </crucible>
     </servers>
-    <default-jira-server>c2f78497-e859-444b-9995-5c0e50315cbd</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
