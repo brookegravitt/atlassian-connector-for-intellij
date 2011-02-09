@@ -10,7 +10,7 @@
     <description>An Intellij IDEA plugin task Integration for IDEA 9.x</description>
     <groupId>com.atlassian.connector.tasks</groupId>
     <artifactId>atlassian-idea9-integration</artifactId>
-    <version>0.2</version>
+    <version>0.2.1-SNAPSHOT</version>
     <scm>
 	<connection>scm:hg:file:///${basedir}</connection>
 	<developerConnection>scm:hg:file:///${basedir}</developerConnection>
