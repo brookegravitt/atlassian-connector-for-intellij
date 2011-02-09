@@ -177,7 +177,7 @@
                             <name>ddsteps-httpserver-mock</name>
                             <exclude>true</exclude>
                         </library>
-                        <library>
+                        <!--library>
                             <name>jetty</name>
                             <exclude>true</exclude>
                         </library>
@@ -188,7 +188,7 @@
                          <library>
                             <name>jetty-mock</name>
                             <exclude>true</exclude>
-                        </library>
+                        </library-->
                         <library>
                             <name>junit-addons</name>
                             <exclude>true</exclude>
