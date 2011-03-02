@@ -540,21 +540,20 @@
 
 
     </build>
-    <repositories>
-        <repository>
-            <id>springRichclientRepository</id>
-            <name>Spring rich client repository</name>
-            <url>http://spring-rich-c.sourceforge.net/maven2repository</url>
-        </repository>
-        <repository>
-            <id>atlassian-restricted</id>
-            <url>https://maven.atlassian.com/restricted</url>
-        </repository>
-        <repository>
-            <id>atlassian-public-repository</id>
-            <url>https://maven.atlassian.com/public</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>atlassian-m2-snapshot-repository</id>
+			<url>https://maven.atlassian.com/public-snapshot</url>
+		</repository>
+		<repository>
+			<id>atlassian-public-repository</id>
+			<url>https://maven.atlassian.com/public</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://m2proxy.atlassian.com/repository/internal/</url>
+		</repository>
+	</repositories>
 
 
 </project>
