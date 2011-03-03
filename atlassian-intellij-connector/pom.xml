@@ -555,14 +555,14 @@
 			<id>atlassian-m2-snapshot-repository</id>
 			<url>https://maven.atlassian.com/public-snapshot</url>
 		</repository>
-		<repository>
-			<id>atlassian-public-repository</id>
-			<url>https://maven.atlassian.com/public</url>
-		</repository>
-		<repository>
-			<id>central</id>
-			<url>https://m2proxy.atlassian.com/repository/internal/</url>
-		</repository>
+		<!--<repository>-->
+			<!--<id>atlassian-public-repository</id>-->
+			<!--<url>https://maven.atlassian.com/public</url>-->
+		<!--</repository>-->
+		<!--<repository>-->
+			<!--<id>central</id>-->
+			<!--<url>https://m2proxy.atlassian.com/repository/internal/</url>-->
+		<!--</repository>-->
 	</repositories>
 
 
