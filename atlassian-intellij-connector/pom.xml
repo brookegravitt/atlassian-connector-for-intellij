@@ -536,34 +536,35 @@
                     </excludes>
                 </configuration>
             </plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<inherited>false</inherited>
-				<version>2.5</version>
-				<configuration>
-					<altDeploymentRepository>
-						atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot
-					</altDeploymentRepository>
-				</configuration>
-			</plugin>
+			<!--<plugin>-->
+				<!--<artifactId>maven-deploy-plugin</artifactId>-->
+				<!--<inherited>false</inherited>-->
+				<!--<version>2.5</version>-->
+				<!--<configuration>-->
+					<!--<altDeploymentRepository>-->
+						<!--&lt;!&ndash;atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot&ndash;&gt;-->
+						<!--central::default::dav:https://m2proxy.atlassian.com/repository/internal-->
+					<!--</altDeploymentRepository>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
         </plugins>
 
 
     </build>
-	<repositories>
-		<repository>
-			<id>atlassian-m2-snapshot-repository</id>
-			<url>https://maven.atlassian.com/public-snapshot</url>
-		</repository>
+	<!--<repositories>-->
 		<!--<repository>-->
-			<!--<id>atlassian-public-repository</id>-->
-			<!--<url>https://maven.atlassian.com/public</url>-->
+			<!--<id>atlassian-m2-snapshot-repository</id>-->
+			<!--<url>https://maven.atlassian.com/public-snapshot</url>-->
 		<!--</repository>-->
-		<!--<repository>-->
-			<!--<id>central</id>-->
-			<!--<url>https://m2proxy.atlassian.com/repository/internal/</url>-->
-		<!--</repository>-->
-	</repositories>
+		<!--&lt;!&ndash;<repository>&ndash;&gt;-->
+			<!--&lt;!&ndash;<id>atlassian-public-repository</id>&ndash;&gt;-->
+			<!--&lt;!&ndash;<url>https://maven.atlassian.com/public</url>&ndash;&gt;-->
+		<!--&lt;!&ndash;</repository>&ndash;&gt;-->
+		<!--&lt;!&ndash;<repository>&ndash;&gt;-->
+			<!--&lt;!&ndash;<id>central</id>&ndash;&gt;-->
+			<!--&lt;!&ndash;<url>https://m2proxy.atlassian.com/repository/internal/</url>&ndash;&gt;-->
+		<!--&lt;!&ndash;</repository>&ndash;&gt;-->
+	<!--</repositories>-->
 
 
 </project>
