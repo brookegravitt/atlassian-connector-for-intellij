@@ -21,8 +21,9 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.util.PluginUtil;
-import static com.spartez.util.junit3.TestUtil.assertNotEquals;
 import junit.framework.TestCase;
+
+import static com.spartez.util.junit3.TestUtil.assertNotEquals;
 
 public class ConfigurationTest extends TestCase {
 	private IdeaPluginConfigurationBean baseConf;
@@ -42,7 +43,7 @@ public class ConfigurationTest extends TestCase {
     }
 
 	public void testProjectSettings() {
-        assertEquals("Atlassian Connector for IntelliJ IDEA", PluginUtil.getInstance().getName());
+        assertEquals("Atlassian Connector for IntelliJ PHP Storm", PluginUtil.getInstance().getName());
     }
 
 	public void testGeneralConfigEquals() {
