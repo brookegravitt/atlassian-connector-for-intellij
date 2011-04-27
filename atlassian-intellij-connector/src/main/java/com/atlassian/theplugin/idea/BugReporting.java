@@ -31,6 +31,7 @@ public final class BugReporting {
 	private static Map<String, String> versionMap = new HashMap<String, String>();
 
 	static {
+		versionMap.put("0", "12482");
 		versionMap.put("1.0-alpha", "12482");
 	}
 
