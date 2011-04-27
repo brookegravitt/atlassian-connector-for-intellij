@@ -73,10 +73,12 @@
 <p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes" rel="nofollow">Release Notes</a>.</p>
 		]]>
 	</change-notes>    
-    <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
-	<depends>JUnit</depends>
+    <!--<depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>-->
+	<!--<depends>JUnit</depends>-->
+	<!--<depends>com.jetbrains.php</depends>-->
     <depends>Subversion</depends>
-
+	<!-- FAKE DEPENDENCY FOR wEB ide -->
+	<depends>com.intellij.modules.xml</depends>
 
 	<extensions defaultExtensionNs="com.intellij">		
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
@@ -309,17 +311,6 @@
 				<!--icon="/actions/export.png">-->
 			<!--<keyboard-shortcut first-keystroke="F4" keymap="$default"/>-->
 		<!--</action>-->
-
-
-
-
-
-
-
-
-
-
-
 		<action id="ThePlugin.JiraIssues.QuickSearch"
 				class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
 				text="Search JIRA"

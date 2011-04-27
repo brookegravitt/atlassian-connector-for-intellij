@@ -220,7 +220,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private void openBuildAndRunTest(final BambooBuildAdapter buildDetailsInfo,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
-		IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testPackage, testClass, testMethod);
+//		IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testPackage, testClass, testMethod);
 	}
 
 	public void openBuild(@NotNull final String buildKey, final int buildNumber, @NotNull final String serverUrl) {

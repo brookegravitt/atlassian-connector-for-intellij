@@ -5,7 +5,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 
@@ -29,7 +29,7 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 
 		if (issue != null) {
 			String changeListName = issue.getKey() + " - " + issue.getSummary();
-			final Project project = event.getData(DataKeys.PROJECT);
+			final Project project = event.getData(PlatformDataKeys.PROJECT);
 			if (project != null) {
 				if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
 					event.getPresentation().setText("Create ChangeList");

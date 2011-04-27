@@ -31,66 +31,12 @@ public final class BugReporting {
 	private static Map<String, String> versionMap = new HashMap<String, String>();
 
 	static {
-		versionMap.put("0", "10031"); // don't remove this entry or I will kill you
-		versionMap.put("0.0.1", "10010");
-		versionMap.put("0.1.0", "10011");
-		versionMap.put("0.2.0", "10012");
-		versionMap.put("0.3.1", "10013");
-		versionMap.put("0.4.0", "10014");
-		versionMap.put("0.5.0", "10015");
-		versionMap.put("0.5.1", "10423");
-		versionMap.put("1.0.0", "10016");
-		versionMap.put("1.0.1", "10440");
-        
-		versionMap.put("1.1.0", "10017");
-		versionMap.put("1.2.0", "10018");
-		versionMap.put("1.2.1", "10470");
-		versionMap.put("1.3.0", "10019");
-		versionMap.put("1.3.1", "10472");
-		versionMap.put("1.4.0", "10020");
-		versionMap.put("1.4.1", "10482");
-		versionMap.put("1.5.0", "10021");
-		versionMap.put("1.6.0", "10022");
-		versionMap.put("1.6.1", "10571");
-		versionMap.put("1.7.0", "10496");
-		versionMap.put("1.8.0", "10497");
-		versionMap.put("2.0.0-beta-1", "10498");
-        versionMap.put("2.0.0-beta-2", "10592");
-        versionMap.put("2.0.0-beta-3", "10593");
-		versionMap.put("2.0.0-beta-4", "10632");
-		versionMap.put("2.0.0-beta-5", "10644");
-		versionMap.put("2.0.0-beta-6", "10672");
-		versionMap.put("2.0.0-beta-7", "10680");
-		versionMap.put("2.0.0-beta-8", "10770");
-		versionMap.put("2.0.0-beta-9", "10781");
-		versionMap.put("2.0.0-beta-10", "10782-lni");
-		versionMap.put("2.0.0-beta-11", "10810");		
-		versionMap.put("2.0.0-beta-12", "10850");
-		versionMap.put("2.0.0", "10661");
-		versionMap.put("2.0.1", "10890");
-        versionMap.put("2.1.0", "10927");
-        versionMap.put("2.1.1", "11095");
-        versionMap.put("2.2.0", "11075");
-        //the same number as 2.2.1
-        versionMap.put("2.2.0-beta-1", "11314");
-        versionMap.put("2.2.1", "11314");
-        versionMap.put("2.2.2", "11454");
-        versionMap.put("2.2.3", "11542");
-        versionMap.put("2.3.0", "11506");
-        versionMap.put("2.3.1", "11692");
-        versionMap.put("2.4.0", "11696");
-        versionMap.put("2.4.1", "11900");
-        versionMap.put("2.4.2", "12135");
-        versionMap.put("2.5.0", "12038");
-        versionMap.put("2.5.1", "12167");
-		versionMap.put("3.0.0", "12235");
-		versionMap.put("3.0.1", "12321");
-
+		versionMap.put("1.0-alpha", "12482");
 	}
 
     private static final int MAX_URI_LENGTH = 2048;
 	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
-	private static final String PROJECT_ID = "10024";
+	private static final String PROJECT_ID = "10770";
 	private static final String TICKET_TYPE_BUG = "1";
 	private static final String TICKET_TYPE_STORY = "5";
 	private static String storyUrl;

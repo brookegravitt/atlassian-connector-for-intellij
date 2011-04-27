@@ -5,7 +5,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class RunJiraActionGroup extends ActionGroup {
 	@NotNull
 	public AnAction[] getChildren(@Nullable final AnActionEvent anActionEvent) {
 		if (anActionEvent != null) {
-			Project project = anActionEvent.getData(DataKeys.PROJECT);
+			Project project = anActionEvent.getData(PlatformDataKeys.PROJECT);
 			if (project != null) {
 				if (actions.containsKey(project)) {
 					final List<AnAction> actionsList = actions.get(project);

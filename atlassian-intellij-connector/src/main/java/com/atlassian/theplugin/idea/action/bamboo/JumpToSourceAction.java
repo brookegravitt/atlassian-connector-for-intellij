@@ -13,13 +13,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class JumpToSourceAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(e);
-		window.jumpToSource(e.getPlace());
+//		window.jumpToSource(e.getPlace());
 	}
 
 	public void update(AnActionEvent e) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(e);
 		if (window != null) {
-			e.getPresentation().setEnabled(window.canJumpToSource(e.getPlace()));
+//			e.getPresentation().setEnabled(window.canJumpToSource(e.getPlace()));
 		}
 		super.update(e);
 	}
