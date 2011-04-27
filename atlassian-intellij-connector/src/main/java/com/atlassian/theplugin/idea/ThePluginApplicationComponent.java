@@ -55,7 +55,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     private final IdeaPluginConfigurationBean configuration;
     private final NewVersionChecker newVersionChecker;
 
-    private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
+    private final Timer timer = new Timer("atlassian-phpstorm-plugin background status checkers");
     private static final int TIMER_START_DELAY = 20000;
 
     private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();

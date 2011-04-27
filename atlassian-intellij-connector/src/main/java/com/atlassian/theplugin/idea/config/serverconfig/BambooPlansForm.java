@@ -315,7 +315,7 @@ public class BambooPlansForm extends JPanel {
                 }
 
             }
-        }, "atlassian-idea-plugin bamboo panel retrieve plans").start();
+        }, "atlassian-phpstorm-plugin bamboo panel retrieve plans").start();
     }
 
     private void setBambooVersionNumberInfo(BambooServerCfg serverCfg) {

@@ -57,7 +57,7 @@ class NewVersionCheckModalTask extends Task.Modal {
 		indicator.setFraction(0);
 		indicator.setIndeterminate(true);
 		final ConnectionWrapper checkerThread = new ConnectionWrapper(new UpdateServerConnection(), null,
-				"atlassian-idea-plugin New version checker");
+				"atlassian-phpstorm-plugin New version checker");
 		checkerThread.start();
 		while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
 			try {
