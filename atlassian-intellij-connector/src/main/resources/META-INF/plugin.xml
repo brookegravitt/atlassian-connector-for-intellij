@@ -21,16 +21,16 @@
 <!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/">
 
-	<name>Atlassian Connector for IntelliJ IDEA</name>
+	<name>Atlassian Connector for IntelliJ PHP Storm</name>
 	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
 	<!--
 															  todo lguminski/jjaroczynski check if there is some decent way of getting artifactId from pom.xml
 															  <plugin-id>${project.artifactId}</plugin-id>
 														  -->
-	<plugin-id>atlassian-idea-plugin</plugin-id>
+	<plugin-id>atlassian-phpstorm-plugin</plugin-id>
 	<description>
 		<![CDATA[
-		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
+		Atlassian Connector for IntelliJ PHPStorm provides PHP Storm IDE integration for the following Atlassian products:
 		<ul>
 			<li>JIRA 3.12 and above</li>
 			<li>Bamboo 2.2.4 and above</li>
@@ -56,7 +56,7 @@
 	<change-notes>
 		<![CDATA[
 <h3>Important Note when Upgrading</h3>
-<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
+<p>Crucible and FishEye:</p>
 <ol>
 	<li>Create Pre-commit Reviews in Crucible</li>
 	<li>Open files in IntelliJ IDEA from FishEye</li>
@@ -64,7 +64,7 @@
 <p>For more details, please read the <a target="_blank" href="http://blogs.atlassian.com/devtools/2011/02/atlassian-ide-connector-30.html" rel="nofollow">announcement</a>.</p>
 <h3>New Features</h3>
 <ol>
-	<li>Compatibility with IDEA X - the connector works in IDEA 10.0.1 and above</li>
+	<li>Compatibility with PHP Storm 2.0 - the connector works in PHP Storm 2.0 and above</li>
 	<li>Multiple Bamboo jobs - unit tests are shown grouped by Job for plans with multiple jobs in Bamboo</li>
 	<li>Added support for Bamboo 2.7 and above</li>
 	<li>Easier pre-commit review creation - you can now easily create pre-commmit reviews in one step</li>

@@ -1180,7 +1180,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
             public synchronized void getIssueDetails() {
                 Runnable runnable = new IssueDetailsRunnable();
-                new Thread(runnable, "atlassian-idea-plugin get issue details").start();
+                new Thread(runnable, "atlassian-phpstorm-plugin get issue details").start();
             }
 
             private class IssueDetailsRunnable implements Runnable {
@@ -1491,7 +1491,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                             }
                         }
                     };
-                    new Thread(runnable, "atlassian-idea-plugin comment issue from editor").start();
+                    new Thread(runnable, "atlassian-phpstorm-plugin comment issue from editor").start();
                 }
             }
 
@@ -1499,7 +1499,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
                 tabs.setTitleAt(tabIndex, "Refreshing comments...");
                 Runnable runnable = new RefreshDescriptionAndCommentsRunnable();
-                new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
+                new Thread(runnable, "atlassian-phpstorm-plugin refresh comments").start();
             }
 
             private void resetStackTraces() {

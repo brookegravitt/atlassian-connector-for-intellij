@@ -517,7 +517,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						}
 					});
 				}
-			}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
+			}, "atlassian-phpstorm-plugin crucible patch upload combos refresh").start();
 		} else {
 			updateServerRelatedCombos(server, data);
 

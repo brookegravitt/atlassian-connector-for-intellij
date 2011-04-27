@@ -59,7 +59,7 @@ public class PluginDownloader {
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
     public static final String PLUGIN_DIR_NAME = "atlassian-ide-plugin";
-    public static final String PLUGIN_NAME = "atlassian-idea-plugin";
+    public static final String PLUGIN_NAME = "atlassian-phpstorm-plugin";
 
 	private static String pluginName = PluginUtil.getInstance().getName();
 
