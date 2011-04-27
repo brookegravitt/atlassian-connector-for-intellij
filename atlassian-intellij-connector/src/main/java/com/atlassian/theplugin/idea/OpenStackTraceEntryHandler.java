@@ -4,14 +4,13 @@ import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+
+//import com.intellij.psi.PsiClass;
 
 /**
  * @author Wojciech Seliga
@@ -100,7 +99,8 @@ public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandle
 
 		final String lineString = fileAndLine.substring(colonIndex + 1);
 		final int lineNumber = Integer.parseInt(lineString);
-		PsiClass aClass = IdeaVersionFacade.getInstance().findClass(className, project);
+		//todo FIX-PHPSTORM
+/*		PsiClass aClass = IdeaVersionFacade.getInstance().findClass(className, project);
 
 
 //		PsiClass aClass = JavaPsiFacade.getInstance(manager.getProject()).findClass(className, mySearchScope);
@@ -112,13 +112,13 @@ public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandle
 			return null;
 		}
 
-		/*
+		*//*
 				   IDEADEV-4976: Some scramblers put something like SourceFile mock instead of real class name.
 				  final String filePath = fileAndLine.substring(0, colonIndex).replace('/', File.separatorChar);
 				  final int slashIndex = filePath.lastIndexOf(File.separatorChar);
 				  final String shortFileName = slashIndex < 0 ? filePath : filePath.substring(slashIndex + 1);
 				  if (!file.getName().equalsIgnoreCase(shortFileName)) return null;
-				  */
+				  *//*
 
 		VirtualFile virtualFile = file.getVirtualFile();
 		if (virtualFile == null) {
@@ -126,7 +126,8 @@ public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandle
 		}
 
 
-		return new OpenFileHyperlinkInfo(project, virtualFile, lineNumber - 1);
+		return new OpenFileHyperlinkInfo(project, virtualFile, lineNumber - 1);*/
+		return null;
 	}
 
 }	

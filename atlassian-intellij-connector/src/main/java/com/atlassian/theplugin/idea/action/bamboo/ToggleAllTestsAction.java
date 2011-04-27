@@ -25,13 +25,14 @@ public class ToggleAllTestsAction extends ToggleAction {
 	@Override
 	public boolean isSelected(AnActionEvent event) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(event);
-		return window != null && !window.isPassedTestsVisible(event.getPlace());
+		return false;
+//		return window != null && !window.isPassedTestsVisible(event.getPlace());
 
 	}
 
 	@Override
 	public void setSelected(AnActionEvent event, boolean b) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(event);
-		window.setPassedTestsVisible(event.getPlace(), !b);
+//		window.setPassedTestsVisible(event.getPlace(), !b);
 	}
 }

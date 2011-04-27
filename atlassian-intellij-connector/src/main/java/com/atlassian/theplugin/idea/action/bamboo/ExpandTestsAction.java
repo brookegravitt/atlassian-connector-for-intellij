@@ -25,6 +25,6 @@ public class ExpandTestsAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(event);
-		window.expandTests(event.getPlace());
+//		window.expandTests(event.getPlace());
 	}
 }

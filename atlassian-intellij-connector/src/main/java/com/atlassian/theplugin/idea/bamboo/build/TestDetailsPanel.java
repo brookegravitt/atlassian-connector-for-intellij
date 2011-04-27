@@ -1,53 +1,19 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.commons.bamboo.BambooJob;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.util.ColorToHtml;
-import com.intellij.execution.PsiLocation;
-import com.intellij.execution.RunManager;
-import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.impl.RunManagerImpl;
-import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
-import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
+//import com.intellij.execution.junit.JUnitConfiguration;
 
 /**
  * User: jgorycki
@@ -81,7 +47,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		this.contentKey = contentKey;
 		setLayout(new GridBagLayout());
 	}
-
+	 /*
 	public void showError(final Exception e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -259,14 +225,14 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return createTestConfiguration(null);
 	}
 
-	private static JUnitConfiguration getJunitConfiguration(RunConfiguration config) {
-		try {
-			return (JUnitConfiguration) config;
-		} catch (ClassCastException e) {
-			LoggerImpl.getInstance().warn("Unexpected RunConfiguration instance", e);
-		}
-		return null;
-	}
+//	private static JUnitConfiguration getJunitConfiguration(RunConfiguration config) {
+//		try {
+//			return (JUnitConfiguration) config;
+//		} catch (ClassCastException e) {
+//			LoggerImpl.getInstance().warn("Unexpected RunConfiguration instance", e);
+//		}
+//		return null;
+//	}
 
 	private abstract class NonLeafNode extends AbstractTreeNode {
 		protected int totalTests;
@@ -352,39 +318,39 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		}
 
 		@Override
-		public boolean createTestConfiguration(RunConfiguration configuration) {
-			if (configuration != null) {
-				JUnitConfiguration conf = getJunitConfiguration(configuration);
-				if (conf != null) {
-					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-					conf.getPersistentData().PACKAGE_NAME = toString();
-				} else {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
+//		public boolean createTestConfiguration(RunConfiguration configuration) {
+//			if (configuration != null) {
+//				JUnitConfiguration conf = getJunitConfiguration(configuration);
+//				if (conf != null) {
+//					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+//					conf.getPersistentData().PACKAGE_NAME = toString();
+//				} else {
+//					return false;
+//				}
+//			}
+//			return true;
+//		}
+//	}
 
 	private class AllTestsNode extends PackageNode {
 		public AllTestsNode(final int totalTests, final int failedTests) {
 			super("All", totalTests, failedTests);
 		}
 
-		@Override
-		public boolean createTestConfiguration(RunConfiguration configuration) {
-			if (configuration != null) {
-				JUnitConfiguration conf = getJunitConfiguration(configuration);
-				if (conf != null) {
-					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-					conf.getPersistentData().PACKAGE_NAME = "";
-				} else {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
+//		@Override
+//		public boolean createTestConfiguration(RunConfiguration configuration) {
+//			if (configuration != null) {
+//				JUnitConfiguration conf = getJunitConfiguration(configuration);
+//				if (conf != null) {
+//					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+//					conf.getPersistentData().PACKAGE_NAME = "";
+//				} else {
+//					return false;
+//				}
+//			}
+//			return true;
+//		}
+//	}
 
 	private class ClassNode extends NonLeafNode {
 		private String className;
@@ -775,5 +741,9 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		public abstract boolean navigate(boolean testOnly);
 
 		public abstract boolean createTestConfiguration(RunConfiguration configuration);
+	}       */
+
+	public void actionPerformed(ActionEvent actionEvent) {
+
 	}
 }

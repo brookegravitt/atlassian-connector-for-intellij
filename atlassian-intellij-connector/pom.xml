@@ -6,12 +6,11 @@
         <artifactId>atlassian-connector-parent-pom</artifactId>
         <version>2.1.4</version>
     </parent>
-    <name>Atlassian Intellij IDEA Plugin</name>
-    <description>An Intellij IDEA plugin for Atlassian's tools.</description>
+    <name>Atlassian Intellij PHP Storm Plugin</name>
+    <description>An Intellij PHP Storm Plugin for Atlassian's tools.</description>
     <groupId>com.atlassian.connector</groupId>
-    <artifactId>atlassian-idea-plugin</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
-
+    <artifactId>atlassian-phpstorm-plugin</artifactId>
+	<version>1.0-ALPHA</version>
     <scm>
         <!--connection>scm:hg:file:///${basedir}</connection>
         <developerConnection>scm:hg:file:///${basedir}</developerConnection-->
@@ -19,6 +18,7 @@
         <developerConnection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</developerConnection>
 
     </scm>
+
     <issueManagement>
         <system>Jira</system>
         <url>https://studio.atlassian.com/browse/PL</url>

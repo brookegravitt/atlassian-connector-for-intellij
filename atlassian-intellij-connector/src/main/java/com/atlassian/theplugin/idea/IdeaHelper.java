@@ -31,7 +31,7 @@ import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -72,7 +72,7 @@ public final class IdeaHelper {
 
 	@Nullable
 	public static Project getCurrentProject(DataContext dataContext) {
-		return DataKeys.PROJECT.getData(dataContext);
+		return PlatformDataKeys.PROJECT.getData(dataContext);
 	}
 
 	@Nullable

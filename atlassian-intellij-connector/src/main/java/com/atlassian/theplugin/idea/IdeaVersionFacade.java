@@ -35,7 +35,6 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
@@ -154,8 +153,8 @@ public final class IdeaVersionFacade {
 		}
 
 	}
-
-	public PsiClass findClass(String name, Project project) {
+//todo FIX-PHPSTORM
+/*	public PsiClass findClass(String name, Project project) {
 		PsiClass cls = null;
 		try {
 			if (isIdea8 || isIdea9 || isIdeaX) {
@@ -181,7 +180,7 @@ public final class IdeaVersionFacade {
 			e.printStackTrace();
 		}
 		return cls;
-	}
+	}*/
 
 	public void setEmptyText(CommittedChangesTreeBrowser tb, String text) {
 		if (isIdea7 || isIdea8 || isIdea9) {

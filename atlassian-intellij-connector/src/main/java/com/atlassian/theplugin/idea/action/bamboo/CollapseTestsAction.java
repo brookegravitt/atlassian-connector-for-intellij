@@ -25,6 +25,6 @@ public class CollapseTestsAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		BuildToolWindow window = IdeaHelper.getBuildToolWindow(event);
-		window.collapseTestTree(event.getPlace());
+//		window.collapseTestTree(event.getPlace());
 	}
 }
