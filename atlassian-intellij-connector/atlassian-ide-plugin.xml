@@ -13,7 +13,7 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
+        <bamboo2>false</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
           <plan key="ECL-TST" grouped="0" />
