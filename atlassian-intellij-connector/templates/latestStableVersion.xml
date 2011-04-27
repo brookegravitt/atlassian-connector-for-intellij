@@ -5,7 +5,7 @@
         <releaseNotes><![CDATA[
    <html><body>
 <h2>Description</h2>
-<p>Atlassian Connector for IntelliJ IDEA provides integration for the following Atlassian products:</p>
+<p>Atlassian Connector for IntelliJ PHP Storm provides integration for the following Atlassian products:</p>
 
 <ol>
 	<li>JIRA 3.12 and above</li>
@@ -21,10 +21,10 @@
 
 <h3><font color="red">Important Note when Upgrading</font></h3>
 
-<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
+<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ PHP Storm. The only features that remain are:</p>
 <ol>
 	<li>Create Pre-commit Reviews in Crucible</li>
-	<li>Open files in IntelliJ IDEA from FishEye</li>
+	<li>Open files in IntelliJ PHP Strom from FishEye</li>
 </ol>
 
 
@@ -33,7 +33,7 @@
 <h3>New Features</h3>
 
 <ol>
-	<li>Compatibility with IDEA X - the connector works in IDEA 10.0.1 and above</li>
+	<li>Compatibility with PHP Storm 2.0- the connector works in PKP Storm 2.0 and above</li>
 	<li>Multiple Bamboo jobs - unit tests are shown grouped by Job for plans with multiple jobs in Bamboo</li>
 	<li>Added support for Bamboo 2.7 and above</li>
 	<li>Easier pre-commit review creation - you can now easily create pre-commmit reviews in one step</li>
