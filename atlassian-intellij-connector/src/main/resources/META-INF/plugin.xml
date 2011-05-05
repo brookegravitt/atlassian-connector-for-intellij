@@ -19,7 +19,7 @@
 <!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
 <!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
 <!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
-<idea-plugin url="http://www.atlassian.com/software/ideplugin/">
+<idea-plugin url="http://www.atlassian.com/software/ideplugin/"  version="2">
 
 	<name>Atlassian Connector for IntelliJ IDEA</name>
 	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
@@ -73,9 +73,12 @@
 <p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes" rel="nofollow">Release Notes</a>.</p>
 		]]>
 	</change-notes>    
+	<depends>Subversion</depends>
     <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
-	<depends>JUnit</depends>
-    <depends>Subversion</depends>
+	<depends optional="true">JUnit</depends>
+	<!-- FAKE DEPENDENCY FOR wEB ide -->
+	<depends optional="true">com.intellij.modules.xml</depends>
+
 
 
 	<extensions defaultExtensionNs="com.intellij">		

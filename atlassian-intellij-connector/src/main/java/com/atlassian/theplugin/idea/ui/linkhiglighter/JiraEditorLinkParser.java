@@ -17,15 +17,15 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.javadoc.PsiDocToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -92,7 +92,7 @@ public final class JiraEditorLinkParser {
 			return false;
 		}
 		PsiElement element = psiFile.findElementAt(startOffset);
-		return element instanceof PsiComment || element instanceof PsiDocToken;
+		return element instanceof PsiComment || IdeaVersionFacade.isInstanceOfPsiDocToken(element);
 	}
 
 	private List<JiraURLTextRange> getNewRanges(final CharSequence text) {
@@ -155,8 +155,8 @@ public final class JiraEditorLinkParser {
 	}
 
 	public JiraURLTextRange getURLTextRange(DataContext context) {
-		PsiFile file = DataKeys.PSI_FILE.getData(context);
-		Editor editor = DataKeys.EDITOR.getData(context);
+		PsiFile file = LangDataKeys.PSI_FILE.getData(context);
+		Editor editor = LangDataKeys.EDITOR.getData(context);
 		if (editor == null || editor.isDisposed()) {
 			return null;
 		}

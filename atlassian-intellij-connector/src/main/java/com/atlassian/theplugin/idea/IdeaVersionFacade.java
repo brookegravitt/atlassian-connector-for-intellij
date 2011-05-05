@@ -4,7 +4,10 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.ExecutionManager;
+import com.intellij.execution.Location;
+import com.intellij.execution.PsiLocation;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
@@ -35,7 +38,7 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
@@ -71,6 +74,7 @@ public final class IdeaVersionFacade {
 	private boolean isIdeaX;
 	private boolean communityEdition = false;
 
+
 	private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
 	private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
@@ -102,6 +106,22 @@ public final class IdeaVersionFacade {
 			}
 		}
 
+	}
+
+	private boolean isIdea() {
+		return isIdea7 || isIdea8 || isIdea9 || isIdea9;
+	}
+
+	public static boolean isInstanceOfPsiDocToken(Object obj) {
+		Class psiDocTokenClass = null;
+
+		try {
+			psiDocTokenClass = Class.forName("com.intellij.psi.javadoc.PsiDocToken");
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+
+		return psiDocTokenClass != null && psiDocTokenClass.isInstance(obj);
 	}
 
 	private static IdeaVersionFacade instance;
@@ -155,30 +175,113 @@ public final class IdeaVersionFacade {
 
 	}
 
-	public PsiClass findClass(String name, Project project) {
-		PsiClass cls = null;
+	public boolean psiClassNavigate(final Project project, String className) {
+		Object psiClassObject = findPsiClass(className, project);
+		if (psiClassObject != null) {
+			try {
+				Class psiClass = Class.forName("com.intellij.psi.PsiClass");
+				Method navigateMethod = psiClass.getMethod("navigate", Boolean.TYPE);
+				navigateMethod.invoke(psiClassObject, true);
+			} catch (Exception e) {
+				//e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		return false;
+
+	}
+
+	public PsiFile getPsiClassNavigationElement(final Project project, final String name) {
+		PsiFile navigationElement = null;
+		try {
+			Object cls = findPsiClass(name, project);
+
+			if (cls == null) {
+				return null;
+			}
+			Class psiClass = Class.forName("com.intellij.psi.PsiClass");
+			Method getContainingFileMethod = psiClass.getMethod("getContainingFile");
+			PsiFile psiFile = (PsiFile) getContainingFileMethod.invoke(cls);
+			navigationElement = (PsiFile) psiFile.getNavigationElement();
+
+		} catch (Exception e) {
+			 return null;
+		}
+		return navigationElement;
+	}
+
+	public boolean beMethodConfiguraion(Project project, RunConfiguration config, Object psiMethod) {
+		try {
+			Class jUnitConfigurationClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration");
+			Method beMethodConfigurationMethod = jUnitConfigurationClass.getMethod("beMethodConfiguration", Location.class);
+			beMethodConfigurationMethod.invoke(config, PsiLocation.fromPsiElement(project, (PsiElement) psiMethod));
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	public boolean beClassConfiguration(RunConfiguration config, Object psiClass) {
+		try {
+			Class jUnitConfigurationClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration");
+			Class psiClassInterface = Class.forName("com.intellij.psi.PsiClass");
+			Method beClassConfigurationMethod = jUnitConfigurationClass
+					.getMethod("beClassConfiguration", psiClassInterface);
+			beClassConfigurationMethod.invoke(config, psiClass);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+
+
+	}
+
+	public boolean createTestConfiguration(RunConfiguration config, String packageName) {
+
+		try {
+			Class jUnitConfigurationClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration");
+			Class jUnitConfigurationDataClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration.Data");
+			Method getPersistentDataMethod = jUnitConfigurationClass.getMethod("getPersistentData");
+			Object persitentData = getPersistentDataMethod.invoke(config);
+			Field testPackageField = jUnitConfigurationDataClass.getField("TEST_PACKAGE");//static
+			Field testObjectField = jUnitConfigurationDataClass.getField("TEST_OBJECT");
+			Field packageNameField = jUnitConfigurationDataClass.getField("PACKAGE_NAME");
+
+			//conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+			testObjectField.set(persitentData, testPackageField.get(null));
+
+			//conf.getPersistentData().PACKAGE_NAME = toString();
+			testPackageField.set(persitentData, packageName);
+
+			return true;
+
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/*
+		* @returns PsiClass
+		* */
+	public Object findPsiClass(String name, Project project) {
+		Object cls = null;
 		try {
 			if (isIdea8 || isIdea9 || isIdeaX) {
 				Class javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
 				Method getInstance = javaPsiFacadeClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
 				Method findClass = javaPsiFacadeClass.getMethod("findClass", String.class, GlobalSearchScope.class);
-				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
-			} else {
+				cls = findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
+			} else if (isIdea()) {
 				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
 				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
 				Method findClass = psiManagerClass.getMethod("findClass", String.class, GlobalSearchScope.class);
-				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
+				cls = findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			//JAVAPSIFacade is not available
+			return null;
 		}
 		return cls;
 	}
@@ -207,7 +310,7 @@ public final class IdeaVersionFacade {
 				Method getProjectScope = projectScopeClass.getMethod("getProjectScope", Project.class);
 				GlobalSearchScope scope = (GlobalSearchScope) getProjectScope.invoke(null, project);
 				psiFiles = (PsiFile[]) getFilesByName.invoke(null, project, filePath, scope);
-			} else {
+			} else if (isIdea()) {
 				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
 				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
@@ -217,13 +320,7 @@ public final class IdeaVersionFacade {
 				Method getFilesByName = psiShortNamesCacheClass.getMethod("getFilesByName", String.class);
 				psiFiles = (PsiFile[]) getFilesByName.invoke(cacheInstance, filePath);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return psiFiles;
@@ -269,7 +366,7 @@ public final class IdeaVersionFacade {
 		try {
 			editorClass = Class.forName("com.intellij.openapi.editor.ex.EditorEx");
 			Method getBackgroundColorMethod;
-			if (isIdeaX) {
+			if (isIdeaX || !isIdea()) {
 				getBackgroundColorMethod = editorClass.getMethod("getBackgroundColor");
 			} else {
 				getBackgroundColorMethod = editorClass.getMethod("getBackroundColor");
@@ -294,7 +391,7 @@ public final class IdeaVersionFacade {
 				changeList = new ArrayList<Change>(changes);
 			}
 			int v = 0;
-			if (!isIdea9 && !isIdeaX) {
+			if (!isIdea9 && !isIdeaX && !isIdea()) {
 				// there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
 				// deprecated getBuildNumber() method here...
 				@SuppressWarnings("deprecation")
@@ -303,7 +400,7 @@ public final class IdeaVersionFacade {
 			}
 			Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 			Constructor[] constructors = browserClass.getConstructors();
-			if (isIdeaX || isIdea9 || v >= IDEA_8_1_3) {
+			if (isIdeaX || isIdea9 || v >= IDEA_8_1_3 || !isIdea()) {
 				return (MultipleChangeListBrowser) constructors[0]
 						.newInstance(project, changeListManager.getChangeLists(),
 								changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
@@ -316,20 +413,14 @@ public final class IdeaVersionFacade {
 						.newInstance(project, changeListManager.getChangeLists(),
 								changeList, null, true, true);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	public void addActionToDiffGroup(@NotNull AnAction action) {
-		if (isIdea8 || isIdea9 || isIdeaX) {
+		if (isIdea8 || isIdea9 || isIdeaX || !isIdea()) {
 			DefaultActionGroup diffToolbar =
 					(DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
 			if (diffToolbar != null) {
@@ -344,7 +435,7 @@ public final class IdeaVersionFacade {
 			Method getInstance = hintManagerClass.getMethod("getInstance");
 			Object inst = getInstance.invoke(null);
 			Class mgrClass;
-			if (isIdea8 || isIdea9 || isIdeaX) {
+			if (isIdea8 || isIdea9 || isIdeaX || !isIdea()) {
 				Class hintManagerImplClass = Class.forName("com.intellij.codeInsight.hint.HintManagerImpl");
 				mgrClass = hintManagerImplClass;
 				inst = hintManagerImplClass.cast(inst);
@@ -364,15 +455,7 @@ public final class IdeaVersionFacade {
 			int hbs = (Integer) hideByScrolling.get(null);
 
 			showEditorHint.invoke(inst, lightweightHint, anEditor, point, hbak | hbtc | hboh | hbs, -1, false);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -447,7 +530,7 @@ public final class IdeaVersionFacade {
 					}
 				}
 
-			} else {
+			} else if (!isIdea()) {
 				Class javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
 				Class executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
 				Class runStrategyClass = Class.forName("com.intellij.execution.runners.RunStrategy");
@@ -471,15 +554,7 @@ public final class IdeaVersionFacade {
 					e.printStackTrace();
 				}
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -522,7 +597,7 @@ public final class IdeaVersionFacade {
 			if (setItems == null) {
 				return;
 			}
-			if (isIdea8 || isIdea9 || isIdeaX) {
+			if (isIdea8 || isIdea9 || isIdeaX || !isIdea()) {
 				Class enumClass = Class
 						.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase");
 				Method valueOf = enumClass.getMethod("valueOf", String.class);
@@ -534,13 +609,7 @@ public final class IdeaVersionFacade {
 			} else {
 				setItems.invoke(browser, list, flag);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -633,7 +702,7 @@ public final class IdeaVersionFacade {
 	}
 
 	public boolean openStackTrace(@NotNull Project project, String stracktrace, String title) {
-		if (isIdea8 || isIdea9 || isIdeaX) {
+		if (isIdea8 || isIdea9 || isIdeaX || !isIdea()) {
 			try {
 				final Class<?> analyzeStackTraceUtil = Class.forName("com.intellij.unscramble.AnalyzeStacktraceUtil");
 				for (Method method : analyzeStackTraceUtil.getMethods()) {
@@ -645,13 +714,7 @@ public final class IdeaVersionFacade {
 						return true;
 					}
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
@@ -663,7 +726,6 @@ public final class IdeaVersionFacade {
 				e.printStackTrace();
 				return false;
 			}
-
 		}
 
 		return false;
