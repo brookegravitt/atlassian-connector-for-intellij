@@ -5,7 +5,8 @@
 		<releaseNotes><![CDATA[
               <html><body>
         <p>
-        This is a SNAPSHOT version. We do testing but cannot guarantee the major version stability level.         
+        This is a SNAPSHOT version. We do testing but cannot guarantee the major version stability level.<br>
+        Plugin compatibility extended for PhPStorm 2.0 and probably WebIde (not tested).<br>
         </p>
 
         </body></html>
