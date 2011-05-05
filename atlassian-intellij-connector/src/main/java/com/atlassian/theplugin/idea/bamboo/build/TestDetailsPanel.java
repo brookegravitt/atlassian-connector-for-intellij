@@ -8,7 +8,6 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.ColorToHtml;
-import com.intellij.execution.PsiLocation;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -16,7 +15,6 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.impl.RunManagerImpl;
-import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -28,8 +26,6 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +41,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,14 +256,14 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return createTestConfiguration(null);
 	}
 
-	private static JUnitConfiguration getJunitConfiguration(RunConfiguration config) {
-		try {
-			return (JUnitConfiguration) config;
-		} catch (ClassCastException e) {
-			LoggerImpl.getInstance().warn("Unexpected RunConfiguration instance", e);
-		}
-		return null;
-	}
+//	private static JUnitConfiguration getJunitConfiguration(RunConfiguration config) {
+//		try {
+//			return (JUnitConfiguration) config;
+//		} catch (ClassCastException e) {
+//			LoggerImpl.getInstance().warn("Unexpected RunConfiguration instance", e);
+//		}
+//		return null;
+//	}
 
 	private abstract class NonLeafNode extends AbstractTreeNode {
 		protected int totalTests;
@@ -354,16 +351,12 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
 			if (configuration != null) {
-				JUnitConfiguration conf = getJunitConfiguration(configuration);
-				if (conf != null) {
-					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-					conf.getPersistentData().PACKAGE_NAME = toString();
-				} else {
-					return false;
-				}
+				return IdeaVersionFacade.getInstance().createTestConfiguration(configuration, toString());
 			}
 			return true;
+
 		}
+
 	}
 
 	private class AllTestsNode extends PackageNode {
@@ -374,13 +367,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
 			if (configuration != null) {
-				JUnitConfiguration conf = getJunitConfiguration(configuration);
-				if (conf != null) {
-					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-					conf.getPersistentData().PACKAGE_NAME = "";
-				} else {
-					return false;
-				}
+				return IdeaVersionFacade.getInstance().createTestConfiguration(configuration, "");
 			}
 			return true;
 		}
@@ -396,29 +383,23 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		@Override
 		public boolean navigate(boolean testOnly) {
-			PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
-			if (cls != null) {
-				if (!testOnly) {
-					cls.navigate(true);
-				}
-				return true;
+
+
+			if (!testOnly) {
+				return IdeaVersionFacade.getInstance().psiClassNavigate(project, className);
 			}
-			return false;
+			return true;
+
 		}
 
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
-			PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
+			Object cls = IdeaVersionFacade.getInstance().findPsiClass(className, project);
 			if (cls == null) {
 				return false;
 			}
 			if (configuration != null) {
-				JUnitConfiguration conf = getJunitConfiguration(configuration);
-				if (conf != null) {
-					conf.beClassConfiguration(cls);
-				} else {
-					return false;
-				}
+				return IdeaVersionFacade.getInstance().beClassConfiguration(configuration, cls);
 			}
 			return true;
 		}
@@ -436,43 +417,52 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			return testDetails;
 		}
 
-		private PsiMethod getMethod() {
-			PsiClass cls = IdeaVersionFacade.getInstance().findClass(testDetails.getTestClassName(), project);
-			if (cls == null) {
+		private Object getMethod() {
+			Object psiClassObject = IdeaVersionFacade.getInstance()
+					.findPsiClass(testDetails.getTestClassName(), project);
+			Object[] psiMethods = null;
+			if (psiClassObject == null) {
 				return null;
 			}
-			PsiMethod[] methods = cls.findMethodsByName(testDetails.getTestMethodName(), false);
-			if (methods.length == 0 || methods[0] == null) {
+			try {
+				Class psiClass = Class.forName("com.intellij.psi.PsiClass");
+				Method findMethodByName = psiClass.getMethod("findMethodsByName", String.class, Boolean.TYPE);
+				psiMethods = (Object[])findMethodByName.invoke(psiClassObject, testDetails.getTestMethodName(), false);
+				//Object[] psiMethods = psiClassObject.findMethodsByName(testDetails.getTestMethodName(), false);
+				if (psiMethods.length == 0 || psiMethods[0] == null) {
+					return null;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 
-			return methods[0];
+			return psiMethods != null ? psiMethods[0] : null;
 		}
 
 		@Override
 		public boolean navigate(boolean testOnly) {
-			PsiMethod m = getMethod();
-			if (m != null) {
+			try {
+			Object psiMethod = getMethod();
+			Class psiClass = Class.forName(testDetails.getTestClassName());
+			if (psiMethod != null && psiClass != null) {
 				if (!testOnly) {
-					m.navigate(true);
+					//psiMethod.navigate(true);
 				}
 				return true;
+			}} catch (Exception e) {
+				return false;
 			}
 			return false;
 		}
 
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
-			PsiMethod m = getMethod();
+			Object m = getMethod();
 
 			if (m != null) {
 				if (configuration != null) {
-					JUnitConfiguration conf = getJunitConfiguration(configuration);
-					if (conf != null) {
-						conf.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
-					} else {
-						return false;
-					}
+					return IdeaVersionFacade.getInstance().beMethodConfiguraion(project, configuration, m);
 				}
 				return true;
 			}
@@ -606,7 +596,8 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			for (BambooJob job : buildDetails.getJobs()) {
 
 				JobNode jobNode = new JobNode(
-						job.getShortName() != null && job.getShortName().equals("") ? job.getName() : job.getShortName(),
+						job.getShortName() != null && job.getShortName().equals("") ? job.getName()
+								: job.getShortName(),
 						job.getFailedTests().size() + job.getSuccessfulTests().size(),
 						job.getFailedTests().size());
 
@@ -617,7 +608,8 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 					continue;
 				}
 				root.add(jobNode);
-				for (Map.Entry<String, PackageNode> e : getPackagesNodes(job.getFailedTests(), job.getSuccessfulTests()).entrySet()) {
+				for (Map.Entry<String, PackageNode> e : getPackagesNodes(job.getFailedTests(), job.getSuccessfulTests())
+						.entrySet()) {
 					PackageNode n = e.getValue();
 					if (n.isFailed() || passedTestsVisible) {
 						//if no jobs then add to root !!!!!
@@ -630,7 +622,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			List<TestDetails> failedTests = buildDetails.getFailedTestDetails();
 			List<TestDetails> successfulTests = buildDetails.getSuccessfulTestDetails();
 
-					root = new AllTestsNode(
+			root = new AllTestsNode(
 					failedTests.size() + successfulTests.size(), failedTests.size());
 			for (Map.Entry<String, PackageNode> e : getPackagesNodes(failedTests, successfulTests).entrySet()) {
 				PackageNode n = e.getValue();

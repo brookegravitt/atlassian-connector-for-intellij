@@ -5,7 +5,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
@@ -100,14 +99,8 @@ public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandle
 
 		final String lineString = fileAndLine.substring(colonIndex + 1);
 		final int lineNumber = Integer.parseInt(lineString);
-		PsiClass aClass = IdeaVersionFacade.getInstance().findClass(className, project);
 
-
-//		PsiClass aClass = JavaPsiFacade.getInstance(manager.getProject()).findClass(className, mySearchScope);
-		if (aClass == null) {
-			return null;
-		}
-		final PsiFile file = (PsiFile) aClass.getContainingFile().getNavigationElement();
+		final PsiFile file = IdeaVersionFacade.getInstance().getPsiClassNavigationElement(project, className);
 		if (file == null) {
 			return null;
 		}

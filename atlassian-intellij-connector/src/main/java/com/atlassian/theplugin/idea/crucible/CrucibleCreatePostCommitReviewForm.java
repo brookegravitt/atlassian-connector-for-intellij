@@ -29,7 +29,6 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.DataKey;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.project.Project;
@@ -39,6 +38,7 @@ import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.RepositoryLocation;
+import com.intellij.openapi.vcs.VcsDataKeys;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
@@ -98,7 +98,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		final MyDataSink dataSink = new MyDataSink();
 		//noinspection deprecation
-		commitedChangesBrowser.calcData(DataKeys.CHANGE_LISTS, dataSink);
+		commitedChangesBrowser.calcData(VcsDataKeys.CHANGE_LISTS, dataSink);
 		final ChangeList[] changes = dataSink.getChanges();
 		return createReviewImpl(server, reviewBeingConstructed, changes);
 	}
