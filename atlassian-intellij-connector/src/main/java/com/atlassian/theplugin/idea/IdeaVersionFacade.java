@@ -482,7 +482,10 @@ public final class IdeaVersionFacade {
 				Class patchBuilderClass = Class.forName("com.intellij.openapi.diff.impl.patch.IdeaTextPatchBuilder");
 				Method buildPatchMethod = patchBuilderClass
 						.getMethod("buildPatch", Project.class, Collection.class, String.class, boolean.class);
-				list = (List) buildPatchMethod.invoke(null, project, changes, basePresentalbeUrl, false);
+//				list = (List) buildPatchMethod.invoke(null, project, changes, basePresentalbeUrl, false);
+				//instead of project we set null in order to get revisions for git instead of dates se
+				list = (List) buildPatchMethod.invoke(null, null, changes, basePresentalbeUrl, false);
+
 				return list;
 			}
 		} catch (Exception e) {
