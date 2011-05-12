@@ -65,4 +65,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 	public void executionCanceled() {
 	}
+
+	public String getHelpId() {
+		return null;
+	}
 }
