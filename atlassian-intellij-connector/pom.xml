@@ -53,83 +53,44 @@
             <classifier>jdk15</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>annotations</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
+		 <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>jgoodies-forms</artifactId>
+            <version>9.0.4</version>
+            <classifier>95.627</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>forms_rt</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
+            <version>9.0.4</version>
+            <classifier>95.627</classifier>
+            <scope>compile</scope>
+        </dependency>
+		 <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>idea</artifactId>
+            <version>9.0.4</version>
+            <classifier>95.627</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>openapi</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>jgoodies-forms</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>jgoodies-forms</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>javac2</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>util</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>extensions</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
+            <version>9.0.4</version>
+            <classifier>95.627</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>8.1.4</version>
-            <classifier>9952</classifier>
+            <version>9.0.4</version>
+            <classifier>95.627</classifier>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>idea</artifactId>
-            <version>8.1.4</version>
-            <classifier>jdk15</classifier>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij.idea</groupId>
-            <artifactId>idea-junit</artifactId>
-            <version>8.1.4</version>
-            <classifier>jdk15</classifier>
-            <scope>compile</scope>
-        </dependency>
+
+
+
         <dependency>
             <groupId>gnu.trove</groupId>
             <artifactId>trove4j</artifactId>
@@ -378,19 +339,7 @@
                             <exclude>true</exclude>
                         </library>
                         <library>
-                            <name>annotations</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>extensions</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
                             <name>forms_rt</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>javac2</name>
                             <exclude>true</exclude>
                         </library>
                         <library>
