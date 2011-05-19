@@ -34,6 +34,7 @@ import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
+import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
@@ -68,10 +69,18 @@ public final class IdeaVersionFacade {
 	private static final int IDEA_9_GR4 = 95;
 	private static final int IDEA_9_COMMUNITY_1 = 93;
 
+	//idea 10.5 stable
+	private static final int IDEA_107_105_GR4 = 107;
+	private static final int IDEA_107_105_GR5 = 105;
+
+	private static final int IDEA_103_255_GR4 = 103;
+	private static final int IDEA_103_255_GR5 = 255;
+
 	private boolean isIdea7;
 	private boolean isIdea8;
 	private boolean isIdea9;
 	private boolean isIdeaX;
+	boolean isIdeaX5;
 	private boolean communityEdition = false;
 
 
@@ -86,13 +95,19 @@ public final class IdeaVersionFacade {
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
 		Matcher m = IDEA_9_REGEX.matcher(ver);
 		final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
+		final int group5 = m.matches() && m.group(5) != null ? Integer.parseInt(m.group(5)) : 0;
 
 		if (m.matches() && (group4 == IDEA_9_GR4 || group4 == IDEA_9_COMMUNITY_1)) {
 			isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
 			communityEdition = m.group(3) != null;
+		} else if (m.matches() && group5 >= IDEA_107_105_GR5 && group4 >= IDEA_107_105_GR4) {
+			isIdeaX5 = true;
+			isIdeaX = true;
+			communityEdition = m.group(3) != null;
 		} else if (m.matches() && (group4 >= IDEA_X_EAP_GR4)) {
 			isIdeaX = true;
 			communityEdition = m.group(3) != null;
+
 		} else {
 
 			try {
@@ -140,7 +155,7 @@ public final class IdeaVersionFacade {
 					.forName("com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog");
 			Method getAffectedVcsesMethod = commitChangeListDialogClass.getMethod("getAffectedVcses");
 			@SuppressWarnings("unchecked")
-			List<Object> list = (List<Object>) getAffectedVcsesMethod.invoke(dialog);
+			Collection list = (Collection) getAffectedVcsesMethod.invoke(dialog);
 
 			if (list != null) {
 				return list.size();
@@ -206,7 +221,7 @@ public final class IdeaVersionFacade {
 			navigationElement = (PsiFile) psiFile.getNavigationElement();
 
 		} catch (Exception e) {
-			 return null;
+			return null;
 		}
 		return navigationElement;
 	}
@@ -214,13 +229,15 @@ public final class IdeaVersionFacade {
 	public boolean beMethodConfiguraion(Project project, RunConfiguration config, Object psiMethod) {
 		try {
 			Class jUnitConfigurationClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration");
-			Method beMethodConfigurationMethod = jUnitConfigurationClass.getMethod("beMethodConfiguration", Location.class);
+			Method beMethodConfigurationMethod = jUnitConfigurationClass
+					.getMethod("beMethodConfiguration", Location.class);
 			beMethodConfigurationMethod.invoke(config, PsiLocation.fromPsiElement(project, (PsiElement) psiMethod));
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
+
 	public boolean beClassConfiguration(RunConfiguration config, Object psiClass) {
 		try {
 			Class jUnitConfigurationClass = Class.forName("com.intellij.execution.junit.JUnitConfiguration");
@@ -611,6 +628,43 @@ public final class IdeaVersionFacade {
 				}
 			} else {
 				setItems.invoke(browser, list, flag);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void registerCheckinHandler(final Project project, final CheckinHandlerFactory handlerFactory) {
+		try {
+			if (!isIdeaX5) {
+				//ProjectLevelVcsManagerImpl.getInstance(project).registerCheckinHandlerFactory(handlerFactory);
+
+				Class projectLevelVcsManagerImplClass = Class
+						.forName("com.intellij.openapi.vcs.impl.ProjectLevelVcsManagerImpl");
+				Class baseCheckinHandlerFactoryClass = Class.forName(
+						"com.intellij.openapi.vcs.checkin.CheckinHandlerFactory");
+
+				Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
+						.getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
+
+				Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance", Project.class);
+
+				registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), handlerFactory);
+
+
+			} else {
+				//for idea 10.5 and later
+				//CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration, projectCfgManager));
+				Class projectLevelVcsManagerImplClass = Class
+						.forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
+
+				Class baseCheckinHandlerFactoryClass = Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory");
+
+				Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
+						.getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
+				Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance", Project.class);
+
+				registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), handlerFactory);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

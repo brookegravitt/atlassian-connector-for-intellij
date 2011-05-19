@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,9 +34,9 @@ public class ServerTreeModel extends DefaultTreeModel {
 	public ServerTreeModel(RootNode root) {
 		super(root);
 		for (ServerType serverType : ServerType.values()) {
-            if (serverType.isPseudoServer() || serverType.equals(ServerType.FISHEYE_SERVER)) {
-                continue;
-            }
+			if (serverType.isPseudoServer() || serverType.equals(ServerType.FISHEYE_SERVER)) {
+				continue;
+			}
 			ServerTypeNode serverTypeNode = new ServerTypeNode(serverType);
 			serverTypeNode.add(new ServerInfoNode(serverType));
 			root.add(serverTypeNode);
@@ -68,18 +68,20 @@ public class ServerTreeModel extends DefaultTreeModel {
 	}
 
 	public void nodeStructureChanged(final TreeNode node) {
-		for (int i = 0; i < node.getChildCount(); i++) {
-			if (node instanceof ServerTypeNode && node.getChildAt(i) instanceof ServerInfoNode) {
-				((ServerTypeNode) node).remove(i);
-				break;
+		if (node != null) {
+			for (int i = 0; i < node.getChildCount(); i++) {
+				if (node instanceof ServerTypeNode && node.getChildAt(i) instanceof ServerInfoNode) {
+					((ServerTypeNode) node).remove(i);
+					break;
+				}
 			}
-		}
-		if (node.getChildCount() == 0) {
-			if (node instanceof ServerTypeNode) {
-				ServerTypeNode serverTypeNode = (ServerTypeNode) node;
-				serverTypeNode.add(new ServerInfoNode(serverTypeNode.getServerType()));
+			if (node.getChildCount() == 0) {
+				if (node instanceof ServerTypeNode) {
+					ServerTypeNode serverTypeNode = (ServerTypeNode) node;
+					serverTypeNode.add(new ServerInfoNode(serverTypeNode.getServerType()));
+				}
 			}
+			super.nodeStructureChanged(node);
 		}
-		super.nodeStructureChanged(node);
 	}
 }
