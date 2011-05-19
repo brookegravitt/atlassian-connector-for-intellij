@@ -17,7 +17,14 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.bamboo.*;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
+import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
+import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
+import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
+import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
@@ -25,6 +32,7 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.TaskActionOrganizer;
@@ -36,6 +44,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory;
 import com.atlassian.theplugin.idea.ui.InformationDialogWithCheckBox;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
@@ -104,6 +113,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 
 	private FileEditorListenerImpl fileEditorListener;
+	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
@@ -112,7 +122,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
 			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -123,6 +134,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.bambooModel = bambooModel;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
+		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 
 		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		jiraIssueListModelBuilder.setProject(project);
@@ -175,6 +187,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 		if (!created) {
             IconLoader.activate();
+
             TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
 
@@ -274,6 +287,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			checkDefaultServerValues();
             informAboutIdea9TaskIntegrationAsExperimental();
 
+			IdeaVersionFacade.getInstance().registerCheckinHandler(project, new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration));
 		}
 
 
@@ -287,8 +301,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// here we have guarantee that IDEA splash screen will not obstruct our window
 		askForUserStatistics();
 		fileEditorListener.projectOpened();
-
 	}
+
     private void informAboutIdea9TaskIntegrationAsExperimental() {
       if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
               && PluginTaskManagerFacade.isValidIdeaVersion()) {

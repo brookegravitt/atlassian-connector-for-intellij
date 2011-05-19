@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
@@ -30,14 +29,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import java.awt.Color;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -50,13 +43,11 @@ import java.util.List;
  */
 public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 	private JiraWorkspaceConfiguration config;
-	private ProjectCfgManager projectCfgManager;
 
-	public LogTimeCheckinHandlerFactory(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager) {
+	public LogTimeCheckinHandlerFactory(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
 		this.config = jiraWorkspaceConfiguration;
-		this.projectCfgManager = projectCfgManager;
 	}
+
 
 	@NotNull
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {

@@ -41,7 +41,7 @@
         <url>https://jira.bamboo.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
+        <bamboo2>false</bamboo2>
         <plans>
           <plan key="JIRA42-SELENIUMCI" grouped="0" />
           <plan key="PLUGINS-JIMTST" grouped="0" />
@@ -65,7 +65,7 @@
       <jira>
         <server-id>4f7c25b6-7bfa-49d8-a7bc-d94df9fef03e</server-id>
         <name>water</name>
-        <url>http://192.168.157.158:8078</url>
+        <url>http://192.168.157.101:8030</url>
         <shared>false</shared>
       </jira>
       <crucible>

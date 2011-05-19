@@ -54,7 +54,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.intellij.idea</groupId>
+            <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
             <version>8.1.4</version>
             <classifier>9952</classifier>
@@ -203,7 +203,6 @@
             </resource>
         </resources>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
@@ -287,29 +286,6 @@
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
-            <!--            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-4</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <format>{0, date, yyyyMMddHHmmss}</format>
-                    <items>
-                        <item>timestamp</item>
-                    </items>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <revisionOnScmFailure>2010010101</revisionOnScmFailure>
-                    &lt;!&ndash;<providerImplementations>hg</providerImplementations>&ndash;&gt;
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.groovy.maven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
