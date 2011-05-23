@@ -4,48 +4,25 @@
         <downloadUrl>http://update.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}-plugin-zip.zip</downloadUrl>
         <releaseNotes><![CDATA[
    <html><body>
-<h2>Description</h2>
-<p>Atlassian Connector for IntelliJ IDEA provides integration for the following Atlassian products:</p>
 
+<h3>New features</h3>
 <ol>
-	<li>JIRA 3.12 and above</li>
-	<li>Bamboo 2.2.4 and above</li>
-	<li>Crucible 2.0 and above</li>
-	<li>FishEye 2.0 and above</li>
+    <li>IntelliJ PHPStorm 2.0 (experimental)</li>
+</ol>
+
+<h3>Change Notes</h3>
+<ol>
+	<li>Compatibility with IDEA 10.5 </li>
+	<li>Fixed precommit review for Git and Mercurial</li>
+	<li>Bug fixes</li>
 </ol>
 
 
-<p>For more information, please see <a target="_blank" href="http://www.atlassian.com/software/ideconnector" class="external-link" rel="nofollow">the website</a>.</p>
-
-<h2>Change Notes</h2>
-
-<h3><font color="red">Important Note when Upgrading</font></h3>
-
-<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
-<ol>
-	<li>Create Pre-commit Reviews in Crucible</li>
-	<li>Open files in IntelliJ IDEA from FishEye</li>
-</ol>
-
-
-<p>For more details, please read the <a target="_blank" href="http://blogs.atlassian.com/devtools/2011/02/atlassian-ide-connector-30.html" rel="nofollow">announcement</a>.</p>
-
-<h3>New Features</h3>
-
-<ol>
-	<li>Compatibility with IDEA X - the connector works in IDEA 10.0.1 and above</li>
-	<li>Multiple Bamboo jobs - unit tests are shown grouped by Job for plans with multiple jobs in Bamboo</li>
-	<li>Added support for Bamboo 2.7 and above</li>
-	<li>Easier pre-commit review creation - you can now easily create pre-commmit reviews in one step</li>
-	<li>Lots of bug fixes</li>
-</ol>
-
-
-<p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes" class="external-link" rel="nofollow">Release Notes</a>.</p>
+<p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0.1+Release+Notes" rel="nofollow">Release Notes</a>.</p>
 
   </body></html>
 
         ]]></releaseNotes>
-<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes</releaseNotesUrl>
+<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0.1+Release+Notes</releaseNotesUrl>
 </version>
 </response>
