@@ -461,17 +461,17 @@
                     </excludes>
                 </configuration>
             </plugin>
-			<!--<plugin>-->
-				<!--<artifactId>maven-deploy-plugin</artifactId>-->
-				<!--<inherited>false</inherited>-->
-				<!--<version>2.5</version>-->
-				<!--<configuration>-->
-					<!--<altDeploymentRepository>-->
-						<!--&lt;!&ndash;atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot&ndash;&gt;-->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<inherited>false</inherited>
+				<version>2.5</version>
+				<configuration>
+					<altDeploymentRepository>
+						atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot
 						<!--central::default::dav:https://m2proxy.atlassian.com/repository/internal-->
-					<!--</altDeploymentRepository>-->
-				<!--</configuration>-->
-			<!--</plugin>-->
+					</altDeploymentRepository>
+				</configuration>
+			</plugin>
         </plugins>
 
 

@@ -33,9 +33,9 @@
 		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
 		<ul>
 			<li>JIRA 3.12 and above</li>
-			<li>Bamboo 2.2.4 and above</li>
-			<li>Crucible 2.0 and above</li>
-			<li>FishEye 2.0 and above</li>
+			<li>Bamboo 2.7 and above</li>
+			<li>Crucible 2.4 and above</li>
+			<li>FishEye 2.4 and above</li>
 		</ul>
 		]]>
 	</description>
@@ -55,23 +55,21 @@
 
 	<change-notes>
 		<![CDATA[
-<h3>Important Note when Upgrading</h3>
-<p>Crucible and FishEye are no longer supported in this version of the Atlassian Connector for IntelliJ IDEA. The only features that remain are:</p>
+<h3>New features</h3>
 <ol>
-	<li>Create Pre-commit Reviews in Crucible</li>
-	<li>Open files in IntelliJ IDEA from FishEye</li>
+    <li>IntelliJ PHPStorm 2.0 (experimental)</li>
 </ol>
-<p>For more details, please read the <a target="_blank" href="http://blogs.atlassian.com/devtools/2011/02/atlassian-ide-connector-30.html" rel="nofollow">announcement</a>.</p>
-<h3>New Features</h3>
+
+<h3>Change Notes</h3>
 <ol>
-	<li>Compatibility with IDEA X - the connector works in IDEA 10.0.1 and above</li>
-	<li>Multiple Bamboo jobs - unit tests are shown grouped by Job for plans with multiple jobs in Bamboo</li>
-	<li>Added support for Bamboo 2.7 and above</li>
-	<li>Easier pre-commit review creation - you can now easily create pre-commmit reviews in one step</li>
-	<li>Lots of bug fixes</li>
+	<li>Compatibility with IDEA 10.5 </li>
+	<li>Fixed precommit review for Git and Mercurial</li>
+	<li>Bug fixes</li>
 </ol>
-<p>Fore more information please see the <a target="_blank" href="http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0+Release+Notes" rel="nofollow">Release Notes</a>.</p>
-		]]>
+
+
+<p>Fore more information please see the <a target="_blank" href="q" rel="nofollow">Release Notes</a>.</p>
+	]]>
 	</change-notes>    
 	<depends>Subversion</depends>
     <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
