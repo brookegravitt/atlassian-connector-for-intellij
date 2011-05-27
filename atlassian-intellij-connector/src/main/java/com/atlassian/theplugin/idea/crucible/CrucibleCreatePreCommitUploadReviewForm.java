@@ -32,6 +32,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -51,10 +52,15 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
 		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBrowser(project, changeListManager, changes);
 
-		setCustomComponent(changesBrowser);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setCustomComponent(changesBrowser);
 
-		setTitle("Create Pre-Commit Review");
-		pack();
+				setTitle("Create Pre-Commit Review");
+				pack();
+			}
+		});
+
 	}
 
 	@Override
