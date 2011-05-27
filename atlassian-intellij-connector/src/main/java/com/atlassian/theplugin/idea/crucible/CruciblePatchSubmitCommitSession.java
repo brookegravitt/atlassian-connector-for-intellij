@@ -56,11 +56,10 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	public void execute(Collection<Change> changes, String commitMessage) {
-		ApplicationManager.getApplication().invokeAndWait(
+ApplicationManager.getApplication().invokeLater(
 				new CruciblePatchUploader(project, crucibleServerFacade,
 						changes, projectCfgManager),
 				ModalityState.defaultModalityState());
-
 	}
 
 	public void executionCanceled() {
