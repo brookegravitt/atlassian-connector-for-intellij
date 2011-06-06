@@ -25,7 +25,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
@@ -580,7 +580,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		setupUI();
 
 		if (deactivateActiveIssue) {
-            String prefix = PluginTaskManagerFacade.isValidIdeaVersion() ? "[Server Side] " : "";
+            String prefix = PluginTaskManagerHelper.isValidIdeaVersion() ? "[Server Side] " : "";
 			setTitle(prefix + "Stop Work on Issue " + issue.getKey());
 
 			SwingUtilities.invokeLater(new Runnable() {

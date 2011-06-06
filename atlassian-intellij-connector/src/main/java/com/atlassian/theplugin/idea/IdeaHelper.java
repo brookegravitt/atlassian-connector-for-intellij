@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.intellij.tasks.PluginTaskManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -239,5 +240,9 @@ public final class IdeaHelper {
 //
 //		return null;
 		return getProjectComponent(project, JIRAServerModel.class);
+	}
+
+	public static PluginTaskManager getPluginTaskManager(final Project project) {
+		return getProjectComponent(project, PluginTaskManager.class);
 	}
 }

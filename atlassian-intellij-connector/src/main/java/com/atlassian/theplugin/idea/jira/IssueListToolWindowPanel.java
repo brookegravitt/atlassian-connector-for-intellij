@@ -28,7 +28,7 @@ import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.jira.tree.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -782,7 +782,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         boolean isOk = true;
 
-        if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
+        if (!PluginTaskManagerHelper.isValidIdeaVersion()) {
             isOk = createChangeListAction(issue);
         }
 

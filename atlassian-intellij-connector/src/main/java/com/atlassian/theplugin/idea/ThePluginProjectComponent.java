@@ -34,7 +34,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.TaskActionOrganizer;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
@@ -305,7 +305,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
     private void informAboutIdea9TaskIntegrationAsExperimental() {
       if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
-              && PluginTaskManagerFacade.isValidIdeaVersion()) {
+              && PluginTaskManagerHelper.isValidIdeaVersion()) {
 
           final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
                   PluginUtil.PRODUCT_NAME,

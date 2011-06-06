@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -81,7 +81,7 @@ public class ActivateIssueItemAction extends AnAction {
 			final JiraServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
 			if (jiraServer != null) {
 				activeIssue.resetTimeSpent();
-				if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
+				if (!PluginTaskManagerHelper.isValidIdeaVersion()) {
 
 					ActiveIssueUtils.activateIssue(IdeaHelper.getCurrentProject(event),
 							event, activeIssue, jiraServer, null);
@@ -89,7 +89,7 @@ public class ActivateIssueItemAction extends AnAction {
 				} else {
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
 						public void run() {
-							PluginTaskManagerFacade.activateIssue(IdeaHelper.getCurrentProject(event), activeIssue);
+							PluginTaskManagerHelper.activateIssue(IdeaHelper.getCurrentProject(event), activeIssue);
 						}
 					});
 				}
