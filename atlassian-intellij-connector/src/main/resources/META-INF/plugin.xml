@@ -21,7 +21,7 @@
 <!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/"  version="2">
 
-	<name>Atlassian Connector for IntelliJ IDEA</name>
+	<name>Atlassian Connector for IntelliJ IDE</name>
 	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
 	<!--
 															  todo lguminski/jjaroczynski check if there is some decent way of getting artifactId from pom.xml
@@ -30,7 +30,7 @@
 	<plugin-id>atlassian-idea-plugin</plugin-id>
 	<description>
 		<![CDATA[
-		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
+		Atlassian Connector for IntelliJ IDE provides integration for the following Atlassian products:
 		<ul>
 			<li>JIRA 3.12 and above</li>
 			<li>Bamboo 2.7 and above</li>
@@ -72,7 +72,6 @@
 	]]>
 	</change-notes>    
 	<depends>Subversion</depends>
-    <depends optional="true" config-file="task-integration.xml">com.intellij.tasks</depends>
 	<depends optional="true">JUnit</depends>
 	<!-- FAKE DEPENDENCY FOR wEB ide -->
 	<depends optional="true">com.intellij.modules.xml</depends>
@@ -128,6 +127,9 @@
 
 		<projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
+
+		<projectService serviceInterface="com.atlassian.connector.intellij.tasks.PluginTaskManager"
+				serviceImplementation="com.atlassian.connector.intellij.tasks.PluginTaskManager"/>
 
 
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.UiTaskExecutor"

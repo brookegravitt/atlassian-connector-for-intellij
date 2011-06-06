@@ -1,19 +1,13 @@
 <atlassian-ide-plugin>
   <project-configuration>
     <servers>
-      <jira>
-        <server-id>c2f78497-e859-444b-9995-5c0e50315cbd</server-id>
-        <name>Studio</name>
-        <url>https://studio.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
       <bamboo>
         <server-id>60ccec01-b4fa-4afb-b28a-db2306b0c0ac</server-id>
         <name>Gdansk</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
+        <bamboo2>false</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
           <plan key="ECL-TST" grouped="0" />
@@ -82,6 +76,12 @@
         <shared>false</shared>
         <isFisheyeInstance>false</isFisheyeInstance>
       </crucible>
+      <jira>
+        <server-id>30b811ed-e157-4405-85a3-264f90edbbc1</server-id>
+        <name>4.2.1</name>
+        <url>http://192.168.157.159:8041</url>
+        <shared>false</shared>
+      </jira>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>

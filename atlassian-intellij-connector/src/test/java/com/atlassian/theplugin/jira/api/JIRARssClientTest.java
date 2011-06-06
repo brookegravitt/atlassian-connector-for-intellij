@@ -45,6 +45,7 @@ import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class JIRARssClientTest extends TestCase {
@@ -151,6 +152,62 @@ public class JIRARssClientTest extends TestCase {
 
 
     }
+
+		// for testing PL-2477
+	public void testBugPl2477() throws Exception {
+        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public JiraServerCfg getClone() {
+				return null;
+			}
+		};
+
+		final JiraServerData server = new JiraServerData(serverCfg);
+
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallbackImpl()) {
+			@Override
+			protected Document retrieveGetResponse(String urlString)
+					throws IOException, JDOMException, RemoteApiSessionExpiredException {
+				SAXBuilder builder = new SAXBuilder();
+				InputStream is = JIRARssClientTest.class.getResourceAsStream("/jira/PL-2477.xml");
+				Document doc = builder.build(is);
+				preprocessResult(doc);
+				return doc;
+			}
+		};
+		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
+		l.add(new JIRAProjectBean());
+
+		try {
+			c.getSavedFilterIssues(new JIRAQueryFragment() {
+						public String getQueryStringFragment() {
+							return "1001";
+						}
+
+						public long getId() {
+							return 0;
+						}
+
+						public String getName() {
+							return "name";  //To change body of implemented methods use File | Settings | File Templates.
+						}
+
+						public HashMap<String, String> getMap() {
+							return null;
+						}
+
+						public JIRAQueryFragment getClone() {
+							return null;
+						}
+					}, "sortBy", "DESC", 0, 0);
+		} catch (JIRAException e) {
+			// I think it should stay here like this, as this is really unsolved on server side!
+			System.out.println("PL-2477 not fixed: " + e.getMessage());
+		}
+	}
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
         JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {

@@ -30,12 +30,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.atlassian.connector.tasks</groupId>
-            <artifactId>atlassian-idea9-integration</artifactId>
-            <version>0.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
             <version>4.0.0-SNAPSHOT</version>
@@ -52,6 +46,18 @@
             <version>0.9.4</version>
             <classifier>jdk15</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>tasks-core</artifactId>
+            <version>9.0.2-95.4</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>jira-connector</artifactId>
+            <version>9.0.2-95.4</version>
+            <scope>compile</scope>
         </dependency>
 		 <dependency>
             <groupId>com.intellij.idea</groupId>
@@ -326,6 +332,10 @@
                     <wildcardResourcePatterns>!?*.java</wildcardResourcePatterns>
                     <downloadSources>true</downloadSources>
                     <libraries>
+						<library>
+							<name>com.toedter</name>
+							<exclude></exclude>
+						</library>
                         <library>
                             <name>Clover</name>
                             <exclude>false</exclude>

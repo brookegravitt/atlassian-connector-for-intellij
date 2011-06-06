@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerFacade;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -43,7 +43,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 							selectedIssue.getJiraServerData().getServerId(), selectedIssue.getIssueUrl(),
                             selectedIssue.getKey(), new DateTime());
                     final Project project = IdeaHelper.getCurrentProject(event);
-					if (!PluginTaskManagerFacade.isValidIdeaVersion()) {
+					if (!PluginTaskManagerHelper.isValidIdeaVersion()) {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 ActiveIssueUtils.activateIssue(project, event, newActiveIssue,
@@ -54,8 +54,8 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
                     } else {
                         ApplicationManager.getApplication().invokeLater(new Runnable() {
                             public void run() {
-                                PluginTaskManagerFacade.activateIssue(
-                                        IdeaHelper.getCurrentProject(event), newActiveIssue);
+                                PluginTaskManagerHelper.activateIssue(
+										IdeaHelper.getCurrentProject(event), newActiveIssue);
 				}
                         });
 
