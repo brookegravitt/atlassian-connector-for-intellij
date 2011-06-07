@@ -59,7 +59,7 @@
       <jira>
         <server-id>4f7c25b6-7bfa-49d8-a7bc-d94df9fef03e</server-id>
         <name>water</name>
-        <url>http://192.168.157.101:8030</url>
+        <url>http://192.168.157.159:8030</url>
         <shared>false</shared>
       </jira>
       <crucible>
