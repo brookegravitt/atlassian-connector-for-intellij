@@ -4,11 +4,10 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.startup.StartupManager;
 import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
@@ -17,10 +16,8 @@ import com.intellij.tasks.impl.BaseRepository;
 import com.intellij.tasks.impl.TaskManagerImpl;
 import com.intellij.tasks.jira.JiraRepository;
 import com.intellij.tasks.jira.JiraRepositoryType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -30,12 +27,11 @@ import java.util.Timer;
  * @author pmaruszak
  * @date Feb 2, 2010
  */
-public class PluginTaskManager implements ProjectComponent {
+public class PluginTaskManager {
 
 	private final Project project;
 	private final ProjectCfgManager projectCfgManager;
 	private final PluginConfiguration pluginConfiguration;
-	private TaskManagerImpl taskManager;
 	private TaskListenerImpl listener;
 	private Timer timer = new Timer("plugin task manager timer");
 	private static final int SILENT_ACTIVATE_DELAY = 500;
@@ -46,12 +42,14 @@ public class PluginTaskManager implements ProjectComponent {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.pluginConfiguration = pluginConfiguration;
-		this.listener = new TaskListenerImpl(project, this, pluginConfiguration);
-		this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+		listener =
+				PluginTaskManagerHelper.isValidIdeaVersion() ? new TaskListenerImpl(project, this, pluginConfiguration)
+						: null;
 //        this.changeListListener = new PluginChangeListAdapter(project);
 	}
 
 	public void activateIssue(final ActiveJiraIssue issue) {
+		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 		ServerData server = projectCfgManager.getServerr(issue.getServerId());
 		final Task foundTask = findLocalTaskByUrl(issue.getIssueUrl());
 
@@ -85,6 +83,8 @@ public class PluginTaskManager implements ProjectComponent {
 
 	@Nullable
 	private BaseRepository getJiraRepository(ServerData server) {
+		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+
 		TaskRepository[] repos = taskManager.getAllRepositories();
 		if (repos != null) {
 			for (TaskRepository r : repos) {
@@ -111,21 +111,27 @@ public class PluginTaskManager implements ProjectComponent {
 	}
 
 	public void activateListener() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				PluginUtil.getLogger().debug("Activating TM listener");
-				taskManager.addTaskListener(listener);
-			}
-		});
-
+		if (PluginTaskManagerHelper.isValidIdeaVersion()) {
+//			EventQueue.invokeLater(new Runnable() {
+//				public void run() {
+			TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+			PluginUtil.getLogger().debug("Activating TM listener");
+			taskManager.addTaskListener(listener);
+//				}
+//			});
+		}
 	}
 
 	public void deactivateListner() {
-		PluginUtil.getLogger().debug("Deactivating TM listener");
-		taskManager.removeTaskListener(listener);
+		if (listener != null) {
+			PluginUtil.getLogger().debug("Deactivating TM listener");
+			TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+			taskManager.removeTaskListener(listener);
+		}
 	}
 
 	private void addJiraRepository(TaskRepository repo) {
+		TaskManagerImpl taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 		TaskRepository[] repos = taskManager.getAllRepositories();
 		List<TaskRepository> reposList = new ArrayList<TaskRepository>();
 		if (repos != null) {
@@ -141,6 +147,7 @@ public class PluginTaskManager implements ProjectComponent {
 	private LocalTask findLocalTaskByUrl
 			(String
 					issueUrl) {
+		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 		LocalTask[] tasks = taskManager.getLocalTasks();
 		if (tasks != null) {
 			for (LocalTask t : tasks) {
@@ -157,6 +164,7 @@ public class PluginTaskManager implements ProjectComponent {
 	private LocalTask findLocalTaskById
 			(String
 					issueId) {
+		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 		LocalTask[] tasks = taskManager.getLocalTasks();
 		if (tasks != null) {
 			for (LocalTask t : tasks) {
@@ -167,37 +175,6 @@ public class PluginTaskManager implements ProjectComponent {
 		}
 
 		return null;
-	}
-
-	public void projectOpened() {
-		StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
-			public void run() {
-				initializePlugin();
-			}
-		});
-	}
-
-
-	private void initializePlugin() {
-		this.taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-		activateListener();
-	}
-
-	public void projectClosed() {
-		deactivateListner();
-	}
-
-	@NotNull
-	public String getComponentName() {
-		return "PluginTaskManager";
-	}
-
-	public void initComponent() {
-
-	}
-
-	public void disposeComponent() {
-
 	}
 
 	public static boolean isDefaultTask(LocalTask task) {
@@ -218,6 +195,7 @@ public class PluginTaskManager implements ProjectComponent {
 
 
 	public void deactivateToDefaultTask() {
+		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 		PluginUtil.getLogger().debug("deactivating to default");
 		LocalTask defaultTask = getDefaultTask();
 		if (defaultTask != null) {
@@ -226,7 +204,7 @@ public class PluginTaskManager implements ProjectComponent {
 
 	}
 
-	private LocalTask getDefaultTask() {
+	public LocalTask getDefaultTask() {
 		LocalTask defaultTask = findLocalTaskById("Default task");
 		if (defaultTask == null) {
 			defaultTask = findLocalTaskById("Default");
@@ -235,4 +213,11 @@ public class PluginTaskManager implements ProjectComponent {
 		return defaultTask;
 	}
 
+	public boolean isDefaultTaskActive() {
+		LocalTask defaultTask = getDefaultTask();
+		final LocalTask activeTask =  TaskManager.getManager(project).getActiveTask();
+
+		return defaultTask != null && activeTask.equals(defaultTask);
+
+	}
 }

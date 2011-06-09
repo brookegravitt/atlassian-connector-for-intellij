@@ -71,7 +71,11 @@ public final class PluginTaskManagerHelper {
 			public void run() {
 				try {
 					final PluginTaskManager ptm = IdeaHelper.getPluginTaskManager(project);
-					ptm.deactivateToDefaultTask();
+					if (!ptm.isDefaultTaskActive()) {
+						ptm.deactivateToDefaultTask();
+					} else {
+						SwingUtilities.invokeLater(new DeactivateIssueRunnable(project));
+					}
 
 				} catch (Exception e) {
 					PluginUtil.getLogger().error("Cannot deactivate issue to default task.", e);

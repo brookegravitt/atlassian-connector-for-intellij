@@ -82,7 +82,12 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			this.timer = new Timer();
 			timer.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
-					blinkIcon();
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							blinkIcon();
+						}
+					});
+
 				}
 			}, 0, ICON_BLINK_TIME);
 		}
