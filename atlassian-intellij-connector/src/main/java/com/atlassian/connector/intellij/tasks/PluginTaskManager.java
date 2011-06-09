@@ -59,7 +59,7 @@ public class PluginTaskManager {
 			LocalTask activeTask = taskManager.getActiveTask();
 			if (activeTask.getIssueUrl() == null || !foundTask.getIssueUrl().equals(activeTask.getIssueUrl())) {
 				try {
-					taskManager.activateTask(foundTask, true, false);
+					taskManager.activateTask(foundTask, true, true);
 				} catch (Exception e) {
 					PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
 					deactivateToDefaultTask();
@@ -200,6 +200,7 @@ public class PluginTaskManager {
 		LocalTask defaultTask = getDefaultTask();
 		if (defaultTask != null) {
 			taskManager.activateTask(defaultTask, false, false);
+
 		}
 
 	}
