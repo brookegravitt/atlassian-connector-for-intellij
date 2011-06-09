@@ -52,8 +52,8 @@
       </bamboo>
       <jira>
         <server-id>4ac8f6e9-41a7-4d34-a017-d32735139cb2</server-id>
-        <name>java.net</name>
-        <url>https://java.net/jira</url>
+        <name>local</name>
+        <url>http://192.168.157.159:8030</url>
         <shared>false</shared>
       </jira>
       <jira>

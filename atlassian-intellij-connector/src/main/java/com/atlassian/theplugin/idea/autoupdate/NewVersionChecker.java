@@ -108,6 +108,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		Version newVersion = versionInfo.getVersion();
 		// get current version
 		Version thisVersion = new Version(PluginUtil.getInstance().getVersion());
+
 		if (newVersion.greater(thisVersion)) {
 			action.doAction(versionInfo, showConfigPath);
 		}

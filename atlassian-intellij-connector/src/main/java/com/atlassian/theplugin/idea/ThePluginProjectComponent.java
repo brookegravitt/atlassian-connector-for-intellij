@@ -26,6 +26,7 @@ import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.tasks.PluginTaskManager;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -114,6 +115,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private FileEditorListenerImpl fileEditorListener;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
+	private final PluginTaskManager pluginTaskManager;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
@@ -123,7 +125,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull BuildListModelImpl bambooModel,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
-			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
+			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+			@NotNull final PluginTaskManager pluginTaskManager) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -135,6 +138,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
+		this.pluginTaskManager = pluginTaskManager;
 
 		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		jiraIssueListModelBuilder.setProject(project);
@@ -187,6 +191,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// clean up object model confusion
 		if (!created) {
             IconLoader.activate();
+			pluginTaskManager.activateListener();
 
             TaskActionOrganizer.organizeTaskActionsInToolbar();
 			toolWindow.register(toolWindowManager);
@@ -415,6 +420,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public void projectClosed() {
 		if (created) {
+			pluginTaskManager.deactivateListner();
 			fileEditorListener.projectClosed();
 			// remove icon from status bar
 			statusBarBambooIcon.hideIcon();
