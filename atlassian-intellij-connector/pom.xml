@@ -34,6 +34,7 @@
 			<groupId>com.atlassian.connector</groupId>
 			<artifactId>atlassian-connector-commons</artifactId>
 			<version>4.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ddsteps</groupId>
@@ -64,14 +65,14 @@
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>util</artifactId>
 			<version>9.0.4</version>
-			<classifier>95.627</classifier>
+			<!--<classifier>95.627</classifier>-->
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.openapi</groupId>
 			<artifactId>extensions</artifactId>
 			<version>9.0.4</version>
-			<classifier>95.627</classifier>
+			<!--<classifier>95.627</classifier>-->
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -81,6 +82,7 @@
 			<classifier>95.627</classifier>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>forms_rt</artifactId>
@@ -165,6 +167,11 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -287,7 +294,209 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>log4j:log4j</include>
+									<include>commons-codec:commons-codec</include>
+									<include>commons-logging:commons-logging</include>
+									<include>com.atlassian.connector:atlassian-connector-commons</include>
+									<include>commons-httpclient:commons-httpclient</include>
+									<include>commons-discovery:commons-discovery</include>
+									<include>commons-io:commons-io</include>
+									<include>commons-lang:commons-lang</include>
+									<include>joda-time:joda-time</include>
+									<include>axis:axis</include>
+									<include>org.apache.axis:axis-jaxrpc</include>
+									<include>org.apache.axis:axis-saaj</include>
+									<include>wsdl4j:wsdl4j</include>
+									<include>com.toedter:jcalendar</include>
+									<include>com.thoughtworks.xstream:xstream</include>
+									<include>com.atlassian.connector:atlassian-idea-plugin</include>
+								</includes>
+							</artifactSet>
+							<relocations>
+								<relocation>
+									<pattern>javax.xml.messaging</pattern>
+									<shadedPattern>shadow.javax.xml.messaging</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>javax.xml.namespace</pattern>
+									<shadedPattern>shadow.javax.xml.namespace</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>javax.xml.rpc</pattern>
+									<shadedPattern>shadow.javax.xml.rpc</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>javax.xml.soap</pattern>
+									<shadedPattern>shadow.javax.xml.soap</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.axis</pattern>
+									<shadedPattern>shadow.org.apache.axis</shadedPattern>
+									<excludes>
+										<exclude>org.apache.axis.transport.http.HTTPSender</exclude>
+									</excludes>
+								</relocation>
+								<relocation>
+									<pattern>org.joda.time</pattern>
+									<shadedPattern>shadow.org.joda.time</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.lang</pattern>
+									<shadedPattern>shadow.org.apache.commons.lang</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.io</pattern>
+									<shadedPattern>shadow.org.apache.commons.io</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.discover</pattern>
+									<shadedPattern>shadow.org.apache.commons.discover</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.discovery</pattern>
+									<shadedPattern>shadow.org.apache.commons.discovery</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.httpclient</pattern>
+									<shadedPattern>shadow.org.apache.commons.httpclient</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.logging</pattern>
+									<shadedPattern>shadow.org.apache.commons.logging</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.codec</pattern>
+									<shadedPattern>shadow.org.apache.commons.codec</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.log4j</pattern>
+									<shadedPattern>shadow.org.apache.log4j</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.ibm.wsdl</pattern>
+									<shadedPattern>shadow.com.ibm.wsdl"</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>javax.wsdl</pattern>
+									<shadedPattern>shadow.javax.wsdl</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.toeder</pattern>
+									<shadedPattern>shadow.com.toeder"</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.thoughtworks.xstream</pattern>
+									<shadedPattern>shadow.com.thoughtworks.xstream</shadedPattern>
+								</relocation>
+							</relocations>
+							<!--<filters>-->
+								<!--<filter>-->
+									<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
+									<!--<includes>-->
+										<!--<include>com/thoughtworks/**</include>-->
+									<!--</includes>-->
+								<!--</filter>-->
+								<!--<filter>-->
+									<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
+									<!--<includes>-->
+										<!--<include>com/thoughtworks/**</include>-->
+									<!--</includes>-->
+								<!--</filter>-->
+								<!--<filter>-->
+									<!--<artifact>*:*</artifact>-->
+									<!--<excludes>-->
+										<!--<exclude>META-INF/*.SF</exclude>-->
+										<!--<exclude>META-INF/*.DSA</exclude>-->
+										<!--<exclude>META-INF/*.RSA</exclude>-->
+									<!--</excludes>-->
+								<!--</filter>-->
+							<!--</filters>-->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+<!--
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>jarjar-maven-plugin</artifactId>
+				<version>1.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jarjar</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>log4j:log4j:jar</include>
+								<include>commons-codec:commons-codec:jar</include>
+								<include>commons-logging:commons-logging:jar</include>
+								<include>com.atlassian.connector:atlassian-connector-commons:jar</include>
+								<include>commons-httpclient:commons-httpclient:jar</include>
+								<include>commons-discovery:commons-discovery:jar</include>
+								<include>commons-io:commons-io:jar</include>
+								<include>commons-lang:commons-lang</include>
+								<include>joda-time:joda-time:jar</include>
+								<include>axis:axis:jar</include>
+								<include>org.apache.axis:axis-jaxrpc:jar</include>
+								<include>org.apache.axis:axis-saaj:jar</include>
+								<include>wsdl4j:wsdl4j:jar</include>
+								<include>com.toedter:jcalendar:jar</include>
+								<include>com.thoughtworks.xstream:xstream:jar</include>
+								&lt;!&ndash;<include>com.atlassian.connector:atlassian-idea-plugin:jar</include>&ndash;&gt;
+							</includes>
+							<rules>
+								<rule>
+									<pattern>com.atlassian.**</pattern>
+									<result>com.atlassian.@1</result>
+								</rule>
+								<rule>
+									<pattern>org.apache.**</pattern>
+									<result>shadow.org.apache.@1</result>
+								</rule>
+								<rule>
+									<pattern>javax.xml.**</pattern>
+									<result>shadow.javax.xml.@1</result>
+								</rule>
+								<rule>
+									<pattern>com.toeder.**</pattern>
+									<result>shadow.com.toeder.@1"</result>
+								</rule>
+								<rule>
+									<pattern>org.joda.**</pattern>
+									<result>shadow.org.joda.@1</result>
+								</rule>
+								<rule>
+									<pattern>javax.wsdl.**</pattern>
+									<result>shadow.javax.wsdl.@1"</result>
+								</rule>
+								<rule>
+									<pattern>com.ibm.wsdl.**</pattern>
+									<result>shadow.com.ibm.wsdl.@1"</result>
+								</rule>
+								<rule>
+									<pattern>com.thoughtworks.**</pattern>
+									&lt;!&ndash;<result>com.atlassian.connector.ide.shadow.com.thoughtworks.@1"</result>&ndash;&gt;
+									<result>com.thoughtworks.@1</result>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -308,10 +517,10 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>
-									${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml
-								</descriptor>
-								<descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
+								<!--<descriptor>-->
+								<!--${pom.basedir}/src/main/assembly/idea-plugin-assembly-jar-with-dependencies.xml-->
+								<!--</descriptor>-->
+								<!--<descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>-->
 								<descriptor>${pom.basedir}/src/main/assembly/idea-plugin-zip.xml</descriptor>
 							</descriptors>
 							<outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
@@ -416,6 +625,10 @@
 						</library>
 						<library>
 							<name>idea-junit</name>
+							<exclude>true</exclude>
+						</library>
+						<library>
+							<name>commons-logging</name>
 							<exclude>true</exclude>
 						</library>
 					</libraries>
