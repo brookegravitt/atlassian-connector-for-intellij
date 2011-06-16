@@ -70,6 +70,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
+			<artifactId>icons</artifactId>
+			<version>9.0.4</version>
+			<classifier>95.627</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>9.0.4</version>
 			<classifier>95.627</classifier>

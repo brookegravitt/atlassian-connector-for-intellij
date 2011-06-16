@@ -56,12 +56,6 @@
         <url>http://192.168.157.170:8030</url>
         <shared>false</shared>
       </jira>
-      <jira>
-        <server-id>4f7c25b6-7bfa-49d8-a7bc-d94df9fef03e</server-id>
-        <name>water</name>
-        <url>http://192.168.157.159:8030</url>
-        <shared>false</shared>
-      </jira>
       <crucible>
         <server-id>0aefbc76-e0c7-48c8-ba3b-c90ce0b1d0cb</server-id>
         <name>localhost</name>
@@ -77,9 +71,9 @@
         <isFisheyeInstance>false</isFisheyeInstance>
       </crucible>
       <jira>
-        <server-id>30b811ed-e157-4405-85a3-264f90edbbc1</server-id>
-        <name>4.2.1</name>
-        <url>http://192.168.157.159:8041</url>
+        <server-id>894ac1db-027a-4dcc-8045-a1722ee61284</server-id>
+        <name>Studio</name>
+        <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
     </servers>
