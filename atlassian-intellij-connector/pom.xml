@@ -65,14 +65,14 @@
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>util</artifactId>
 			<version>9.0.4</version>
-			<!--<classifier>95.627</classifier>-->
+			<classifier>95.627</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>9.0.4</version>
-			<!--<classifier>95.627</classifier>-->
+			<classifier>95.627</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -705,7 +705,7 @@
 
 	<repositories>
 		<repository>
-			<id>maven-restricted</id>
+			<id>atlassian-restricted</id>
 			<url>dav:https://maven.atlassian.com/content/repositories/atlassian-restricted/</url>
 			<snapshots>
 				<enabled>false</enabled>
