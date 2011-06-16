@@ -25,7 +25,8 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>${project.basedir}/target/site/download/${artifactId}-${version}-plugin.jar</source>
+			<!--<source>${project.basedir}/target/site/download/${artifactId}-${version}-plugin.jar</source>-->
+			<source>${project.basedir}/target/${artifactId}-${version}.jar</source>
             <destName>${artifactId}.jar</destName>
             
 		</file>

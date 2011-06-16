@@ -7,7 +7,7 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
+        <bamboo2>true</bamboo2>
         <plans>
           <plan key="ACC-CS" grouped="0" />
           <plan key="ECL-TST" grouped="0" />
@@ -53,7 +53,7 @@
       <jira>
         <server-id>4ac8f6e9-41a7-4d34-a017-d32735139cb2</server-id>
         <name>local</name>
-        <url>http://192.168.157.159:8030</url>
+        <url>http://192.168.157.170:8030</url>
         <shared>false</shared>
       </jira>
       <jira>
