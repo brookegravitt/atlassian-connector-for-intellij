@@ -69,7 +69,7 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.intellij.openapi</groupId>
+			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>9.0.4</version>
 			<!--<classifier>95.627</classifier>-->
@@ -403,32 +403,32 @@
 								</relocation>
 							</relocations>
 							<!--<filters>-->
-								<!--<filter>-->
-									<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
-									<!--<includes>-->
-										<!--<include>com/thoughtworks/**</include>-->
-									<!--</includes>-->
-								<!--</filter>-->
-								<!--<filter>-->
-									<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
-									<!--<includes>-->
-										<!--<include>com/thoughtworks/**</include>-->
-									<!--</includes>-->
-								<!--</filter>-->
-								<!--<filter>-->
-									<!--<artifact>*:*</artifact>-->
-									<!--<excludes>-->
-										<!--<exclude>META-INF/*.SF</exclude>-->
-										<!--<exclude>META-INF/*.DSA</exclude>-->
-										<!--<exclude>META-INF/*.RSA</exclude>-->
-									<!--</excludes>-->
-								<!--</filter>-->
+							<!--<filter>-->
+							<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
+							<!--<includes>-->
+							<!--<include>com/thoughtworks/**</include>-->
+							<!--</includes>-->
+							<!--</filter>-->
+							<!--<filter>-->
+							<!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
+							<!--<includes>-->
+							<!--<include>com/thoughtworks/**</include>-->
+							<!--</includes>-->
+							<!--</filter>-->
+							<!--<filter>-->
+							<!--<artifact>*:*</artifact>-->
+							<!--<excludes>-->
+							<!--<exclude>META-INF/*.SF</exclude>-->
+							<!--<exclude>META-INF/*.DSA</exclude>-->
+							<!--<exclude>META-INF/*.RSA</exclude>-->
+							<!--</excludes>-->
+							<!--</filter>-->
 							<!--</filters>-->
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-<!--
+			<!--
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>jarjar-maven-plugin</artifactId>
@@ -698,35 +698,27 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!--<plugin>-->
-			<!--<artifactId>maven-deploy-plugin</artifactId>-->
-			<!--<inherited>false</inherited>-->
-			<!--<version>2.5</version>-->
-			<!--<configuration>-->
-			<!--<altDeploymentRepository>-->
-			<!--&lt;!&ndash;atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot&ndash;&gt;-->
-			<!--central::default::dav:https://m2proxy.atlassian.com/repository/internal-->
-			<!--</altDeploymentRepository>-->
-			<!--</configuration>-->
-			<!--</plugin>-->
 		</plugins>
 
 
 	</build>
-	<!--<repositories>-->
-	<!--<repository>-->
-	<!--<id>atlassian-m2-snapshot-repository</id>-->
-	<!--<url>https://maven.atlassian.com/public-snapshot</url>-->
-	<!--</repository>-->
-	<!--&lt;!&ndash;<repository>&ndash;&gt;-->
-	<!--&lt;!&ndash;<id>atlassian-public-repository</id>&ndash;&gt;-->
-	<!--&lt;!&ndash;<url>https://maven.atlassian.com/public</url>&ndash;&gt;-->
-	<!--&lt;!&ndash;</repository>&ndash;&gt;-->
-	<!--&lt;!&ndash;<repository>&ndash;&gt;-->
-	<!--&lt;!&ndash;<id>central</id>&ndash;&gt;-->
-	<!--&lt;!&ndash;<url>https://m2proxy.atlassian.com/repository/internal/</url>&ndash;&gt;-->
-	<!--&lt;!&ndash;</repository>&ndash;&gt;-->
-	<!--</repositories>-->
+
+	<repositories>
+		<repository>
+			<id>maven-restricted</id>
+			<url>dav:https://maven.atlassian.com/content/repositories/atlassian-restricted/</url>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+		</repository>
+
+	</repositories>
 
 
 </project>
