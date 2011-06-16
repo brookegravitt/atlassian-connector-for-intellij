@@ -58,7 +58,6 @@
                 <include>wsdl4j:wsdl4j:jar</include>
                 <include>com.toedter:jcalendar:jar</include>
                 <include>com.thoughtworks.xstream:xstream:jar</include>
-                <!--<include>com.atlassian.connector.tasks:atlassian-idea9-integration:jar</include>-->
             </includes>
         </dependencySet>
     </dependencySets>
