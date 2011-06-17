@@ -314,9 +314,9 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>log4j:log4j</include>
+									<!--<include>log4j:log4j</include>-->
 									<include>commons-codec:commons-codec</include>
-									<include>commons-logging:commons-logging</include>
+									<!--<include>commons-logging:commons-logging</include>-->
 									<include>com.atlassian.connector:atlassian-connector-commons</include>
 									<include>commons-httpclient:commons-httpclient</include>
 									<include>commons-discovery:commons-discovery</include>
@@ -352,9 +352,6 @@
 								<relocation>
 									<pattern>org.apache.axis</pattern>
 									<shadedPattern>shadow.org.apache.axis</shadedPattern>
-									<excludes>
-										<exclude>org.apache.axis.transport.http.HTTPSender</exclude>
-									</excludes>
 								</relocation>
 								<relocation>
 									<pattern>org.joda.time</pattern>
@@ -380,18 +377,18 @@
 									<pattern>org.apache.commons.httpclient</pattern>
 									<shadedPattern>shadow.org.apache.commons.httpclient</shadedPattern>
 								</relocation>
-								<relocation>
-									<pattern>org.apache.commons.logging</pattern>
-									<shadedPattern>shadow.org.apache.commons.logging</shadedPattern>
-								</relocation>
+								<!--<relocation>-->
+									<!--<pattern>org.apache.commons.logging</pattern>-->
+									<!--<shadedPattern>shadow.org.apache.commons.logging</shadedPattern>-->
+								<!--</relocation>-->
 								<relocation>
 									<pattern>org.apache.commons.codec</pattern>
 									<shadedPattern>shadow.org.apache.commons.codec</shadedPattern>
 								</relocation>
-								<relocation>
-									<pattern>org.apache.log4j</pattern>
-									<shadedPattern>shadow.org.apache.log4j</shadedPattern>
-								</relocation>
+								<!--<relocation>-->
+									<!--<pattern>org.apache.log4j</pattern>-->
+									<!--<shadedPattern>shadow.org.apache.log4j</shadedPattern>-->
+								<!--</relocation>-->
 								<relocation>
 									<pattern>com.ibm.wsdl</pattern>
 									<shadedPattern>shadow.com.ibm.wsdl"</shadedPattern>
