@@ -65,13 +65,13 @@ public final class IdeaVersionFacade {
 	private static final int IDEA_8_0_1 = 9164;
 	private static final int IDEA_8_1_3 = 9886;
 	private static final int IDEA_9_EAP = 10000;
-	private static final int IDEA_X_EAP_GR4 = 96;
-	private static final int IDEA_9_GR4 = 95;
+	private static final int IDEA_X_EAP_GR5 = 96;
+	private static final int IDEA_9_GR5 = 95;
 	private static final int IDEA_9_COMMUNITY_1 = 93;
 
 	//idea 10.5 stable
-	private static final int IDEA_107_105_GR4 = 107;
-	private static final int IDEA_107_105_GR5 = 105;
+	private static final int IDEA_107_105_GR5 = 107;
+	private static final int IDEA_107_105_GR6 = 105;
 
 	private static final int IDEA_103_255_GR4 = 103;
 	private static final int IDEA_103_255_GR5 = 255;
@@ -84,7 +84,7 @@ public final class IdeaVersionFacade {
 	private boolean communityEdition = false;
 
 
-	private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
+	private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS))-(\\d+)\\.(\\d+)";
 	private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
 
@@ -94,17 +94,17 @@ public final class IdeaVersionFacade {
 		@SuppressWarnings("deprecation")
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
 		Matcher m = IDEA_9_REGEX.matcher(ver);
-		final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
 		final int group5 = m.matches() && m.group(5) != null ? Integer.parseInt(m.group(5)) : 0;
+		final int group6 = m.matches() && m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
 
-		if (m.matches() && (group4 == IDEA_9_GR4 || group4 == IDEA_9_COMMUNITY_1)) {
+		if (m.matches() && (group5 == IDEA_9_GR5 || group5 == IDEA_9_COMMUNITY_1)) {
 			isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
 			communityEdition = m.group(3) != null;
-		} else if (m.matches() && group5 >= IDEA_107_105_GR5 && group4 >= IDEA_107_105_GR4) {
+		} else if (m.matches() && group6 >= IDEA_107_105_GR6 && group5 >= IDEA_107_105_GR5) {
 			isIdeaX5 = true;
 			isIdeaX = true;
 			communityEdition = m.group(3) != null;
-		} else if (m.matches() && (group4 >= IDEA_X_EAP_GR4)) {
+		} else if (m.matches() && (group5 >= IDEA_X_EAP_GR5)) {
 			isIdeaX = true;
 			communityEdition = m.group(3) != null;
 
