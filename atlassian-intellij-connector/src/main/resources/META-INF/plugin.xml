@@ -74,7 +74,7 @@
 	<depends>Subversion</depends>
 	<depends optional="true">JUnit</depends>
 	<!-- FAKE DEPENDENCY FOR wEB ide -->
-	<!--<depends optional="true">com.intellij.modules.xml</depends>-->
+	<depends optional="true">com.intellij.modules.xml</depends>
 	<depends optional="true">com.intellij.tasks</depends>
 
 
