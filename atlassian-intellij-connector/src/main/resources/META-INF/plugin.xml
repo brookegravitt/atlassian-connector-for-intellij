@@ -41,8 +41,7 @@
 	</description>
 
     
-	<!--<version>${project.version}, SVN:${buildNumber}</version>-->
-	<version>3.0.1, SVN:1106071100</version>
+	<version>${project.version}, SVN:${buildNumber}</version>
 
 	<!-- no email link for now - we don't have the plugin email alias yet-->
 	<!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
@@ -75,7 +74,7 @@
 	<depends>Subversion</depends>
 	<depends optional="true">JUnit</depends>
 	<!-- FAKE DEPENDENCY FOR wEB ide -->
-	<depends optional="true">com.intellij.modules.xml</depends>
+	<!--<depends optional="true">com.intellij.modules.xml</depends>-->
 	<depends optional="true">com.intellij.tasks</depends>
 
 
