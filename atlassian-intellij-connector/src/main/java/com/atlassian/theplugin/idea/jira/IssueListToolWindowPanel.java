@@ -43,6 +43,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -58,6 +59,7 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.DateTime;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -971,7 +973,15 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
          * Clear server model and refill it with all enabled servers' data
          */
         public MetadataFetcherBackgroundableTask() {
-            super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
+            super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false,
+					new PerformInBackgroundOption() {
+						public boolean shouldStartInBackground() {
+							return true;
+						}
+
+						public void processSentToBackground() {
+						}
+					});
             fillServerData();
             jiraServerModel.clearAll();
             refreshIssueList = true;
@@ -1574,20 +1584,25 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         public void run(@NotNull final ProgressIndicator indicator) {
             getStatusBarPane().setInfoMessage("Loading issues...", false);
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    public void run() {
-                        jiraFilterTree.reCreateTree(jiraFilterListModel, false);
-                        jiraFilterTree.expandTree();
-                    }
-                });
+				final Runnable runnable = new Runnable() {
+					public void run() {
+						jiraFilterTree.reCreateTree(jiraFilterListModel, false);
+						jiraFilterTree.expandTree();
+					}
+				};
+				System.out.print("1Start -" + new DateTime().toString());
+				SwingUtilities.invokeAndWait(runnable);
+				System.out.print("1End -" + new DateTime().toString());
                 JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
                 JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
                 JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
                 JiraServerData jiraServerData = getSelectedServer();
                 jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
                 if (presetFilter != null) {
+					System.out.print("PresetStart -" + new DateTime().toString());
                     jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+						System.out.print("PresetEnd -" + new DateTime().toString());
                 } else if (savedFilter != null) {
                     jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);

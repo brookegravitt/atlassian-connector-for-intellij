@@ -147,7 +147,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public void setStatusErrorMessage(final String error, final Throwable exception) {
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				statusBarPane.setErrorMessage(error, exception);
 			}
@@ -156,7 +156,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 
 	public void setStatusErrorMessages(final String error, final Collection<Throwable> exceptions) {
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				statusBarPane.setErrorMessages(error, exceptions);
 			}
@@ -164,7 +164,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public void setStatusErrorMessage(final String error) {
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				statusBarPane.setErrorMessage(error);
 			}
@@ -176,7 +176,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public void setStatusInfoMessage(final String msg, final boolean rightAlign) {
-		EventQueue.invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				statusBarPane.setInfoMessage(msg, rightAlign);
 			}
