@@ -8,17 +8,8 @@ import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTask
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.tasks.LocalTask;
-import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskManager;
-import com.intellij.tasks.TaskRepository;
-import com.intellij.tasks.impl.BaseRepository;
-import com.intellij.tasks.impl.TaskManagerImpl;
-import com.intellij.tasks.jira.JiraRepository;
-import com.intellij.tasks.jira.JiraRepositoryType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
@@ -49,17 +40,21 @@ public class PluginTaskManager {
 	}
 
 	public void activateIssue(final ActiveJiraIssue issue) {
-		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+
 		ServerData server = projectCfgManager.getServerr(issue.getServerId());
-		final Task foundTask = findLocalTaskByUrl(issue.getIssueUrl());
+		final Object foundTask = findLocalTaskByUrl(issue.getIssueUrl());
+		final TaskManagerHelper instance = TaskManagerHelper.getInstance(project);
 
 		//ADD or GET JiraRepository
-		BaseRepository jiraRepository = getJiraRepository(server);
+		Object jiraRepository = getJiraRepository(server);
 		if (foundTask != null) {
-			LocalTask activeTask = taskManager.getActiveTask();
-			if (activeTask.getIssueUrl() == null || !foundTask.getIssueUrl().equals(activeTask.getIssueUrl())) {
+
+			Object activeTask = instance.getActiveTask();
+			String activeTaskIssueUrl = instance.getLocalTaskIssueUrl(activeTask);
+			String foundTaskIssueUrl = instance.getLocalTaskIssueUrl(foundTask);
+			if (activeTaskIssueUrl == null || !foundTaskIssueUrl.equals(activeTaskIssueUrl)) {
 				try {
-					taskManager.activateTask(foundTask, true, true);
+					instance.activateTask(foundTask, true, true);
 				} catch (Exception e) {
 					PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
 					deactivateToDefaultTask();
@@ -68,10 +63,10 @@ public class PluginTaskManager {
 			}
 		} else if (jiraRepository != null) {
 			try {
-				Task newTask = jiraRepository.findTask(issue.getIssueKey());
+				Object newTask = instance.jiraRepositoryfindTask(jiraRepository, issue.getIssueKey());
 				if (newTask != null) {
 
-					taskManager.activateTask(newTask, true, true);
+					instance.activateTask(newTask, true, true);
 				}
 			} catch (Exception e) {
 				PluginUtil.getLogger().error("Task haven't been activated : " + e.getMessage());
@@ -82,15 +77,17 @@ public class PluginTaskManager {
 	}
 
 	@Nullable
-	private BaseRepository getJiraRepository(ServerData server) {
-		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+	private Object getJiraRepository(ServerData server) {
 
-		TaskRepository[] repos = taskManager.getAllRepositories();
+		TaskManagerHelper instance = TaskManagerHelper.getInstance(project);
+		Object[] repos = instance.getAllRepositories();
 		if (repos != null) {
-			for (TaskRepository r : repos) {
-				if (r.getRepositoryType().getName().equalsIgnoreCase("JIRA")
-						&& r.getUrl().equalsIgnoreCase(server.getUrl())) {
-					return (BaseRepository) r;
+			for (Object r : repos) {
+				String repositoryTypeName = instance.getBaseRepositoryTypeName(r);
+				String repositoryUrl = instance.getBaseRepositoryUrl(r);
+				if (repositoryTypeName.equalsIgnoreCase("JIRA")
+						&& repositoryUrl.equalsIgnoreCase(server.getUrl())) {
+					return r;
 				}
 			}
 		}
@@ -99,24 +96,19 @@ public class PluginTaskManager {
 	}
 
 	@Nullable
-	private BaseRepository createJiraRepository(ServerData server) {
-		JiraRepositoryType jiraRepositoryType = new JiraRepositoryType();
-		JiraRepository repo = jiraRepositoryType.createRepository();
-		repo.setPassword(server.getPassword());
-		repo.setUrl(server.getUrl());
-		repo.setUsername(server.getUsername());
-		addJiraRepository(repo);
-
-		return repo;
+	private Object createJiraRepository(ServerData server) {
+		TaskManagerHelper instance = TaskManagerHelper.getInstance(project);
+		Object jiraRepository = instance.createJiraRepository(server.getUrl(), server.getUsername(), server.getPassword());
+		addJiraRepository(jiraRepository);
+		return jiraRepository;
 	}
 
 	public void activateListener() {
 		if (PluginTaskManagerHelper.isValidIdeaVersion()) {
 //			EventQueue.invokeLater(new Runnable() {
 //				public void run() {
-			TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
 			PluginUtil.getLogger().debug("Activating TM listener");
-			taskManager.addTaskListener(listener);
+			TaskManagerHelper.getInstance(project).addTaskListener(listener);
 //				}
 //			});
 		}
@@ -125,33 +117,34 @@ public class PluginTaskManager {
 	public void deactivateListner() {
 		if (listener != null) {
 			PluginUtil.getLogger().debug("Deactivating TM listener");
-			TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-			taskManager.removeTaskListener(listener);
+
+			TaskManagerHelper.getInstance(project).removeTaskListener(listener);
 		}
 	}
 
-	private void addJiraRepository(TaskRepository repo) {
-		TaskManagerImpl taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-		TaskRepository[] repos = taskManager.getAllRepositories();
-		List<TaskRepository> reposList = new ArrayList<TaskRepository>();
+	private void addJiraRepository(Object repo) {
+		final TaskManagerHelper instance = TaskManagerHelper.getInstance(project);
+		Object[] repos = instance.getAllRepositories();
+		List<Object> reposList = instance.getNewArrayList();
 		if (repos != null) {
-			for (TaskRepository r : repos) {
+			for (Object r : repos) {
 				reposList.add(r);
 			}
 		}
 		reposList.add(repo);
-		taskManager.setRepositories(reposList);
+		instance.setRepositories(reposList);
 	}
 
 	@Nullable
-	private LocalTask findLocalTaskByUrl
+	private Object findLocalTaskByUrl
 			(String
 					issueUrl) {
-		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-		LocalTask[] tasks = taskManager.getLocalTasks();
+
+		Object[] tasks = TaskManagerHelper.getInstance(project).getLocalTasks();
 		if (tasks != null) {
-			for (LocalTask t : tasks) {
-				if (t.getIssueUrl() != null && t.getIssueUrl().equals(issueUrl)) {
+			for (Object t : tasks) {
+				String localTaskIssueUrl  = TaskManagerHelper.getInstance(project).getLocalTaskIssueUrl(t);
+				if (localTaskIssueUrl != null && localTaskIssueUrl.equals(issueUrl)) {
 					return t;
 				}
 			}
@@ -161,14 +154,15 @@ public class PluginTaskManager {
 	}
 
 	@Nullable
-	private LocalTask findLocalTaskById
+	private Object findLocalTaskById
 			(String
 					issueId) {
-		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
-		LocalTask[] tasks = taskManager.getLocalTasks();
+
+		Object[] tasks = TaskManagerHelper.getInstance(project).getLocalTasks();
 		if (tasks != null) {
-			for (LocalTask t : tasks) {
-				if (t.getId() != null && t.getId().equals(issueId)) {
+			for (Object t : tasks) {
+				String localTaskId = TaskManagerHelper.getInstance(project).getLocalTaskId(t);
+				if (localTaskId != null && localTaskId.equals(issueId)) {
 					return t;
 				}
 			}
@@ -177,9 +171,11 @@ public class PluginTaskManager {
 		return null;
 	}
 
-	public static boolean isDefaultTask(LocalTask task) {
-		return (task.getId() != null && task.getId().equalsIgnoreCase("Default"))
-				|| task.getSummary().equalsIgnoreCase("Default task");
+	public static boolean isDefaultTask(Project project, Object task) {
+		String localTaskId = TaskManagerHelper.getInstance(project).getLocalTaskId(task);
+		String localTaskSummary = TaskManagerHelper.getInstance(project).getLocalTaskId(task);
+		return (localTaskId != null && localTaskId.equalsIgnoreCase("Default"))
+				|| localTaskSummary.equalsIgnoreCase("Default task");
 	}
 
 	@Nullable
@@ -195,18 +191,18 @@ public class PluginTaskManager {
 
 
 	public void deactivateToDefaultTask() {
-		TaskManager taskManager = (TaskManagerImpl) TaskManager.getManager(project);
+
 		PluginUtil.getLogger().debug("deactivating to default");
-		LocalTask defaultTask = getDefaultTask();
+		Object defaultTask = getDefaultTask();
 		if (defaultTask != null) {
-			taskManager.activateTask(defaultTask, false, false);
+			TaskManagerHelper.getInstance(project).activateTask(defaultTask, false, false);
 
 		}
 
 	}
 
-	public LocalTask getDefaultTask() {
-		LocalTask defaultTask = findLocalTaskById("Default task");
+	public Object getDefaultTask() {
+		Object defaultTask = findLocalTaskById("Default task");
 		if (defaultTask == null) {
 			defaultTask = findLocalTaskById("Default");
 		}
@@ -215,10 +211,12 @@ public class PluginTaskManager {
 	}
 
 	public boolean isDefaultTaskActive() {
-		LocalTask defaultTask = getDefaultTask();
-		final LocalTask activeTask =  TaskManager.getManager(project).getActiveTask();
+		Object defaultTask = getDefaultTask();
+		final Object activeTask =  TaskManagerHelper.getInstance(project).getActiveTask();
 
 		return defaultTask != null && activeTask.equals(defaultTask);
 
 	}
+
+
 }

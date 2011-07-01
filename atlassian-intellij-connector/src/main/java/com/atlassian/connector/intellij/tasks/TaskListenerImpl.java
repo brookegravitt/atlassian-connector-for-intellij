@@ -32,7 +32,7 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
     public void taskActivated(final LocalTask localTask) {
         if (pluginConfiguration != null
                 && pluginConfiguration.getJIRAConfigurationData().isSynchronizeWithIntelliJTasks()) {
-            if (!PluginTaskManager.isDefaultTask(localTask)) {
+            if (!PluginTaskManager.isDefaultTask(project, localTask)) {
                 final ActiveJiraIssue jiraIssue = ActiveIssueUtils.getActiveJiraIssue(project);
                 if (jiraIssue == null || !localTask.getId().equals(jiraIssue.getIssueKey())) {
                     final JiraServerData sd = pluginTaskManager.findJiraPluginJiraServer(localTask.getIssueUrl());
