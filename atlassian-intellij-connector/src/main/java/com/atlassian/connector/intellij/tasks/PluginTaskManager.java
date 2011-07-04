@@ -34,6 +34,17 @@ public class PluginTaskManager {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.pluginConfiguration = pluginConfiguration;
+
+		if (PluginTaskManagerHelper.isValidIdeaVersion()) {
+			try {
+				listener = Proxy.newProxyInstance(
+						PluginTaskManager.class.getClassLoader(),
+						new Class[]{Class.forName("com.intellij.tasks.TaskListener")},
+						new TaskListenerInvocationHandler(project, this, pluginConfiguration));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 //		listener =
 //				PluginTaskManagerHelper.isValidIdeaVersion() ? new TaskListenerImpl(project, this, pluginConfiguration)
 //						: null;
@@ -109,14 +120,7 @@ public class PluginTaskManager {
 		if (PluginTaskManagerHelper.isValidIdeaVersion()) {
 //			EventQueue.invokeLater(new Runnable() {
 //				public void run() {
-			try {
-				listener = Proxy.newProxyInstance(
-						PluginTaskManager.class.getClassLoader(),
-						new Class[]{Class.forName("com.intellij.tasks.TaskListener")},
-						new TaskListenerInvocationHandler(project, this, pluginConfiguration));
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+
 			PluginUtil.getLogger().debug("Activating TM listener");
 			TaskManagerHelper.getInstance(project).addTaskListener(listener);
 //				}

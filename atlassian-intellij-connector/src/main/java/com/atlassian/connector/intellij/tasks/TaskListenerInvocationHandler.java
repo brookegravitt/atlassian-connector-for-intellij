@@ -63,6 +63,12 @@ public class TaskListenerInvocationHandler implements InvocationHandler {
 				}
 
 			}
+		} else {
+			for (Method m : Object.class.getMethods()) {
+				if (m.equals(method)) {
+					return m.invoke(this, args);
+				}
+			}
 		}
 
 		return null;
