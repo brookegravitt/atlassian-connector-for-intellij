@@ -8,11 +8,12 @@ import com.intellij.openapi.project.Project;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskManagerHelper {
 	private static TaskManagerHelper instance;
-	private static Object taskManager = null;
+	private static Object taskManagerImpl = null;
 	private static Project project;
 	private static Class taskManagerClass;
 	private static Class localTaskClass;
@@ -22,15 +23,17 @@ public class TaskManagerHelper {
 	private static Class baseRepositoryClass;
 	private static Class repositoryTypeClass;
 	private static Class taskListenerClass;
-	private static Class arrayListClass;
+	//private static Class taskRepositoryClass;
+	private static Class taskManagerImplClass;
 
 	private TaskManagerHelper(Project project) {
 
 		TaskManagerHelper.project = project;
 		try {
 			taskManagerClass = Class.forName("com.intellij.tasks.TaskManager");
-			Method getInstanceMethod = taskManagerClass.getMethod("getInstance", Project.class);
-			taskManager = getInstanceMethod.invoke(null, project);
+			taskManagerImplClass = Class.forName("com.intellij.tasks.impl.TaskManagerImpl");
+			Method getInstanceMethod = taskManagerClass.getMethod("getManager", Project.class);
+			taskManagerImpl = getInstanceMethod.invoke(null, project);
 			localTaskClass = Class.forName("com.intellij.tasks.LocalTask");
 			jiraRepositoryClass = Class.forName("com.intellij.tasks.jira.JiraRepository");
 			jiraRepositoryTypeClass = Class.forName("com.intellij.tasks.jira.JiraRepositoryType");
@@ -38,10 +41,11 @@ public class TaskManagerHelper {
 			baseRepositoryClass = Class.forName("com.intellij.tasks.impl.BaseRepository");
 			repositoryTypeClass = Class.forName("com.intellij.tasks.jira.JiraRepositoryType");
 			taskListenerClass = Class.forName("com.intellij.tasks.TaskListener");
-			arrayListClass = Class.forName("java.util.ArrayList<com.intellij.tasks.TaskRepository>");
+			//taskRepositoryClass = Class.forName("com.intellij.tasks.TaskRepository");
+
 
 		} catch (Exception e) {
-
+			  e.printStackTrace();
 		}
 
 	}
@@ -54,14 +58,15 @@ public class TaskManagerHelper {
 	}
 
 	public Object getTaskManagerImplInstance(Project project) {
-		return taskManager;
+		return taskManagerImpl;
 	}
 
 	public Object getActiveTask() {
 		try {
 			Method getActiveTaskMethod = taskManagerClass.getMethod("getActiveTask");
-			return getActiveTaskMethod.invoke(taskManager);
+			return getActiveTaskMethod.invoke(taskManagerImpl);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -69,8 +74,9 @@ public class TaskManagerHelper {
 	public Object[] getLocalTasks() {
 		try {
 			Method getLocalTasksMethod = taskManagerClass.getMethod("getLocalTasks");
-			return (Object[]) getLocalTasksMethod.invoke(taskManager);
+			return (Object[]) getLocalTasksMethod.invoke(taskManagerImpl);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new Object[0];
 		}
 	}
@@ -80,6 +86,7 @@ public class TaskManagerHelper {
 			Method getIssueUrlMethod = localTaskClass.getMethod("getIssueUrl");
 			return (String) getIssueUrlMethod.invoke(localTask);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -89,6 +96,7 @@ public class TaskManagerHelper {
 			Method getIdMethod = localTaskClass.getMethod("getId");
 			return (String) getIdMethod.invoke(localTask);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -98,6 +106,7 @@ public class TaskManagerHelper {
 			Method getSummaryMethod = localTaskClass.getMethod("getSummary");
 			return (String) getSummaryMethod.invoke(localTask);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -105,8 +114,9 @@ public class TaskManagerHelper {
 	public Object[] getAllRepositories() {
 		try {
 			Method getAllRepositories = taskManagerClass.getMethod("getAllRepositories");
-			return (Object[]) getAllRepositories.invoke(taskManager);
+			return (Object[]) getAllRepositories.invoke(taskManagerImpl);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new Object[0];
 		}
 	}
@@ -117,8 +127,9 @@ public class TaskManagerHelper {
 
 			Method activateTaskMethod = taskManagerClass
 					.getMethod("activateTask", taskClass, boolean.class, boolean.class);
-			activateTaskMethod.invoke(taskManager, foundTask, b, b1);
+			activateTaskMethod.invoke(taskManagerImpl, foundTask, b, b1);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -128,6 +139,7 @@ public class TaskManagerHelper {
 			return findTaskMethod.invoke(jiraRepository, issueKey);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 
@@ -140,6 +152,7 @@ public class TaskManagerHelper {
 			Method getNameMethod = repositoryTypeClass.getMethod("getName");
 			return (String) getNameMethod.invoke(repositoryTypeObject);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -149,6 +162,7 @@ public class TaskManagerHelper {
 			Method getUrlMethod = baseRepositoryClass.getMethod("getUrl");
 			return (String) getUrlMethod.invoke(baseRepository);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -157,8 +171,8 @@ public class TaskManagerHelper {
 		try {
 			Constructor jiraRepositoryTypeConstructor = jiraRepositoryTypeClass.getConstructor();
 			Object jiraRepositoryTypeObject = jiraRepositoryTypeConstructor.newInstance();
-			Method createRepositoryMethod = jiraRepositoryClass.getMethod("createRepository");
-			Object jiraRepositoryObject = createRepositoryMethod.invoke(jiraRepositoryTypeObject);
+			Method createRepositoryTypeMethod = jiraRepositoryTypeClass.getMethod("createRepository");
+			Object jiraRepositoryObject = createRepositoryTypeMethod.invoke(jiraRepositoryTypeObject);
 
 			Method setUrlMethod = jiraRepositoryClass.getMethod("setUrl", String.class);
 			setUrlMethod.invoke(jiraRepositoryObject, url);
@@ -178,21 +192,23 @@ public class TaskManagerHelper {
 
 	}
 
-	public void addTaskListener(TaskListenerImpl listener) {
+	public void addTaskListener(Object listener) {
 		try {
 			Method addTaskListenerMethod = taskManagerClass.getMethod("addTaskListener", taskListenerClass);
-			addTaskListenerMethod.invoke(taskManager, listener);
+			addTaskListenerMethod.invoke(taskManagerImpl, listener);
 		} catch (Exception e) {
+			e.printStackTrace();
 
 		}
 
 	}
 
-	public void removeTaskListener(TaskListenerImpl listener) {
+	public void removeTaskListener(Object listener) {
 		try {
 			Method removeTaskListenerMethod = taskManagerClass.getMethod("removeTaskListener", taskListenerClass);
-			removeTaskListenerMethod.invoke(taskManager, listener);
+			removeTaskListenerMethod.invoke(taskManagerImpl, listener);
 		} catch (Exception e) {
+			e.printStackTrace();
 
 		}
 
@@ -200,8 +216,9 @@ public class TaskManagerHelper {
 
 	public List<Object> getNewArrayList() {
 		try {
-			return (List<Object>) arrayListClass.newInstance();
+			return new ArrayList<Object>();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 
@@ -209,9 +226,10 @@ public class TaskManagerHelper {
 
 	public void setRepositories(List<Object> reposList) {
 		try {
-			Method setRepositoriesMethod = taskManagerClass.getMethod("setRepositories", arrayListClass);
-			setRepositoriesMethod.invoke(taskManager, reposList);
+			Method setRepositoriesMethod = taskManagerImplClass.getMethod("setRepositories", List.class);
+			setRepositoriesMethod.invoke(taskManagerImpl, reposList);
 		} catch (Exception e) {
+			e.printStackTrace();
 
 		}
 	}

@@ -10,6 +10,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Timer;
 
@@ -23,7 +24,7 @@ public class PluginTaskManager {
 	private final Project project;
 	private final ProjectCfgManager projectCfgManager;
 	private final PluginConfiguration pluginConfiguration;
-	private TaskListenerImpl listener;
+	private Object listener;
 	private Timer timer = new Timer("plugin task manager timer");
 	private static final int SILENT_ACTIVATE_DELAY = 500;
 //    private PluginChangeListAdapter changeListListener;
@@ -33,9 +34,9 @@ public class PluginTaskManager {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.pluginConfiguration = pluginConfiguration;
-		listener =
-				PluginTaskManagerHelper.isValidIdeaVersion() ? new TaskListenerImpl(project, this, pluginConfiguration)
-						: null;
+//		listener =
+//				PluginTaskManagerHelper.isValidIdeaVersion() ? new TaskListenerImpl(project, this, pluginConfiguration)
+//						: null;
 //        this.changeListListener = new PluginChangeListAdapter(project);
 	}
 
@@ -98,7 +99,8 @@ public class PluginTaskManager {
 	@Nullable
 	private Object createJiraRepository(ServerData server) {
 		TaskManagerHelper instance = TaskManagerHelper.getInstance(project);
-		Object jiraRepository = instance.createJiraRepository(server.getUrl(), server.getUsername(), server.getPassword());
+		Object jiraRepository = instance
+				.createJiraRepository(server.getUrl(), server.getUsername(), server.getPassword());
 		addJiraRepository(jiraRepository);
 		return jiraRepository;
 	}
@@ -107,6 +109,14 @@ public class PluginTaskManager {
 		if (PluginTaskManagerHelper.isValidIdeaVersion()) {
 //			EventQueue.invokeLater(new Runnable() {
 //				public void run() {
+			try {
+				listener = Proxy.newProxyInstance(
+						PluginTaskManager.class.getClassLoader(),
+						new Class[]{Class.forName("com.intellij.tasks.TaskListener")},
+						new TaskListenerInvocationHandler(project, this, pluginConfiguration));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 			PluginUtil.getLogger().debug("Activating TM listener");
 			TaskManagerHelper.getInstance(project).addTaskListener(listener);
 //				}
@@ -143,7 +153,7 @@ public class PluginTaskManager {
 		Object[] tasks = TaskManagerHelper.getInstance(project).getLocalTasks();
 		if (tasks != null) {
 			for (Object t : tasks) {
-				String localTaskIssueUrl  = TaskManagerHelper.getInstance(project).getLocalTaskIssueUrl(t);
+				String localTaskIssueUrl = TaskManagerHelper.getInstance(project).getLocalTaskIssueUrl(t);
 				if (localTaskIssueUrl != null && localTaskIssueUrl.equals(issueUrl)) {
 					return t;
 				}
@@ -212,7 +222,7 @@ public class PluginTaskManager {
 
 	public boolean isDefaultTaskActive() {
 		Object defaultTask = getDefaultTask();
-		final Object activeTask =  TaskManagerHelper.getInstance(project).getActiveTask();
+		final Object activeTask = TaskManagerHelper.getInstance(project).getActiveTask();
 
 		return defaultTask != null && activeTask.equals(defaultTask);
 

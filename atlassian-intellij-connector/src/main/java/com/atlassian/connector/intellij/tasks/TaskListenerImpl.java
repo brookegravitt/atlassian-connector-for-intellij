@@ -1,22 +1,14 @@
 package com.atlassian.connector.intellij.tasks;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.DeactivateIssueRunnable;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
-import com.intellij.openapi.project.Project;
-import com.intellij.tasks.LocalTask;
-import org.joda.time.DateTime;
-
-import javax.swing.*;
+///import com.intellij.tasks.LocalTask;
 
 /**
  * @author pmaruszak
  * @date Feb 2, 2010
  */
-public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
+public class TaskListenerImpl {
+
+};/*implements com.intellij.tasks.TaskListener {
     private final Project project;
     private final PluginTaskManager pluginTaskManager;
     private final PluginConfiguration pluginConfiguration;
@@ -57,4 +49,5 @@ public class TaskListenerImpl implements com.intellij.tasks.TaskListener {
             
         }
     }
-}
+    }*/
+
