@@ -1,0 +1,18 @@
+<atlassian-ide-plugin>
+  <project-configuration>
+    <servers>
+      <jira>
+        <server-id>46029028-e229-4039-ab98-de9160c27fa5</server-id>
+        <name>Moje studio</name>
+        <url>https://studio.atlassian.com</url>
+        <shared>false</shared>
+      </jira>
+      <jira>
+        <server-id>38bae84d-58ba-44da-ba19-17b861f7b425</server-id>
+        <name>JAC</name>
+        <url>https://jira.atlassian.com</url>
+        <shared>false</shared>
+      </jira>
+    </servers>
+  </project-configuration>
+</atlassian-ide-plugin>
