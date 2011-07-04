@@ -198,7 +198,6 @@ public class TaskManagerHelper {
 			addTaskListenerMethod.invoke(taskManagerImpl, listener);
 		} catch (Exception e) {
 			e.printStackTrace();
-
 		}
 
 	}
@@ -209,7 +208,6 @@ public class TaskManagerHelper {
 			removeTaskListenerMethod.invoke(taskManagerImpl, listener);
 		} catch (Exception e) {
 			e.printStackTrace();
-
 		}
 
 	}
@@ -230,7 +228,6 @@ public class TaskManagerHelper {
 			setRepositoriesMethod.invoke(taskManagerImpl, reposList);
 		} catch (Exception e) {
 			e.printStackTrace();
-
 		}
 	}
 }
