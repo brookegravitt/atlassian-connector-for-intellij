@@ -1,0 +1,107 @@
+<!--
+
+    Copyright (C) 2008 Atlassian
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<!--jgorycki: TODO: The fact that we need this file is generally stupid. We should be putting findBugs exclusions-->
+<!--as annotations in the source code. But these annotations are currently not documented sufficiently for me-->
+<!--to bother looking them up wherever they are described. Hopefully in the future we will deprecate this file-->
+
+<FindBugsFilter>
+
+	<!--ctor of $$$setupUI$$$ is generated automagically from the form, skipping -->
+	<Match>
+		<Or>
+			<Class name="com.atlassian.theplugin.idea.PluginConfigurationForm"/>
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm"/>
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm"/>
+		</Or>
+		<Bug pattern="DM_BOOLEAN_CTOR"/>
+	</Match>
+
+
+	<!-- findBugs has something against in-place created anonymous inner classes -->
+	<Match>
+		<Class name="~.*\$\d+"/>
+		<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
+	</Match>
+
+	<!--mouse listener adapter seems to be generating this-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.PluginStatusBarToolTip$ToolTipTitleBar$1"/>
+		<Bug pattern="URF_UNREAD_FIELD"/>
+	</Match>
+
+	<!--genereated from WSDL-->
+	<Match>
+		<Or>
+			<Package name="com.atlassian.theplugin.commons.jira.api.commons.soap.axis" />
+		</Or>
+	</Match>
+
+	<!--method name the same as in SOAP-generated stubs, ignoring-->
+	<Match>
+		<Or>
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm" />
+			<Class name="com.atlassian.theplugin.util.Connector" />
+			<Class name="com.atlassian.theplugin.idea.PasswordDialog" />
+		</Or>
+		<Bug pattern="NM_CONFUSING"/>
+	</Match>
+
+	
+	<!--reflection is used to call these-->
+	<Match>
+		<Method name="createUIComponents"/>
+	</Match>
+
+	<!--I am not sure why findBugs complains about this. This is an UI designer-generated code anyway, so whatever-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.GeneralConfigForm"/>
+		<Bug code="NP,UwF,UrF,URF_UNREAD_FIELD"/>
+	</Match>
+
+	<!--we are not serializing dialogs-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.config.GeneralConfigPanel"/>
+		<Bug pattern="SE_BAD_FIELD"/>
+	</Match>
+
+	<!--the author says he knows what he is doing. Oh well :)-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.config.ConfigPanel"/>
+		<Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+	</Match>
+
+	<!--evil developer really wants to do it - see the comment in the offending line. -->
+	<!--If something breaks, I am totally gonna kick his ass-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.ThePluginApplicationComponent"/>
+		<Bug pattern="EI_EXPOSE_REP2"/>
+	</Match>
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon"/>
+		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+	</Match>
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel"/>
+		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+	</Match>
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.jira.JiraIssuesFilterPanel"/>
+	</Match>
+
+</FindBugsFilter>
