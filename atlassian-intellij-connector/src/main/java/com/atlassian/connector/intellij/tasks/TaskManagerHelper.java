@@ -45,7 +45,7 @@ public class TaskManagerHelper {
 
 
 		} catch (Exception e) {
-			  e.printStackTrace();
+			e.printStackTrace();
 		}
 
 	}
@@ -204,8 +204,10 @@ public class TaskManagerHelper {
 
 	public void removeTaskListener(Object listener) {
 		try {
-			Method removeTaskListenerMethod = taskManagerClass.getMethod("removeTaskListener", taskListenerClass);
-			removeTaskListenerMethod.invoke(taskManagerImpl, listener);
+			Method removeTaskListenerMethod = taskManagerImplClass.getMethod("removeTaskListener", taskListenerClass);
+			if (listener != null) {
+				removeTaskListenerMethod.invoke(taskManagerImpl, listener);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
