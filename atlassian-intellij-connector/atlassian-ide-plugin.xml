@@ -13,6 +13,12 @@
         <url>https://jira.atlassian.com</url>
         <shared>false</shared>
       </jira>
+      <jira>
+        <server-id>950510fe-5297-4ee9-adf9-e65d26def33d</server-id>
+        <name>Local</name>
+        <url>http://192.168.157.191:8030</url>
+        <shared>false</shared>
+      </jira>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>
