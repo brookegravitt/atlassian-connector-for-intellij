@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -71,6 +72,7 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 
 	public ProjectConfigurationPanel(@NotNull final Project project,
 			@NotNull final ProjectConfiguration projectConfiguration,
+			@NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade,
 			final JiraServerFacade jiraServerFacade,
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerData selectedServer,
@@ -86,7 +88,7 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
 				projectConfiguration, selectedServer, defaultCredentialsAsked);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration,
-				bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
 		aboutBox = new AboutForm();
 
 		initLayout();
@@ -126,6 +128,10 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 		}
 		serverConfigPanel.saveData();
 
+		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
+			projectConfiguration.setDefaultFishEyeServerId(null);
+			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
+		}
 		if (!projectConfiguration.isDefaultJiraServerValid()) {
 			projectConfiguration.setDefaultJiraServerId(null);
 			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");

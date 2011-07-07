@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -386,6 +387,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		projectConfigurationPanel =
 				new ProjectConfigurationPanel(project, configuration.getClone(),
+						IntelliJFishEyeServerFacade.getInstance(),
 						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
 						IntelliJJiraServerFacade.getInstance(), uiTaskExecutor, selectedServer, projectCfgManager
 								.getDefaultCredentials().getClone(),

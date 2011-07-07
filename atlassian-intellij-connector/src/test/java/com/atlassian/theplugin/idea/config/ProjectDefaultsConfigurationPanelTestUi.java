@@ -19,8 +19,14 @@ import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerFacade;
@@ -35,6 +41,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collection;
 import java.util.List;
 
 public class ProjectDefaultsConfigurationPanelTestUi {
@@ -44,6 +51,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	public static void main(String[] args) throws RemoteApiException, ServerPasswordNotProvidedException, JIRAException {
 		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerIdImpl(), true);
 		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerIdImpl(), true);
+		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerIdImpl());
+		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerIdImpl());
 		final ProjectConfiguration projectConfiguration = new ProjectConfiguration(MiscUtil.buildArrayList(
 				new BambooServerCfg("Bamboo Server 1", new ServerIdImpl()),
 				jiraServerCfg1, jiraServerCfg2));
@@ -56,7 +65,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		final List<JIRAProject> jiraProjects2 = MiscUtil.buildArrayList(makeJiraProject(id++, "CD", "Jira Project 3"),
 				makeJiraProject(id, "EF", "Jira Project 4"));
 
-
+		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
 		final JiraServerFacade jiraServerFacade = EasyMock.createNiceMock(JiraServerFacade.class);
 		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
@@ -74,8 +83,22 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 		EasyMock.replay(jiraServerFacade);
 
+		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
+		EasyMock.expect(fishEyeServerFacade.getRepositories(getServerData(fishEyeServerCfg0)))
+				.andReturn(repos0).anyTimes();
+		EasyMock.expect(fishEyeServerFacade.getRepositories(getServerData(fishEyeServerCfg1)))
+				.andAnswer(new IAnswer<Collection<String>>() {
+
+					public Collection<String> answer() throws Throwable {
+						Thread.sleep(7000);
+						return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
+					}
+				}).anyTimes();
+
+		EasyMock.replay(fishEyeServerFacade);
+
 		JPanel panel = new ProjectDefaultsConfigurationPanel(null, projectConfiguration,
-                bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(),
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(),
 				new UserCfg());
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");

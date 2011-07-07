@@ -175,6 +175,12 @@
 	</project-components>
 
 	<actions>
+
+		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
+				text="Open FishEye Link in Browser"
+				description="Open FishEye Link in Browser">
+		</action>
+
 		<action id="ThePlugin.ShowHideMainToolWindow"
 				class="com.atlassian.theplugin.idea.action.ShowHideMainPluginWindowAction"
 				text="Show/Hide Main Plugin Tool Window" description="Shows/Hides main plugin tool window">
@@ -667,6 +673,13 @@
 				text="Close Issue View"
 				icon="/actions/cancel.png"/>
 
+
+		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
+			<reference id="OpenFisheyeLink"/>
+			<!--<reference id="CopyFisheyeLink"/>-->
+			<!--<reference id="AnnotateInFisheye"/>-->
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</group>
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
 			<!--<reference id="ThePlugin.GroupByText"/>-->

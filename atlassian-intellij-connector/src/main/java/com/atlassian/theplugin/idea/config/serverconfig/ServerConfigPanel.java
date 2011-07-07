@@ -20,6 +20,8 @@ import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
@@ -69,6 +71,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	public ServerConfigPanel(final Project project, final UserCfg defaultUser,
 			ProjectConfiguration projectConfiguration,
 			final ServerData selectedServer, final boolean isDefaultCredentialsAsked) {
+		final FishEyeServerFacade fishEyeServerFacade = IntelliJFishEyeServerFacade.getInstance();
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel(project, defaultUser);
@@ -79,7 +82,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new JiraServerConfigForm(project, defaultUser, jiraServerFacade);
-		crucibleServerConfigForm = new CrucibleServerConfigForm(project, defaultUser, crucibleServerFacade);
+		crucibleServerConfigForm = new CrucibleServerConfigForm(project, defaultUser, crucibleServerFacade,
+				fishEyeServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, defaultUser, bambooServerFacade);
 		initLayout();
         cleanServers(serverCfgs);

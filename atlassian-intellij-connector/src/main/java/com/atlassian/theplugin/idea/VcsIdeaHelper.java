@@ -20,10 +20,16 @@ package com.atlassian.theplugin.idea;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CommittedChangesProvider;
+import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.RepositoryLocation;
+import com.intellij.openapi.vcs.actions.VcsContextFactory;
+import com.intellij.openapi.vcs.diff.DiffProvider;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.peer.PeerFactory;
 import com.intellij.vcsUtil.VcsUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class VcsIdeaHelper {
@@ -67,4 +73,26 @@ public final class VcsIdeaHelper {
 		}
 		return repositoryLocation.toPresentableString();
 	}
+
+
+	@Nullable
+	public static VcsRevisionNumber getVcsRevisionNumber(@NotNull final Project project,
+			@NotNull final VirtualFile virtualFile) {
+		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
+		if (vcs == null) {
+			return null;
+		}
+		VcsContextFactory vcsContextFactory = PeerFactory.getInstance().getVcsContextFactory();
+		final FilePath filePath = vcsContextFactory.createFilePathOn(virtualFile);
+		if (filePath == null || !vcs.fileIsUnderVcs(filePath)) {
+			return null;
+		}
+
+		DiffProvider diffProvider = vcs.getDiffProvider();
+		if (diffProvider == null) {
+			return null;
+		}
+		return diffProvider.getCurrentRevision(virtualFile);
+	}
+
 }
