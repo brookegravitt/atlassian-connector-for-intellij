@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.util.Connector;
@@ -24,14 +25,23 @@ import org.jetbrains.annotations.NotNull;
 public class CrucibleConnector implements Connector {
 	private final CrucibleServerFacade facade;
 	private volatile boolean isFisheye;
+	private FishEyeServerFacade fishEyeServerFacade;
 
-	public CrucibleConnector(@NotNull final CrucibleServerFacade facade) {
+	public CrucibleConnector(@NotNull final CrucibleServerFacade facade,
+			@NotNull final FishEyeServerFacade fishEyeServerFacade) {
 		this.facade = facade;
+		this.fishEyeServerFacade = fishEyeServerFacade;
 	}
 
 	public synchronized void connect(final ServerData server) throws RemoteApiException {
 		isFisheye = false;
 		facade.testServerConnection(server);
+		try {
+			fishEyeServerFacade.testServerConnection(server);
+			isFisheye = true;
+		} catch (RemoteApiException e) {
+			// it's apparently not a FishEye instance
+		}
 	}
 
 	public boolean isFisheye() {
