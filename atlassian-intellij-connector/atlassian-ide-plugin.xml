@@ -19,6 +19,13 @@
         <url>http://192.168.157.191:8030</url>
         <shared>false</shared>
       </jira>
+      <crucible>
+        <server-id>a48d422d-36ba-44cd-8ae6-576630ac1db7</server-id>
+        <name>Local</name>
+        <url>http://localhost:5244/crucible</url>
+        <shared>false</shared>
+        <isFisheyeInstance>false</isFisheyeInstance>
+      </crucible>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>
