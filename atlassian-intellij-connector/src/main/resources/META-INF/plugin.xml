@@ -200,7 +200,7 @@
 				text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
 		<action id="ThePlugin.AddCrucibleServerAction"
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
-				text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
+				text="Add Crucible/FishEye Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
 
 		<action id="ThePlugin.AddJIRAServerAction"
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction"

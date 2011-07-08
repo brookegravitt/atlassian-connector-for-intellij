@@ -162,7 +162,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		editPane.setLayout(editPaneCardLayout);
 		editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
 		editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
-		editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
+		editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible/FishEye Servers");
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
 		return editPane;
