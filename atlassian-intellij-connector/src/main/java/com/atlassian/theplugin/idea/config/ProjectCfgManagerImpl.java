@@ -535,6 +535,23 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     }
 
     public ServerData getDefaultFishEyeServer() {
+               ProjectConfiguration prjCfg = getProjectConfiguration();
+        if (prjCfg != null) {
+            FishEyeServer fishEyeServer = prjCfg.getDefaultFishEyeServer();
+            if (fishEyeServer != null) {
+                return getServerData(fishEyeServer);
+            }
+        }
+
+        // PL-1697
+        Collection<ServerData> allFisheyeServers = getAllEnabledServerss(ServerType.FISHEYE_SERVER);
+        if (allFisheyeServers == null || allFisheyeServers.size() == 0) {
+            allFisheyeServers = getAllEnabledCrucibleServersContainingFisheye();
+        }
+        if (allFisheyeServers != null && allFisheyeServers.size() == 1) {
+            return allFisheyeServers.iterator().next();
+        }
+
         return null;
     }
 
@@ -563,11 +580,11 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
     }
 
     public String getDefaultFishEyeRepo() {
-        return null;
+        return getProjectConfiguration().getDefaultFishEyeRepo();
     }
 
     public String getFishEyeProjectPath() {
-        return null;
+        return getProjectConfiguration().getFishEyeProjectPath();
     }
 
     private static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {

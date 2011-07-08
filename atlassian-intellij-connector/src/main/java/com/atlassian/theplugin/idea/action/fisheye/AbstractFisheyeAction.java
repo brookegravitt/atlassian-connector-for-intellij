@@ -12,7 +12,12 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractFisheyeAction extends AnAction {
 	@Override
 	public void update(final AnActionEvent event) {
-		event.getPresentation().setVisible(isFishEyeConfigured(event));
+		final boolean fishEyeConfigured = isFishEyeConfigured(event);
+		System.out.println("isFishEyeConfigured == " + fishEyeConfigured);
+
+		event.getPresentation().setVisible(fishEyeConfigured);
+		event.getPresentation().setEnabled(fishEyeConfigured);
+
 	}
 
 	@Nullable
