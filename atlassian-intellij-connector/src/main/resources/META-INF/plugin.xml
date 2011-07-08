@@ -176,7 +176,8 @@
 
 	<actions>
 
-		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
+		<action id="OpenFisheyeLink"
+				class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
 				text="Open FishEye Link in Browser"
 				description="Open FishEye Link in Browser">
 		</action>
