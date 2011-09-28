@@ -178,8 +178,9 @@
 
 		<action id="OpenFisheyeLink"
 				class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
-				text="Open FishEye Link in Browser"
-				description="Open FishEye Link in Browser">
+				text="Open File in FishEye"
+				description="Open File in FishEye">
+				<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 
 		<action id="ThePlugin.ShowHideMainToolWindow"
@@ -675,12 +676,12 @@
 				icon="/actions/cancel.png"/>
 
 
-		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
-			<reference id="OpenFisheyeLink"/>
-			<!--<reference id="CopyFisheyeLink"/>-->
-			<!--<reference id="AnnotateInFisheye"/>-->
-			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
-		</group>
+		<!--<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">-->
+			<!--<reference id="OpenFisheyeLink"/>-->
+			<!--&lt;!&ndash;<reference id="CopyFisheyeLink"/>&ndash;&gt;-->
+			<!--&lt;!&ndash;<reference id="AnnotateInFisheye"/>&ndash;&gt;-->
+			<!--<add-to-group group-id="EditorPopupMenu" anchor="last"/>-->
+		<!--</group>-->
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
 			<!--<reference id="ThePlugin.GroupByText"/>-->

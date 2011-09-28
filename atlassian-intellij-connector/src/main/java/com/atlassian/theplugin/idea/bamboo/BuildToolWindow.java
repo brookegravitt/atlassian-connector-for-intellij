@@ -351,6 +351,8 @@ public class BuildToolWindow extends MultiTabToolWindow {
                         issues = bambooFacade.getIssuesForBuild(build.getServer(), build.getPlanKey(), build.getNumber());
                     } catch (RemoteApiBadServerVersionException e) {
                         // ignore. Bamboo build 1401 or newer required for getting issues
+                    } catch (RemoteApiException e) {
+                        issues = null;
                     }
 
                     final Collection<BuildIssue> issuesFinal = issues;
@@ -374,7 +376,6 @@ public class BuildToolWindow extends MultiTabToolWindow {
                 } catch (final RemoteApiException e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            bdp.setIssues(null);
                             tdp.showError(e);
                         }
                     });

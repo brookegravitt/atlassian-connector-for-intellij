@@ -7,6 +7,7 @@ import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
@@ -54,7 +55,7 @@ public final class PluginTaskManagerHelper {
 	}
 
 	public static IdeaPluginDescriptor getTaskManagerDescriptor() {
-		for (IdeaPluginDescriptor descriptor : ApplicationManager.getApplication().getPlugins()) {
+		for (IdeaPluginDescriptor descriptor : PluginManager.getPlugins()) {
 			if (descriptor.getPluginId().getIdString().equals("com.intellij.tasks")) {
 				return descriptor;
 			}
