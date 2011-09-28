@@ -103,7 +103,7 @@ public class ProgressAnimationProvider extends JPanel {
 
 		private void initCustomLook() {
 			loadIcons();
-			init(icons, passiveIcon, CYCLE_LENGTH, CYCLE_GAP, -1);
+            IdeaVersionFacade.getInstance().initAsyncProcessIcon(this, icons, passiveIcon, CYCLE_LENGTH, CYCLE_GAP, -1);
 		}
 
 		private void loadIcons() {

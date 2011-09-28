@@ -218,7 +218,7 @@ public final class FisheyeUrlHelper {
 			if (rev != null) {
 				sb.append("?r=");
 				sb.append(rev);
-				sb.append("#l");
+				sb.append("#to");
 				sb.append(lineNumber);
 			}
 		} else {

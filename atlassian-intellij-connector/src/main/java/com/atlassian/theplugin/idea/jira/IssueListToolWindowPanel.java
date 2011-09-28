@@ -1590,16 +1590,16 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						jiraFilterTree.expandTree();
 					}
 				};
-				System.out.print("1Start -" + new DateTime().toString());
+//				System.out.print("1Start -" + new DateTime().toString());
 				SwingUtilities.invokeAndWait(runnable);
-				System.out.print("1End -" + new DateTime().toString());
+//				System.out.print("1End -" + new DateTime().toString());
                 JiraPresetFilter presetFilter = jiraFilterTree.getSelectedPresetFilter();
                 JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
                 JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
                 JiraServerData jiraServerData = getSelectedServer();
                 jiraFilterTree.updatePresetFiltersNodes(jiraServerData);
                 if (presetFilter != null) {
-					System.out.print("PresetStart -" + new DateTime().toString());
+//					System.out.print("PresetStart -" + new DateTime().toString());
                     jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 						System.out.print("PresetEnd -" + new DateTime().toString());
