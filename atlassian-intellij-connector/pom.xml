@@ -660,6 +660,12 @@
 		</repository>
 
 	</repositories>
+        <pluginRepositories>
+        <pluginRepository>
+            <id>central-public</id>
+            <url>https://maven.atlassian.com/content/repositories/central/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 
 </project>
