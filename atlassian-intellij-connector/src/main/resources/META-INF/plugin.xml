@@ -55,16 +55,9 @@
 
 	<change-notes>
 		<![CDATA[
-<h3>New features</h3>
-<ol>
-    <li>IntelliJ PHPStorm 2.0 (experimental)</li>
-</ol>
-
 <h3>Change Notes</h3>
 <ol>
-	<li>Compatibility with IDEA 10.5 </li>
-	<li>Fixed precommit review for Git and Mercurial</li>
-	<li>Bug fixes</li>
+	<li>Compatibility with IDEA 11</li>
 </ol>
 
 
