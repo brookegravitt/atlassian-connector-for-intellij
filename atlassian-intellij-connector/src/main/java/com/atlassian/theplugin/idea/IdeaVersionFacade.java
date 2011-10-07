@@ -107,9 +107,11 @@ public final class IdeaVersionFacade {
         if (m.matches() && (group5 == IDEA_9_GR5 || group5 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && group6 >= IDEA_108_1333_GR6 && group5 >= IDEA_108_1333_GR5) {
+        } else if (m.matches() && group5 >= IDEA_108_1333_GR5) {
             isIdea11 = true;
             isIdeaX  = true;
+            isIdeaX5 = true;
+            communityEdition = m.group(3) != null;
         } else if (m.matches() && group6 >= IDEA_107_105_GR6 && group5 >= IDEA_107_105_GR5) {
             isIdeaX5 = true;
             isIdeaX = true;
@@ -666,7 +668,20 @@ public final class IdeaVersionFacade {
 
     public void registerCheckinHandler(final Project project, final CheckinHandlerFactory handlerFactory) {
         try {
-            if (!isIdeaX5) {
+            if (isIdea11) {
+   //for idea 10.5 and later
+                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration, projectCfgManager));
+                Class projectLevelVcsManagerImplClass = Class
+                        .forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
+
+                Class baseCheckinHandlerFactoryClass = Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory");
+
+                Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
+                        .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
+                Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance");
+
+                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null), handlerFactory);
+            } else if (!isIdeaX5) {
                 //ProjectLevelVcsManagerImpl.getInstance(project).registerCheckinHandlerFactory(handlerFactory);
 
                 Class projectLevelVcsManagerImplClass = Class
