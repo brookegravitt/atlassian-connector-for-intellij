@@ -398,7 +398,7 @@ public class JIRAIssueTreeBuilder {
 	private static final int DAYS_IN_WEEK = 7;
 
 	private UpdateGroup updatedDate2Name(JiraIssueAdapter issue) {
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", issue.getLocale());
 		UpdateGroup groupName;
 		try {
 			DateMidnight midnight = new DateMidnight();
