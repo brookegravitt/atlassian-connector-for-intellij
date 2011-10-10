@@ -90,12 +90,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: jgorycki
@@ -1104,8 +1100,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
 //				issueResolution = createEditableField(new JLabel(params.issue.getResolution()), "resolution", "Resolution");
                 issueResolution = new JLabel(params.issue.getResolution());
-                issueCreationTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString(params.issue.getCreated()));
-                issueUpdateTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString((params.issue.getUpdated())));
+                issueCreationTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString(params.issue.getCreated(), params.issue.getLocale()));
+                issueUpdateTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString((params.issue.getUpdated()), params.issue.getLocale()));
                 issueEnvironment = new JEditorPane();
                 issueEnvironment.setMargin(new Insets(0, 0, 0, 0));
                 issueEnvironment.setText(Html2text.translate(params.issue.getEnvironment()));
