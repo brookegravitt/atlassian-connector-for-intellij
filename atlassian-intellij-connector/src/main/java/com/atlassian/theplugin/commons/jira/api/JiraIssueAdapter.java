@@ -12,6 +12,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -270,6 +271,10 @@ public class JiraIssueAdapter implements JIRAIssue {
 
     public void setSummary(String summary) {
         jiraIssue.setSummary(summary);
+    }
+
+    public Locale getLocale() {
+        return jiraIssue.getLocale();
     }
 
     public LocalConfigurationListener getLocalConfigurationListener() {
