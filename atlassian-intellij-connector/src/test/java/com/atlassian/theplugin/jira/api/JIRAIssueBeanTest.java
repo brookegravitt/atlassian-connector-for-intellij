@@ -25,6 +25,8 @@ import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
+import java.util.Locale;
+
 public class JIRAIssueBeanTest extends TestCase {
 	private JIRAIssueBean issue;
 	private Document doc;
@@ -42,7 +44,7 @@ public class JIRAIssueBeanTest extends TestCase {
 				return null;
 			}
 		});
-		issue = new JIRAIssueBean(server.getUrl(), doc.getRootElement());
+		issue = new JIRAIssueBean(server.getUrl(), doc.getRootElement(), Locale.US);
 	}
 
 	public void testFromXml() throws Exception {
@@ -78,9 +80,9 @@ public class JIRAIssueBeanTest extends TestCase {
 		modyfiedIssue.setKey(issue.getKey() + "modyfied");
 		assertFalse(issue.equals(modyfiedIssue));
 
-		modyfiedIssue = new JIRAIssueBean("url", doc.getRootElement());
+		modyfiedIssue = new JIRAIssueBean("url", doc.getRootElement(), Locale.US);
 		assertEquals(issue, modyfiedIssue);
-		modyfiedIssue = new JIRAIssueBean("urll",doc.getRootElement());
+		modyfiedIssue = new JIRAIssueBean("urll",doc.getRootElement(), Locale.US);
         modyfiedIssue.setKey("krukkey");
 		assertFalse(issue.equals(modyfiedIssue));
 
