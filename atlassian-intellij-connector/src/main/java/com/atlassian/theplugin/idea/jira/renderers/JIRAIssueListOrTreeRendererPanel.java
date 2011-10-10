@@ -111,7 +111,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 
 		gbc.gridx++;
 		gbc.weightx = 0.0;
-		updated = new SelectableLabel(true, true, null, JiraTImeFormatter.formatShortTimeFromJiraTimeString(issue.getUpdated()),
+		updated = new SelectableLabel(true, true, null, JiraTImeFormatter.formatShortTimeFromJiraTimeString(issue.getUpdated(), issue.getLocale()),
 				null, SwingConstants.LEADING, AbstractTreeNode.ICON_HEIGHT, false, true);
 		updated.setHorizontalAlignment(SwingConstants.RIGHT);
 		Dimension minDimension = updated.getPreferredSize();
