@@ -36,9 +36,12 @@
         <plans>
           <plan key="ACC-DPL" grouped="0" />
           <plan key="ACC-TST" grouped="0" />
+          <plan key="INT-CS" grouped="0" />
+          <plan key="INT-DPL" grouped="0" />
           <plan key="INT-FAIL2" grouped="0" />
           <plan key="INT-FAIL3" grouped="0" />
           <plan key="INT-FAIL" grouped="0" />
+          <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
     </servers>
