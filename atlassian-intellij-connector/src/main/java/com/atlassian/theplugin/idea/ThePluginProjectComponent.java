@@ -45,7 +45,6 @@ import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory;
 import com.atlassian.theplugin.idea.ui.InformationDialogWithCheckBox;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
@@ -80,260 +79,259 @@ import java.util.Collection;
  */
 
 public class ThePluginProjectComponent implements ProjectComponent {
-	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
+    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
-	private final WorkspaceConfigurationBean projectConfigurationBean;
-	private final Project project;
+    private final WorkspaceConfigurationBean projectConfigurationBean;
+    private final Project project;
 
-	public ProjectCfgManager getCfgManager() {
-		return projectCfgManager;
-	}
+    public ProjectCfgManager getCfgManager() {
+        return projectCfgManager;
+    }
 
-	private final ProjectCfgManager projectCfgManager;
-	private final UIActionScheduler actionScheduler;
-	private BambooStatusIcon statusBarBambooIcon;
+    private final ProjectCfgManager projectCfgManager;
+    private final UIActionScheduler actionScheduler;
+    private BambooStatusIcon statusBarBambooIcon;
 
-	private PluginUpdateIcon statusPluginUpdateIcon;
-	private BambooStatusChecker bambooStatusChecker;
-	private final BuildListModelImpl bambooModel;
+    private PluginUpdateIcon statusPluginUpdateIcon;
+    private BambooStatusChecker bambooStatusChecker;
+    private final BuildListModelImpl bambooModel;
 
-	private BambooStatusTooltipListener tooltipBambooStatusListener;
-	private final IntelliJCrucibleServerFacade crucibleServerFacade;
+    private BambooStatusTooltipListener tooltipBambooStatusListener;
+    private final IntelliJCrucibleServerFacade crucibleServerFacade;
 
-	private final ToolWindowManager toolWindowManager;
-	private boolean created;
-	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
-	private final PluginConfiguration pluginConfiguration;
+    private final ToolWindowManager toolWindowManager;
+    private boolean created;
+    private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
+    private final PluginConfiguration pluginConfiguration;
 
-	private final IssueListToolWindowPanel issuesToolWindowPanel;
+    private final IssueListToolWindowPanel issuesToolWindowPanel;
 
-	private final PluginToolWindow toolWindow;
+    private final PluginToolWindow toolWindow;
 
-	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
-	private ConfigurationListenerImpl configurationListener;
+    //	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
+    private ConfigurationListenerImpl configurationListener;
 
 
-	private FileEditorListenerImpl fileEditorListener;
-	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
-	private final PluginTaskManager pluginTaskManager;
+    private FileEditorListenerImpl fileEditorListener;
+    private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
+    private final PluginTaskManager pluginTaskManager;
 
-	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
-			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
-			WorkspaceConfigurationBean projectConfigurationBean,
-			@NotNull IssueListToolWindowPanel issuesToolWindowPanel,
-			@NotNull PluginToolWindow pluginToolWindow,
-			@NotNull BuildListModelImpl bambooModel,
-			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
-			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
-			@NotNull final PluginTaskManager pluginTaskManager) {
-		this.project = project;
-		this.projectCfgManager = projectCfgManager;
-		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
-		this.actionScheduler = actionScheduler;
-		this.toolWindowManager = toolWindowManager;
-		this.pluginConfiguration = pluginConfiguration;
-		this.projectConfigurationBean = projectConfigurationBean;
-		this.bambooModel = bambooModel;
-		this.issuesToolWindowPanel = issuesToolWindowPanel;
-		this.toolWindow = pluginToolWindow;
-		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
-		this.pluginTaskManager = pluginTaskManager;
+    public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
+                                     PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
+                                     WorkspaceConfigurationBean projectConfigurationBean,
+                                     @NotNull IssueListToolWindowPanel issuesToolWindowPanel,
+                                     @NotNull PluginToolWindow pluginToolWindow,
+                                     @NotNull BuildListModelImpl bambooModel,
+                                     @NotNull final ProjectCfgManager projectCfgManager,
+                                     @NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+                                     @NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+                                     @NotNull final PluginTaskManager pluginTaskManager) {
+        this.project = project;
+        this.projectCfgManager = projectCfgManager;
+        this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
+        this.actionScheduler = actionScheduler;
+        this.toolWindowManager = toolWindowManager;
+        this.pluginConfiguration = pluginConfiguration;
+        this.projectConfigurationBean = projectConfigurationBean;
+        this.bambooModel = bambooModel;
+        this.issuesToolWindowPanel = issuesToolWindowPanel;
+        this.toolWindow = pluginToolWindow;
+        this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
+        this.pluginTaskManager = pluginTaskManager;
 
-		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
-		jiraIssueListModelBuilder.setProject(project);
+        this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
+        jiraIssueListModelBuilder.setProject(project);
 //		jiraIssueListModelBuilder.setProjectCfgManager(projectCfgManager);
-		/*
+        /*
 
-										WARNING!!!
-		BEFORE ADDING SOME INITIALIZATION CODE TO CONSTRUCTOR THINK TWICE
-                                         st
-		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
-		(WHICH IS INVOKED WHEN THE ENTIRE PLUGIN ENVIRONMENT IS SET UP)?
+                                          WARNING!!!
+          BEFORE ADDING SOME INITIALIZATION CODE TO CONSTRUCTOR THINK TWICE
+                                           st
+          ...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
+          (WHICH IS INVOKED WHEN THE ENTIRE PLUGIN ENVIRONMENT IS SET UP)?
 
 
-		 */
-		// make findBugs happy
-		statusBarBambooIcon = null;
-		statusPluginUpdateIcon = null;
-		created = false;
-		StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
-			public void run() {
-				LoggerImpl.getInstance().info("Start: Project initializing");
-				initializePlugin();
-				LoggerImpl.getInstance().info("End: Project initialized");
-			}
-		});
+           */
+        // make findBugs happy
+        statusBarBambooIcon = null;
+        statusPluginUpdateIcon = null;
+        created = false;
+        StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
+            public void run() {
+                LoggerImpl.getInstance().info("Start: Project initializing");
+                initializePlugin();
+                LoggerImpl.getInstance().info("End: Project initialized");
+            }
+        });
 
-	}
+    }
 
-	public void initComponent() {
-		LoggerImpl.getInstance().info("Init ThePlugin project component.");
-		this.fileEditorListener = new FileEditorListenerImpl(project, projectCfgManager);
-		//ActivateJiraIssueAction.showToolbar(project);
-	}
+    public void initComponent() {
+        LoggerImpl.getInstance().info("Init ThePlugin project component.");
+        this.fileEditorListener = new FileEditorListenerImpl(project, projectCfgManager);
+        //ActivateJiraIssueAction.showToolbar(project);
+    }
 
-	public void disposeComponent() {
-		LoggerImpl.getInstance().info("Dispose ThePlugin project component");
-	}
+    public void disposeComponent() {
+        LoggerImpl.getInstance().info("Dispose ThePlugin project component");
+    }
 
-	@NotNull
-	public String getComponentName() {
-		return "ThePluginProjectComponent";
-	}
+    @NotNull
+    public String getComponentName() {
+        return "ThePluginProjectComponent";
+    }
 
-	private void initializePlugin() {
-		// unregister changelistmanager?
-		// only open tool windows for each application that's registered
-		// show something nice if there are non
-		// swap listener for dataretrievedlistener and datachangelisteners
-		// store bamboo between runs in UDC
-		// clean up object model confusion
-		if (!created) {
+    private void initializePlugin() {
+        // unregister changelistmanager?
+        // only open tool windows for each application that's registered
+        // show something nice if there are non
+        // swap listener for dataretrievedlistener and datachangelisteners
+        // store bamboo between runs in UDC
+        // clean up object model confusion
+        if (!created) {
             IconLoader.activate();
-			pluginTaskManager.activateListener();
+            pluginTaskManager.activateListener();
 
             TaskActionOrganizer.organizeTaskActionsInToolbar();
-			toolWindow.register(toolWindowManager);
+            toolWindow.register(toolWindowManager);
 
-			ChangeListManager.getInstance(project).registerCommitExecutor(
-					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
+            ChangeListManager.getInstance(project).registerCommitExecutor(
+                    new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
-			final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
-					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
-					projectCfgManager,
-					project);
+            final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
+                    IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
+                    projectCfgManager,
+                    project);
 
-			this.bambooStatusChecker = new BambooStatusChecker(
-					actionScheduler,
-					projectCfgManager,
-					pluginConfiguration,
-					new Runnable() {
-						public void run() {
-							MissingPasswordHandlerQueue.addHandler(pwdHandler);
-						}
-					},
-					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()));
+            this.bambooStatusChecker = new BambooStatusChecker(
+                    actionScheduler,
+                    projectCfgManager,
+                    pluginConfiguration,
+                    new Runnable() {
+                        public void run() {
+                            MissingPasswordHandlerQueue.addHandler(pwdHandler);
+                        }
+                    },
+                    IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()));
 
-			// DependencyValidationManager.getHolder(project, "", )
+            // DependencyValidationManager.getHolder(project, "", )
 
-			issuesToolWindowPanel.refreshModels();
+            issuesToolWindowPanel.refreshModels();
 
-			// create Atlassian tool window
+            // create Atlassian tool window
 //			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager, bambooToolWindowPanel);
-			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
-			toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
+            Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
+            toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
 
-			// create tool window content
+            // create tool window content
 
 //			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD);
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 
-			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
-			// add tool window bamboo content listener to bamboo checker thread
-			bambooStatusChecker.registerListener(new BambooStatusListener() {
-				
-				
-				public void updateBuildStatuses(Collection<BambooBuildAdapter> builds,
-						Collection<Exception> generalExceptions) {
-					bambooModel.update(builds, generalExceptions);
-				}
+            IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
+            // add tool window bamboo content listener to bamboo checker thread
+            bambooStatusChecker.registerListener(new BambooStatusListener() {
 
-				public void resetState() {
-				}
-			});
 
-			// create Bamboo status bar icon
-			statusBarBambooIcon = new BambooStatusIcon(this.project, projectCfgManager, toolWindow);
-			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
+                public void updateBuildStatuses(Collection<BambooBuildAdapter> builds,
+                                                Collection<Exception> generalExceptions) {
+                    bambooModel.update(builds, generalExceptions);
+                }
 
-			// add icon listener to bamboo checker thread
-			final StatusIconBambooListener iconBambooStatusListener = new StatusIconBambooListener(statusBarBambooIcon);
-			bambooStatusChecker.registerListener(iconBambooStatusListener);
+                public void resetState() {
+                }
+            });
 
-			// add simple bamboo listener to bamboo checker thread
-			// this listener shows idea tooltip when buld failed
-			final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project, toolWindow);
-			tooltipBambooStatusListener = new BambooStatusTooltipListener(bambooStatusDisplay, pluginConfiguration);
-			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
+            // create Bamboo status bar icon
+            statusBarBambooIcon = new BambooStatusIcon(this.project, projectCfgManager, toolWindow);
+            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
+
+            // add icon listener to bamboo checker thread
+            final StatusIconBambooListener iconBambooStatusListener = new StatusIconBambooListener(statusBarBambooIcon);
+            bambooStatusChecker.registerListener(iconBambooStatusListener);
+
+            // add simple bamboo listener to bamboo checker thread
+            // this listener shows idea tooltip when buld failed
+            final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project, toolWindow);
+            tooltipBambooStatusListener = new BambooStatusTooltipListener(bambooStatusDisplay, pluginConfiguration);
+            bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 //			bambooStatusChecker.registerListener(buildToolWindowPanel.getBuildTree());
 
-			// add bamboo icon to status bar
-			statusBarBambooIcon.showOrHideIcon();
+            // add bamboo icon to status bar
+            statusBarBambooIcon.showOrHideIcon();
 
-			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration, projectCfgManager);
-			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
-			//statusPluginUpdateIcon.showOrHideIcon();
+            statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration, projectCfgManager);
+            ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
+            //statusPluginUpdateIcon.showOrHideIcon();
 
-			toolWindow.showHidePanels();
-			// focus last active panel only if it exists (do not create panel)
-			toolWindow.focusPanelIfExists(projectConfigurationBean.getActiveToolWindowTab());
-			toolWindow.getIdeaToolWindow().getContentManager().addContentManagerListener(new ContentManagerAdapter() {
-				@Override
-				public void selectionChanged(final ContentManagerEvent event) {
-					projectConfigurationBean.setActiveToolWindowTab(event.getContent().getDisplayName());
-				}
-			});
+            toolWindow.showHidePanels();
+            // focus last active panel only if it exists (do not create panel)
+            toolWindow.focusPanelIfExists(projectConfigurationBean.getActiveToolWindowTab());
+            toolWindow.getIdeaToolWindow().getContentManager().addContentManagerListener(new ContentManagerAdapter() {
+                @Override
+                public void selectionChanged(final ContentManagerEvent event) {
+                    projectConfigurationBean.setActiveToolWindowTab(event.getContent().getDisplayName());
+                }
+            });
 
-			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
+            IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
 
-			configurationListener = new ConfigurationListenerImpl();
-			projectCfgManager.addProjectConfigurationListener(configurationListener);
-			projectCfgManager.addProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
+            configurationListener = new ConfigurationListenerImpl();
+            projectCfgManager.addProjectConfigurationListener(configurationListener);
+            projectCfgManager.addProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
 
             projectCfgManager.addProjectConfigurationListener(
                     IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).getConfigurationListener());
 
-			created = true;
+            created = true;
 
-			issuesToolWindowPanel.init();
-			checkDefaultServerValues();
+            issuesToolWindowPanel.init();
+            checkDefaultServerValues();
             informAboutIdea9TaskIntegrationAsExperimental();
 
-			IdeaVersionFacade.getInstance().registerCheckinHandler(project, new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration));
-		}
+            IdeaVersionFacade.getInstance().registerCheckinHandler(project, jiraWorkspaceConfiguration);
+
+        }
 
 
+    }
 
 
-	}
-
-
-	public void projectOpened() {
-		// content moved to StartupManager to wait until
-		// here we have guarantee that IDEA splash screen will not obstruct our window
-		askForUserStatistics();
-		fileEditorListener.projectOpened();
-	}
+    public void projectOpened() {
+        // content moved to StartupManager to wait until
+        // here we have guarantee that IDEA splash screen will not obstruct our window
+        askForUserStatistics();
+        fileEditorListener.projectOpened();
+    }
 
     private void informAboutIdea9TaskIntegrationAsExperimental() {
-      if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
-              && PluginTaskManagerHelper.isValidIdeaVersion()) {
+        if (!pluginConfiguration.getGeneralConfigurationData().isInformedAboutIdea9TaskExperimentalSupport()
+                && PluginTaskManagerHelper.isValidIdeaVersion()) {
 
-          final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
-                  PluginUtil.PRODUCT_NAME,
-                        "Atlassian IntelliJ Connector now provides experimental<br>"
-                        + "integration with IntelliJ IDEA Tasks.<br>"
-                        + "Please report any inconveniences or suggestions");
-          SwingUtilities.invokeLater(new Runnable() {
+            final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
+                    PluginUtil.PRODUCT_NAME,
+                    "Atlassian IntelliJ Connector now provides experimental<br>"
+                            + "integration with IntelliJ IDEA Tasks.<br>"
+                            + "Please report any inconveniences or suggestions");
+            SwingUtilities.invokeLater(new Runnable() {
 
-              public void run() {
-                  dialog.show();
-                  pluginConfiguration.getGeneralConfigurationData().setInformedAboutIdea9TaskExperimentalSupport(
-                          dialog.isDoNotShowChecked());
+                public void run() {
+                    dialog.show();
+                    pluginConfiguration.getGeneralConfigurationData().setInformedAboutIdea9TaskExperimentalSupport(
+                            dialog.isDoNotShowChecked());
 
-              }
-          });
-      }
+                }
+            });
+        }
     }
+
     private void checkDefaultServerValues() {
         String text = "";
         if (projectCfgManager.getDefaultJiraServer() == null && projectCfgManager.getAllJiraServerss().size() > 0) {
             text = "JIRA";
         }
-
 
 
         if (text.length() > 0 && !pluginConfiguration.getGeneralConfigurationData().isAskedAboutDefaultServers()) {
@@ -353,121 +351,121 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
     }
 
-	public FileEditorListenerImpl getFileEditorListener() {
-		return fileEditorListener;
-	}
+    public FileEditorListenerImpl getFileEditorListener() {
+        return fileEditorListener;
+    }
 
-	private void askForUserStatistics() {
-		ApplicationManager.getApplication().invokeLater(new Runnable() {
-			public void run() {
-				if (pluginConfiguration.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled() == null) {
-					UsageStatsDialog dlg = new UsageStatsDialog();
-					dlg.show();
-					int answer = dlg.getExitCode();
+    private void askForUserStatistics() {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            public void run() {
+                if (pluginConfiguration.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled() == null) {
+                    UsageStatsDialog dlg = new UsageStatsDialog();
+                    dlg.show();
+                    int answer = dlg.getExitCode();
                     boolean feedbackEnabled = answer == DialogWrapper.OK_EXIT_CODE;
                     pluginConfiguration.getGeneralConfigurationData().setAnonymousEnhancedFeedbackEnabled(feedbackEnabled);
                     InfoServer.reportOptInOptOut(pluginConfiguration.getGeneralConfigurationData().getUid(), feedbackEnabled);
-				}
-			}
-		}, ModalityState.defaultModalityState());
-	}
+                }
+            }
+        }, ModalityState.defaultModalityState());
+    }
 
-	private class UsageStatsDialog extends DialogWrapper {
-		private static final String MSG_TEXT =
-				"We would greatly appreciate it if you would allow us to collect anonymous"
-						+ "<br>usage statistics to help us provide a better quality product. Details"
-						+ "<br>of what will be tracked are given "
-						+ "<a href=\""
-						+ UsageStatisticsGenerator.USAGE_STATS_HREF
-						+ "\">here</a>. Is this OK?";
+    private class UsageStatsDialog extends DialogWrapper {
+        private static final String MSG_TEXT =
+                "We would greatly appreciate it if you would allow us to collect anonymous"
+                        + "<br>usage statistics to help us provide a better quality product. Details"
+                        + "<br>of what will be tracked are given "
+                        + "<a href=\""
+                        + UsageStatisticsGenerator.USAGE_STATS_HREF
+                        + "\">here</a>. Is this OK?";
 
-		protected UsageStatsDialog() {
-			super((Project) null, false);
-			init();
-			setTitle(PluginUtil.getInstance().getName() + " Request");
-			setModal(true);
-			setOKButtonText("Yes");
-			setCancelButtonText("No");
-		}
+        protected UsageStatsDialog() {
+            super((Project) null, false);
+            init();
+            setTitle(PluginUtil.getInstance().getName() + " Request");
+            setModal(true);
+            setOKButtonText("Yes");
+            setCancelButtonText("No");
+        }
 
-		@Override
-		protected JComponent createCenterPanel() {
-			JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
-			CellConstraints cc = new CellConstraints();
+        @Override
+        protected JComponent createCenterPanel() {
+            JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
+            CellConstraints cc = new CellConstraints();
 
-			JEditorPane textPane = new JEditorPane();
-			textPane.setContentType("text/html");
-			textPane.setEditable(false);
-			textPane.setOpaque(false);
-			textPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-			textPane.setText("<html>" + MSG_TEXT);
-			textPane.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-						BrowserUtil.launchBrowser(e.getURL().toString());
-					}
-				}
-			});
+            JEditorPane textPane = new JEditorPane();
+            textPane.setContentType("text/html");
+            textPane.setEditable(false);
+            textPane.setOpaque(false);
+            textPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+            textPane.setText("<html>" + MSG_TEXT);
+            textPane.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        BrowserUtil.launchBrowser(e.getURL().toString());
+                    }
+                }
+            });
 
-			p.add(new JLabel(Messages.getQuestionIcon()), cc.xy(2, 2));
-			p.add(textPane, cc.xy(4, 2));
+            p.add(new JLabel(Messages.getQuestionIcon()), cc.xy(2, 2));
+            p.add(textPane, cc.xy(4, 2));
 
-			return p;
-		}
-
-
-	}
-
-	public void projectClosed() {
-		if (created) {
-			pluginTaskManager.deactivateListner();
-			fileEditorListener.projectClosed();
-			// remove icon from status bar
-			statusBarBambooIcon.hideIcon();
-			statusBarBambooIcon = null;
-			statusPluginUpdateIcon.hideIcon();
-			statusPluginUpdateIcon = null;
-
-			IdeaHelper.getAppComponent().getSchedulableCheckers().remove(bambooStatusChecker);
-			IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
-			// unregister listeners
-			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
-			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
-			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
-			//unregister form model
-			projectCfgManager.removeProjectConfigurationListener(configurationListener);
-			configurationListener = null;
-			projectCfgManager.removeProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
-
-			// remove tool window
-			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
+            return p;
+        }
 
 
-			created = false;
-		}
-	}
+    }
 
-	public WorkspaceConfigurationBean getProjectConfigurationBean() {
-		return projectConfigurationBean;
-	}
+    public void projectClosed() {
+        if (created) {
+            pluginTaskManager.deactivateListner();
+            fileEditorListener.projectClosed();
+            // remove icon from status bar
+            statusBarBambooIcon.hideIcon();
+            statusBarBambooIcon = null;
+            statusPluginUpdateIcon.hideIcon();
+            statusPluginUpdateIcon = null;
 
-	public BambooStatusChecker getBambooStatusChecker() {
-		return bambooStatusChecker;
-	}
+            IdeaHelper.getAppComponent().getSchedulableCheckers().remove(bambooStatusChecker);
+            IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
+            // unregister listeners
+            //bambooStatusChecker.unregisterListener(iconBambooStatusListener);
+            //bambooStatusChecker.unregisterListener(toolWindowBambooListener);
+            bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
+            //unregister form model
+            projectCfgManager.removeProjectConfigurationListener(configurationListener);
+            configurationListener = null;
+            projectCfgManager.removeProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
 
-	public JIRAIssueListModelBuilder getJiraIssueListModelBuilder() {
-		return jiraIssueListModelBuilder;
-	}
+            // remove tool window
+            toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 
-	private class ConfigurationListenerImpl extends ConfigurationListenerAdapter {
 
-		@Override
-		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-			// show-hide icons if necessary
-			statusBarBambooIcon.showOrHideIcon();
-			// show-hide panels if necessary
-			toolWindow.showHidePanels();
-		}
-	}
+            created = false;
+        }
+    }
+
+    public WorkspaceConfigurationBean getProjectConfigurationBean() {
+        return projectConfigurationBean;
+    }
+
+    public BambooStatusChecker getBambooStatusChecker() {
+        return bambooStatusChecker;
+    }
+
+    public JIRAIssueListModelBuilder getJiraIssueListModelBuilder() {
+        return jiraIssueListModelBuilder;
+    }
+
+    private class ConfigurationListenerImpl extends ConfigurationListenerAdapter {
+
+        @Override
+        public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+            // show-hide icons if necessary
+            statusBarBambooIcon.showOrHideIcon();
+            // show-hide panels if necessary
+            toolWindow.showHidePanels();
+        }
+    }
 
 }
