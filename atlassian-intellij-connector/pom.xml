@@ -17,7 +17,7 @@
                   <developerConnection>scm:hg:file:///${basedir}</developerConnection-->
         <connection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</connection>
         <developerConnection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</developerConnection>
-                                                                                                                                                                 p
+
     </scm>
     <issueManagement>
         <system>Jira</system>
