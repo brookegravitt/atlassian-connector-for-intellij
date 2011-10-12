@@ -17,7 +17,7 @@
                   <developerConnection>scm:hg:file:///${basedir}</developerConnection-->
         <connection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</connection>
         <developerConnection>scm:hg:ssh://hg@bitbucket.org/atlassian/connector-idea</developerConnection>
-
+                                                                                                                                                                 p
     </scm>
     <issueManagement>
         <system>Jira</system>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.0.0-SNHAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
