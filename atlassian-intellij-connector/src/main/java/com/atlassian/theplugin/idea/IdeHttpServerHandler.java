@@ -333,7 +333,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
                 final VirtualFile virtualFile = value.getVirtualFile();
 
                 if (virtualFile != null) {
-                    return virtualFile.getIcon();
+                    return virtualFile.getFileType().getIcon();
                 }
 
                 return null;

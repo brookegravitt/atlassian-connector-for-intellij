@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.exception.PatchCreateErrorException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
@@ -110,7 +109,7 @@ public final class CrucibleHelper {
 						&& project.getBaseDir() != null ? project.getBaseDir().getPresentableUrl() : "");
 		if (list != null) {
 			String s1 = CodeStyleSettingsManager.getInstance(project).getCurrentSettings().getLineSeparator();
-			UnifiedDiffWriter.write(list, sw, s1);
+			IdeaVersionFacade.getInstance().UnifiedDiffWriterWrite(project, list, sw, s1);
 		}
 		return sw.toString();
 	}

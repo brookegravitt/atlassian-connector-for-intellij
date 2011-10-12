@@ -1,7 +1,11 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.intellij.tasks.PluginTaskManager;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.exception.PatchCreateErrorException;
+import com.atlassian.theplugin.idea.jira.LogTimeCheckinHandler;
+import com.atlassian.theplugin.idea.jira.logtime.LogTimeInvocationHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.ExecutionManager;
 import com.intellij.execution.Location;
@@ -23,19 +27,19 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
+import com.intellij.openapi.diff.impl.patch.FilePatch;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
-import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
@@ -51,6 +55,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -99,7 +105,13 @@ public final class IdeaVersionFacade {
         // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
         // deprecated getBuildNumber() method here...
         @SuppressWarnings("deprecation")
-        String ver = ApplicationInfo.getInstance().getBuildNumber();
+        //if Application.getInstance is null means we run tests
+                String ver;
+        try {
+            ver = ApplicationInfo.getInstance().getBuildNumber();
+        } catch (NullPointerException e) {
+            ver = "IU-103.255";
+        }
         Matcher m = IDEA_9_REGEX.matcher(ver);
         final int group5 = m.matches() && m.group(5) != null ? Integer.parseInt(m.group(5)) : 0;
         final int group6 = m.matches() && m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
@@ -109,7 +121,7 @@ public final class IdeaVersionFacade {
             communityEdition = m.group(3) != null;
         } else if (m.matches() && group5 >= IDEA_108_1333_GR5) {
             isIdea11 = true;
-            isIdeaX  = true;
+            isIdeaX = true;
             isIdeaX5 = true;
             communityEdition = m.group(3) != null;
         } else if (m.matches() && group6 >= IDEA_107_105_GR6 && group5 >= IDEA_107_105_GR5) {
@@ -449,7 +461,11 @@ public final class IdeaVersionFacade {
             }
             Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
             Constructor[] constructors = browserClass.getConstructors();
-            if (isIdeaX || isIdea9 || v >= IDEA_8_1_3 || !isIdea()) {
+            if (isIdea11) {
+                return (MultipleChangeListBrowser) constructors[0]
+                        .newInstance(project, changeListManager.getChangeLists(),
+                                changeList, changeListManager.getDefaultChangeList(), true, true, null, null, null);
+            } else if (isIdeaX || isIdea9 || v >= IDEA_8_1_3 || !isIdea()) {
                 return (MultipleChangeListBrowser) constructors[0]
                         .newInstance(project, changeListManager.getChangeLists(),
                                 changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
@@ -666,11 +682,16 @@ public final class IdeaVersionFacade {
         }
     }
 
-    public void registerCheckinHandler(final Project project, final CheckinHandlerFactory handlerFactory) {
+    public void registerCheckinHandler(final Project project, JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
+
         try {
             if (isIdea11) {
-   //for idea 10.5 and later
-                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration, projectCfgManager));
+                //for idea 10.5 and later
+                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandler(jiraWorkspaceConfiguration, projectCfgManager));
+                 Object proxy = Proxy.newProxyInstance(PluginTaskManager.class.getClassLoader(),
+                        new Class[]{Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory")},
+                        new LogTimeInvocationHandler(new LogTimeCheckinHandler(jiraWorkspaceConfiguration)));
+
                 Class projectLevelVcsManagerImplClass = Class
                         .forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
 
@@ -680,26 +701,31 @@ public final class IdeaVersionFacade {
                         .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
                 Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance");
 
-                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null), handlerFactory);
-            } else if (!isIdeaX5) {
+                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null), proxy);
+            } else if (isIdea9) {
                 //ProjectLevelVcsManagerImpl.getInstance(project).registerCheckinHandlerFactory(handlerFactory);
+                Class logTimeCheckinFactoryClass = Class.forName("com.atlassian.theplugin.idea.jira.logtime.LogTimeCheckinHandlerFactory");
+                Constructor constructor = logTimeCheckinFactoryClass.getConstructor(JiraWorkspaceConfiguration.class);
 
                 Class projectLevelVcsManagerImplClass = Class
                         .forName("com.intellij.openapi.vcs.impl.ProjectLevelVcsManagerImpl");
-                Class baseCheckinHandlerFactoryClass = Class.forName(
+                Class checkinHandlerFactoryClass = Class.forName(
                         "com.intellij.openapi.vcs.checkin.CheckinHandlerFactory");
 
                 Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
-                        .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
+                        .getMethod("registerCheckinHandlerFactory", checkinHandlerFactoryClass);
 
                 Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance", Project.class);
 
-                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), handlerFactory);
+                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), constructor.newInstance(jiraWorkspaceConfiguration));
 
 
             } else {
                 //for idea 10.5 and later
-                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandlerFactory(jiraWorkspaceConfiguration, projectCfgManager));
+                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandler(jiraWorkspaceConfiguration, projectCfgManager));
+                Class logTimeCheckinFactoryClass = Class.forName("com.atlassian.theplugin.idea.jira.logtime.LogTimeCheckinHandlerFactory");
+                Constructor constructor = logTimeCheckinFactoryClass.getConstructor(JiraWorkspaceConfiguration.class);
+
                 Class projectLevelVcsManagerImplClass = Class
                         .forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
 
@@ -709,7 +735,29 @@ public final class IdeaVersionFacade {
                         .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
                 Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance", Project.class);
 
-                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), handlerFactory);
+                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null, project), constructor.newInstance(jiraWorkspaceConfiguration));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void UnifiedDiffWriterWrite(Project project, Collection<FilePatch> list, StringWriter sw, String lineSeparator) {
+        Collection<FilePatch> collectionFilePatch = (Collection<FilePatch>)new ArrayList<FilePatch>();
+        try {
+            Class unifiedDiffWriter = Class.forName("com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter");
+            Method writeMethod;
+
+            if (isIdea11) {
+                Class commitContextClass = Class.forName("com.intellij.openapi.vcs.changes.CommitContext");
+                writeMethod = unifiedDiffWriter.getMethod("write", Project.class, Collection.class, Writer.class, String.class,
+                        commitContextClass);
+                  writeMethod.invoke(null, project, list, sw, lineSeparator, null);
+                //UnifiedDiffWriter.write(project, list, sw, lineSeparator, null);
+            } else {
+                writeMethod = unifiedDiffWriter.getMethod("write", Collection.class, Writer.class, String.class);
+                writeMethod.invoke(null, list,  sw, lineSeparator);
+                //UnifiedDiffWriter.write(list, sw, lineSeparator);
             }
         } catch (Exception e) {
             e.printStackTrace();
