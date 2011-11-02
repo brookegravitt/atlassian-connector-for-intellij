@@ -27,7 +27,7 @@ import javax.swing.event.HyperlinkListener;
 */
 public class GenericHyperlinkListener implements HyperlinkListener {
     public void hyperlinkUpdate(HyperlinkEvent e) {
-        if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
+        if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED) && e.getURL() != null) {
             BrowserUtil.launchBrowser(e.getURL().toString());
         }
 	}
