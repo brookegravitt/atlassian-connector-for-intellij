@@ -20,9 +20,8 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
         handler = new LogTimeCheckinHandler(jiraWorkspaceConfiguration);
     }
 
-    @NotNull
-    @Override
     public CheckinHandler createHandler(CheckinProjectPanel checkinprojectpanel) {
         return handler.createHandler(checkinprojectpanel);
     }
+
 }
