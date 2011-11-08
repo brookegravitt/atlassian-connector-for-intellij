@@ -153,7 +153,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
-	private boolean load() {
+	public boolean load() {
 		final Document root;
 		final SAXBuilder builder = new SAXBuilder(false);
 //		final ProjectId projectId = CfgUtil.getProjectId(project);

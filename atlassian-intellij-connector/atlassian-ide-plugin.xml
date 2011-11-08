@@ -13,22 +13,9 @@
         <url>https://jira.atlassian.com</url>
         <shared>false</shared>
       </jira>
-      <jira>
-        <server-id>950510fe-5297-4ee9-adf9-e65d26def33d</server-id>
-        <name>Local</name>
-        <url>http://192.168.157.163:8030</url>
-        <shared>false</shared>
-      </jira>
-      <crucible>
-        <server-id>a48d422d-36ba-44cd-8ae6-576630ac1db7</server-id>
-        <name>Local</name>
-        <url>http://localhost:5244/crucible</url>
-        <shared>false</shared>
-        <isFisheyeInstance>false</isFisheyeInstance>
-      </crucible>
       <bamboo>
         <server-id>6186ab78-da78-49b6-91aa-176b16ffa81d</server-id>
-        <name>Gdansk</name>
+        <name>Gdanskk</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>

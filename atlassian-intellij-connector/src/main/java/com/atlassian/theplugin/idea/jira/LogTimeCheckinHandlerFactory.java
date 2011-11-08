@@ -60,7 +60,8 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 		return new NullCheckinHandler();
 	}
 
-	private class Handler extends CheckinHandler {
+
+    private class Handler extends CheckinHandler {
 		private CheckinProjectPanel checkinProjectPanel;
 		private JCheckBox cbLogTime = new JCheckBox("Log Time Spent");
 		private JTextField txtTimeSpent = new JTextField();
