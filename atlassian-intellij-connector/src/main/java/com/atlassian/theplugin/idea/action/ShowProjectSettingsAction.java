@@ -46,6 +46,7 @@ public class ShowProjectSettingsAction extends AnAction {
 		Project project = IdeaHelper.getCurrentProject(event);
 		if (project != null) {
 			ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
+            component.load();
 			ServerData server = event.getData(Constants.SERVER_KEY);
 			if (server != null) {
 				component.setSelectedServer(server);
@@ -76,15 +77,15 @@ public class ShowProjectSettingsAction extends AnAction {
 			return null;
 		}
 
-		Collection<ServerData> servers = cfgManager.getAllEnabledServerss(serverType);
+		Collection<ServerData> servers = cfgManager != null ? cfgManager.getAllEnabledServerss(serverType) : null;
 
-		if (!servers.isEmpty()) {
+		if (servers != null && !servers.isEmpty()) {
 			return servers.iterator().next();
 		}
 
-		servers = cfgManager.getAllServerss(serverType);
+		servers = cfgManager != null ? cfgManager.getAllServerss(serverType) : null;
 
-		if (!servers.isEmpty()) {
+		if (servers != null && !servers.isEmpty()) {
 			return servers.iterator().next();
 		}
 
