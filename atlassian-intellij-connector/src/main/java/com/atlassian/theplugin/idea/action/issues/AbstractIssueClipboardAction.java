@@ -15,7 +15,8 @@ public abstract class AbstractIssueClipboardAction extends JIRAAbstractAction {
 		}
 	}
 
-	public void onUpdate(AnActionEvent event) {
+    public void onUpdate(AnActionEvent event) {
+        onUpdate(event, true);
 	}
 
 	public void onUpdate(AnActionEvent event, boolean enabled) {
@@ -24,8 +25,6 @@ public abstract class AbstractIssueClipboardAction extends JIRAAbstractAction {
 			event.getPresentation().setText(getCliboardText(issue));
 			event.getPresentation().setVisible(true);
 			event.getPresentation().setEnabled(true);
-		} else {
-			event.getPresentation().setVisible(false);
 		}
 	}
 
