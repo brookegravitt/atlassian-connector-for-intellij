@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.IllegalFormatFlagsException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -135,7 +136,11 @@ public class PasswordStorage {
             // PasswordSafe.getInstance().getPassword(project, PasswordStorage.class, key);
             Object safe = getPasswordSafeInstance();
             Method getPassword = safe.getClass().getMethod("getPassword", Project.class, Class.class, String.class);
-            return getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
+            if (getPassword != null) {
+                return getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             LoggerImpl.getInstance().error(e);
         }
