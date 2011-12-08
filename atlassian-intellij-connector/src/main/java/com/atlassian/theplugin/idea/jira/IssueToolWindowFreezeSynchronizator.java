@@ -36,7 +36,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 
 				public void modelFrozen(FrozenModel model, boolean frozen) {
 					if (filterModel != null) {
-						filterModel.setModelFrozen(frozen);
+
 					}
 
 				}
