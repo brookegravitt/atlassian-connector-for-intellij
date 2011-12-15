@@ -33,7 +33,6 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
@@ -71,21 +70,18 @@ public final class IdeaVersionFacade {
     private static final int IDEA_8_0_1 = 9164;
     private static final int IDEA_8_1_3 = 9886;
     private static final int IDEA_9_EAP = 10000;
-    private static final int IDEA_X_EAP_GR5 = 96;
-    private static final int IDEA_9_GR5 = 95;
+    private static final int IDEA_X_EAP_GR6 = 96;
+    private static final int IDEA_9_GR6 = 95;
     private static final int IDEA_9_COMMUNITY_1 = 93;
 
 
     //idea 10.5 stable
-    private static final int IDEA_107_105_GR5 = 107;
-    private static final int IDEA_107_105_GR6 = 105;
+    private static final int IDEA_107_105_GR6 = 107;
+    private static final int IDEA_107_105_GR7 = 105;
 
     //idea 11 EAP
-    private static final int IDEA_108_1333_GR5 = 108;
-    private static final int IDEA_108_1333_GR6 = 1333;
+    private static final int IDEA_108_1333_GR6 = 108;
 
-    private static final int IDEA_103_255_GR4 = 103;
-    private static final int IDEA_103_255_GR5 = 255;
 
     private boolean isIdea7;
     private boolean isIdea8;
@@ -97,7 +93,7 @@ public final class IdeaVersionFacade {
     private boolean communityEdition = false;
 
 
-    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS))-(\\d+)\\.(\\d+)";
+    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
 
@@ -113,22 +109,22 @@ public final class IdeaVersionFacade {
             ver = "IU-103.255";
         }
         Matcher m = IDEA_9_REGEX.matcher(ver);
-        final int group5 = m.matches() && m.group(5) != null ? Integer.parseInt(m.group(5)) : 0;
-        final int group6 = m.matches() && m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
+        final int group5 = m.matches() && m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
+        final int group6 = m.matches() && m.group(7) != null ? Integer.parseInt(m.group(7)) : 0;
 
-        if (m.matches() && (group5 == IDEA_9_GR5 || group5 == IDEA_9_COMMUNITY_1)) {
+        if (m.matches() && (group5 == IDEA_9_GR6 || group5 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && group5 >= IDEA_108_1333_GR5) {
+        } else if (m.matches() && group5 >= IDEA_108_1333_GR6) {
             isIdea11 = true;
             isIdeaX = true;
             isIdeaX5 = true;
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && group6 >= IDEA_107_105_GR6 && group5 >= IDEA_107_105_GR5) {
+        } else if (m.matches() && group6 >= IDEA_107_105_GR7 && group5 >= IDEA_107_105_GR6) {
             isIdeaX5 = true;
             isIdeaX = true;
             communityEdition = m.group(3) != null;
-        } else if (m.matches() && (group5 >= IDEA_X_EAP_GR5)) {
+        } else if (m.matches() && (group5 >= IDEA_X_EAP_GR6)) {
             isIdeaX = true;
             communityEdition = m.group(3) != null;
 
