@@ -1,0 +1,14 @@
+<script language="javascript">
+	function toggle(id, controlid) {
+		var el = document.getElementById(id);
+		var state = el.style.display;
+		if (state == 'block') {
+			document.getElementById(id).style.display = 'none';
+			document.getElementById(controlid).innerHTML="expand";
+		} else {
+			document.getElementById(id).style.display = 'block';
+			document.getElementById(controlid).innerHTML="collapse";
+		}
+	}
+</script>
+
