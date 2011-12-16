@@ -51,78 +51,81 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>tasks-core</artifactId>
-            <version>9.0.2-95.4</version>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jira-connector</artifactId>
-            <version>9.0.2-95.4</version>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>util</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>icons</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>extensions</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jgoodies-forms</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>forms_rt</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>openapi</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>9.0.4</version>
-            <classifier>95.627</classifier>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>compile</scope>
         </dependency>
 
 
         <dependency>
-            <groupId>gnu.trove</groupId>
+            <groupId>com.intellij.idea</groupId>
             <artifactId>trove4j</artifactId>
-            <version>idea-7.0.2</version>
+            <version>11.0</version>
+            <classifier>111.19</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
