@@ -152,56 +152,56 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		final FormLayout layout = new FormLayout(
 				"10dlu, 20dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 10dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 20dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 10dlu, " +     //14
+                        "p, 3dlu, p, 3dlu, p, 10dlu, " +      //20
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		PanelBuilder builder = new PanelBuilder(layout, this);
 		builder.setDefaultDialogBorder();
 
 		final CellConstraints cc = new CellConstraints();
-		builder.addSeparator("FishEye", cc.xyw(1, 11, ALL_COLUMNS));
+		builder.addSeparator("FishEye", cc.xyw(1, 1, ALL_COLUMNS));     //11
 		JLabel fshHelp1 = new JLabel(FISHEYE_HELP_TEXT_1);
 		fshHelp1.setFont(fshHelp1.getFont().deriveFont(10.0f));
 		fshHelp1.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(fshHelp1, cc.xyw(2, 13, ALL_COLUMNS - 1));
-		builder.addLabel("Default Server:", cc.xy(3, 15));
-		builder.add(defaultFishEyeServerCombo, cc.xy(5, 15));
-		builder.addLabel("Default Repository:", cc.xy(3, 17));
-		builder.add(defaultFishEyeRepositoryCombo, cc.xy(5, 17));
-		builder.addLabel("Path to Project:", cc.xy(3, 19));
-		builder.add(pathToProjectEdit, cc.xy(5, 19));
+		builder.add(fshHelp1, cc.xyw(2, 3, ALL_COLUMNS - 1));
+		builder.addLabel("Default Server:", cc.xy(3, 5));
+		builder.add(defaultFishEyeServerCombo, cc.xy(5, 5));
+		builder.addLabel("Default Repository:", cc.xy(3, 7));
+		builder.add(defaultFishEyeRepositoryCombo, cc.xy(5, 7));
+		builder.addLabel("Path to Project:", cc.xy(3, 9));
+		builder.add(pathToProjectEdit, cc.xy(5, 9));
 		JLabel fshHelp2 = new JLabel(FISHEYE_HELP_TEXT_2);
 		fshHelp2.setFont(fshHelp2.getFont().deriveFont(10.0f));
 		fshHelp2.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(fshHelp2, cc.xy(5, 21));
+		builder.add(fshHelp2, cc.xy(5, 11));
 
-		builder.addSeparator("JIRA", cc.xyw(1, 23, ALL_COLUMNS));
+		builder.addSeparator("JIRA", cc.xyw(1, 13, ALL_COLUMNS));
 		JLabel jiraHelp = new JLabel(JIRA_HELP_TEXT);
 		jiraHelp.setFont(jiraHelp.getFont().deriveFont(10.0f));
 		// jgorycki: well, it seems like FormLayout doesn't give a shit about JLabel's maximum width. However,
 		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
 		// of producing one long line
 		jiraHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(jiraHelp, cc.xyw(2, 25, ALL_COLUMNS - 1));
-		builder.addLabel("Default Server:", cc.xy(3, 27));
-		builder.add(defaultJiraServerCombo, cc.xy(5, 27));
+		builder.add(jiraHelp, cc.xyw(2, 15, ALL_COLUMNS - 1));
+		builder.addLabel("Default Server:", cc.xy(3, 17));
+		builder.add(defaultJiraServerCombo, cc.xy(5, 17));
 
-		builder.addSeparator("Default Credentials", cc.xyw(1, 29, ALL_COLUMNS));
+		builder.addSeparator("Default Credentials", cc.xyw(1, 19, ALL_COLUMNS));
 		final String DEFAULT_CREDENTIALS_TEXT = "Default credentials for selected servers";
 		JLabel defaultCredentialsLabel = new JLabel(DEFAULT_CREDENTIALS_TEXT);
 		defaultCredentialsLabel.setFont(defaultCredentialsLabel.getFont().deriveFont(10.0f));
-		builder.add(defaultCredentialsLabel, cc.xyw(2, 31, ALL_COLUMNS - 1));
-		builder.addLabel("Username:", cc.xy(3, 33));
-		builder.add(defaultUsername, cc.xy(5, 33));
-		builder.addLabel("Password:", cc.xy(3, 35));
-		builder.add(defaultPassword, cc.xy(5, 35));
+		builder.add(defaultCredentialsLabel, cc.xyw(2, 21, ALL_COLUMNS - 1));
+		builder.addLabel("Username:", cc.xy(3, 23));
+		builder.add(defaultUsername, cc.xy(5, 23));
+		builder.addLabel("Password:", cc.xy(3, 25));
+		builder.add(defaultPassword, cc.xy(5, 25));
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(defaultCredentialsTestButton, BorderLayout.EAST);
 		defaultCredentialsTestButton.setMaximumSize(defaultCredentialsTestButton.getPreferredSize());
 
-		builder.add(defaultCredentialsTestButton, cc.xy(5, 37, CellConstraints.RIGHT, CellConstraints.CENTER));
+		builder.add(defaultCredentialsTestButton, cc.xy(5, 27, CellConstraints.RIGHT, CellConstraints.CENTER));
 
 
 		initializeControls();
