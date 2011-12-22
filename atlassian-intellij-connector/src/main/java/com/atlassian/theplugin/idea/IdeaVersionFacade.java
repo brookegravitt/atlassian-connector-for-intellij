@@ -144,7 +144,7 @@ public final class IdeaVersionFacade {
     }
 
     private boolean isIdea() {
-        return isIdea7 || isIdea8 || isIdea9 || isIdea9;
+        return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11 ;
     }
 
     public static boolean isInstanceOfPsiDocToken(Object obj) {
