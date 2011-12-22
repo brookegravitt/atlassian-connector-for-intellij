@@ -484,7 +484,7 @@
                 <version>2.1</version>
                 <configuration>
                     <ideaPlugin>true</ideaPlugin>
-                    <jdkName>IDEA 9952</jdkName>
+                    <jdkName>IDEA IU-111.69</jdkName>
                     <jdkLevel>${jdkLevel}</jdkLevel>
                     <wildcardResourcePatterns>!?*.java</wildcardResourcePatterns>
                     <downloadSources>true</downloadSources>
