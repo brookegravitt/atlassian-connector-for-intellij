@@ -39,6 +39,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private SpinnerModel model;
 	private JSpinner issuePageSize;
     private JCheckBox cbSynchroWithIntelliJTasks;
+    private JCheckBox cbShowIssueTooltips;
 
     private transient PluginConfiguration globalPluginConfiguration;
 
@@ -68,8 +69,9 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public boolean isModified() {
-		return IdeaHelper.getSpinnerIntValue(issuePageSize) != jiraConfiguration.getPageSize() ||
-                cbSynchroWithIntelliJTasks.isSelected() != jiraConfiguration.isSynchronizeWithIntelliJTasks();
+		return IdeaHelper.getSpinnerIntValue(issuePageSize) != jiraConfiguration.getPageSize()
+               || cbSynchroWithIntelliJTasks.isSelected() != jiraConfiguration.isSynchronizeWithIntelliJTasks()
+               || cbShowIssueTooltips.isSelected() != jiraConfiguration.isShowIssueTooltips();
 	}
 
 	public String getTitle() {
@@ -84,6 +86,9 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
                 .setSynchronizeWithIntelliJTasks(cbSynchroWithIntelliJTasks.isSelected());
         globalPluginConfiguration.getJIRAConfigurationData()
                 .setSynchronizeWithIntelliJTasks(cbSynchroWithIntelliJTasks.isSelected());
+
+        getLocalPluginConfigurationCopy().getJIRAConfigurationData().setShowIssueTooltips(cbShowIssueTooltips.isSelected());
+        globalPluginConfiguration.getJIRAConfigurationData().setShowIssueTooltips(cbShowIssueTooltips.isSelected());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -94,6 +99,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 		model.setValue(jiraConfiguration.getPageSize());
         cbSynchroWithIntelliJTasks.setSelected(jiraConfiguration.isSynchronizeWithIntelliJTasks());
+        cbShowIssueTooltips.setSelected(jiraConfiguration.isShowIssueTooltips());
 	}
 
 	private PluginConfiguration getLocalPluginConfigurationCopy() {

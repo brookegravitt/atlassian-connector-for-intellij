@@ -252,7 +252,6 @@ public class PluginToolWindow {
 					if (content != null) {
 						// hide tab
 
-
 						if (content.isSelected() && ideaToolWindow.isVisible()) {
 							ideaToolWindow.getContentManager().removeContent(content, true);
 						} else {

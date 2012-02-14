@@ -19,9 +19,6 @@
           <plan key="ACC-TST" grouped="0" />
           <plan key="INT-CS" grouped="0" />
           <plan key="INT-DPL" grouped="0" />
-          <plan key="INT-FAIL2" grouped="0" />
-          <plan key="INT-FAIL3" grouped="0" />
-          <plan key="INT-FAIL" grouped="0" />
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
@@ -48,6 +45,12 @@
           <plan key="AIC-CS" grouped="0" />
         </plans>
       </bamboo>
+      <jira>
+        <server-id>282a28e8-04ed-4ba3-85d2-0d5b630446b8</server-id>
+        <name>stac</name>
+        <url>https://studio.atlassian.com</url>
+        <shared>false</shared>
+      </jira>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>

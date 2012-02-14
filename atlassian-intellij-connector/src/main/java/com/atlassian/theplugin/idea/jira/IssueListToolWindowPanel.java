@@ -152,7 +152,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         currentIssueListModel = searchingIssueListModel;
 
         issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel,
-                jiraServerModel, projectCfgManager);
+                jiraServerModel, projectCfgManager, pluginConfiguration.getJIRAConfigurationData());
 
         this.jiraServerModel = jiraServerModel;
 
@@ -572,7 +572,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         Task.Backgroundable assign = new Task.Backgroundable(getProject(), "Assigning Issue", false) {
 
-            @Override
             public void run(@NotNull final ProgressIndicator indicator) {
                 setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
@@ -632,7 +631,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         issueCommentDialog.show();
         if (issueCommentDialog.isOK()) {
             Task.Backgroundable comment = new Task.Backgroundable(getProject(), "Commenting Issue", false) {
-                @Override
+
                 public void run(@NotNull final ProgressIndicator indicator) {
                     EventQueue.invokeLater(new Runnable() {
                         public void run() {
@@ -794,7 +793,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 private JiraIssueAdapter updatedIssue = issue;
 
-                @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
                     updatedIssue = assignIssueAndPutInProgress(issue, statusBarPane, handler, newActiveIssue);
                     jiraIssueListModelBuilder.updateIssue(updatedIssue);
@@ -1006,7 +1004,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             this.refreshIssueList = refreshIssueList;
         }
 
-        @Override
         public void run(@NotNull final ProgressIndicator indicator) {
 
             try {
@@ -1274,7 +1271,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             this.resultHandler = resultHandler;
         }
 
-        @Override
         public void run(@NotNull final ProgressIndicator indicator) {
             try {
                 if (jiraServerData != null) {
@@ -1580,7 +1576,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             this.reload = reload;
         }
 
-
         public void run(@NotNull final ProgressIndicator indicator) {
             getStatusBarPane().setInfoMessage("Loading issues...", false);
             try {
@@ -1602,7 +1597,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 //					System.out.print("PresetStart -" + new DateTime().toString());
                     jiraIssueListModelBuilder.addIssuesToModel(presetFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
-						System.out.print("PresetEnd -" + new DateTime().toString());
+//						System.out.print("PresetEnd -" + new DateTime().toString());
                 } else if (savedFilter != null) {
                     jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerData,
                             pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);

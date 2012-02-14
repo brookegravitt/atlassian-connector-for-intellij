@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira.renderers;
 
 import com.atlassian.connector.commons.jira.JiraTImeFormatter;
+import com.atlassian.theplugin.commons.configuration.JiraConfigurationBean;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.util.DateUtil;
@@ -11,6 +12,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +43,7 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 	private static final int MAX_TOOLTIP_WIDTH = 400;
 	private static final int MAX_DESCRIPTION_LENGTH = 360;
 
-	public JIRAIssueListOrTreeRendererPanel(JiraIssueAdapter issue) {
+	public JIRAIssueListOrTreeRendererPanel(JiraIssueAdapter issue, @Nullable JiraConfigurationBean configuration) {
 		super(new FormLayout("1dlu, pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		this.issue = issue;
 
@@ -60,22 +62,24 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 
 		setParameters(true, true);
 
-		setToolTipText(buildTolltip(issue, 0));
+        if (configuration != null && configuration.isShowIssueTooltips()) {
+            setToolTipText(buildTolltip(issue, 0));
 
-		// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
-		final JToolTip jToolTip = createToolTip();
+            // now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
+            final JToolTip jToolTip = createToolTip();
 
-		try {
-			jToolTip.setTipText(buildTolltip(issue, 0));
-		} catch (ClassCastException e) {
-			// don't know why but sometimes setTipText throws CCE (most probably on IDEA start)
-			// we cannot do much about thtat
-			PluginUtil.getLogger().warn("ClassCastException when setting tooltip text", e);
-		}
+            try {
+                jToolTip.setTipText(buildTolltip(issue, 0));
+            } catch (ClassCastException e) {
+                // don't know why but sometimes setTipText throws CCE (most probably on IDEA start)
+                // we cannot do much about thtat
+                PluginUtil.getLogger().warn("ClassCastException when setting tooltip text", e);
+            }
 
-		final int prefWidth = jToolTip.getPreferredSize().width;
-		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-		setToolTipText(buildTolltip(issue, width));
+            final int prefWidth = jToolTip.getPreferredSize().width;
+            int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+            setToolTipText(buildTolltip(issue, width));
+        }
 	}
 
 	private JPanel createPanelForOtherIssueDetails() {
