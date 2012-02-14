@@ -4,6 +4,7 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.configuration.JiraConfigurationBean;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -32,7 +33,8 @@ public class JIRAIssueTreeBuilder {
 	private final JIRAIssueListModel issueModel;
 	private JIRAServerModel jiraServerModel;
 	private ProjectCfgManager projectCfgManager;
-	private SortableGroupsTreeModel treeModel;
+    private JiraConfigurationBean configuration;
+    private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
 	private boolean isGroupSubtasksUnderParent;
@@ -132,13 +134,14 @@ public class JIRAIssueTreeBuilder {
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
 			JIRAServerModel jiraServerModel,
-			final ProjectCfgManager projectCfgManager) {
+			final ProjectCfgManager projectCfgManager, final JiraConfigurationBean configuration) {
 		this.groupBy = groupBy;
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;
 		this.jiraServerModel = jiraServerModel;
 		this.projectCfgManager = projectCfgManager;
-		lastTree = null;
+        this.configuration = configuration;
+        lastTree = null;
 
 //		issueModel.addModelListener(new JIRAIssueListModelListener() {
 //
@@ -179,24 +182,24 @@ public class JIRAIssueTreeBuilder {
 		reCreateTree(tree, treeParent, root);
 		if (isGroupSubtasksUnderParent) {
 			for (JiraIssueAdapter issue : issueModel.getIssuesNoSubtasks()) {
-				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issue);
+				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issue, configuration);
 				getPlace(issue, root).add(node);
 				if (!issue.getSubTaskKeys().isEmpty()) {
 					for (JiraIssueAdapter sub : issueModel.getSubtasks(issue)) {
-						node.add(new JIRAIssueTreeNode(sub));
+						node.add(new JIRAIssueTreeNode(sub, configuration));
 					}
 				}
 			}
 			Collection<JiraIssueAdapter> orphans = issueModel.getSubtasks(null);
 			if (!orphans.isEmpty()) {
 				for (JiraIssueAdapter i : orphans) {
-					JIRAIssueTreeNode node = new JIRAIssueTreeNode(i);
+					JIRAIssueTreeNode node = new JIRAIssueTreeNode(i, configuration);
 					getPlace(i, root).add(node);
 				}
 			}
 		} else {
 			for (JiraIssueAdapter issue : issueModel.getIssues()) {
-				getPlace(issue, root).add(new JIRAIssueTreeNode(issue));
+				getPlace(issue, root).add(new JIRAIssueTreeNode(issue, configuration));
 			}
 		}
 		treeModel.nodeStructureChanged(root);

@@ -289,7 +289,7 @@ public final class IdeaVersionFacade {
                 initMethod.invoke(asyncProcessIcon, icons, passiveIcon, cycleLength, cycleGap, i);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

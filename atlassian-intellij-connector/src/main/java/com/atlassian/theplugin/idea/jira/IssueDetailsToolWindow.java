@@ -240,7 +240,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
         final JiraServerData jiraServerData = issue.getJiraServerData();
         ProgressManager.getInstance().run(
                 new Task.Backgroundable(project, "Uploading attachment " + name) {
-                    @Override
                     public void run(@NotNull ProgressIndicator progressIndicator) {
                         try {
                             facade.addAttachment(jiraServerData, issueKey, name, contents);
@@ -1280,7 +1279,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                         JiraIssueAdapter issue = (JiraIssueAdapter) value;
                         JIRAIssueListOrTreeRendererPanel r = rendererMap.get(issue);
                         if (r == null) {
-                            r = new JIRAIssueListOrTreeRendererPanel(issue);
+                            r = new JIRAIssueListOrTreeRendererPanel(issue, null);
                             rendererMap.put(issue, r);
                         }
                         r.setParameters(isSelected, true);
