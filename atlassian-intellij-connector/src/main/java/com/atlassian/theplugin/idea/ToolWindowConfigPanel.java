@@ -32,8 +32,6 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class ToolWindowConfigPanel extends JPanel {
-	private static final int ROW_COUNT = 6;
-
 	public ToolWindowConfigPanel(final Project project) {
 		super(new GridBagLayout());
 
