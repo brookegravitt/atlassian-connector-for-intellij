@@ -45,12 +45,6 @@
           <plan key="AIC-CS" grouped="0" />
         </plans>
       </bamboo>
-      <jira>
-        <server-id>282a28e8-04ed-4ba3-85d2-0d5b630446b8</server-id>
-        <name>stac</name>
-        <url>https://studio.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>
