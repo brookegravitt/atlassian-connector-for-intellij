@@ -128,9 +128,10 @@ public class PasswordStorage {
             Object safe = getPasswordSafeInstance();
             Method storePassword = safe.getClass().getMethod(
                     "storePassword", Project.class, Class.class, String.class, String.class);
-            storePassword.invoke(safe, project, PasswordStorage.class, key, value);
             if (defaultProject != null) {
                 storePassword.invoke(safe, defaultProject, PasswordStorage.class, key, value);
+            } else {
+                storePassword.invoke(safe, project, PasswordStorage.class, key, value);
             }
         } catch (Exception e) {
             LoggerImpl.getInstance().error(e);
@@ -143,9 +144,11 @@ public class PasswordStorage {
             Object safe = getPasswordSafeInstance();
             Method getPassword = safe.getClass().getMethod("getPassword", Project.class, Class.class, String.class);
             if (getPassword != null) {
-                String pwd = getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
-                if (StringUtils.isEmpty(pwd) && defaultProject != null) {
+                String pwd = "";
+                if (defaultProject != null) {
                     pwd = getPassword.invoke(safe, defaultProject, PasswordStorage.class, key).toString();
+                } else {
+                    pwd = getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
                 }
                 return pwd;
             } else {
