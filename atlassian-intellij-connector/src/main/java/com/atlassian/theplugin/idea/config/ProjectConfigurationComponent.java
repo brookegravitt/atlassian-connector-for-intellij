@@ -340,7 +340,6 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
             if (shouldSaveConfiguration) {
 
-                cfgFactory.save(configuration);
                 PasswordStorage.savePasswordsToSecureStore(project, projectManager.getDefaultProject(), configuration, cfgFactory);
                 
 				final String publicCfgFile = getCfgFilePath();
