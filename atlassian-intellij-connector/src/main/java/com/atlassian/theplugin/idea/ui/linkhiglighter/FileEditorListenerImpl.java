@@ -19,6 +19,7 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -84,7 +85,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			linkHighlighters.remove(oldFile);
 
 		} else if (newFile != null && !linkHighlighters.containsKey(newFile)) {
-			PsiFile psiFile = PsiManager.getInstance(project).findFile(newFile);
+			PsiFile psiFile = safeFindFile(newFile);
 			if (psiFile != null) {
 				Editor editor = editorManager.getSelectedTextEditor();
 				if (editor != null) {
@@ -93,6 +94,16 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			}
 		}
 	}
+
+    // PL-2570 - rather ugly workaround
+    private PsiFile safeFindFile(VirtualFile file) {
+        try {
+            return PsiManager.getInstance(project).findFile(file);
+        } catch (Throwable t) {
+            LoggerImpl.getInstance().error(t);
+        }
+        return null;
+    }
 
 	public void projectClosed() {
 		projectCfgManager.removeProjectConfigurationListener(localConfigurationListener);
@@ -150,7 +161,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		}
 		for (VirtualFile openFile : editorManager.getSelectedFiles()) {
 			if (!linkHighlighters.containsKey(openFile)) {
-				PsiFile psiFile = PsiManager.getInstance(project).findFile(openFile);
+				PsiFile psiFile = safeFindFile(openFile);
 				if (psiFile != null) {
 					Editor editor = editorManager.getSelectedTextEditor();
 					if (editor != null) {
@@ -206,7 +217,6 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			this.fileEditor = fileEditor;
 		}
 
-		@Override
 		public void run(@NotNull final ProgressIndicator progressIndicator) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
