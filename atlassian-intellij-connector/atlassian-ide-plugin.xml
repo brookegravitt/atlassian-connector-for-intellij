@@ -2,49 +2,12 @@
   <project-configuration>
     <servers>
       <jira>
-        <server-id>46029028-e229-4039-ab98-de9160c27fa5</server-id>
-        <name>VHost 4.4.3</name>
-        <url>http://192.168.157.171:8080</url>
+        <server-id>282a28e8-04ed-4ba3-85d2-0d5b630446b8</server-id>
+        <name>stac</name>
+        <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
-      <bamboo>
-        <server-id>6186ab78-da78-49b6-91aa-176b16ffa81d</server-id>
-        <name>Gdanskk</name>
-        <url>https://gdansk.bamboo2.atlassian.com</url>
-        <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="ACC-DPL" grouped="0" />
-          <plan key="ACC-TST" grouped="0" />
-          <plan key="INT-CS" grouped="0" />
-          <plan key="INT-DPL" grouped="0" />
-          <plan key="INT-TST" grouped="0" />
-        </plans>
-      </bamboo>
-      <jira>
-        <server-id>0b7a9d65-8748-4998-a583-80898161bb0a</server-id>
-        <name>Unnamed_1</name>
-        <url />
-        <shared>false</shared>
-      </jira>
-      <jira>
-        <server-id>8444984d-4fba-4ad6-9af3-ffe8a8d2a3be</server-id>
-        <name>JIRA</name>
-        <url>https://jira.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
-      <bamboo>
-        <server-id>abb6da94-9936-4c11-8a28-1d4b060749e3</server-id>
-        <name>Local 3.3.2</name>
-        <url>http://192.168.157.115:8085</url>
-        <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>false</bamboo2>
-        <plans>
-          <plan key="AIC-CS" grouped="0" />
-        </plans>
-      </bamboo>
     </servers>
+    <default-jira-server>282a28e8-04ed-4ba3-85d2-0d5b630446b8</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
