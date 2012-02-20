@@ -59,14 +59,9 @@ public class PasswordStorage {
             return;
         }
 
-        int blankedPasswordsCnt = 0;
-
         Map<String, String> tempPasswordMap = new HashMap<String, String>();
         for (ServerCfg server : configuration.getServers()) {
             if (server.isPasswordStored()) {
-                if (!StringUtils.isEmpty(server.getPassword())) {
-                    ++blankedPasswordsCnt;
-                }
                 store(project, defaultProject, server.getServerId().toString(), server.getPassword());
             } else {
                 remove(project, defaultProject, server.getServerId().toString());
@@ -77,9 +72,7 @@ public class PasswordStorage {
             server.setPassword("");
         }
 
-        if (blankedPasswordsCnt > 0) {
-            cfgFactory.save(configuration);
-        }
+        cfgFactory.save(configuration);
 
         for (ServerCfg server : configuration.getServers()) {
             server.setPassword(tempPasswordMap.get(server.getServerId().toString()));
