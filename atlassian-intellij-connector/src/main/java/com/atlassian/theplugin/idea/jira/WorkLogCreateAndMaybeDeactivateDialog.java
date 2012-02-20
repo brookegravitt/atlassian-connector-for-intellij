@@ -72,6 +72,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -592,8 +593,10 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 					changesBrowserPanel = IdeaVersionFacade.getInstance()
 							.getChangesListBrowser(project, changeListManager, chList.getChanges());
-					changesPanel.add(changesBrowserPanel, BorderLayout.CENTER);
-					changesPanel.validate();
+                    if (changesBrowserPanel != null) {
+					    changesPanel.add(changesBrowserPanel, BorderLayout.CENTER);
+					    changesPanel.validate();
+                    }
 
 					if (!PluginTaskManagerHelper.isValidIdeaVersion()) {
 						if ("default".equalsIgnoreCase(chList.getName())) {
@@ -746,11 +749,11 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	}
 
 	public LocalChangeList getCurrentChangeList() {
-		return (LocalChangeList) changesBrowserPanel.getSelectedChangeList();
+		return changesBrowserPanel == null ? null : (LocalChangeList) changesBrowserPanel.getSelectedChangeList();
 	}
 
 	public java.util.List<Change> getSelectedChanges() {
-		return changesBrowserPanel.getCurrentIncludedChanges();
+		return changesBrowserPanel != null ? changesBrowserPanel.getCurrentIncludedChanges() : null;
 	}
 
 	public String getTimeSpentString() {
