@@ -1340,11 +1340,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         private void commitChanges() {
             final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+            final LocalChangeList list = dialog.getCurrentChangeList();
+            if (list == null) {
+                return;
+            }
+
             if (dialog.isCommitChanges()) {
 
-                final LocalChangeList list = dialog.getCurrentChangeList();
                 list.setComment(dialog.getComment());
                 final List<Change> selectedChanges = dialog.getSelectedChanges();
+                if (selectedChanges == null) {
+                    return;
+                }
 
                 /////////
                 if (dialog.isCreateReviewAfterCommit()) {
@@ -1361,8 +1368,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         setStatusInfoMessage("Committing changes...");
                         FileDocumentManager.getInstance().saveAllDocuments();
 
-                        commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(
-                                list, selectedChanges);
+                        commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(list, selectedChanges);
                     }
                 }, ModalityState.defaultModalityState());
 
@@ -1376,12 +1382,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             break;
                         case REMOVE_CHANGESET:
                             PluginUtil.activateDefaultChangeList(changeListManager);
-                            if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())
+                            if (!"default".equalsIgnoreCase(list.getName())
                                     && !(changeListManager.getChangeLists().size() <= 1)) {
                                 // PL-1612 - belt and suspenders probably, but just to be sure
                                 try {
 //                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                                    PluginUtil.removeChangeList(project, dialog.getCurrentChangeList());
+                                    PluginUtil.removeChangeList(project, list);
 
                                 } catch (Exception e) {
                                     // stupid IDEA 7 API. I hate you
@@ -1409,12 +1415,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 if (!dialog.isCreateReviewAfterCommit()
                         && afterCommit == WorkLogCreateAndMaybeDeactivateDialog.AfterCommit.REMOVE_CHANGESET) {
                     PluginUtil.activateDefaultChangeList(changeListManager);
-                    if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())
+                    if (!"default".equalsIgnoreCase(list.getName())
                             && !(changeListManager.getChangeLists().size() <= 1)) {
                         // PL-1612 - belt and suspenders probably, but just to be sure
                         try {
 //                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                            PluginUtil.removeChangeList(project, dialog.getCurrentChangeList());
+                            PluginUtil.removeChangeList(project, list);
 
                         } catch (Exception e) {
                             // stupid IDEA 7 API. I hate you
