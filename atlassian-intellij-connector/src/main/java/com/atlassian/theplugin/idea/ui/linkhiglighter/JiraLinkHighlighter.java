@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -222,14 +223,24 @@ public class JiraLinkHighlighter {
 		for (RangeHighlighter h : editor.getMarkupModel().getAllHighlighters()) {
 			JiraURLTextRange jiraRange = JiraURLTextRange.getFrom(h);
 			if (jiraRange != null && rangesList.contains(jiraRange) && !jiraRange.isActive()) {
-				editor.getMarkupModel().removeHighlighter(h);
-
+                // PL-2564 - not sure what exactly is going on with the highlighter,
+                // but this IOOBE is deep inside guts of IDEA. Just catching and logging. Oh well
+                try {
+				    editor.getMarkupModel().removeHighlighter(h);
+                } catch (IndexOutOfBoundsException e) {
+                    LoggerImpl.getInstance().error("Error removing highlighter", e);
+                }
 			}
 		}
 
 		for (JiraURLTextRange urlTextRange : rangesList) {
 			if (urlTextRange.isActive()) {
-				urlTextRange.addLinkHighlighter(editor);
+                // PL-2564 - again here. Not sure if this is needed, but just to make sure
+                try {
+    				urlTextRange.addLinkHighlighter(editor);
+                } catch (IndexOutOfBoundsException e) {
+                    LoggerImpl.getInstance().error("Error removing highlighter", e);
+                }
 			}
 		}
 	}
