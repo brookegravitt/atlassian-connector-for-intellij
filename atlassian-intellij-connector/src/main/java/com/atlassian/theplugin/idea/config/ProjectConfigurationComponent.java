@@ -47,6 +47,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
@@ -75,7 +76,8 @@ import java.util.List;
 public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable {
 
 	private final Project project;
-	private final ProjectCfgManagerImpl projectCfgManager;
+    private final ProjectManager projectManager;
+    private final ProjectCfgManagerImpl projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
     private final UserSharedConfigurationDao userSharedConfigurationDao;
@@ -94,13 +96,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private ServerData selectedServer;
 
 
-	public ProjectConfigurationComponent(final Project project, final ProjectCfgManager projectCfgManager,
+	public ProjectConfigurationComponent(final Project project, final ProjectManager projectManager, final ProjectCfgManager projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
 			@NotNull PrivateConfigurationDao privateCfgDao,
             @NotNull WorkspaceConfigurationBean projectConfigurationBean,
             @NotNull UserSharedConfigurationDao sharedCfgDao) {
 		this.project = project;
-		this.projectCfgManager = (ProjectCfgManagerImpl) projectCfgManager;
+        this.projectManager = projectManager;
+        this.projectCfgManager = (ProjectCfgManagerImpl) projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
         this.userSharedConfigurationDao = sharedCfgDao;
@@ -154,7 +157,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 
 	public boolean load() {
-		final Document root;
+        Element rootElement = new Element("atlassian-ide-plugin");
+        Element pc = new Element("project-configuration");
+        pc.getChildren().add(new Element("servers"));
+        rootElement.getChildren().add(pc);
+        Document root = new Document(rootElement);
 		final SAXBuilder builder = new SAXBuilder(false);
 //		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
@@ -163,11 +170,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			if (path == null || !file.exists()) {
 				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
-				return false;
-			}
-			FileInputStream inStream = new FileInputStream(file);
-			root = builder.build(inStream);
-			cleanupDom(root);
+			} else {
+                FileInputStream inStream = new FileInputStream(file);
+                root = builder.build(inStream);
+                cleanupDom(root);
+            }
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
@@ -182,7 +189,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			final ProjectConfiguration projectConfiguration;
 			projectConfiguration = cfgFactory.load();
 
-            PasswordStorage.loadPasswordsFromSecureStore(project, projectConfiguration, cfgFactory);
+            PasswordStorage.loadPasswordsFromSecureStore(project, projectManager.getDefaultProject(), projectConfiguration, cfgFactory);
 
 			if (projectConfiguration.getDefaultFishEyeServer() == null) {
 				//means that configuration holds Crucible as FishEye server.
@@ -333,7 +340,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
             if (shouldSaveConfiguration) {
 
-                PasswordStorage.savePasswordsToSecureStore(project, configuration, cfgFactory);
+                cfgFactory.save(configuration);
+                PasswordStorage.savePasswordsToSecureStore(project, projectManager.getDefaultProject(), configuration, cfgFactory);
                 
 				final String publicCfgFile = getCfgFilePath();
 

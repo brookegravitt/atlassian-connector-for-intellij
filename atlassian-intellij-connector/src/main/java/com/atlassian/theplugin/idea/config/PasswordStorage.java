@@ -4,8 +4,11 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,7 +28,7 @@ public class PasswordStorage {
     private static Boolean haveSafe = null;
 
     public static void loadPasswordsFromSecureStore(
-            Project project, ProjectConfiguration configuration, JDomProjectConfigurationDao cfgFactory) {
+            Project project, Project defaultProject, ProjectConfiguration configuration, JDomProjectConfigurationDao cfgFactory) {
 
         if (!hasPasswordSafe()) {
             return;
@@ -35,7 +38,7 @@ public class PasswordStorage {
             if (!server.isPasswordStored()) {
                 continue;
             }
-            String password = load(project, server.getServerId().toString());
+            String password = load(project, defaultProject, server.getServerId().toString());
             if (password != null) {
                 server.setPassword(password);
             } else {
@@ -45,23 +48,28 @@ public class PasswordStorage {
             }
         }
         // save back to migrate passwords
-        savePasswordsToSecureStore(project, configuration, cfgFactory);
+        savePasswordsToSecureStore(project, defaultProject, configuration, cfgFactory);
     }
 
     public static void savePasswordsToSecureStore(
-            Project project, ProjectConfiguration configuration, JDomProjectConfigurationDao cfgFactory) {
+            Project project, Project defaultProject, ProjectConfiguration configuration, JDomProjectConfigurationDao cfgFactory) {
 
         if (!hasPasswordSafe()) {
             cfgFactory.save(configuration);
             return;
         }
 
+        int blankedPasswordsCnt = 0;
+
         Map<String, String> tempPasswordMap = new HashMap<String, String>();
         for (ServerCfg server : configuration.getServers()) {
             if (server.isPasswordStored()) {
-                store(project, server.getServerId().toString(), server.getPassword());
+                if (!StringUtils.isEmpty(server.getPassword())) {
+                    ++blankedPasswordsCnt;
+                }
+                store(project, defaultProject, server.getServerId().toString(), server.getPassword());
             } else {
-                remove(project, server.getServerId().toString());
+                remove(project, defaultProject, server.getServerId().toString());
             }
             tempPasswordMap.put(server.getServerId().toString(), server.getPassword());
 
@@ -69,7 +77,9 @@ public class PasswordStorage {
             server.setPassword("");
         }
 
-        cfgFactory.save(configuration);
+        if (blankedPasswordsCnt > 0) {
+            cfgFactory.save(configuration);
+        }
 
         for (ServerCfg server : configuration.getServers()) {
             server.setPassword(tempPasswordMap.get(server.getServerId().toString()));
@@ -80,7 +90,7 @@ public class PasswordStorage {
         if (!hasPasswordSafe() || project == null) {
             return false;
         }
-        store(project, project.getLocationHash(), password);
+        store(project, null, project.getLocationHash(), password);
         return true;
     }
 
@@ -88,7 +98,7 @@ public class PasswordStorage {
         if (!hasPasswordSafe() || project == null) {
             return null;
         }
-        return load(project, project.getLocationHash());
+        return load(project, null, project.getLocationHash());
     }
 
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
@@ -119,25 +129,32 @@ public class PasswordStorage {
         return haveSafe;
     }
 
-    private static void store(Project project, String key, String value) {
+    private static void store(Project project, @Nullable Project defaultProject, String key, String value) {
         try {
             // PasswordSafe.getInstance().storePassword(project, PasswordStorage.class, key, value);
             Object safe = getPasswordSafeInstance();
             Method storePassword = safe.getClass().getMethod(
                     "storePassword", Project.class, Class.class, String.class, String.class);
             storePassword.invoke(safe, project, PasswordStorage.class, key, value);
+            if (defaultProject != null) {
+                storePassword.invoke(safe, defaultProject, PasswordStorage.class, key, value);
+            }
         } catch (Exception e) {
             LoggerImpl.getInstance().error(e);
         }
     }
 
-    private static String load(Project project, String key) {
+    private static String load(Project project, @Nullable Project defaultProject, String key) {
         try {
             // PasswordSafe.getInstance().getPassword(project, PasswordStorage.class, key);
             Object safe = getPasswordSafeInstance();
             Method getPassword = safe.getClass().getMethod("getPassword", Project.class, Class.class, String.class);
             if (getPassword != null) {
-                return getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
+                String pwd = getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
+                if (StringUtils.isEmpty(pwd) && defaultProject != null) {
+                    pwd = getPassword.invoke(safe, defaultProject, PasswordStorage.class, key).toString();
+                }
+                return pwd;
             } else {
                 return null;
             }
@@ -147,12 +164,15 @@ public class PasswordStorage {
         return null;
     }
 
-    private static void remove(Project project, String key) {
+    private static void remove(Project project, Project defaultProject, String key) {
         try {
             // PasswordSafe.getInstance().removePassword(project, PasswordStorage.class, key);
             Object safe = getPasswordSafeInstance();
             Method removePassword = safe.getClass().getMethod("removePassword", Project.class, Class.class, String.class);
             removePassword.invoke(safe, project, PasswordStorage.class, key);
+            if (defaultProject != null) {
+                removePassword.invoke(safe, defaultProject, PasswordStorage.class, key);
+            }
         } catch (Exception e) {
             LoggerImpl.getInstance().error(e);
         }

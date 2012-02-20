@@ -24,6 +24,8 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.xstream.BasePrivateConfigurationDao;
+import com.atlassian.theplugin.commons.cfg.xstream.HomeDirSharedConfigurationImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.model.RootNode;
@@ -38,9 +40,14 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -49,11 +56,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.xpath.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
@@ -207,24 +216,57 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 					return;
 				}
 
-
                 final ServerCfg serverCfg = selectedServerNode.getServer();
-                servers.remove(serverCfg);
+                if (serverCfg.isShared()) {
+                    serverCfg.setDeleted(true);
+                    serverConfigPanel.showEmptyPanel();
+                } else {
+                    servers.remove(serverCfg);
+                }
 				TreeNode parent = selectedServerNode.getParent();
 				selectedServerNode.removeFromParent();
 				model.nodeStructureChanged(parent);
                 deleteServerFile(serverCfg);
-                
 			}
 		}
 	}
+
+//    private synchronized void deleteServerFromSharedServers(ServerCfg serverCfg) {
+//        File sharedServersFile = new File(
+//            BasePrivateConfigurationDao.getPrivateCfgDirectoryPath() + File.separator + HomeDirSharedConfigurationImpl.GLOBAL_SERVERS_FILE_NAME);
+//        if (!sharedServersFile.exists()) {
+//            return;
+//        }
+//        Document doc;
+//
+//        final SAXBuilder builder = new SAXBuilder(false);
+//        try {
+//            doc = builder.build(sharedServersFile.getAbsolutePath());
+//            doc.getRootElement().getChildren().get(0)
+//            XPath xpath = XPathFactory.newInstance().newXPath();
+//            XPathExpression expression = xpath.compile("//*/server-id");
+//            NodeList nodes = (NodeList) expression.evaluate(doc, XPathConstants.NODESET);
+//            for (int i = 0; i < nodes.getLength(); ++i) {
+//                Node item = nodes.item(i);
+//                if (item.getNodeValue().equals(serverCfg.getServerId().getId())) {
+//                    System.out.println("found " + serverCfg.getServerId().getId());
+//                }
+//            }
+//        } catch (JDOMException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (IOException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (XPathExpressionException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//    }
 
     /**
      * Deletes server file with password
      * */
     private void deleteServerFile(ServerCfg serverCfg) {
         String fileName = serverCfg.getServerId().getId();
-        File serverFile = new File(fileName);
+        File serverFile = new File(BasePrivateConfigurationDao.getPrivateCfgDirectoryPath() + File.separator + fileName);
         if (serverFile.exists()) {
             boolean success = serverFile.delete();
             if (!success) {
@@ -259,6 +301,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 //			boolean doExpand = serverTree.isExpanded(serverNodePath);
 
 		for (ServerCfg server : servers) {
+            if (server.isDeleted()) {
+                continue;
+            }
 			ServerNode child = ServerNodeFactory.getServerNode(server);
 			ServerTypeNode serverTypeNode = model.getServerTypeNode(server.getServerType());
 
