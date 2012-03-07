@@ -117,7 +117,10 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				ProjectCfgManager cfgMgr = IdeaHelper.getProjectCfgManager(project);
 				ServerData fshServer = cfgMgr.getDefaultFishEyeServer();
 				if (fshServer != null) {
-					server = projectConfiguration.getServerCfg(fshServer.getServerId()).asFishEyeServer();
+                    ServerCfg serverCfg = projectConfiguration.getServerCfg(fshServer.getServerId());
+                    if (serverCfg != null) {
+                        server = serverCfg.asFishEyeServer();
+                    }
 				}
 			}
 			return server;
