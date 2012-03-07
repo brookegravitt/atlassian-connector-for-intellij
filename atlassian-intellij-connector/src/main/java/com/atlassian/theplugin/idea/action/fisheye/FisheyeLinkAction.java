@@ -4,6 +4,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.fisheye.FisheyeUrlHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -14,8 +15,8 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 
 	@Override
 	public void actionPerformed(final AnActionEvent event) {
-		final VirtualFile virtualFile = event.getData(DataKeys.VIRTUAL_FILE);
-		final Editor editor = event.getData(DataKeys.EDITOR);
+		final VirtualFile virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
+		final Editor editor = event.getData(PlatformDataKeys.EDITOR);
 		if (editor == null || virtualFile == null) {
 			return;
 		}

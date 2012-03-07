@@ -1,6 +1,16 @@
 <atlassian-ide-plugin>
   <project-configuration>
-    <servers />
+    <servers>
+      <crucible>
+        <server-id>6bd37238-178f-41a2-9955-406974c8c93a</server-id>
+        <name>atlaseye</name>
+        <url>https://atlaseye.atlassian.com</url>
+        <shared>false</shared>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+    </servers>
+    <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
+    <default-fisheye-repo>connector-intellij</default-fisheye-repo>
     <default-jira-server>282a28e8-04ed-4ba3-85d2-0d5b630446b8</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
