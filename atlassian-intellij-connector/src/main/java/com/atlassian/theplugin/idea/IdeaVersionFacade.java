@@ -93,7 +93,7 @@ public final class IdeaVersionFacade {
     private boolean communityEdition = false;
 
 
-    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS))-(\\d+)\\.(\\d+)";
+    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS)|(RM)|(PY))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
 
@@ -109,8 +109,8 @@ public final class IdeaVersionFacade {
             ver = "IU-103.255";
         }
         Matcher m = IDEA_9_REGEX.matcher(ver);
-        final int group5 = m.matches() && m.group(6) != null ? Integer.parseInt(m.group(6)) : 0;
-        final int group6 = m.matches() && m.group(7) != null ? Integer.parseInt(m.group(7)) : 0;
+        final int group5 = m.matches() && m.group(8) != null ? Integer.parseInt(m.group(8)) : 0;
+        final int group6 = m.matches() && m.group(9) != null ? Integer.parseInt(m.group(9)) : 0;
 
         if (m.matches() && (group5 == IDEA_9_GR6 || group5 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now

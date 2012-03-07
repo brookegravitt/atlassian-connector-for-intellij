@@ -84,6 +84,10 @@ public final class CodeNavigationUtil {
 
 		Collection<PsiFile> match = new ArrayList<PsiFile>();
 
+        if (psiFiles == null) {
+            return match;
+        }
+
 		for (PsiFile psiFile : psiFiles) {
 			String absolutePath = psiFile.getVirtualFile().getUrl();
 			absolutePath = absolutePath.replace('\\', '/');
