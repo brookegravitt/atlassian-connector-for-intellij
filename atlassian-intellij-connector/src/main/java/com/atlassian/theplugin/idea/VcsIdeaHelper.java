@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea;
 
-
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CommittedChangesProvider;
@@ -27,7 +26,6 @@ import com.intellij.openapi.vcs.actions.VcsContextFactory;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.peer.PeerFactory;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +80,7 @@ public final class VcsIdeaHelper {
 		if (vcs == null) {
 			return null;
 		}
-		VcsContextFactory vcsContextFactory = PeerFactory.getInstance().getVcsContextFactory();
+		VcsContextFactory vcsContextFactory = VcsContextFactory.SERVICE.getInstance();
 		final FilePath filePath = vcsContextFactory.createFilePathOn(virtualFile);
 		if (filePath == null || !vcs.fileIsUnderVcs(filePath)) {
 			return null;
