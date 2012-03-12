@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.auth.InvalidCredentialsException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
@@ -76,6 +77,8 @@ public final class InfoServer {
 			builder.setValidation(false);
 			Document doc = builder.build(is);
 			return new VersionInfo(doc);
+        } catch (InvalidCredentialsException e) {
+            throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 		} catch (JDOMException e) {
@@ -95,6 +98,8 @@ public final class InfoServer {
                     GetMethod method = new GetMethod(getMethodUrl);
                     client.executeMethod(method);
                     method.getResponseBodyAsStream(); // ignore response
+                } catch (InvalidCredentialsException e) {
+//                    LoggerImpl.getInstance().info(e.getMessage());
                 } catch (HttpProxySettingsException e) {
                     LoggerImpl.getInstance().error(e);
                 } catch (IOException e) {
