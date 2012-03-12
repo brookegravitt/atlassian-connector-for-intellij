@@ -735,28 +735,28 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             return updatedIssue;
         }
 
-        boolean statusChanged = false;
+        JIRAAction action = null;
         for (JIRAAction a : actions) {
             if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-                setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
-                try {
-                    jiraServerFacade.progressWorkflowAction(jiraServerData, issue, a);
-                    statusChanged = true;
-                } catch (JIRAException e) {
-                    final String msg = "Error starting progress on issue. Perform workflow action failed: ";
-                    setStatusErrorMessage(msg + e.getMessage(), e);
-                    PluginUtil.getLogger().warn(msg + e.getMessage(), e);
-                    return updatedIssue;
-                }
-                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServerData, issue);
+                action = a;
                 break;
             }
+        } 
+        if (action == null) {
+            action = showActionDialog(issue, actions);
         }
 
-        if (!statusChanged) {
-            if (statusBarPane != null) {
-                statusBarPane.setErrorMessage("Available actions do not allow to change state to In Progress");
+        if (action != null) {
+            setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
+            try {
+                jiraServerFacade.progressWorkflowAction(jiraServerData, issue, action);
+            } catch (JIRAException e) {
+                final String msg = "Error starting progress on issue. Perform workflow action failed: ";
+                setStatusErrorMessage(msg + e.getMessage(), e);
+                PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+                return updatedIssue;
             }
+            JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServerData, issue);
         }
 
         setStatusInfoMessage("Refreshing issue");
@@ -769,12 +769,34 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         if (updatedIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
-            setStatusErrorMessage("Progress on " + issue.getKey() + " not started on JIRA side");
+            setStatusInfoMessage(
+                    "Progress on " + issue.getKey() + " not started - transition to state \"In Progress\" ("
+                    + Constants.JiraStatusId.IN_PROGRESS.getId() + ") not found");
         } else {
             setStatusInfoMessage("Progress on " + issue.getKey() + " started");
         }
 
         return updatedIssue;
+    }
+
+    private JIRAAction showActionDialog(@NotNull final JiraIssueAdapter issue, final List<JIRAAction> actions) {
+        final JIRAAction[] action = {null};
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                public void run() {
+                    IssueActionSelectorDialog dlg = new IssueActionSelectorDialog(issue.getKey(), actions);
+                    dlg.show();
+                    if (dlg.isOK()) {
+                        action[0] = dlg.getSelectedAction();
+                    }
+                }
+            });
+        } catch (InterruptedException e) {
+            return null;
+        } catch (InvocationTargetException e) {
+            return null;
+        }
+        return action[0];
     }
 
     public void startWorkingOnIssueAndActivate(@NotNull final JiraIssueAdapter issue, final ActiveJiraIssue newActiveIssue,
@@ -1316,7 +1338,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
                                 // 4.
-                                setStatusInfoMessage("Deactivated issue " + issue.getKey());
+                                setStatusInfoMessage("Stopped work on issue " + issue.getKey());
 //								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServerData);
                             } catch (JIRAException e) {
                                 if (resultHandler != null) {
@@ -1331,7 +1353,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 }
             } catch (JIRAException e) {
                 if (deactivateIssue) {
-                    setStatusErrorMessage("Issue not deactivated: " + e.getMessage(), e);
+                    setStatusErrorMessage("Work on Issue not stopped: " + e.getMessage(), e);
                 } else {
                     setStatusErrorMessage("Work not logged: " + e.getMessage(), e);
                 }
@@ -1403,11 +1425,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             break;
                     }
 
-                    setStatusInfoMessage("Deactivated issue " + issue.getKey());
+                    setStatusInfoMessage("Stopped work on issue " + issue.getKey());
 
                 } else {
                     setStatusErrorMessage(
-                            "Failed to commit change list while deactivating issue " + issue.getKey());
+                            "Failed to commit change list while stopping work on issue " + issue.getKey());
                 }
             } else {
                 WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
