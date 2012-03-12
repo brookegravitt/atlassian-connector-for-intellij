@@ -41,7 +41,7 @@ public class DeactivateIssueRunnable  implements Runnable {
                             if (project != null && !project.isDisposed()) {
                                 DialogWithDetails.showExceptionDialog(
                                         project,
-                                        "Issue Deactivated Locally but Failed to Deactivate Issue remotely.", problem);
+                                        "Work on issue stopped locally but failed to stop work on issue remotely.", problem);
                             }
                         }
                     });
