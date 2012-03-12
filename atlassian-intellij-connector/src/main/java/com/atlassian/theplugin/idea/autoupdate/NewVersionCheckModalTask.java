@@ -48,8 +48,6 @@ class NewVersionCheckModalTask extends Task.Modal {
 		this.showConfigPath = showConfigPath;
 	}
 
-	
-	@Override
 	public void run(@NotNull ProgressIndicator indicator) {
 		newVersion = null;
 		setCancelText("Stop");
