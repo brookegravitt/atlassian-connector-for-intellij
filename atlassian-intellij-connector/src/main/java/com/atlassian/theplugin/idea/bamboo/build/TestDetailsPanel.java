@@ -536,7 +536,6 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			}
 		}
 
-
 		for (TestDetails d : succeededTests) {
 			String fqcn = d.getTestClassName();
 			NonLeafNode n = classes.get(fqcn);
@@ -562,9 +561,9 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			String fqcn = c.getKey();
 			String pkg = getPackageFromClassName(fqcn);
 			NonLeafNode n = c.getValue();
-			packages.get(pkg);
-			if (n.isFailed() || passedTestsVisible) {
-				packages.get(pkg).add(n);
+            PackageNode pakage = packages.get(pkg);
+            if (pakage != null && (n.isFailed() || passedTestsVisible)) {
+				pakage.add(n);
 			}
 		}
 		//add Ssuccessful test to class name
