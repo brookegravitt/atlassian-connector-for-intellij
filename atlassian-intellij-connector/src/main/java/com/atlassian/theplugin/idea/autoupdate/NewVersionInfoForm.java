@@ -91,7 +91,6 @@ public class NewVersionInfoForm extends DialogWrapper {
     @Override
     protected void doOKAction() {
         Task.Backgroundable downloader = new Task.Backgroundable(project, DOWNLOAD_TITLE, false) {
-            @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 new PluginDownloader(versionInfo, updateConfiguration).run();
             }
