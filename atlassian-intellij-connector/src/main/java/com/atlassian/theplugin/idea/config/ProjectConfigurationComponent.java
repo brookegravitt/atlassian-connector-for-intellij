@@ -189,7 +189,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			final ProjectConfiguration projectConfiguration;
 			projectConfiguration = cfgFactory.load();
 
-            PasswordStorage.loadPasswordsFromSecureStore(project, projectManager.getDefaultProject(), projectConfiguration, cfgFactory);
+            PasswordStorage.loadPasswordsFromSecureStore(project, null /*projectManager.getDefaultProject()*/, projectConfiguration, cfgFactory);
 
 			if (projectConfiguration.getDefaultFishEyeServer() == null) {
 				//means that configuration holds Crucible as FishEye server.
@@ -340,7 +340,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
             if (shouldSaveConfiguration) {
 
-                PasswordStorage.savePasswordsToSecureStore(project, projectManager.getDefaultProject(), configuration, cfgFactory);
+                PasswordStorage.savePasswordsToSecureStore(project, null  /*projectManager.getDefaultProject()*/, configuration, cfgFactory);
                 
 				final String publicCfgFile = getCfgFilePath();
 
@@ -349,7 +349,6 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			}
 		}
 	}
-
 
 	private void writeXmlFile(final Element element, final String filepath) {
 		if (filepath == null) {

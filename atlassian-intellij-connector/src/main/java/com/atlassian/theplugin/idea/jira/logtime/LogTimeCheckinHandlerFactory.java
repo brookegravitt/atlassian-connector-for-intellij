@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
     private LogTimeCheckinHandler handler;
-
-
+     //
     public LogTimeCheckinHandlerFactory(JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
 
         handler = new LogTimeCheckinHandler(jiraWorkspaceConfiguration);
