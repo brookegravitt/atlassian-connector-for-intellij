@@ -51,72 +51,72 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>tasks-core</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jira-connector</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>util</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>icons</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>extensions</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>jgoodies-forms</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>forms_rt</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>openapi</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
 
@@ -124,8 +124,8 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>trove4j</artifactId>
-            <version>11.0</version>
-            <classifier>111.277</classifier>
+            <version>11.1.1</version>
+            <classifier>117.117</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>

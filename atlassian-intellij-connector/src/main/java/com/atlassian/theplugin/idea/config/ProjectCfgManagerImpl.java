@@ -82,7 +82,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
         projectConfiguration = configuration;
 
-        notifyListeners(projectConfiguration, oldConfiguration);
+//        if (!projectConfiguration.equals(oldConfiguration)) {
+            notifyListeners(projectConfiguration, oldConfiguration);
+//        }
     }
 
     ///////////////////////////////////////////////////////////////////
