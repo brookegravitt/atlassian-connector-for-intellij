@@ -14,6 +14,20 @@
         <url>https://jira.atlassian.com</url>
         <shared>false</shared>
       </jira>
+      <bamboo>
+        <server-id>0e5a4867-a998-4e51-a7fc-4731f846abad</server-id>
+        <name>tardigrade</name>
+        <url>http://tardigrade.sydney.atlassian.com:8085/bamboo</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="ANGRY-ANMP" grouped="0" />
+          <plan key="ANGRY-ANPLAN" grouped="0" />
+          <plan key="ANGRY-ANRLS" grouped="0" />
+          <plan key="ANGRY-NERDS" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
     <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
     <default-fisheye-repo>connector-intellij</default-fisheye-repo>
