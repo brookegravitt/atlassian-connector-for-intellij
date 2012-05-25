@@ -31,6 +31,5 @@
     </servers>
     <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
     <default-fisheye-repo>connector-intellij</default-fisheye-repo>
-    <default-jira-server>709100db-1f0e-4325-8c26-b391a1f3f2c6</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
