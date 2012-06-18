@@ -28,6 +28,20 @@
           <plan key="ANGRY-NERDS" grouped="0" />
         </plans>
       </bamboo>
+      <bamboo>
+        <server-id>a65097a5-000e-46d3-b370-2afd5665fccb</server-id>
+        <name>gbac</name>
+        <url>https://gdansk.bamboo2.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="ACC-DPL" grouped="0" />
+          <plan key="ACC-TST" grouped="0" />
+          <plan key="INT-DPL" grouped="0" />
+          <plan key="INT-TST" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
     <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
     <default-fisheye-repo>connector-intellij</default-fisheye-repo>
