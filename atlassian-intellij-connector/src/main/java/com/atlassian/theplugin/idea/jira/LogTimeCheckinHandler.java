@@ -167,10 +167,10 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 			if (cbLogTime.isEnabled() && cbLogTime.isSelected()) {
 				if (!timeSpentCorrect) {
 					Messages.showErrorDialog(checkinProjectPanel.getComponent(),
-							"Incorrect \"Time Spent\" value", "Error");
+                        "Incorrect \"Time Spent\" value", "Error");
 				} else if (!timeReminingCorrect) {
 					Messages.showErrorDialog(checkinProjectPanel.getComponent(),
-							"Incorrect \"Remaining Estimate\" value", "Error");
+                        "Incorrect \"Remaining Estimate\" value", "Error");
 				}
 				return timeSpentCorrect && timeReminingCorrect ? ReturnResult.COMMIT : ReturnResult.CANCEL;
 			}
