@@ -22,7 +22,6 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.changes.ui.CommitChangeListDialog;
 import com.intellij.openapi.vcs.checkin.CheckinHandler;
-import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -251,16 +250,20 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 		}
 
 		private class AfterCheckinConfiguration implements RefreshableOnComponent {
-			public JComponent getComponent() {
-				JPanel p = new JPanel(new FormLayout("10dlu, fill:pref:grow, pref", "pref, pref"));
-				CellConstraints cc = new CellConstraints();
 
-				p.add(cbLogTime, cc.xyw(1, 1, 2));
-				p.add(txtTimeSpent, cc.xy(1 + 2, 1));
-				p.add(lblRemainingEstimateAdjust, cc.xy(2, 2));
-				p.add(btnChange, cc.xy(1 + 2, 2));
+            private JPanel panel;
 
-				return p;
+            public JComponent getComponent() {
+                if (panel == null) {
+                    panel = new JPanel(new FormLayout("10dlu, fill:pref:grow, pref", "pref, pref"));
+                    CellConstraints cc = new CellConstraints();
+
+                    panel.add(cbLogTime, cc.xyw(1, 1, 2));
+                    panel.add(txtTimeSpent, cc.xy(1 + 2, 1));
+                    panel.add(lblRemainingEstimateAdjust, cc.xy(2, 2));
+                    panel.add(btnChange, cc.xy(1 + 2, 2));
+                }
+				return panel;
 			}
 
 			public void refresh() {
