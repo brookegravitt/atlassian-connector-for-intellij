@@ -21,10 +21,12 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.Icons;
+import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
+
+//import com.intellij.util.Icons;
 
 /**
  * Created by IntelliJ IDEA.
@@ -80,7 +82,7 @@ public class FolderNode extends FileNode {
 			FileNode node = (FileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
-			setIcon(expanded ? Icons.DIRECTORY_OPEN_ICON : Icons.DIRECTORY_CLOSED_ICON);
+			setIcon(expanded ? PlatformIcons.DIRECTORY_OPEN_ICON : PlatformIcons.DIRECTORY_CLOSED_ICON);
 		}
 	}
 }
