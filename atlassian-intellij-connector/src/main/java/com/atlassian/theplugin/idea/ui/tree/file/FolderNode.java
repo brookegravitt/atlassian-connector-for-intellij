@@ -16,12 +16,13 @@
 
 package com.atlassian.theplugin.idea.ui.tree.file;
 
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.PlatformIcons;
+//import com.intellij.util.PlatformIcons;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
@@ -82,7 +83,7 @@ public class FolderNode extends FileNode {
 			FileNode node = (FileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
-			setIcon(expanded ? PlatformIcons.DIRECTORY_OPEN_ICON : PlatformIcons.DIRECTORY_CLOSED_ICON);
+			setIcon(IdeaVersionFacade.getInstance().getIcon(expanded ? IdeaVersionFacade.IconType.DIRECTORY_OPEN_ICON : IdeaVersionFacade.IconType.DIRECTORY_CLOSED_ICON));
 		}
 	}
 }

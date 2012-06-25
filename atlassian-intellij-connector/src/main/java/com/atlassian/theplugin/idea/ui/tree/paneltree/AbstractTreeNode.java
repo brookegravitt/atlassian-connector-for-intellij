@@ -1,9 +1,8 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
-//import com.intellij.util.Icons;
-import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -31,8 +30,8 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 			this.iconOpen = icon;
 			this.iconClosed = icon;
 		} else {
-			this.iconOpen = PlatformIcons.DIRECTORY_OPEN_ICON;
-			this.iconClosed = PlatformIcons.DIRECTORY_CLOSED_ICON;
+			this.iconOpen = IdeaVersionFacade.getInstance().getIcon(IdeaVersionFacade.IconType.DIRECTORY_OPEN_ICON);
+			this.iconClosed = IdeaVersionFacade.getInstance().getIcon(IdeaVersionFacade.IconType.DIRECTORY_CLOSED_ICON);
 		}
 		if (disabledIcon != null) {
 			this.disabledIconOpen = disabledIcon;
