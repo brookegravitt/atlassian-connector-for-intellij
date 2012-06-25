@@ -14,17 +14,8 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.execution.ui.ExecutionConsole;
-import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.execution.ui.RunContentManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.execution.ui.*;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
 import com.intellij.openapi.diff.impl.patch.FilePatch;
@@ -47,6 +38,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
+import com.intellij.util.Icons;
+import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.AnimatedIcon;
 import com.intellij.util.ui.AsyncProcessIcon;
 import org.jetbrains.annotations.NotNull;
@@ -96,6 +89,7 @@ public final class IdeaVersionFacade {
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS)|(RM)|(PY))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
+    private boolean havePlatformIcons = false;
 
     private IdeaVersionFacade() {
         // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
@@ -141,6 +135,12 @@ public final class IdeaVersionFacade {
             }
         }
 
+        try {
+            Icon icon = PlatformIcons.DIRECTORY_OPEN_ICON;
+            havePlatformIcons = true;
+        } catch (NoClassDefFoundError e) {
+            LoggerImpl.getInstance().warn("com.intellij.util.PlatformIcons not available, falling back to com.intellij.util.Icons");
+        }
     }
 
     private boolean isIdea() {
@@ -890,6 +890,37 @@ public final class IdeaVersionFacade {
         );
     }
 
+    public enum IconType {
+        DIRECTORY_OPEN_ICON,
+        DIRECTORY_CLOSED_ICON
+    }
+
+    public Icon getIcon(IconType iconType) {
+        if (havePlatformIcons) {
+            return getPlatformIcon(iconType);
+        }
+        return getOldStyleIcon(iconType);
+    }
+
+    private Icon getPlatformIcon(IconType iconType) {
+        switch (iconType) {
+            case DIRECTORY_OPEN_ICON:
+                return PlatformIcons.DIRECTORY_OPEN_ICON;
+            case DIRECTORY_CLOSED_ICON:
+                return PlatformIcons.DIRECTORY_CLOSED_ICON;
+        }
+        return null;
+    }
+
+    private Icon getOldStyleIcon(IconType iconType) {
+        switch (iconType) {
+            case DIRECTORY_OPEN_ICON:
+                return Icons.DIRECTORY_OPEN_ICON;
+            case DIRECTORY_CLOSED_ICON:
+                return Icons.DIRECTORY_CLOSED_ICON;
+        }
+        return null;
+    }
 
     private static ConsoleView createConsoleView(Project project, String tabTitle) throws Exception {
         ConsoleView consoleview = TextConsoleBuilderFactory.getInstance().createBuilder(project).getConsole();
@@ -952,5 +983,4 @@ public final class IdeaVersionFacade {
             add(consoleView.getComponent(), BorderLayout.CENTER);
         }
     }
-
 }
