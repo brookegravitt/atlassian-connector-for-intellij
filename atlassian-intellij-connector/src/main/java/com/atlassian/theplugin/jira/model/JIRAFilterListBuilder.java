@@ -50,7 +50,7 @@ public class JIRAFilterListBuilder {
 			Collection<JiraServerData> connectionsToAdd = new ArrayList<JiraServerData>();
 
 			for (JiraServerData jiraServerData : jiraServerModel.getServers()) {
-                if (!jiraServerData.isServerResponding()) {
+                if (!jiraServerModel.isServerResponding(jiraServerData)) {
                     continue;
                 }
 

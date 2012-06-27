@@ -117,8 +117,8 @@ public class JIRAServerCache {
     }
 
 
-    public List<JIRAProject> getProjects() throws JIRAException {
-        if (projects == null) {
+    public List<JIRAProject> getProjects(boolean fromCacheOnly) throws JIRAException {
+        if (projects == null && !fromCacheOnly) {
             try {
                 List<JIRAProject> retrieved = jiraServerFacade.getProjects(jiraServerData);
                 projects = new ArrayList<JIRAProject>();

@@ -1032,7 +1032,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 for (JiraServerData server : servers) {
                     try {
-                        server.setServerResponding(false);
                         //returns false if no cfg is available or login failed
                         Boolean serverCheck = jiraServerModel.checkServer(server);
                         if (serverCheck == null || !serverCheck) {
@@ -1058,7 +1057,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         setStatusInfoMessage(serverStr + "Retrieving projects...", false);
                         jiraServerModel.getProjects(server);
                         setStatusInfoMessage(serverStr + "Server data query finished", false);
-                        server.setServerResponding(true);
                     } catch (RemoteApiException e) {
                         setStatusErrorMessage("Unable to connect to server. "
                                 + jiraServerModel.getErrorMessage(server), e);

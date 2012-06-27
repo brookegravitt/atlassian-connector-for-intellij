@@ -23,6 +23,8 @@ public interface JIRAServerModel {
 
 	void clearAll();
 
+    boolean isServerResponding(JiraServerData jiraServerData);
+
 	/*
 	* returns false if invalid password or login occured
 	 */
