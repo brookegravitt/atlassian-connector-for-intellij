@@ -123,7 +123,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
         gbc.weightx = 0.0;
         add(additionalPanel, gbc);
 
-        setInfoMessage(initialText, false);
+        setInfoMessage(initialText, false, true);
     }
 
 
@@ -132,7 +132,10 @@ public class StatusBarPane extends JPanel implements StatusBar {
     }
 
 
-    public void setInfoMessage(final String message, boolean rightAlign) {
+    public void setInfoMessage(final String message, boolean rightAlign, boolean overrideError) {
+        if (errors.size() > 0 && !overrideError) {
+            return;
+        }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
 //		textPanel.set setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);

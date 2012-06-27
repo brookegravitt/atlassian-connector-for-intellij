@@ -153,7 +153,7 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 
 	public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
-		if (jiraServerData == null) {
+		if (jiraServerData == null || !jiraServerData.isServerResponding()) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);

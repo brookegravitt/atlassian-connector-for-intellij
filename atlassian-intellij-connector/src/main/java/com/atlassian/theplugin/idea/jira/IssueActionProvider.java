@@ -9,7 +9,7 @@ public interface IssueActionProvider {
 	 *
 	 * @param message
 	 */
-	void setStatusInfoMessage(final String message);
+	void setStatusInfoMessage(final String message, boolean overrideError);
 
 	/**
 	 * Can be called from the non-UI thread

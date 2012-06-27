@@ -171,14 +171,14 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		});
 	}
 
-	public void setStatusInfoMessage(final String message) {
-		setStatusInfoMessage(message, false);
+	public void setStatusInfoMessage(final String message, boolean overrideError) {
+		setStatusInfoMessage(message, false, overrideError);
 	}
 
-	public void setStatusInfoMessage(final String msg, final boolean rightAlign) {
+	public void setStatusInfoMessage(final String msg, final boolean rightAlign, final boolean overrideError) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				statusBarPane.setInfoMessage(msg, rightAlign);
+				statusBarPane.setInfoMessage(msg, rightAlign, overrideError);
 			}
 		});
 	}

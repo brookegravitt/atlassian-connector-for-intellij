@@ -130,7 +130,7 @@ public class RunIssueActionAction extends AnAction {
 	}
 
 	private void showInfo(final String s) {
-		window.setStatusInfoMessage(s);
+		window.setStatusInfoMessage(s, false);
 	}
 
 	private void showError(final String error, final Throwable exception) {

@@ -441,7 +441,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             return params.issue.getKey();
         }
 
-        public void setStatusInfoMessage(final String message) {
+        public void setStatusInfoMessage(final String message, boolean overrideError) {
             // ignore for now - should we display it?
         }
 

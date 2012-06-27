@@ -59,7 +59,6 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTime;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -573,13 +572,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         Task.Backgroundable assign = new Task.Backgroundable(getProject(), "Assigning Issue", false) {
 
             public void run(@NotNull final ProgressIndicator indicator) {
-                setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+                setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...", true);
                 try {
 
                     JiraServerData httpConnectionCfg = getSelectedServer();
                     if (httpConnectionCfg != null) {
                         jiraServerFacade.setAssignee(httpConnectionCfg, issue, assignee);
-                        setStatusInfoMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+                        setStatusInfoMessage("Assigned issue " + issue.getKey() + " to " + assignee, true);
                         jiraIssueListModelBuilder.reloadIssue(issue.getKey(), httpConnectionCfg);
                     }
                 } catch (JIRAException e) {
@@ -635,7 +634,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 public void run(@NotNull final ProgressIndicator indicator) {
                     EventQueue.invokeLater(new Runnable() {
                         public void run() {
-                            setStatusInfoMessage("Commenting issue " + issueKey + "...");
+                            setStatusInfoMessage("Commenting issue " + issueKey + "...", true);
                         }
                     });
                     try {
@@ -643,7 +642,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             jiraServerFacade.addComment(jiraServerData, issueKey, issueCommentDialog.getComment());
                             EventQueue.invokeLater(new Runnable() {
                                 public void run() {
-                                    setStatusInfoMessage("Commented issue " + issueKey);
+                                    setStatusInfoMessage("Commented issue " + issueKey, true);
                                 }
                             });
                         }
@@ -710,7 +709,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         final JiraServerData jiraServerData = issue.getJiraServerData();
 
         if (!issue.getAssigneeId().equals(jiraServerData.getUsername())) {
-            setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
+            setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...", true);
             try {
                 jiraServerFacade.setAssignee(jiraServerData, issue, jiraServerData.getUsername());
                 //no exception == assignee set properly
@@ -724,7 +723,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
 
-        setStatusInfoMessage("Retrieving available actions for issue");
+        setStatusInfoMessage("Retrieving available actions for issue", true);
         List<JIRAAction> actions;
         try {
             actions = jiraServerFacade.getAvailableActions(jiraServerData, issue);
@@ -747,7 +746,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         if (action != null) {
-            setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
+            setStatusInfoMessage("Starting progress on " + issue.getKey() + "...", true);
             try {
                 jiraServerFacade.progressWorkflowAction(jiraServerData, issue, action);
             } catch (JIRAException e) {
@@ -759,7 +758,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServerData, issue);
         }
 
-        setStatusInfoMessage("Refreshing issue");
+        setStatusInfoMessage("Refreshing issue", true);
         try {
             updatedIssue = jiraServerFacade.getIssue(jiraServerData, issue.getKey());
         } catch (JIRAException e) {
@@ -771,9 +770,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         if (updatedIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
             setStatusInfoMessage(
                     "Progress on " + issue.getKey() + " not started - transition to state \"In Progress\" ("
-                    + Constants.JiraStatusId.IN_PROGRESS.getId() + ") not found");
+                    + Constants.JiraStatusId.IN_PROGRESS.getId() + ") not found", true);
         } else {
-            setStatusInfoMessage("Progress on " + issue.getKey() + " started");
+            setStatusInfoMessage("Progress on " + issue.getKey() + " started", true);
         }
 
         return updatedIssue;
@@ -1033,6 +1032,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 for (JiraServerData server : servers) {
                     try {
+                        server.setServerResponding(false);
                         //returns false if no cfg is available or login failed
                         Boolean serverCheck = jiraServerModel.checkServer(server);
                         if (serverCheck == null || !serverCheck) {
@@ -1043,21 +1043,22 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         }//@todo remove  saved filters download or merge with existing in listModel
 
                         final String serverStr = "[" + server.getName() + "] ";
-                        setStatusInfoMessage(serverStr + "Retrieving saved filters...");
+                        setStatusInfoMessage(serverStr + "Retrieving saved filters...", false);
                         jiraServerModel.getSavedFilters(server);
-                        setStatusInfoMessage(serverStr + "Retrieving projects...");
+                        setStatusInfoMessage(serverStr + "Retrieving projects...", false);
                         jiraServerModel.getProjects(server);
-                        setStatusInfoMessage(serverStr + "Retrieving issue types...");
+                        setStatusInfoMessage(serverStr + "Retrieving issue types...", false);
                         jiraServerModel.getIssueTypes(server, null, true);
-                        setStatusInfoMessage(serverStr + "Retrieving statuses...");
+                        setStatusInfoMessage(serverStr + "Retrieving statuses...", false);
                         jiraServerModel.getStatuses(server);
-                        setStatusInfoMessage(serverStr + "Retrieving resolutions...");
+                        setStatusInfoMessage(serverStr + "Retrieving resolutions...", false);
                         jiraServerModel.getResolutions(server, true);
-                        setStatusInfoMessage(serverStr + "Retrieving priorities...");
+                        setStatusInfoMessage(serverStr + "Retrieving priorities...", false);
                         jiraServerModel.getPriorities(server, true);
-                        setStatusInfoMessage(serverStr + "Retrieving projects...");
+                        setStatusInfoMessage(serverStr + "Retrieving projects...", false);
                         jiraServerModel.getProjects(server);
-                        setStatusInfoMessage(serverStr + "Server data query finished");
+                        setStatusInfoMessage(serverStr + "Server data query finished", false);
+                        server.setServerResponding(true);
                     } catch (RemoteApiException e) {
                         setStatusErrorMessage("Unable to connect to server. "
                                 + jiraServerModel.getErrorMessage(server), e);
@@ -1338,7 +1339,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
                                 // 4.
-                                setStatusInfoMessage("Stopped work on issue " + issue.getKey());
+                                setStatusInfoMessage("Stopped work on issue " + issue.getKey(), true);
 //								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServerData);
                             } catch (JIRAException e) {
                                 if (resultHandler != null) {
@@ -1387,7 +1388,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
                 ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                     public void run() {
-                        setStatusInfoMessage("Committing changes...");
+                        setStatusInfoMessage("Committing changes...", true);
                         FileDocumentManager.getInstance().saveAllDocuments();
 
                         commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(list, selectedChanges);
@@ -1425,7 +1426,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                             break;
                     }
 
-                    setStatusInfoMessage("Stopped work on issue " + issue.getKey());
+                    setStatusInfoMessage("Stopped work on issue " + issue.getKey(), true);
 
                 } else {
                     setStatusErrorMessage(
@@ -1463,7 +1464,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             JIRAAction selectedAction = dialog.getSelectedAction();
             if (selectedAction != null) {
                 setStatusInfoMessage("Running action [" + selectedAction.getName()
-                        + "] on issue " + issue.getKey());
+                        + "] on issue " + issue.getKey(), true);
                 final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
                         jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
                 SwingUtilities.invokeLater(new Runnable() {
@@ -1480,7 +1481,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         private void logWork() throws JIRAException {
             if (dialog.isLogTime()) {
-                setStatusInfoMessage("Logging work for issue " + issue.getKey() + "...");
+                setStatusInfoMessage("Logging work for issue " + issue.getKey() + "...", true);
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(dialog.getStartDate());
 
@@ -1494,7 +1495,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         newRemainingEstimate);
                 JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
                         jiraServerData, issue);
-                setStatusInfoMessage("Logged work for issue " + issue.getKey());
+                setStatusInfoMessage("Logged work for issue " + issue.getKey(), true);
             }
         }
 
@@ -1530,10 +1531,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
             if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
                 enableGetMoreIssues(true);
-                setStatusInfoMessage("Loaded " + loadedIssues + " issues", true);
+                setStatusInfoMessage("Loaded " + loadedIssues + " issues", false);
             } else {
                 enableGetMoreIssues(false);
-                setStatusInfoMessage("Loaded " + loadedIssues + " issues");
+                setStatusInfoMessage("Loaded " + loadedIssues + " issues", false);
             }
         }
 
@@ -1548,7 +1549,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 JiraIssueCachedAdapter.clearCache();
                 JiraServerData srvcfg = getSelectedServer();
                 if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
-                    setStatusInfoMessage("Nothing selected");
+                    setStatusInfoMessage("Nothing selected", true);
                     issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
                 } else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
                     Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
@@ -1605,7 +1606,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         public void run(@NotNull final ProgressIndicator indicator) {
-            getStatusBarPane().setInfoMessage("Loading issues...", false);
+            getStatusBarPane().setInfoMessage("Loading issues...", false, false);
             try {
 				final Runnable runnable = new Runnable() {
 					public void run() {
