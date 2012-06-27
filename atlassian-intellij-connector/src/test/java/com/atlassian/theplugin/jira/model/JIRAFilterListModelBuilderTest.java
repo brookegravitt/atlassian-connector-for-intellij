@@ -100,6 +100,8 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
             }
         });
+        jiraServerData.setServerResponding(true);
+
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 
 		final JIRATestServerFacade2 facade = new JIRATestServerFacade2();
@@ -344,11 +346,15 @@ final class ServerDataProvider {
 	}
 
 	public static ServerData getServerData(final Server serverCfg) {
-		return new ServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
+        ServerData data = new ServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
+        data.setServerResponding(true);
+        return data;
 	}
 
     public static JiraServerData getServerData(final JiraServerCfg serverCfg) {
-        return new JiraServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
+        JiraServerData data = new JiraServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
+        data.setServerResponding(true);
+        return data;
     }
 
 }
