@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.util.Logger;
 import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: jgorycki
@@ -35,6 +32,8 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 	private final Map<JiraServerData, JIRAServerCache> serverInfoMap = new HashMap<JiraServerData, JIRAServerCache>();
 	private boolean changed = false;
+
+    private Set<JiraServerData> nonResponsiveServers = new HashSet<JiraServerData>();
 
     public JIRAServerModelImpl(Logger logger) {
 		facade = IntelliJJiraServerFacade.getInstance();
@@ -88,6 +87,8 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 		serverInfoMap.remove(server);
 
+        nonResponsiveServers.remove(server);
+
 		if (isFrozen()) {
 			changed = true;
 		}
@@ -110,7 +111,8 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		if (oldServer != null) {
 			serverInfoMap.put(newJiraServerData, serverInfoMap.get(oldServer));
 			serverInfoMap.remove(oldServer);
-		}
+            nonResponsiveServers.remove(oldServer);
+        }
 
 		if (isFrozen()) {
 			changed = true;
@@ -124,6 +126,7 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
     public synchronized void clearAll() {
 		serverInfoMap.clear();
+        nonResponsiveServers.clear();
 	}
 
 	public Boolean checkServer(JiraServerData jiraServerData) throws RemoteApiException {
@@ -133,13 +136,28 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 		JIRAServerCache srv = getServer(jiraServerData);
 		if (srv != null) {
-			return srv.checkServer();
+            boolean works = false;
+            nonResponsiveServers.remove(jiraServerData);
+            try {
+                works = srv.checkServer();
+                if (!works) {
+                    nonResponsiveServers.add(jiraServerData);
+                }
+            } catch (RemoteApiException e) {
+                nonResponsiveServers.add(jiraServerData);
+                throw e;
+            }
+            return works;
 		}
 
 		return null;
 	}
 
-	public String getErrorMessage(JiraServerData jiraServerData) {
+    public boolean isServerResponding(JiraServerData jiraServerData) {
+        return !nonResponsiveServers.contains(jiraServerData);
+    }
+
+    public String getErrorMessage(JiraServerData jiraServerData) {
 		if (jiraServerData == null) {
 			return "No Server configuration";
 		}
@@ -153,11 +171,11 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 
 
 	public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
-		if (jiraServerData == null || !jiraServerData.isServerResponding()) {
+		if (jiraServerData == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);
-		return (srv == null) ? null : srv.getProjects();
+		return (srv == null) ? null : srv.getProjects(nonResponsiveServers.contains(jiraServerData));
 	}
 
 	public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {

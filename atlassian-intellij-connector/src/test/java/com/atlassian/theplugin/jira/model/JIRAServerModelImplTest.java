@@ -82,7 +82,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	private JiraServerData createServerData(final String serverName) {
-        JiraServerData data = new JiraServerData(new JiraServerCfg(true, serverName, new ServerIdImpl(), true) {
+        return new JiraServerData(new JiraServerCfg(true, serverName, new ServerIdImpl(), true) {
             @Override
             public ServerType getServerType() {
                 return null;
@@ -93,8 +93,6 @@ public class JIRAServerModelImplTest extends TestCase {
                 return null;
             }
         });
-        data.setServerResponding(true);
-        return data;
 	}
 
 	public void testGetProjectsNull() {
@@ -127,9 +125,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		JIRAServerModelImpl model = new JIRAServerModelImplLocal();
 
 		JiraServerData cfg1 = createServerData("test1");
-        cfg1.setServerResponding(true);
 		JiraServerData cfg2 = createServerData("test2");
-        cfg2.setServerResponding(true);
 
 		try {
 			model.setFacade(facade);
