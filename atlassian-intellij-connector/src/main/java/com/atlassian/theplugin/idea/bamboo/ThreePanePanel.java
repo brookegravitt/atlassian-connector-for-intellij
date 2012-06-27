@@ -117,7 +117,7 @@ public abstract class ThreePanePanel extends JPanel {
 	}
 
 	public void setStatusMessage(final String infoMessage) {
-		statusBarPane.setInfoMessage(infoMessage, false);
+		statusBarPane.setInfoMessage(infoMessage, false, false);
 	}
 
 	public void setErrorMessage(final String errorMessage) {

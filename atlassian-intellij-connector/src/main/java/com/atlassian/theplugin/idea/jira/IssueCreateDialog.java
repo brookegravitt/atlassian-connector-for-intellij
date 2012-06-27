@@ -604,7 +604,7 @@ public class IssueCreateDialog extends DialogWrapper {
                             + createdIssue.getKey()
                             + "</a>";
 
-                    issueListToolWindowPanel.setStatusInfoMessage(message);
+                    issueListToolWindowPanel.setStatusInfoMessage(message, false);
 
                     if (originalEstimate.getText() != null && originalEstimate.getText().length() > 0) {
 //                        "timeoriginalestimate"
@@ -621,7 +621,7 @@ public class IssueCreateDialog extends DialogWrapper {
                                 + createdIssue.getKey()
                                 + "</a>";
 
-                        issueListToolWindowPanel.setStatusInfoMessage(message);
+                        issueListToolWindowPanel.setStatusInfoMessage(message, false);
                     }
 
                     EventQueue.invokeLater(new Runnable() {

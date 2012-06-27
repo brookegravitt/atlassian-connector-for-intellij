@@ -42,6 +42,12 @@
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
+      <jira>
+        <server-id>32b8252a-7aea-48b7-bdc6-73ae814fe662</server-id>
+        <name>stac</name>
+        <url>https://studio.atlassian.com</url>
+        <shared>false</shared>
+      </jira>
     </servers>
     <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
     <default-fisheye-repo>connector-intellij</default-fisheye-repo>

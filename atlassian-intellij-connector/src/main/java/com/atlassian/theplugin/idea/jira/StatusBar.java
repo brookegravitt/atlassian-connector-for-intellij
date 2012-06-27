@@ -21,7 +21,7 @@ import java.util.Collection;
  * User: pmaruszak
  */
 public interface StatusBar {
-	void setInfoMessage(String message, boolean rightAlign);
+	void setInfoMessage(String message, boolean rightAlign, boolean overrideError);
 
 	void setErrorMessage(String msg);
 
