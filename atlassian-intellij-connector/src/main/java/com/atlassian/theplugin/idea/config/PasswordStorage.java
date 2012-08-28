@@ -145,11 +145,13 @@ public class PasswordStorage {
             Method getPassword = safe.getClass().getMethod("getPassword", Project.class, Class.class, String.class);
             if (getPassword != null) {
                 String pwd = "";
+                Object o = null;
                 if (defaultProject != null) {
-                    pwd = getPassword.invoke(safe, defaultProject, PasswordStorage.class, key).toString();
+                    o = getPassword.invoke(safe, defaultProject, PasswordStorage.class, key);
                 } else {
-                    pwd = getPassword.invoke(safe, project, PasswordStorage.class, key).toString();
+                    o = getPassword.invoke(safe, project, PasswordStorage.class, key);
                 }
+                pwd = o != null ? o.toString() : null;
                 return pwd;
             } else {
                 return null;

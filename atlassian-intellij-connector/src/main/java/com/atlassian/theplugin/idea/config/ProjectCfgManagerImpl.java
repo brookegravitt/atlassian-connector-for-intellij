@@ -29,6 +29,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -111,7 +112,12 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
             String password = PasswordStorage.getPassword(project);
             if (password == null) {
                 password = StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword());
-                PasswordStorage.setPassword(project, password);
+                final String finalPassword = password;
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        PasswordStorage.setPassword(project, finalPassword);
+                    }
+                });
             }
                         
             return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(), password);
