@@ -697,7 +697,7 @@
 			<separator/>
 		</group>
 
-		<group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" icon="/actions/menu-copy.png"
+		<group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" icon="/actions/copy.png"
 			   popup="true">
 			<reference id="ThePlugin.JiraIssues.CopyIssueKey"/>
 			<reference id="ThePlugin.JiraIssues.CopyIssueUrl"/>
