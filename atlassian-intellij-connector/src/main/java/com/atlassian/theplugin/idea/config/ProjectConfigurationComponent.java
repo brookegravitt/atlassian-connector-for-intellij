@@ -108,7 +108,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		this.privateCfgDao = privateCfgDao;
         this.userSharedConfigurationDao = sharedCfgDao;
 		this.projectConfigurationBean = projectConfigurationBean;
-		shouldSaveConfiguration = load();
+//		shouldSaveConfiguration = load();
 	}
 
 
@@ -124,6 +124,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void projectOpened() {
+        shouldSaveConfiguration = load();
 		if (projectCfgManager.getProjectConfiguration() == null) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {

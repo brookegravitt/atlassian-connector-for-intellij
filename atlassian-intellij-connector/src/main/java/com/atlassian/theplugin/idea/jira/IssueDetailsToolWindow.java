@@ -1905,14 +1905,18 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 setMinimumSize(new Dimension(0, minHeight));
             }
 
-            public void setDescription(String description) {
-                if (description != null) {
-                    String descriptionFixed = description.replace("/>", ">");
-                    body.setText("<html><body>" + descriptionFixed + "</body></html>");
-                    body.setCaretPosition(0);
-                } else {
-                    body.setText("");
-                }
+            public void setDescription(final String description) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        if (description != null) {
+                            String descriptionFixed = description.replace("/>", ">");
+                            body.setText("<html><body>" + descriptionFixed + "</body></html>");
+                            body.setCaretPosition(0);
+                        } else {
+                            body.setText("");
+                        }
+                    }
+                });
             }
         }
 
