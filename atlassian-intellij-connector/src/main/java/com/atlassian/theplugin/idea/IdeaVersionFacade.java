@@ -80,11 +80,12 @@ public final class IdeaVersionFacade {
     private boolean isIdea8;
     private boolean isIdea9;
     private boolean isIdeaX;
-    private boolean isIdea11;
+    private boolean isIdea11Or12;
 
     boolean isIdeaX5;
     private boolean communityEdition = false;
 
+    private boolean checkinHandlerRegistered = false;
 
     private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS)|(RM)|(PY))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
@@ -110,7 +111,7 @@ public final class IdeaVersionFacade {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
         } else if (m.matches() && group5 >= IDEA_108_1333_GR6) {
-            isIdea11 = true;
+            isIdea11Or12 = true;
             isIdeaX = true;
             isIdeaX5 = true;
             communityEdition = m.group(3) != null;
@@ -144,7 +145,7 @@ public final class IdeaVersionFacade {
     }
 
     private boolean isIdea() {
-        return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11 ;
+        return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11Or12;
     }
 
     public static boolean isInstanceOfPsiDocToken(Object obj) {
@@ -277,7 +278,7 @@ public final class IdeaVersionFacade {
         Class asyncProgressIconClass = AsyncProcessIcon.class;
         Method initMethod;
         try {
-            if (isIdea11) {
+            if (isIdea11Or12) {
 
                 initMethod = AnimatedIcon.class.getDeclaredMethod("init", (new javax.swing.Icon[]{}).getClass(), javax.swing.Icon.class, int.class);
                 initMethod.setAccessible(true);
@@ -457,7 +458,7 @@ public final class IdeaVersionFacade {
             }
             Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
             Constructor[] constructors = browserClass.getConstructors();
-            if (isIdea11) {
+            if (isIdea11Or12) {
                 return (MultipleChangeListBrowser) constructors[0]
                         .newInstance(project, changeListManager.getChangeLists(),
                                 changeList, changeListManager.getDefaultChangeList(), true, true, null, null, null);
@@ -681,23 +682,26 @@ public final class IdeaVersionFacade {
     public void registerCheckinHandler(final Project project, JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
 
         try {
-            if (isIdea11) {
-                //for idea 10.5 and later
-                //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandler(jiraWorkspaceConfiguration, projectCfgManager));
-                 Object proxy = Proxy.newProxyInstance(PluginTaskManager.class.getClassLoader(),
-                        new Class[]{Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory")},
-                        new LogTimeInvocationHandler(new LogTimeCheckinHandler(jiraWorkspaceConfiguration)));
+            if (isIdea11Or12) {
+                if (!checkinHandlerRegistered) {
+                    //CheckinHandlersManagerImpl.getInstance(project).registerCheckinHandlerFactory(new LogTimeCheckinHandler(null, projectCfgManager));
+                     Object proxy = Proxy.newProxyInstance(PluginTaskManager.class.getClassLoader(),
+                            new Class[]{Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory")},
+                             // don't pass JIRA workspace config. It will be picked up from the checkin dialog later on
+                            new LogTimeInvocationHandler(new LogTimeCheckinHandler(null)));
 
-                Class projectLevelVcsManagerImplClass = Class
-                        .forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
+                    Class projectLevelVcsManagerImplClass = Class
+                            .forName("com.intellij.openapi.vcs.impl.CheckinHandlersManagerImpl");
 
-                Class baseCheckinHandlerFactoryClass = Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory");
+                    Class baseCheckinHandlerFactoryClass = Class.forName("com.intellij.openapi.vcs.checkin.BaseCheckinHandlerFactory");
 
-                Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
-                        .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
-                Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance");
+                    Method registerCheckinHandlerFactoryMethod = projectLevelVcsManagerImplClass
+                            .getMethod("registerCheckinHandlerFactory", baseCheckinHandlerFactoryClass);
+                    Method getInstance = projectLevelVcsManagerImplClass.getMethod("getInstance");
 
-                registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null), proxy);
+                    registerCheckinHandlerFactoryMethod.invoke(getInstance.invoke(null), proxy);
+                    checkinHandlerRegistered = true;
+                }
             } else if (isIdea9) {
                 //ProjectLevelVcsManagerImpl.getInstance(project).registerCheckinHandlerFactory(handlerFactory);
                 Class logTimeCheckinFactoryClass = Class.forName("com.atlassian.theplugin.idea.jira.logtime.LogTimeCheckinHandlerFactory");
@@ -744,7 +748,7 @@ public final class IdeaVersionFacade {
             Class unifiedDiffWriter = Class.forName("com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter");
             Method writeMethod;
 
-            if (isIdea11) {
+            if (isIdea11Or12) {
                 Class commitContextClass = Class.forName("com.intellij.openapi.vcs.changes.CommitContext");
                 writeMethod = unifiedDiffWriter.getMethod("write", Project.class, Collection.class, Writer.class, String.class,
                         commitContextClass);

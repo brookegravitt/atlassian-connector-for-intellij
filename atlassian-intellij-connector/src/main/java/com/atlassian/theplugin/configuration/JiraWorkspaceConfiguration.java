@@ -28,6 +28,7 @@ import com.atlassian.theplugin.jira.model.JiraPresetFilter;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,23 +54,25 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private int activeIssueAfterCommit;
 	private boolean logWorkOnCommit;
 	private RemainingEstimateUpdateMode remainingEstimateUpdateMode;
+    private CheckinHandler checkinHandler;
 
     public JiraWorkspaceConfiguration() {
 	}
 
-	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
-		this.filtersMap = jiraConfiguration.filtersMap;
-		this.view = jiraConfiguration.view;
-		this.recentlyOpenIssuess = jiraConfiguration.recentlyOpenIssuess;
-		this.activeJiraIssuee = jiraConfiguration.activeJiraIssuee;
-		this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
-		this.activeIssueProgressWorkflowAction = jiraConfiguration.activeIssueProgressWorkflowAction;
-		this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
-		this.activeIssueCommitChanges = jiraConfiguration.activeIssueCommitChanges;
-		this.activeIssueAfterCommit = jiraConfiguration.activeIssueAfterCommit;
-		this.logWorkOnCommit = jiraConfiguration.logWorkOnCommit;
-		this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
-        this.presetFiltersMap = jiraConfiguration.presetFiltersMap;
+	public void copyConfiguration(JiraWorkspaceConfiguration that) {
+		this.filtersMap = that.filtersMap;
+		this.view = that.view;
+		this.recentlyOpenIssuess = that.recentlyOpenIssuess;
+		this.activeJiraIssuee = that.activeJiraIssuee;
+		this.selectedWorkflowAction = that.selectedWorkflowAction;
+		this.activeIssueProgressWorkflowAction = that.activeIssueProgressWorkflowAction;
+		this.activeIssueLogWork = that.activeIssueLogWork;
+		this.activeIssueCommitChanges = that.activeIssueCommitChanges;
+		this.activeIssueAfterCommit = that.activeIssueAfterCommit;
+		this.logWorkOnCommit = that.logWorkOnCommit;
+		this.remainingEstimateUpdateMode = that.remainingEstimateUpdateMode;
+        this.presetFiltersMap = that.presetFiltersMap;
+        this.checkinHandler = that.checkinHandler;
 	}
 
 	public Map<ServerIdImpl, JiraCustomFilterMap> getFiltersMap() {
@@ -223,7 +226,18 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 //		filtersMap.put(serverId, filterConfiguration);
 //	}
 
-	public JiraWorkspaceConfiguration getState() {
+
+    @Transient
+    public CheckinHandler getCheckinHandler() {
+        return checkinHandler;
+    }
+
+    @Transient
+    public void setCheckinHandler(CheckinHandler checkinHandler) {
+        this.checkinHandler = checkinHandler;
+    }
+
+    public JiraWorkspaceConfiguration getState() {
 		return this;
 	}
 
