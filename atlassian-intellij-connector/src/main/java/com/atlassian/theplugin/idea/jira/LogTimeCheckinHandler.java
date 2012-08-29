@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
@@ -41,10 +42,10 @@ import java.util.List;
  * Time: 11:29:44 AM
  */
 public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
-	private JiraWorkspaceConfiguration config;
+    private JiraWorkspaceConfiguration jiraCfg;
 
-	public LogTimeCheckinHandler(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
-		this.config = jiraWorkspaceConfiguration;
+	public LogTimeCheckinHandler(@Nullable final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
+		this.jiraCfg = jiraWorkspaceConfiguration;
 	}
 
 
@@ -54,27 +55,32 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 		// PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
 		// "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
 		if (IdeaVersionFacade.getInstance().getAffectedVcsesSize((CommitChangeListDialog) checkinProjectPanel) > 0) {
-			return new Handler(checkinProjectPanel);
+			return new Handler(jiraCfg, checkinProjectPanel);
 		}
 		return new NullCheckinHandler();
 	}
 
-
     private class Handler extends CheckinHandler {
-		private CheckinProjectPanel checkinProjectPanel;
+        private final JiraWorkspaceConfiguration config;
+
+        private CheckinProjectPanel checkinProjectPanel;
 		private JCheckBox cbLogTime = new JCheckBox("Log Time Spent");
 		private JTextField txtTimeSpent = new JTextField();
 		private JTextField txtReminingEstimateHidden = new JTextField();
 		private JLabel lblRemainingEstimateAdjust = new JLabel();
 		private JButton btnChange = new JButton("Change");
 
-		private RefreshableOnComponent afterCheckinConfig = new AfterCheckinConfiguration();
+        private JPanel panel;
+
+        private RefreshableOnComponent afterCheckinConfig = new AfterCheckinConfiguration();
 		private JiraTimeWdhmTextFieldListener timeSpentListener;
 		private JiraTimeWdhmTextFieldListener timeReminingListener;
 		private boolean timeSpentCorrect;
 		private boolean timeReminingCorrect;
 
-		public Handler(final CheckinProjectPanel checkinProjectPanel) {
+		public Handler(@Nullable final JiraWorkspaceConfiguration jiraConfig, final CheckinProjectPanel checkinProjectPanel) {
+            config = jiraConfig != null ? jiraConfig : IdeaHelper.getJiraWorkspaceConfiguration(checkinProjectPanel.getProject());
+
 			this.checkinProjectPanel = checkinProjectPanel;
 			cbLogTime.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
@@ -250,8 +256,6 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 		}
 
 		private class AfterCheckinConfiguration implements RefreshableOnComponent {
-
-            private JPanel panel;
 
             public JComponent getComponent() {
                 if (panel == null) {
