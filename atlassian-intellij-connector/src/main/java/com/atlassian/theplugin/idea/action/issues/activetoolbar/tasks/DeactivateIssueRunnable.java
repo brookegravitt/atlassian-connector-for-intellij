@@ -52,7 +52,9 @@ public class DeactivateIssueRunnable  implements Runnable {
 //						conf.getActiveJiraIssuee().resetTimeSpent();
 //					}
                     if (PluginTaskManagerHelper.isValidIdeaVersion()) {
-                        conf.setActiveJiraIssuee(null);
+                        if (conf != null) {
+                            conf.setActiveJiraIssuee(null);
+                        }
                     }
 
                 }
