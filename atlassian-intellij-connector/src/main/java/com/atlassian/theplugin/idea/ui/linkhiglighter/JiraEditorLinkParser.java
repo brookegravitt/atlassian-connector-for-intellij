@@ -117,8 +117,13 @@ public final class JiraEditorLinkParser {
 			return null;
 		}
 
-		int offset = editor.logicalPositionToOffset(editor.xyToLogicalPosition(point));
-		return getJiraURLTextRange(editor, file, offset);
+        // PL-2671 - WTF is Throwable thrown? Anybody?
+        try {
+            int offset = editor.logicalPositionToOffset(editor.xyToLogicalPosition(point));
+            return getJiraURLTextRange(editor, file, offset);
+        } catch (Throwable t) {
+            return null;
+        }
 	}
 
 	private JiraURLTextRange getJiraURLTextRange(final Editor editor, final PsiFile file, final int offset) {
