@@ -80,6 +80,9 @@ public class ColoredTextFieldListener implements DocumentListener {
         int noOfGroups = m.groupCount();
         int totalGroupsLength = 0;
         if (matches) {
+            if (noOfGroups == 0) {
+                return true;
+            }
             for (int i = 1; i <= m.groupCount(); i++) {
                 if (m.group(i) != null) {
                     totalGroupsLength += m.group(i).length();
