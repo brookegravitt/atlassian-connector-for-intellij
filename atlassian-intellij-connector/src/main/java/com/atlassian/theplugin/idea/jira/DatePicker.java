@@ -16,8 +16,6 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.intellij.openapi.ui.DialogWrapper;
-import com.toedter.calendar.JDateChooser;
-import com.toedter.calendar.JTextFieldDateEditor;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -34,7 +32,7 @@ public class DatePicker extends DialogWrapper implements CaretListener {
 
 	private JPanel panel = new JPanel();
 
-	private JDateChooser dateChooser;
+    private com.michaelbaranov.microba.calendar.DatePicker dateChooser;
 	private JPanel bottomPanel = new JPanel();
 	private boolean allowEmptyDate;
 
@@ -67,9 +65,7 @@ public class DatePicker extends DialogWrapper implements CaretListener {
 
 		Date nowZeroZero = nowcal.getTime();
 
-		dateChooser = new JDateChooser(nowZeroZero);
-        JTextFieldDateEditor dateEditor = (JTextFieldDateEditor) dateChooser.getDateEditor();
-		dateEditor.addCaretListener(this);
+        dateChooser = new com.michaelbaranov.microba.calendar.DatePicker(nowZeroZero);
 	}
 
 	private void createPanel() {
@@ -111,18 +107,5 @@ public class DatePicker extends DialogWrapper implements CaretListener {
 	}
 
 	public void caretUpdate(CaretEvent event) {
-		boolean shouldEnableOkAction = true;
-		JTextFieldDateEditor dateEditor = (JTextFieldDateEditor) dateChooser.getDateEditor();
-
-		dateEditor.caretUpdate(event);
-		if (dateEditor.getForeground() == Color.RED) {
-			shouldEnableOkAction = false;
-		}
-		if (!allowEmptyDate && dateEditor.getText().trim().equals("")) {
-			shouldEnableOkAction = false;
-		}
-
-		setOKActionEnabled(shouldEnableOkAction);
 	}
-
 }
