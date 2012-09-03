@@ -570,7 +570,7 @@
                             <name>trove4j</name>
                             <exclude>true</exclude>
                         </library>
-                        <library>p
+                        <library>
                             <name>microba</name>
                             <exclude>true</exclude>
                         </library>
