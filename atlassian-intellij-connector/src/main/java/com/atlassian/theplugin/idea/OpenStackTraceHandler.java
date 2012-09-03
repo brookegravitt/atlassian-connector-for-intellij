@@ -23,7 +23,7 @@ public class OpenStackTraceHandler extends AbstractDirectClickThroughHandler {
 			public void run() {
 				if (ProjectManager.getInstance().getOpenProjects().length > 0) {
 					Project project = ProjectManager.getInstance().getOpenProjects()[0];
-					IdeHttpServerHandler.bringIdeaToFront(project);
+                    IdeHttpWebServer.bringIdeaToFront(project);
 					final String title = issueKey != null ? ("Stacktrace from " + issueKey) : "Stacktrace";
 					IdeaVersionFacade.getInstance().openStackTrace(project, stacktrace, title);
 				} else {

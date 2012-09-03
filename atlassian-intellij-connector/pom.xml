@@ -140,6 +140,14 @@
             <classifier>117.117</classifier>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.michaelbaranov</groupId>
+            <artifactId>microba</artifactId>
+            <version>0.4.4.3</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -413,10 +421,6 @@
                                     <shadedPattern>shadow.javax.wsdl</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.toeder</pattern>
-                                    <shadedPattern>shadow.com.toeder"</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.thoughtworks.xstream</pattern>
                                     <shadedPattern>shadow.com.thoughtworks.xstream</shadedPattern>
                                 </relocation>
@@ -507,10 +511,6 @@
                             <exclude>true</exclude>
                         </library>
                         <library>
-                            <name>com.toedter</name>
-                            <exclude>false</exclude>
-                        </library>
-                        <library>
                             <name>Clover</name>
                             <exclude>false</exclude>
                         </library>
@@ -566,8 +566,12 @@
                             <name>axis-saaj</name>
                             <exclude>false</exclude>
                         </library>
-                        <library>p
+                        <library>
                             <name>trove4j</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>p
+                            <name>microba</name>
                             <exclude>true</exclude>
                         </library>
                         <library>

@@ -27,7 +27,7 @@ abstract class AbstractDirectClickThroughHandler {
 				// try to show message box in the first open IDEA window
 				if (ProjectManager.getInstance().getOpenProjects().length > 0) {
 					Project project = ProjectManager.getInstance().getOpenProjects()[0];
-					IdeHttpServerHandler.bringIdeaToFront(project);
+					IdeHttpWebServer.bringIdeaToFront(project);
 					Messages.showInfoMessage(project, problem, PluginUtil.PRODUCT_NAME);
 				} else {
 					Messages.showInfoMessage(problem, PluginUtil.PRODUCT_NAME);
