@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.veryquick.embweb.EmbeddedServer;
+//import org.veryquick.embweb.EmbeddedServer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,6 +57,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
     private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
     private static final int TIMER_START_DELAY = 20000;
+
+    private IdeHttpWebServer webServer;
 
     private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
@@ -248,7 +250,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
         // create and start server
         try {
-            EmbeddedServer.createInstance(httpServerPort, new IdeHttpServerHandler(iconArray), true);
+            webServer = new IdeHttpWebServer(httpServerPort, iconArray);
         } catch (Exception e) {
             PluginUtil.getLogger().error("Failed to start http server", e);
         }
