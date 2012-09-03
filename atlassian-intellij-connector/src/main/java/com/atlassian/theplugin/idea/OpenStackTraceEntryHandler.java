@@ -30,7 +30,7 @@ public class OpenStackTraceEntryHandler extends AbstractDirectClickThroughHandle
 					Project project = ProjectManager.getInstance().getOpenProjects()[0];
 					final OpenFileHyperlinkInfo hyperlinkInfo = getHyperlinkInfo(project, "at " + stacktraceEntry);
 					if (hyperlinkInfo != null) {
-						IdeHttpServerHandler.bringIdeaToFront(project);
+                        IdeHttpWebServer.bringIdeaToFront(project);
 						hyperlinkInfo.navigate(project);
 					}
 				} else {
