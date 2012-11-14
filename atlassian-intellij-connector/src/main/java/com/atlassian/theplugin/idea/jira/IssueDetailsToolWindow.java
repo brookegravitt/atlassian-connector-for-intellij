@@ -1,12 +1,8 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.commons.jira.JIRAAction;
-import com.atlassian.connector.commons.jira.JIRAActionField;
-import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
-import com.atlassian.connector.commons.jira.JiraCustomField;
-import com.atlassian.connector.commons.jira.JiraTImeFormatter;
-import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
+import com.atlassian.connector.commons.jira.*;
+import com.atlassian.connector.commons.jira.JiraTimeFormatter;
 import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
 import com.atlassian.connector.commons.jira.beans.JIRAComment;
 import com.atlassian.connector.commons.jira.beans.JIRAConstant;
@@ -1099,8 +1095,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
 //				issueResolution = createEditableField(new JLabel(params.issue.getResolution()), "resolution", "Resolution");
                 issueResolution = new JLabel(params.issue.getResolution());
-                issueCreationTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString(params.issue.getCreated(), params.issue.getLocale()));
-                issueUpdateTime = new JLabel(JiraTImeFormatter.formatShortTimeFromJiraTimeString((params.issue.getUpdated()), params.issue.getLocale()));
+                issueCreationTime = new JLabel(JiraTimeFormatter.formatShortTimeFromJiraTimeString(params.issue.getCreated(), params.issue.getLocale()));
+                issueUpdateTime = new JLabel(JiraTimeFormatter.formatShortTimeFromJiraTimeString((params.issue.getUpdated()), params.issue.getLocale()));
                 issueEnvironment = new JEditorPane();
                 issueEnvironment.setMargin(new Insets(0, 0, 0, 0));
                 issueEnvironment.setText(Html2text.translate(params.issue.getEnvironment()));
