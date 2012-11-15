@@ -1042,8 +1042,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         }//@todo remove  saved filters download or merge with existing in listModel
 
                         final String serverStr = "[" + server.getName() + "] ";
-                        setStatusInfoMessage(serverStr + "Retrieving saved filters...", false);
-                        jiraServerModel.getSavedFilters(server);
                         setStatusInfoMessage(serverStr + "Retrieving projects...", false);
                         jiraServerModel.getProjects(server);
                         setStatusInfoMessage(serverStr + "Retrieving issue types...", false);
@@ -1054,8 +1052,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraServerModel.getResolutions(server, true);
                         setStatusInfoMessage(serverStr + "Retrieving priorities...", false);
                         jiraServerModel.getPriorities(server, true);
-                        setStatusInfoMessage(serverStr + "Retrieving projects...", false);
-                        jiraServerModel.getProjects(server);
+                        setStatusInfoMessage(serverStr + "Retrieving saved filters...", false);
+                        jiraServerModel.getSavedFilters(server);
                         setStatusInfoMessage(serverStr + "Server data query finished", false);
                     } catch (RemoteApiException e) {
                         setStatusErrorMessage("Unable to connect to server. "
