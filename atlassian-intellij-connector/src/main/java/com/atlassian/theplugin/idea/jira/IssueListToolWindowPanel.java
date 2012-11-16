@@ -987,6 +987,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
         private Collection<JiraServerData> servers = null;
         private boolean refreshIssueList = false;
+        private boolean fetchedSuccesfully = false;
 
         /**
          * Clear server model and refill it with all enabled servers' data
@@ -1026,6 +1027,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         public void run(@NotNull final ProgressIndicator indicator) {
+            fetchedSuccesfully = false;
 
             try {
                 ((JIRAServerModelIdea) jiraServerModel).setModelFrozen(true);
@@ -1055,6 +1057,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         setStatusInfoMessage(serverStr + "Retrieving saved filters...", false);
                         jiraServerModel.getSavedFilters(server);
                         setStatusInfoMessage(serverStr + "Server data query finished", false);
+                        fetchedSuccesfully = true;
                     } catch (RemoteApiException e) {
                         setStatusErrorMessage("Unable to connect to server. "
                                 + jiraServerModel.getErrorMessage(server), e);
@@ -1070,7 +1073,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void onSuccess() {
-            refreshFilterModel();
+            if (fetchedSuccesfully) {
+                refreshFilterModel();
+            }
             if (refreshIssueList) {
                 jiraFilterListModel.fireModelChanged();
             } else {

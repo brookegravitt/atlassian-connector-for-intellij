@@ -216,8 +216,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
             // DependencyValidationManager.getHolder(project, "", )
 
-            issuesToolWindowPanel.refreshModels();
-
             // create Atlassian tool window
 //			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager, bambooToolWindowPanel);
             Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
@@ -293,9 +291,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
             IdeaVersionFacade.getInstance().registerCheckinHandler(project, jiraWorkspaceConfiguration);
 
+            issuesToolWindowPanel.refreshModels();
         }
-
-
     }
 
 
