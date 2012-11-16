@@ -164,19 +164,25 @@ public class StatusBarPane extends JPanel implements StatusBar {
         errors.clear();
     }
 
-    public void setErrorMessage(String msg, Throwable e) {
+    public void setErrorMessage(String msg, final Throwable e) {
         if (msg == null || msg.length() == 0) {
             msg = "Unknown error";
         }
-        additionalPanel.setBackground(Constants.FAIL_COLOR);
-        dismissLabel.setVisible(true);
-        dismissLabel.setBackground(Constants.FAIL_COLOR);
+        final String msg2 = msg;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                additionalPanel.setBackground(Constants.FAIL_COLOR);
+                dismissLabel.setVisible(true);
+                dismissLabel.setBackground(Constants.FAIL_COLOR);
 //		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
-        textPanel.setBackground(Constants.FAIL_COLOR);
-        setBackground(Constants.FAIL_COLOR);
-        textPanel.setText("<html> " + msg + "&nbsp;&nbsp;<a href=\"http://www.nothing.com\">Error Details</a></html>");
-        errors.clear();
-        errors.add(e);
+                textPanel.setBackground(Constants.FAIL_COLOR);
+                setBackground(Constants.FAIL_COLOR);
+                textPanel.setText("<html> " + msg2 + "&nbsp;&nbsp;<a href=\"http://www.nothing.com\">Error Details</a></html>");
+                errors.clear();
+                errors.add(e);
+            }
+        });
     }
 
 
@@ -184,15 +190,21 @@ public class StatusBarPane extends JPanel implements StatusBar {
         if (msg == null || msg.length() == 0) {
             msg = "Unknown error";
         }
-        additionalPanel.setBackground(Constants.FAIL_COLOR);
-        dismissLabel.setVisible(true);
-        dismissLabel.setBackground(Constants.FAIL_COLOR);
+        final String msg2 = msg;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                additionalPanel.setBackground(Constants.FAIL_COLOR);
+                dismissLabel.setVisible(true);
+                dismissLabel.setBackground(Constants.FAIL_COLOR);
 //		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
-        textPanel.setBackground(Constants.FAIL_COLOR);
-        setBackground(Constants.FAIL_COLOR);
-        textPanel.setText("<html> " + msg + "&nbsp;&nbsp;<a href=\"http://www.nothing.com\">Error Details</a></html>");
-        errors.clear();
-        errors.addAll(exceptions);
+                textPanel.setBackground(Constants.FAIL_COLOR);
+                setBackground(Constants.FAIL_COLOR);
+                textPanel.setText("<html> " + msg2 + "&nbsp;&nbsp;<a href=\"http://www.nothing.com\">Error Details</a></html>");
+                errors.clear();
+                errors.addAll(exceptions);
+            }
+        });
     }
 
     private void clear() {
