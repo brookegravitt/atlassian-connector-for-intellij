@@ -19,22 +19,7 @@ import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
-import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
-import com.atlassian.connector.commons.jira.beans.JIRAComment;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAConstant;
-import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
-import com.atlassian.connector.commons.jira.beans.JIRAIssueTypeBean;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProject;
-import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRASavedFilterBean;
-import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
-import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
-import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
@@ -461,22 +446,37 @@ public class JIRAServerModelImplTest extends TestCase {
 		public int counter = 0;
 		public boolean throwException = false;
 
-		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
-				String sort, String sortOrder, int start, int size) throws JIRAException {
-			return null;
-		}
+//		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+//				String sort, String sortOrder, int start, int size) throws JIRAException {
+//			return null;
+//		}
+//
+//        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
+//                                                String sortOrder, int start, int size) throws JIRAException {
+//            return null;
+//        }
+//
+//        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
+//				String sortOrder, int start, int size) throws JIRAException {
+//			return null;
+//		}
 
-        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
-                                                String sortOrder, int start, int size) throws JIRAException {
+
+        @Override
+        public List<JiraIssueAdapter> getIssues(
+                JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size)
+                throws JIRAException {
             return null;
         }
 
-        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query, String sort,
-				String sortOrder, int start, int size) throws JIRAException {
-			return null;
-		}
+        @Override
+        public List<JiraIssueAdapter> getSavedFilterIssues(
+                JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
+                throws JIRAException {
+            return null;
+        }
 
-		public List<JIRAProject> getProjects(JiraServerData server) throws JIRAException {
+        public List<JIRAProject> getProjects(JiraServerData server) throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");
 			}
@@ -510,7 +510,7 @@ public class JIRAServerModelImplTest extends TestCase {
 			return list;
 		}
 
-		public List<JIRAConstant> getIssueTypesForProject(JiraServerData server, String project) throws JIRAException {
+		public List<JIRAConstant> getIssueTypesForProject(JiraServerData server, long projectId, String projectKey) throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");
 			}
@@ -532,7 +532,7 @@ public class JIRAServerModelImplTest extends TestCase {
 			return list;
 		}
 
-		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData server, String project)
+		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData server, long projectId, String projectKey)
 				throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");

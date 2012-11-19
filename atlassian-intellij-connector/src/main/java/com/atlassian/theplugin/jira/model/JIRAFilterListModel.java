@@ -61,7 +61,7 @@ public class JIRAFilterListModel implements FrozenModel {
                 && serversFilters.get(jiraServerData.getServerId()).getManualFilters().contains(filter)) {
             for (JiraCustomFilter f : serversFilters.get(jiraServerData.getServerId()).getManualFilters()) {
                 if (filter.equals(f)) {
-                    f.getQueryFragment().clear();
+                    f.getQueryFragments().clear();
                 }
             }
         }

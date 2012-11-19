@@ -166,7 +166,7 @@ public class JIRAServerCache {
                 if (project == null || project.getKey() == null) {
                     retrieved = jiraServerFacade.getIssueTypes(jiraServerData);
                 } else {
-                    retrieved = jiraServerFacade.getIssueTypesForProject(jiraServerData, Long.toString(project.getId()));
+                    retrieved = jiraServerFacade.getIssueTypesForProject(jiraServerData, project.getId(), project.getKey());
                 }
                 issueTypes = new ArrayList<JIRAConstant>(retrieved.size());
                 issueTypes.addAll(retrieved);
@@ -208,7 +208,7 @@ public class JIRAServerCache {
                 if (project == null || project.getKey() == null) {
                     retrieved = jiraServerFacade.getSubtaskIssueTypes(jiraServerData);
                 } else {
-                    retrieved = jiraServerFacade.getSubtaskIssueTypesForProject(jiraServerData, Long.toString(project.getId()));
+                    retrieved = jiraServerFacade.getSubtaskIssueTypesForProject(jiraServerData, project.getId(), project.getKey());
                 }
                 subtaskTypes = new ArrayList<JIRAConstant>(retrieved.size());
                 subtaskTypes.addAll(retrieved);

@@ -1,60 +1,53 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
-import com.atlassian.connector.commons.jira.beans.JIRAIssueTypeBean;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRAStatusBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
+import com.google.common.base.Function;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * User: pmaruszak
  */
-public final class JiraCustomFilter implements JIRAQueryFragment {
+public final class JiraCustomFilter implements JiraFilter {
 	private static final int HASH_NUMBER = 31;
 
     public enum QueryElement {
-		PROJECT("Project"),
-		ISSUE_TYPE("Issue Type"),
-		FIX_FOR("Fix For"),
-		COMPONENTS("Components"),
-		AFFECTS_VERSIONS("Affects Versions"),
-		REPORTER("Reporter"),
-		ASSIGNEE("Assignee"),
-		STATUS("Status"),
-		RESOLUTIONS("Resolutions"),
-		PRIORITIES("Priorities"),
-		UNKNOWN("Unknown");
+		PROJECT("Project", "project"),
+		ISSUE_TYPE("Issue Type", "type"),
+		FIX_FOR("Fix For", "fixVersion"),
+		COMPONENTS("Components", "component"),
+		AFFECTS_VERSIONS("Affects Versions", "affectedVersion"),
+		REPORTER("Reporter", "reporter"),
+		ASSIGNEE("Assignee", "assignee"),
+		STATUS("Status", "status"),
+		RESOLUTIONS("Resolutions", "resolution"),
+		PRIORITIES("Priorities", "priority"),
+		UNKNOWN("Unknown", null);
 
 		private String name;
+        private String jqlName;
 
-		QueryElement(final String name) {
+		QueryElement(final String name, final String jqlName) {
 			this.name = name;
+            this.jqlName = jqlName;
 		}
 
 		public String getName() {
 			return name;
 		}
 
+        public String jqlName() {
+            return jqlName;
+        }
 	}
 
     public boolean isEmpty() {
-        return queryFragment == null || queryFragment.size() <= 0;
+        return queryFragments == null || queryFragments.size() <= 0;
     }
-	private List<JIRAQueryFragment> queryFragment = new ArrayList<JIRAQueryFragment>();
+
+	private List<JIRAQueryFragment> queryFragments = new ArrayList<JIRAQueryFragment>();
 
 	private String name;
     private String uid;
@@ -64,10 +57,10 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
          this.name = "Custom Filter";
     }
 
-	JiraCustomFilter(final String uid, final String name, List<JIRAQueryFragment> queryFragment) {
+	JiraCustomFilter(final String uid, final String name, List<JIRAQueryFragment> queryFragments) {
         this.uid = uid;
         this.name = name;
-		this.queryFragment = queryFragment;
+		this.queryFragments = queryFragments;
 	}
 
     public String getQueryStringFragment() {
@@ -103,50 +96,64 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
         this.uid = uid;
     }
 
-     public List<JIRAQueryFragment> getQueryFragment() {
-		return queryFragment;
-	}
+    @Override
+    public List<JIRAQueryFragment> getQueryFragments() {
+        return queryFragments;
+    }
 
-	public void setQueryFragment(final List<JIRAQueryFragment> queryFragment) {
-		this.queryFragment = queryFragment;
-
+    public void setQueryFragments(final List<JIRAQueryFragment> queryFragments) {
+		this.queryFragments = queryFragments;
 	}
 
 	public Map<QueryElement, ArrayList<String>> groupBy(final boolean skipAnyValues) {
 		TreeMap<QueryElement, ArrayList<String>> map = new TreeMap<QueryElement, ArrayList<String>>();
 
-		for (JIRAQueryFragment fragment : queryFragment) {
-			QueryElement qe = QueryElement.UNKNOWN;
-			if (fragment instanceof JIRAProjectBean) {
-				qe = QueryElement.PROJECT;
-			} else if (fragment instanceof JIRAIssueTypeBean) {
-				qe = QueryElement.ISSUE_TYPE;
-			} else if (fragment instanceof JIRAStatusBean) {
-				qe = QueryElement.STATUS;
-			} else if (fragment instanceof JIRAPriorityBean) {
-				qe = QueryElement.PRIORITIES;
-			} else if (fragment instanceof JIRAResolutionBean) {
-				qe = QueryElement.RESOLUTIONS;
-			} else if (fragment instanceof JIRAFixForVersionBean) {
-				qe = QueryElement.FIX_FOR;
-			} else if (fragment instanceof JIRAComponentBean) {
-				qe = QueryElement.COMPONENTS;
-			} else if (fragment instanceof JIRAVersionBean) {
-				qe = QueryElement.AFFECTS_VERSIONS;
-			} else if (fragment instanceof JIRAAssigneeBean) {
-				qe = QueryElement.ASSIGNEE;
-			} else if (fragment instanceof JIRAReporterBean) {
-				qe = QueryElement.REPORTER;
-			}
-			addValueToMap(map, qe, fragment, skipAnyValues);
+		for (JIRAQueryFragment fragment : queryFragments) {
+            QueryElement qe = getQueryElementType(fragment);
+			addValueToNameMap(map, qe, fragment, skipAnyValues);
 		}
 		return map;
-
 	}
 
-	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key,
-			final JIRAQueryFragment fragment, final boolean skipAnyValues) {
+    public Map<QueryElement, ArrayList<JIRAQueryFragment>> groupFragmentsBy(final boolean skipAnyValues) {
+        TreeMap<QueryElement, ArrayList<JIRAQueryFragment>> map = new TreeMap<QueryElement, ArrayList<JIRAQueryFragment>>();
 
+        for (JIRAQueryFragment fragment : queryFragments) {
+            QueryElement qe = getQueryElementType(fragment);
+            addValueToQueryMap(map, qe, fragment, skipAnyValues);
+        }
+        return map;
+
+    }
+
+    private QueryElement getQueryElementType(JIRAQueryFragment fragment) {
+        QueryElement qe = QueryElement.UNKNOWN;
+        if (fragment instanceof JIRAProjectBean) {
+            qe = QueryElement.PROJECT;
+        } else if (fragment instanceof JIRAIssueTypeBean) {
+            qe = QueryElement.ISSUE_TYPE;
+        } else if (fragment instanceof JIRAStatusBean) {
+            qe = QueryElement.STATUS;
+        } else if (fragment instanceof JIRAPriorityBean) {
+            qe = QueryElement.PRIORITIES;
+        } else if (fragment instanceof JIRAResolutionBean) {
+            qe = QueryElement.RESOLUTIONS;
+        } else if (fragment instanceof JIRAFixForVersionBean) {
+            qe = QueryElement.FIX_FOR;
+        } else if (fragment instanceof JIRAComponentBean) {
+            qe = QueryElement.COMPONENTS;
+        } else if (fragment instanceof JIRAVersionBean) {
+            qe = QueryElement.AFFECTS_VERSIONS;
+        } else if (fragment instanceof JIRAAssigneeBean) {
+            qe = QueryElement.ASSIGNEE;
+        } else if (fragment instanceof JIRAReporterBean) {
+            qe = QueryElement.REPORTER;
+        }
+        return qe;
+    }
+
+    private void addValueToNameMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key,
+                                   final JIRAQueryFragment fragment, final boolean skipAnyValues) {
 		if (!skipAnyValues || fragment.getId() != CacheConstants.ANY_ID) {
 			if (!map.containsKey(key)) {
 				map.put(key, new ArrayList<String>());
@@ -154,6 +161,134 @@ public final class JiraCustomFilter implements JIRAQueryFragment {
 			map.get(key).add(fragment.getName());
 		}
 	}
+
+    private void addValueToQueryMap(final TreeMap<QueryElement, ArrayList<JIRAQueryFragment>> map, final QueryElement key,
+                                   final JIRAQueryFragment fragment, final boolean skipAnyValues) {
+        if (!skipAnyValues || fragment.getId() != CacheConstants.ANY_ID) {
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<JIRAQueryFragment>());
+            }
+            map.get(key).add(fragment);
+        }
+    }
+
+    @Override
+    public String getJql() {
+        StringBuilder sb = new StringBuilder();
+        int cnt = 0;
+        Map<QueryElement, ArrayList<JIRAQueryFragment>> groups = groupFragmentsBy(true);
+        for (QueryElement key : groups.keySet()) {
+            ArrayList<JIRAQueryFragment> group = groups.get(key);
+            switch (key) {
+                case REPORTER:
+                    if (group.size() > 0) {
+                        if (cnt++ > 0) {
+                            sb.append(" and ");
+                        }
+                    }
+                    String reporter = ((JIRAReporterBean) group.get(0)).getValue();
+                    if (reporter.length() != 0) {
+                        sb.append("reporter = \"").append(reporter).append("\"");
+                    }
+                    break;
+                case ASSIGNEE:
+                    if (group.size() > 0) {
+                        if (cnt++ > 0) {
+                            sb.append(" and ");
+                        }
+                        JIRAAssigneeBean a = (JIRAAssigneeBean) group.get(0);
+                        String assignee = a.getValue();
+                        if (assignee.equals("unassigned")) {
+                            sb.append("assignee is EMPTY");
+                        } else if (assignee.length() != 0) {
+                            sb.append("assignee = \"").append(assignee).append("\"");
+                        }
+                    }
+                    break;
+                case ISSUE_TYPE:
+                case AFFECTS_VERSIONS:
+                case FIX_FOR:
+                case COMPONENTS:
+                case STATUS:
+                case PRIORITIES:
+                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyName());
+                    break;
+                case RESOLUTIONS:
+                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyResolution());
+                    break;
+                case PROJECT:
+                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyProjectKey());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
+    private class CopyName implements Function<JIRAQueryFragment, String> {
+        @Override
+        public String apply(@Nullable JIRAQueryFragment s) {
+            return s.getName();
+        }
+    }
+
+    private class CopyProjectKey implements Function<JIRAQueryFragment, String> {
+        @Override
+        public String apply(@Nullable JIRAQueryFragment s) {
+            JIRAProjectBean p = (JIRAProjectBean) s;
+            return p.getKey();
+        }
+    }
+    private class CopyResolution implements Function<JIRAQueryFragment, String> {
+        @Override
+        public String apply(@Nullable JIRAQueryFragment s) {
+            JIRAResolutionBean r = (JIRAResolutionBean) s;
+            if (-1 == r.getId()) return "Unresolved";
+            return r.getName();
+        }
+    }
+
+    private static int joinOptions(StringBuilder sb, String jqlName, List<JIRAQueryFragment> what, Function<JIRAQueryFragment, String> getValue) {
+        int cnt = 0;
+        for (JIRAQueryFragment s : what) {
+            if (cnt++ > 0) {
+                sb.append(" or ");
+            }
+            sb.append(jqlName).append(" = \"").append(getValue.apply(s)).append("\"");
+        }
+        return cnt;
+    }
+
+    private static int joinJqlGroups(StringBuilder sb, String jqlName, List<JIRAQueryFragment> what, Function<JIRAQueryFragment, String> getValue) {
+        if (what.size() == 0) return 0;
+
+        if (sb.length() > 0) sb.append(" and ");
+        sb.append("(");
+        int cnt = joinOptions(sb, jqlName, what, getValue);
+        sb.append(")");
+        return cnt;
+    }
+
+    @Override
+    public String getOldStyleQueryString() {
+        StringBuilder query = new StringBuilder();
+
+        List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
+        for (JIRAQueryFragment jiraQueryFragment : getQueryFragments()) {
+            if (jiraQueryFragment.getId() != CacheConstants.ANY_ID) {
+                fragmentsWithoutAnys.add(jiraQueryFragment);
+            }
+        }
+
+        for (JIRAQueryFragment fragment : fragmentsWithoutAnys) {
+            if (fragment.getQueryStringFragment() != null) {
+                query.append("&").append(fragment.getQueryStringFragment());
+            }
+        }
+
+        return query.toString();
+    }
 
     @Override
     public boolean equals(Object o) {

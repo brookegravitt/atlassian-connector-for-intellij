@@ -1,55 +1,26 @@
 <atlassian-ide-plugin>
   <project-configuration>
     <servers>
-      <crucible>
-        <server-id>6bd37238-178f-41a2-9955-406974c8c93a</server-id>
-        <name>atlaseye</name>
-        <url>https://atlaseye.atlassian.com</url>
-        <shared>false</shared>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
       <jira>
-        <server-id>709100db-1f0e-4325-8c26-b391a1f3f2c6</server-id>
-        <name>jac</name>
-        <url>https://jira.atlassian.com</url>
-        <shared>false</shared>
-      </jira>
-      <bamboo>
-        <server-id>0e5a4867-a998-4e51-a7fc-4731f846abad</server-id>
-        <name>tardigrade</name>
-        <url>http://tardigrade.sydney.atlassian.com:8085/bamboo</url>
-        <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="ANGRY-ANMP" grouped="0" />
-          <plan key="ANGRY-ANPLAN" grouped="0" />
-          <plan key="ANGRY-ANRLS" grouped="0" />
-          <plan key="ANGRY-NERDS" grouped="0" />
-        </plans>
-      </bamboo>
-      <bamboo>
-        <server-id>a65097a5-000e-46d3-b370-2afd5665fccb</server-id>
-        <name>gbac</name>
-        <url>https://gdansk.bamboo2.atlassian.com</url>
-        <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="ACC-DPL" grouped="0" />
-          <plan key="ACC-TST" grouped="0" />
-          <plan key="INT-DPL" grouped="0" />
-          <plan key="INT-TST" grouped="0" />
-        </plans>
-      </bamboo>
-      <jira>
-        <server-id>32b8252a-7aea-48b7-bdc6-73ae814fe662</server-id>
+        <server-id>1e263562-f741-4a9e-acbd-76bbe6d18d8a</server-id>
         <name>stac</name>
         <url>https://studio.atlassian.com</url>
         <shared>false</shared>
       </jira>
+      <bamboo>
+        <server-id>2af8f37a-4434-42cb-9bb5-36e412f04496</server-id>
+        <name>jbac</name>
+        <url>https://jira.bamboo.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="JIRAMASTER-RESTAPIGUARD" grouped="0" />
+          <plan key="JIRAFIVETWOSTABLE-RESTAPIGUARD" grouped="0" />
+          <plan key="PLUGINS-JRJC" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
-    <default-fisheye-server>6bd37238-178f-41a2-9955-406974c8c93a</default-fisheye-server>
-    <default-fisheye-repo>connector-intellij</default-fisheye-repo>
+    <default-jira-server>1e263562-f741-4a9e-acbd-76bbe6d18d8a</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>

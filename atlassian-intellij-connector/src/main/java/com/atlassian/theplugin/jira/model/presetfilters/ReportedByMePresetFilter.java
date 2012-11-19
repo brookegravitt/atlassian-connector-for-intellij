@@ -45,4 +45,9 @@ public class ReportedByMePresetFilter extends JiraPresetFilter {
     protected String getQuery() {
         return "reporterSelect=issue_current_user";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "reporter = currentUser()";
+    }
 }

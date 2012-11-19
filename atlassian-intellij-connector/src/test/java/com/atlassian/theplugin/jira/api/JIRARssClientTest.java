@@ -33,6 +33,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
+import com.google.common.collect.ImmutableList;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpClient;
@@ -142,9 +144,10 @@ public class JIRARssClientTest extends TestCase {
             }
         });
 
-        List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
+//        List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
+        JiraCustomFilter f = new JiraCustomFilter();
         try {
-            mockRssClient.getIssues(list, "", "", 1, 100);
+            mockRssClient.getIssues(f, "", "", 1, 100);
             fail();
         } catch (JIRAException e) {
             assertTrue(e.getMessage().startsWith("Connection error"));
@@ -182,27 +185,30 @@ public class JIRARssClientTest extends TestCase {
 		l.add(new JIRAProjectBean());
 
 		try {
-			c.getSavedFilterIssues(new JIRAQueryFragment() {
-						public String getQueryStringFragment() {
-							return "1001";
-						}
+            com.atlassian.connector.commons.jira.beans.JIRASavedFilter f = new com.atlassian.connector.commons.jira.beans.JIRASavedFilterBean(
+                new JIRAQueryFragment() {
+                    public String getQueryStringFragment() {
+                        return "1001";
+                    }
 
-						public long getId() {
-							return 0;
-						}
+                    public long getId() {
+                        return 0;
+                    }
 
-						public String getName() {
-							return "name";  //To change body of implemented methods use File | Settings | File Templates.
-						}
+                    public String getName() {
+                        return "name";  //To change body of implemented methods use File | Settings | File Templates.
+                    }
 
-						public HashMap<String, String> getMap() {
-							return null;
-						}
+                    public HashMap<String, String> getMap() {
+                        return null;
+                    }
 
-						public JIRAQueryFragment getClone() {
-							return null;
-						}
-					}, "sortBy", "DESC", 0, 0);
+                    public JIRAQueryFragment getClone() {
+                        return null;
+                    }
+                }.getMap()
+            );
+			c.getSavedFilterIssues(f, "sortBy", "DESC", 0, 0);
 		} catch (JIRAException e) {
 			// I think it should stay here like this, as this is really unsolved on server side!
 			System.out.println("PL-2477 not fixed: " + e.getMessage());
@@ -233,11 +239,12 @@ public class JIRARssClientTest extends TestCase {
 				return doc;
 			}
 		};
-		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
-		l.add(new JIRAProjectBean());
-
+//		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
+//		l.add(new JIRAProjectBean());
+        JiraCustomFilter f= new JiraCustomFilter();
+        f.setQueryFragments(ImmutableList.of((JIRAQueryFragment) new JIRAProjectBean()));
 		try {
-			c.getIssues(l, "ASC", "prio", 0, 1);
+			c.getIssues(f, "ASC", "prio", 0, 1);
 		} catch (JIRAException e) {
 			// I think it should stay here like this, as this is really unsolved on client side!
 			System.out.println("PL-863 not fixed: " + e.getMessage());

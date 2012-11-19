@@ -4,17 +4,7 @@ import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
-import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
-import com.atlassian.connector.commons.jira.beans.JIRAComment;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAConstant;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProject;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
-import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
@@ -207,24 +197,39 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		public void setFields(JiraServerData jiraServerData, JIRAIssue issue, List<JIRAActionField> fields) throws JIRAException {
 		}
 
-		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
-				String sort, String sortOrder, int start, int size)
-				throws JIRAException {
-			return createIssueList(size);
-		}
+//		public List<JiraIssueAdapter> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
+//				String sort, String sortOrder, int start, int size)
+//				throws JIRAException {
+//			return createIssueList(size);
+//		}
+//
+//        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
+//                                                String sortOrder, int start, int size) throws JIRAException {
+//            return createIssueList(size);
+//        }
+//
+//        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
+//				String sort, String sortOrder, int start, int size)
+//				throws JIRAException {
+//			return createIssueList(size);
+//		}
 
-        public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString, String sort,
-                                                String sortOrder, int start, int size) throws JIRAException {
+
+        @Override
+        public List<JiraIssueAdapter> getIssues(
+                JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size)
+                throws JIRAException {
             return createIssueList(size);
         }
 
-        public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData server, List<JIRAQueryFragment> query,
-				String sort, String sortOrder, int start, int size)
-				throws JIRAException {
-			return createIssueList(size);
-		}
+        @Override
+        public List<JiraIssueAdapter> getSavedFilterIssues(
+                JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
+                throws JIRAException {
+            return createIssueList(size);
+        }
 
-		public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
+        public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
@@ -232,20 +237,21 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {
+        @Override
+        public List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
+            return null;
+        }
+
+        public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 
-		public List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, String project) throws JIRAException {
-			return null;
-		}
+        @Override
+        public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
+            return null;
+        }
 
 		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerData jiraServerData) throws JIRAException {
-			return null;
-		}
-
-		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, String project)
-                throws JIRAException {
 			return null;
 		}
 

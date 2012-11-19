@@ -7,17 +7,7 @@ import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.JIRAIssueBean;
 import com.atlassian.connector.commons.jira.JIRAServerFacade2;
 import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
-import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
-import com.atlassian.connector.commons.jira.beans.JIRAComment;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAConstant;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProject;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
-import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJAxisSessionCallback;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
@@ -62,28 +52,39 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         this.facade = facade;
     }
 
-    public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
-                                            String sort, String sortOrder, int start, int size) throws JIRAException {
-        List<JIRAIssue> list =
-                facade.getIssues(jiraServerData, queryString, sort, sortOrder, start, size);
+//    public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
+//                                            String sort, String sortOrder, int start, int size) throws JIRAException {
+//        List<JIRAIssue> list =
+//                facade.getIssues(jiraServerData, queryString, sort, sortOrder, start, size);
+//        return getJiraServerAdapterList(jiraServerData, list);
+//    }
+//
+//    public List<JiraIssueAdapter> getIssues(final JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+//                                           String sort, String sortOrder, int start, int size) throws JIRAException {
+//        List<JIRAIssue> list =
+//                facade.getIssues(jiraServerData, query, sort, sortOrder, start, size);
+//        return getJiraServerAdapterList(jiraServerData, list);
+//    }
+
+
+//    public List<JiraIssueAdapter> getSavedFilterIssues(final JiraServerData jiraServerData,
+//                                                       List<JIRAQueryFragment> query, String sort, String sortOrder,
+//                                                       int start, int size) throws JIRAException {
+//        List<JIRAIssue> list =
+//                facade.getSavedFilterIssues(jiraServerData, query, sort, sortOrder, start, size);
+//        return getJiraServerAdapterList(jiraServerData, list);
+//    }
+
+    @Override
+    public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size) throws JIRAException {
+        List<JIRAIssue> list = facade.getIssues(jiraServerData, filter, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
     }
 
-    public List<JiraIssueAdapter> getIssues(final JiraServerData jiraServerData, List<JIRAQueryFragment> query,
-                                           String sort, String sortOrder, int start, int size) throws JIRAException {
-        List<JIRAIssue> list =
-                facade.getIssues(jiraServerData, query, sort, sortOrder, start, size);
-        return getJiraServerAdapterList(jiraServerData, list);
-    }
-
-
-    public List<JiraIssueAdapter> getSavedFilterIssues(final JiraServerData jiraServerData,
-                                                       List<JIRAQueryFragment> query, String sort, String sortOrder,
-                                                       int start, int size) throws JIRAException {
-        List<JIRAIssue> list =
-                facade.getSavedFilterIssues(jiraServerData, query, sort, sortOrder, start, size);
-        return getJiraServerAdapterList(jiraServerData, list);
-    }
+    @Override
+    public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size) throws JIRAException {
+        List<JIRAIssue> list = facade.getSavedFilterIssues(jiraServerData, filter, sort, sortOrder, start, size);
+        return getJiraServerAdapterList(jiraServerData, list);    }
 
     public List<JIRAProject> getProjects(final JiraServerData jiraServerData) throws JIRAException {
         return facade.getProjects(jiraServerData);
@@ -97,18 +98,18 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return facade.getIssueTypes(jiraServerData);
     }
 
-    public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, String project)
+    public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, long projectId, String projectKey)
             throws JIRAException {
-        return facade.getIssueTypesForProject(jiraServerData, project);
+        return facade.getIssueTypesForProject(jiraServerData, projectId, projectKey);
     }
 
     public List<JIRAConstant> getSubtaskIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
         return facade.getSubtaskIssueTypes(jiraServerData);
     }
 
-    public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, String project)
+    public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, long projectId, String projectKey)
             throws JIRAException {
-        return facade.getSubtaskIssueTypesForProject(jiraServerData, project);
+        return facade.getSubtaskIssueTypesForProject(jiraServerData, projectId, projectKey);
     }
 
     public List<JIRAQueryFragment> getSavedFilters(final JiraServerData jiraServerData) throws JIRAException {

@@ -16,17 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.connector.commons.jira.beans.JIRAAssigneeBean;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAConstant;
-import com.atlassian.connector.commons.jira.beans.JIRAFixForVersionBean;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProject;
-import com.atlassian.connector.commons.jira.beans.JIRAProjectBean;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAReporterBean;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
@@ -397,18 +387,23 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
     }
 
     private void enableFields(final boolean enable) {
-        projectList.setEnabled(enable);
-        issueTypeList.setEnabled(enable);
-        fixForList.setEnabled(enable);
-        affectsVersionsList.setEnabled(enable);
-        reporterComboBox.setEnabled(enable);
-        assigneeComboBox.setEnabled(enable);
-        componentsList.setEnabled(enable);
-        resolutionsList.setEnabled(enable);
-        statusList.setEnabled(enable);
-        prioritiesList.setEnabled(enable);
-        getOKAction().setEnabled(enable);
-        clearFilterAction.setEnabled(enable);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                projectList.setEnabled(enable);
+                issueTypeList.setEnabled(enable);
+                fixForList.setEnabled(enable);
+                affectsVersionsList.setEnabled(enable);
+                reporterComboBox.setEnabled(enable);
+                assigneeComboBox.setEnabled(enable);
+                componentsList.setEnabled(enable);
+                resolutionsList.setEnabled(enable);
+                statusList.setEnabled(enable);
+                prioritiesList.setEnabled(enable);
+                getOKAction().setEnabled(enable);
+                clearFilterAction.setEnabled(enable);
+            }
+        });
     }
 
     private void refreshProjectDependentLists() {
@@ -548,7 +543,6 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
         if (reporterComboBox.getSelectedItem() != null) {
             query.add((JIRAQueryFragment) reporterComboBox.getSelectedItem());
         }
-
         return query;
     }
 
@@ -611,31 +605,32 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                         assigneeComboBox.addItem(new JIRAAssigneeBean(CacheConstants.ANY_ID, "Any User", ""));
                         assigneeComboBox.addItem(new JIRAAssigneeBean("Unassigned", "unassigned"));
                         assigneeComboBox.addItem(new JIRAAssigneeBean("Current User", jiraServerCfg.getUsername()));
+
+
+
+                        if (!isWindowClosed()) {
+                            enableFields(false);
+//                            ApplicationManager.getApplication().invokeLater(new Runnable() {
+//                                public void run() {
+                                    setListValues(projectList, prjSel);
+                                    setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
+                                    setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
+                                    setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
+                                    setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
+                                    setListValues(JiraIssuesFilterPanel.this.componentsList,
+                                            getSelection(JiraIssuesFilterPanel.this.componentsList.getModel(), initialFilter));
+                                    setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
+                                    setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
+                                    setComboValue(assigneeComboBox, initialFilter);
+                                    setComboValue(reporterComboBox, initialFilter);
+                                    addProjectActionListener();
+                                    enableFields(true);
+//                                }
+//                            }, modality);
+                        }
+
                     }
                 });
-
-
-                if (!isWindowClosed()) {
-                    enableFields(false);
-                    ApplicationManager.getApplication().invokeLater(new Runnable() {
-                        public void run() {
-                            setListValues(projectList, prjSel);
-                            setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
-                            setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
-                            setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
-                            setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
-                            setListValues(JiraIssuesFilterPanel.this.componentsList,
-                                    getSelection(JiraIssuesFilterPanel.this.componentsList.getModel(), initialFilter));
-                            setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
-                            setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
-                            setComboValue(assigneeComboBox, initialFilter);
-                            setComboValue(reporterComboBox, initialFilter);
-                            addProjectActionListener();
-                            enableFields(true);
-                        }
-                    }, modality);
-                }
-
             } catch (JIRAException e) {
                 final JIRAException exception = e;
 
