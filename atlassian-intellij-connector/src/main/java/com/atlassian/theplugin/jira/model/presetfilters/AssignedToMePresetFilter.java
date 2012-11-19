@@ -45,4 +45,9 @@ public class AssignedToMePresetFilter extends JiraPresetFilter {
     protected String getQuery() {
         return "assigneeSelect=issue_current_user&resolution=-1";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "assignee = currentUser() and resolution = Unresolved";
+    }
 }

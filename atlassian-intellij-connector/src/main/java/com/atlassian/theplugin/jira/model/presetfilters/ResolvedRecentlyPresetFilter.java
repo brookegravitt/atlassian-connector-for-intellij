@@ -45,4 +45,9 @@ public class ResolvedRecentlyPresetFilter extends JiraPresetFilter {
     protected String getQuery() {
          return  "status=5&status=6&updated:previous=-1w";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "status = Resolved or status = Closed and updated < -1w";
+    }
 }

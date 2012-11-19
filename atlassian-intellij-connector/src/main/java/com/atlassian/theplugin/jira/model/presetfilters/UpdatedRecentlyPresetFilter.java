@@ -42,4 +42,9 @@ public class UpdatedRecentlyPresetFilter extends JiraPresetFilter {
     protected String getQuery() {
          return "updated:previous=-1w";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "updated < -1w";
+    }
 }

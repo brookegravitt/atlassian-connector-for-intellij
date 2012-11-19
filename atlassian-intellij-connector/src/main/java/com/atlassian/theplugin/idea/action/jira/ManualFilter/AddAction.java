@@ -45,14 +45,14 @@ public class AddAction extends AbstractFilterAction {
 
             if (jiraIssuesFilterPanel.getExitCode() == 0) {
                 jiraFilterListModel.clearManualFilter(jiraServer, newCustomFilter);
-                newCustomFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
+                newCustomFilter.getQueryFragments().addAll(jiraIssuesFilterPanel.getFilter());
                 newCustomFilter.setName(jiraIssuesFilterPanel.getFilterName());
                 jiraFilterListModel.addManualFilter(jiraServer, newCustomFilter);
 
                 JiraWorkspaceConfiguration jiraProjectCfg = IdeaHelper.getJiraWorkspaceConfiguration(event);
                 if (jiraProjectCfg != null) {
                     JiraFilterConfigurationBean bean = new JiraFilterConfigurationBean();
-                    bean.setManualFilter(serializeFilter(newCustomFilter.getQueryFragment()));
+                    bean.setManualFilter(serializeFilter(newCustomFilter.getQueryFragments()));
                     bean.setName(newCustomFilter.getName());
                     bean.setUid(newCustomFilter.getUid());
 

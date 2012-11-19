@@ -37,7 +37,7 @@ public class ViewInBrowserAction extends AnAction {
         if (manualFilter != null && jiraServer != null) {
             JiraQueryUrl queryUrl = new JiraQueryUrl.Builder()
                     .serverUrl(jiraServer.getUrl())
-                    .queryFragments(manualFilter.getQueryFragment())
+                    .queryFragments(manualFilter.getQueryFragments())
                     .max(100)
                     .build();
             try {

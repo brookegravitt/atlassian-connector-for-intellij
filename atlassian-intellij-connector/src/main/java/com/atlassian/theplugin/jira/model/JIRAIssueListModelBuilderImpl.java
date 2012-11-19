@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.IntelliJJiraServerFacade;
@@ -11,7 +10,6 @@ import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.intellij.openapi.project.Project;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -72,9 +70,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
                 recentlyOpenIssuesCache.loadRecenltyOpenIssues();
             }
 
-            if (manualFilter.getQueryFragment().size() > 0) {
+            if (manualFilter.getQueryFragments().size() > 0) {
 //				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
-                l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), "", "", startFrom, size);
+//                l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), "", "", startFrom, size);
+                l = facade.getIssues(jiraServerCfg, manualFilter, "", "", startFrom, size);
                 model.addIssues(l);
                 startFrom += l != null ? l.size() : 0;
 //				checkActiveIssue(l);
@@ -115,9 +114,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 //            l = facade.getIssues(
 //                    jiraServerData,
 //                    presetFilter.getQueryStringFragment(), presetFilter.getSortBy(), SORT_ORDER, startFrom, size);
-            l = facade.getIssues(
-                    jiraServerData,
-                    presetFilter.getQueryStringFragment(), "", "", startFrom, size);
+//            l = facade.getIssues(
+//                    jiraServerData,
+//                    presetFilter.getQueryStringFragment(), "", "", startFrom, size);
+            l = facade.getIssues(jiraServerData, presetFilter, "", "", startFrom, size);
             model.addIssues(l);
 
             startFrom += l != null ? l.size() : 0;
@@ -154,10 +154,11 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
                 recentlyOpenIssuesCache.loadRecenltyOpenIssues();
             }
 
-            List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-            query.add(savedFilter);
+//            List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+//            query.add(savedFilter);
 //			l = facade.getSavedFilterIssues(jiraServerCfg, query, SORT_BY, SORT_ORDER, startFrom, size);
-            l = facade.getSavedFilterIssues(jiraServerCfg, query, "", "", startFrom, size);
+//            l = facade.getSavedFilterIssues(jiraServerCfg, query, "", "", startFrom, size);
+            l = facade.getSavedFilterIssues(jiraServerCfg, savedFilter, "", "", startFrom, size);
             model.addIssues(l);
 
             startFrom += l != null ? l.size() : 0;

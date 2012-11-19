@@ -4,17 +4,7 @@ import com.atlassian.connector.commons.jira.JIRAAction;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.JiraUserNotFoundException;
-import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
-import com.atlassian.connector.commons.jira.beans.JIRAComment;
-import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
-import com.atlassian.connector.commons.jira.beans.JIRAConstant;
-import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
-import com.atlassian.connector.commons.jira.beans.JIRAProject;
-import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
-import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
-import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
-import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
-import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
@@ -31,13 +21,19 @@ import java.util.List;
  */
 public interface JiraServerFacade extends ProductServerFacade {
 
-    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
+//    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, String queryString,
+//                                     String sort, String sortOrder, int start, int size) throws JIRAException;
+//
+//    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+//                                     String sort, String sortOrder, int start, int size) throws JIRAException;
+//
+//    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+//                                                String sort, String sortOrder, int start, int size) throws JIRAException;
+//
+    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, JiraFilter filter,
                                      String sort, String sortOrder, int start, int size) throws JIRAException;
 
-    List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
-                                     String sort, String sortOrder, int start, int size) throws JIRAException;
-
-    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
+    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, JIRASavedFilter filter,
                                                 String sort, String sortOrder, int start, int size) throws JIRAException;
 
     List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException;
@@ -46,11 +42,11 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData) throws JIRAException;
 
-    List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, String project) throws JIRAException;
+    List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException;
 
     List<JIRAConstant> getSubtaskIssueTypes(JiraServerData jiraServerData) throws JIRAException;
 
-    List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, String project) throws JIRAException;
+    List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException;
 
     List<JIRAQueryFragment> getSavedFilters(JiraServerData jiraServerData) throws JIRAException;
 

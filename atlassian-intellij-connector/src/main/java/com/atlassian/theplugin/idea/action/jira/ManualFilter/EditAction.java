@@ -61,7 +61,7 @@ public class EditAction extends AbstractFilterAction {
                                     jiraFilterListModel, jiraServer);
 
 					final java.util.List<JIRAQueryFragment> listClone = new ArrayList<JIRAQueryFragment>();
-					for (JIRAQueryFragment fragment : manualFilter.getQueryFragment()) {
+					for (JIRAQueryFragment fragment : manualFilter.getQueryFragments()) {
 						if (fragment != null) {
 							listClone.add(fragment.getClone());
 						}
@@ -71,7 +71,7 @@ public class EditAction extends AbstractFilterAction {
 
 				if (jiraIssuesFilterPanel.getExitCode() == 0) {
                     jiraFilterListModel.clearManualFilter(jiraServer, manualFilter);
-					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
+					manualFilter.getQueryFragments().addAll(jiraIssuesFilterPanel.getFilter());
                     manualFilter.setName(jiraIssuesFilterPanel.getFilterName());
 					jiraFilterListModel.addManualFilter(jiraServer, manualFilter);
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
@@ -105,6 +105,7 @@ public class EditAction extends AbstractFilterAction {
 
 	private List<JiraFilterEntryBean> serializeFilter(List<JIRAQueryFragment> filter) {
 		List<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
+
 		for (JIRAQueryFragment jiraQueryFragment : filter) {
 			query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
 		}

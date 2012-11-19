@@ -3,9 +3,13 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.commons.jira.beans.JIRAProject;
 import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JiraFilter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 
 /**
@@ -13,10 +17,11 @@ import org.jetbrains.annotations.NotNull;
  * Date: 2009-11-18
  * Time: 14:23:28
  */
-public abstract class JiraPresetFilter implements JIRAQueryFragment {
+public abstract class JiraPresetFilter implements JiraFilter {
     private final ServerId serverId;
     protected final ProjectCfgManager projectCfgManager;
     private JIRAProject jiraProject;
+    protected abstract String getJqlNoProject();
 
     protected JiraPresetFilter(@NotNull ProjectCfgManager projectCfgManager, JiraServerData jiraServer) {
         this.projectCfgManager = projectCfgManager;
@@ -36,6 +41,16 @@ public abstract class JiraPresetFilter implements JIRAQueryFragment {
         return s != null && s.length() > 0 ? s + getProjectQueryString() : "";
     }
 
+    @Override
+    public List<JIRAQueryFragment> getQueryFragments() {
+        return ImmutableList.of((JIRAQueryFragment) this);
+    }
+
+    @Override
+    public String getOldStyleQueryString() {
+        return getQueryStringFragment();
+    }
+
     public abstract String getSortBy();
     protected  abstract String getQuery();
 
@@ -53,6 +68,15 @@ public abstract class JiraPresetFilter implements JIRAQueryFragment {
         }
 
         return "";
+    }
+
+    @Override
+    public String getJql() {
+        String query = getJqlNoProject();
+        if (jiraProject == null) {
+            return query;
+        }
+        return query + " and project = " + jiraProject.getKey();
     }
 
     public String getProjectKey() {

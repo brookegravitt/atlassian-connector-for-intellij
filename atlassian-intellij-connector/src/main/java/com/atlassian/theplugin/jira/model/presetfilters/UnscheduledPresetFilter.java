@@ -44,4 +44,9 @@ public class UnscheduledPresetFilter extends JiraPresetFilter {
     protected String getQuery() {
        return "resolution=-1&fixfor=-1";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "resolution = Unresolved and fixVersion is EMPTY";
+    }
 }

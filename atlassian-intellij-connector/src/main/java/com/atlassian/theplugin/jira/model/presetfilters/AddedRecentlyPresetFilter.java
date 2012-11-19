@@ -49,4 +49,9 @@ public class AddedRecentlyPresetFilter extends JiraPresetFilter {
     protected String getQuery() {
          return "created:previous=-1w";
     }
+
+    @Override
+    public String getJqlNoProject() {
+        return "created < -1w";
+    }
 }
