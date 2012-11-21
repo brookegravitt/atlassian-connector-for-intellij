@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class DueDateFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
-		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
+		RemoteIssue ri = (RemoteIssue) detailedIssue.getApiIssueObject();
 		if (ri == null) {
 			return null;
 		}

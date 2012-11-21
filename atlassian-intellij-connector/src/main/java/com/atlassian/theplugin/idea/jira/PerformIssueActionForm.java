@@ -110,9 +110,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     row = ", pref, 3dlu";
                     break;
                 case DESCRIPTION:
-                    // we use wiki markup version from field (not html version from issue)
-                    // editor = new FieldTextArea(field.getValues().get(0), field);
-					editor = new FieldTextArea(Html2text.translate(issue.getDescription()), field);
+					editor = new FieldTextArea(Html2text.translate(issue.getWikiDescription()), field);
                     row = ", fill:pref:grow, 3dlu";
                     break;
                 case ISSUE_TYPE:
