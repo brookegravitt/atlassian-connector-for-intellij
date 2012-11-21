@@ -23,6 +23,8 @@ public interface JIRAServerModel {
 
 	void clearAll();
 
+    void resetFacade();
+
     boolean isServerResponding(JiraServerData jiraServerData);
 
 	/*

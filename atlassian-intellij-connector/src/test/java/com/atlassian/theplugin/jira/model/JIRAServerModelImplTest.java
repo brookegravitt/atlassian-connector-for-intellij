@@ -476,6 +476,10 @@ public class JIRAServerModelImplTest extends TestCase {
             return null;
         }
 
+        @Override
+        public void reset() {
+        }
+
         public List<JIRAProject> getProjects(JiraServerData server) throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");

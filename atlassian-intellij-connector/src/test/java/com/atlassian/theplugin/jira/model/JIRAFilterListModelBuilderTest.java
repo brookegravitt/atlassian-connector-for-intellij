@@ -165,6 +165,10 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
             
         }
 
+        @Override
+        public void reset() {
+        }
+
         public ServerType getServerType() {
 			return null;
 		}

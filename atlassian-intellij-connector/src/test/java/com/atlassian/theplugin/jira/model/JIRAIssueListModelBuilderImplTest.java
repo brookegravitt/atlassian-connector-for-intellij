@@ -234,7 +234,11 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return list;
 		}
 
-		public void testServerConnection(JiraServerData server) throws RemoteApiException {
+        @Override
+        public void reset() {
+        }
+
+        public void testServerConnection(JiraServerData server) throws RemoteApiException {
 		}
 
         public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
