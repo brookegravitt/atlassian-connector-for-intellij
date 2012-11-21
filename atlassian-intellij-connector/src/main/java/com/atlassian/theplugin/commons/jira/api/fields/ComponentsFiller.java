@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ComponentsFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
-		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
+		RemoteIssue ri = (RemoteIssue) detailedIssue.getApiIssueObject();
 		if (ri == null) {
 			return null;
 		}

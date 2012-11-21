@@ -109,6 +109,11 @@ public class JiraIssueAdapter implements JIRAIssue {
         return jiraIssue.getDescription();
     }
 
+    @Override
+    public String getWikiDescription() {
+        return jiraIssue.getWikiDescription();
+    }
+
     public JIRAConstant getTypeConstant() {
         return jiraIssue.getTypeConstant();
     }
@@ -245,12 +250,12 @@ public class JiraIssueAdapter implements JIRAIssue {
         return jiraIssue.getComments();
     }
 
-    public Object getRawSoapIssue() {
-        return jiraIssue.getRawSoapIssue();
+    public Object getApiIssueObject() {
+        return jiraIssue.getApiIssueObject();
     }
 
-    public void setRawSoapIssue(Object soapIssue) {
-        jiraIssue.setRawSoapIssue(soapIssue);
+    public void setApiIssueObejct(Object soapIssue) {
+        jiraIssue.setApiIssueObejct(soapIssue);
     }
 
     public JIRASecurityLevelBean getSecurityLevel() {

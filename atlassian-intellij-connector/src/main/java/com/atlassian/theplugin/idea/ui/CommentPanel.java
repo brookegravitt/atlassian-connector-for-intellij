@@ -22,22 +22,16 @@ import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.StackTraceDetector;
 import com.atlassian.theplugin.idea.util.Html2text;
 import com.intellij.ide.BrowserUtil;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class CommentPanel extends JPanel {
@@ -85,14 +79,18 @@ public class CommentPanel extends JPanel {
 		creationDate.setForeground(Color.GRAY);
 		creationDate.setFont(creationDate.getFont().deriveFont(Font.ITALIC));
 
-		DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
-		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+//		DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
+//		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
+//        DateTimeFormatter dft = DateTimeFormat.forPattern("EEE MMM d HH:mm:ss Z yyyy").withLocale(Locale.US);
+        DateTimeFormatter dfto = DateTimeFormat.shortDateTime().withLocale(Locale.US);
 		String t;
-		try {
-			t = dfo.format(df.parse(comment.getCreationDate().getTime().toString()));
-		} catch (java.text.ParseException e) {
-			t = "Invalid date: " + comment.getCreationDate().getTime().toString();
-		}
+//		try {
+            t = dfto.print(new DateTime(comment.getCreationDate()));
+//                    t = dfo.format(df.parse(comment.getCreationDate().getTime().toString()));
+//		} catch (java.text.ParseException e) {
+//			t = "Invalid date: " + comment.getCreationDate().getTime().toString();
+//		}
 
 		creationDate.setText(t);
 		gbc.gridx++;

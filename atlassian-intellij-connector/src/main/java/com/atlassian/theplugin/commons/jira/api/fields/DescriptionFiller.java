@@ -2,8 +2,9 @@ package com.atlassian.theplugin.commons.jira.api.fields;
 
 import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.soap.axis.RemoteIssue;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,12 +14,13 @@ import java.util.List;
  */
 public class DescriptionFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
-		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
-		if (ri == null) {
-			return null;
-		}
-		List<String> result = new ArrayList<String>();
-		result.add(ri.getDescription());
-		return result;
+        if (detailedIssue.getApiIssueObject() instanceof RemoteIssue) {
+            RemoteIssue ri = (RemoteIssue) detailedIssue.getApiIssueObject();
+            if (ri == null) {
+                return null;
+            }
+            return ImmutableList.of(Optional.fromNullable(ri.getDescription()).or(""));
+        }
+        return ImmutableList.of(Optional.fromNullable(detailedIssue.getWikiDescription()).or(""));
 	}
 }
