@@ -44,6 +44,11 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return facade;
     }
 
+    @Override
+    public void reset() {
+        facade.reset();
+    }
+
     public static void setServerModel(JIRAServerModel serverModel) {
         IntelliJJiraServerFacade.serverModel = serverModel;
     }

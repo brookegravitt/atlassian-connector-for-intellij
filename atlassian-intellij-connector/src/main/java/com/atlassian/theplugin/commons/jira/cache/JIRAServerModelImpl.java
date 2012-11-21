@@ -94,7 +94,12 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		}
 	}
 
-	public synchronized void replace(JiraServerData newJiraServerData) {
+    @Override
+    public void resetFacade() {
+        facade.reset();
+    }
+
+    public synchronized void replace(JiraServerData newJiraServerData) {
 		if (newJiraServerData == null) {
 			return;
 		}

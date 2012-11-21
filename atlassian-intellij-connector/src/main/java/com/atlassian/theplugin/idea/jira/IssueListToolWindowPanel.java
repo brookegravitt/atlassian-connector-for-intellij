@@ -1031,6 +1031,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
             try {
                 ((JIRAServerModelIdea) jiraServerModel).setModelFrozen(true);
+                jiraServerModel.resetFacade();
 
                 for (JiraServerData server : servers) {
                     try {
