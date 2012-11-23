@@ -38,6 +38,8 @@ import com.atlassian.theplugin.idea.jira.controls.FieldUser;
 import com.atlassian.theplugin.idea.jira.controls.FreezeListener;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.util.Html2text;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -62,8 +64,8 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
     private Project project;
     private JiraIssueAdapter issue;
     private List<JIRAActionField> fields;
-    private HashMap<String, Boolean> fieldsStatus = new HashMap<String, Boolean>();
-    private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
+    private HashMap<String, Boolean> fieldsStatus = Maps.newHashMap();
+    private List<ActionFieldEditor> createdFieldEditors = Lists.newArrayList();
     private int semaphore = 0;
     private CommentTextArea commentTextArea;
 
@@ -96,8 +98,8 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
         JIRAServerModel jiraServerModel = IdeaHelper.getJIRAServerModel(project);
 
-        List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
-        List<String> unsupportedFields = new ArrayList<String>();
+        List<ActionFieldEditor> editors = Lists.newArrayList();
+        List<String> unsupportedFields = Lists.newArrayList();
 
         for (JIRAActionField field : sortedFieldList) {
 
@@ -199,7 +201,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                     break;
             }
 
-            if (editor != null && row != null) {
+            if (editor != null) {
                 editors.add(editor);
                 rows += row;
             }
@@ -233,7 +235,9 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
         y += 2;
 
         if (!unsupportedFields.isEmpty()) {
-            String warning = "Unsupported fields (original values copied): ";
+            String warning = issue.usesRest()
+                ? "Unsupported fields (skipped): "
+                : "Unsupported fields (original values copied): ";
             warning += StringUtils.join(unsupportedFields, ", ");
             contentPanel.add(new JLabel(warning), cc.xyw(2, y, 3, CellConstraints.LEFT, CellConstraints.CENTER));
         }
@@ -249,13 +253,20 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
         List<JIRAActionField> ret = new ArrayList<JIRAActionField>();
 
-        ret.addAll(fields);
-
-        for (ActionFieldEditor editor : createdFieldEditors) {
-            if (ret.contains(editor.getEditedFieldValue())) {
-                ret.remove(editor.getEditedFieldValue());
+        if (issue.usesRest()) {
+            // just fill in supported fields for REST
+            for (ActionFieldEditor editor : createdFieldEditors) {
+                ret.add(editor.getEditedFieldValue());
             }
-            ret.add(editor.getEditedFieldValue());
+        } else {
+            ret.addAll(fields);
+
+            for (ActionFieldEditor editor : createdFieldEditors) {
+                if (ret.contains(editor.getEditedFieldValue())) {
+                    ret.remove(editor.getEditedFieldValue());
+                }
+                ret.add(editor.getEditedFieldValue());
+            }
         }
 
         return ret;

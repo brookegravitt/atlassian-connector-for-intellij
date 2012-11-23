@@ -46,6 +46,9 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 		add(Box.createRigidArea(new Dimension(0, 0)));
 
         for (Pair user : jiraServerModel.getUsers(serverData)) {
+            if (user.first == null) {
+                continue;
+            }
 	        comboBox.addItem(new UserEditLabel.UserComboBoxItem(new User((String) user.getFirst(), (String) user.getSecond())));
 			if (text.equals(user.getFirst())) {
 				comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
