@@ -254,8 +254,8 @@ public class JiraIssueAdapter implements JIRAIssue {
         return jiraIssue.getApiIssueObject();
     }
 
-    public void setApiIssueObejct(Object soapIssue) {
-        jiraIssue.setApiIssueObejct(soapIssue);
+    public void setApiIssueObject(Object soapIssue) {
+        jiraIssue.setApiIssueObject(soapIssue);
     }
 
     public JIRASecurityLevelBean getSecurityLevel() {
@@ -280,6 +280,11 @@ public class JiraIssueAdapter implements JIRAIssue {
 
     public Locale getLocale() {
         return jiraIssue.getLocale();
+    }
+
+    @Override
+    public boolean usesRest() {
+        return jiraIssue.usesRest();
     }
 
     public LocalConfigurationListener getLocalConfigurationListener() {

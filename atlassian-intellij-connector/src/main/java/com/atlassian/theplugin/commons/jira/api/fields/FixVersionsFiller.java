@@ -22,8 +22,8 @@ public class FixVersionsFiller extends AbstractFieldFiller {
             return null;
         }
         List<String> result = Lists.newArrayList();
-        for (Version fixVersion : fixVersions) {
-            Long id = fixVersion.getId();
+        for (Version version : fixVersions) {
+            Long id = version.getId();
             if (id == null) {
                 continue;
             }
