@@ -3,8 +3,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.connector.commons.jira.beans.*;
 import com.atlassian.connector.commons.jira.cache.CacheConstants;
 import com.google.common.base.Function;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
