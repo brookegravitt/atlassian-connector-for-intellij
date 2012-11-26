@@ -16,7 +16,13 @@
 package com.atlassian.theplugin.commons.jira.api.fields;
 
 
+import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
+import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
+import com.atlassian.jira.rest.client.domain.input.FieldInput;
+import com.google.common.collect.ImmutableMap;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,4 +39,13 @@ public class SecurityFiller implements FieldFiller {
 		result.add("" + detailedIssue.getSecurityLevel().getId());
 		return result;
 	}
+
+    @Override
+    public FieldInput generateJrJcFieldValue(JIRAIssue issue, JIRAActionField field, JSONObject fieldMetadata) throws JSONException {
+        List<String> values = field.getValues();
+        if (values == null || values.size() == 0) {
+            return new FieldInput(field.getFieldId(), null);
+        }
+        return new FieldInput(field.getFieldId(), new ComplexIssueInputFieldValue(ImmutableMap.of("id", (Object) values.get(0))));
+    }
 }

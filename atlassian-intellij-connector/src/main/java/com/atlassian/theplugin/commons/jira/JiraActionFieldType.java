@@ -15,33 +15,17 @@
  */
 package com.atlassian.theplugin.commons.jira;
 
+import com.atlassian.connector.commons.FieldValueGeneratorFactory;
+import com.atlassian.connector.commons.jira.FieldValueGenerator;
 import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAActionFieldBean;
 import com.atlassian.connector.commons.jira.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.fields.AffectsVersionsFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.AssigneeFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.ComponentsFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.CustomFieldFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.DescriptionFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.DueDateFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.EnvironmentFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.FieldFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.FixVersionsFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.IssueTypeFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.PriorityFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.ReporterFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.ResolutionFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.SecurityFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.SummaryFiller;
-import com.atlassian.theplugin.commons.jira.api.fields.TimeTrackingFiller;
+import com.atlassian.theplugin.commons.jira.api.fields.*;
+import com.google.common.collect.Maps;
+import org.codehaus.jettison.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * User: jgorycki
@@ -93,11 +77,25 @@ public final class JiraActionFieldType {
 		}
 	}
 
-	private static Map<String, WidgetTypeAndFieldFiller> typeMap = new HashMap<String, WidgetTypeAndFieldFiller>();
+    private static class FieldValueGeneratorFactoryImpl implements FieldValueGeneratorFactory {
+
+        @Override
+        public FieldValueGenerator get(JIRAActionField field, JSONObject fieldDef) {
+            String key = field.getFieldId().startsWith("customfield_") ? "customfield" : field.getFieldId();
+            WidgetTypeAndFieldFiller widgetAndFiller = typeMap.get(key);
+            return widgetAndFiller.getFiller();
+        }
+    }
+
+    private static FieldValueGeneratorFactoryImpl fvgFactory = new FieldValueGeneratorFactoryImpl();
+
+	private static Map<String, WidgetTypeAndFieldFiller> typeMap = Maps.newHashMap();
 	private static CustomFieldFiller customFieldFiller = new CustomFieldFiller();
 
 	static {
 		int i = 0;
+
+        JIRAActionFieldBean.setGeneratorFactory(fvgFactory);
 
 		typeMap.put("summary", new WidgetTypeAndFieldFiller(WidgetType.SUMMARY, ++i, new SummaryFiller()));
 		typeMap.put("resolution", new WidgetTypeAndFieldFiller(WidgetType.RESOLUTION, ++i, new ResolutionFiller()));
@@ -114,7 +112,6 @@ public final class JiraActionFieldType {
 		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIMETRACKING, ++i, new TimeTrackingFiller()));
 		typeMap.put("security", new WidgetTypeAndFieldFiller(WidgetType.SECURITY, ++i, new SecurityFiller()));
         typeMap.put("customfield", new WidgetTypeAndFieldFiller(WidgetType.CUSTOM_FIELD, ++i, new CustomFieldFiller()));
-
 	}
 
 	private JiraActionFieldType() {
