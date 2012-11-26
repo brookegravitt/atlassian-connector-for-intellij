@@ -1,12 +1,18 @@
 package com.atlassian.theplugin.commons.jira.api.fields;
 
+import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.JiraCustomFieldImpl;
 import com.atlassian.connector.commons.jira.soap.axis.RemoteCustomFieldValue;
 import com.atlassian.connector.commons.jira.soap.axis.RemoteIssue;
 import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.input.FieldInput;
+import com.atlassian.jira.rest.client.internal.json.JsonParseUtil;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.google.common.collect.ImmutableList;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,5 +60,22 @@ public class CustomFieldFiller extends AbstractFieldFiller {
             }
         }
         return null;
+    }
+
+    @Override
+    public FieldInput generateJrJcFieldValue(JIRAIssue issue, JIRAActionField field, JSONObject fieldMetadata) throws JSONException, RemoteApiException {
+        JSONObject schema = (JSONObject) fieldMetadata.get("schema");
+        String type = schema.getString("type");
+        String cfType = JsonParseUtil.getOptionalString(schema, "custom");
+        if (cfType != null) {
+            JiraCustomFieldImpl.BasicKeyType cf = JiraCustomFieldImpl.BasicKeyType.getValueOf(cfType);
+            if (cf != null && cf != JiraCustomFieldImpl.BasicKeyType.UNSUPPORTED) {
+                FieldInput f = cf.generateJrJcFieldValue(field);
+                if (f != null) {
+                    return f;
+                }
+            }
+        }
+        throw new RemoteApiException("Unsupported custom field type");
     }
 }

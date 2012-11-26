@@ -1,9 +1,13 @@
 package com.atlassian.theplugin.commons.jira.api.fields;
 
+import com.atlassian.connector.commons.jira.JIRAActionField;
 import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.soap.axis.RemoteIssue;
 import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.google.common.collect.ImmutableList;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.util.List;
 
@@ -21,5 +25,11 @@ public class SummaryFiller extends AbstractFieldFiller {
     @Override
     protected List<String> getFieldValues(String field, JIRAIssue detailedIssue, RemoteIssue apiIssueObject) {
         return ImmutableList.of(apiIssueObject.getSummary());
+    }
+
+    @Override
+    public FieldInput generateJrJcFieldValue(JIRAIssue issue, JIRAActionField field, JSONObject fieldMetadata) throws JSONException {
+        List<String> values = field.getValues();
+        return new FieldInput(field.getFieldId(), values != null && values.size() > 0 ? values.get(0) : null);
     }
 }
