@@ -457,7 +457,7 @@ public class IssueCreateDialog extends DialogWrapper {
     private void addComponents(Collection<JIRAComponentBean> components) {
         final DefaultListModel listModel = new DefaultListModel();
         for (JIRAComponentBean constant : components) {
-            if (constant != null && constant.getId() != CacheConstants.ANY_ID) {
+            if (constant != null && constant.getId() != CacheConstants.ANY_ID && constant.getId() != CacheConstants.UNKNOWN_COMPONENT_ID) {
                 listModel.addElement(new ComponentWrapper(constant));
             }
         }
@@ -606,7 +606,7 @@ public class IssueCreateDialog extends DialogWrapper {
 
                     issueListToolWindowPanel.setStatusInfoMessage(message, false);
 
-                    if (originalEstimate.getText() != null && originalEstimate.getText().length() > 0) {
+                    if (!createdIssue.usesRest() && originalEstimate.getText() != null && originalEstimate.getText().length() > 0) {
 //                        "timeoriginalestimate"
                         JIRAActionField originalEstimateField = new JIRAActionFieldBean("timetracking", "Original Estimate");
                         originalEstimateField.addValue(newIssue.getOriginalEstimate());

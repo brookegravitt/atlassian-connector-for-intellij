@@ -1185,9 +1185,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
                             final JiraIssueAdapter issueDetails =
                                     facade.getIssueDetails(params.issue.getJiraServerData(), params.issue);
-                            params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
-                            params.issue.setFixVersions(issueDetails.getFixVersions());
-                            params.issue.setComponents(issueDetails.getComponents());
+//                            params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
+//                            params.issue.setFixVersions(issueDetails.getFixVersions());
+//                            params.issue.setComponents(issueDetails.getComponents());
+                            params.issue = issueDetails;
                         }
                     } catch (JIRAException e) {
                         errorString = new String[]{"Unable to retrieve"};
