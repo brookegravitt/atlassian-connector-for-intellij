@@ -38,6 +38,7 @@ import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.jira.controls.FieldUser;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -50,6 +51,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ColoredListCellRenderer;
+import com.intellij.ui.HyperlinkAdapter;
+import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -58,9 +61,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -86,16 +91,33 @@ public class IssueCreateDialog extends DialogWrapper {
     private Project project;
     private final JIRAServerModel model;
     private JiraWorkspaceConfiguration jiraConfiguration;
+    @Nullable
+    private final JiraIssueAdapter parentIssue;
     private List<JIRASecurityLevelBean> securityLevels;
+
+    private Action createAndOpenAction = new AbstractAction("Create And Open") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            create(true);
+        }
+    };
+
+    private Action createAction = new AbstractAction("Create") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            create(false);
+        }
+    };
 
     public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
                              @NotNull Project project, JIRAServerModel model, final JiraServerData jiraServerData,
-                             @NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
+                             @NotNull final JiraWorkspaceConfiguration jiraProjectCfg, @Nullable JiraIssueAdapter parent) {
         super(false);
         this.issueListToolWindowPanel = issueListToolWindowPanel;
         this.project = project;
         this.model = model;
         this.jiraConfiguration = jiraProjectCfg;
+        parentIssue = parent;
         $$$setupUI$$$();
         originalEstimate.getDocument().addDocumentListener(new JiraTimeWdhmTextFieldListener(originalEstimate, true));
         assigneeField = new FieldUser(model, jiraServerData, "", null);
@@ -107,7 +129,7 @@ public class IssueCreateDialog extends DialogWrapper {
         pack();
 
         this.jiraServerData = jiraServerData;
-        setTitle("Create JIRA Issue");
+        setTitle(parentIssue == null ? "Create JIRA Issue" : "Create sub-task for issue " + parentIssue.getKey());
 
         projectComboBox.setRenderer(new ColoredListCellRenderer() {
             @Override
@@ -141,8 +163,13 @@ public class IssueCreateDialog extends DialogWrapper {
                 item = null;
             }
         });
-        getOKAction().setEnabled(false);
-        getOKAction().putValue(Action.NAME, "Create");
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+    }
+
+    @Override
+    protected Action[] createActions() {
+        return new Action[]{createAction, createAndOpenAction, getCancelAction()};
     }
 
     private boolean issueTypesUpdated = false;
@@ -167,7 +194,7 @@ public class IssueCreateDialog extends DialogWrapper {
     }
 
     private void setProjectComboBoxEnableState() {
-        projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated && fixVersionsUpdated);
+        projectComboBox.setEnabled(parentIssue == null && issueTypesUpdated && componentsUpdated && versionsUpdated && fixVersionsUpdated);
     }
 
     public void initData() {
@@ -179,7 +206,8 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTaskAdapter updateProject() {
         projectComboBox.setEnabled(false);
-        getOKAction().setEnabled(false);
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
 
         return new UiTaskAdapter("retrieving projects", getContentPane()) {
             private List<JIRAProject> projects = new ArrayList<JIRAProject>();
@@ -215,8 +243,9 @@ public class IssueCreateDialog extends DialogWrapper {
             if (jiraConfiguration != null &&
                     jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServerData.getServerId())) {
 
-                String project = jiraConfiguration.getView().getServerDefaultss().
-                        get(jiraServerData.getServerId()).getProject();
+                String project = parentIssue == null
+                    ? jiraConfiguration.getView().getServerDefaultss().get(jiraServerData.getServerId()).getProject()
+                    : parentIssue.getProjectKey();
 
                 for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
                     if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -238,7 +267,8 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updatePriorities() {
         priorityComboBox.setEnabled(false);
-        getOKAction().setEnabled(false);
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
 
         return new UiTaskAdapter("retrieving priorities", getContentPane()) {
             private List<JIRAPriorityBean> priorities = new ArrayList<JIRAPriorityBean>();
@@ -272,12 +302,16 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updateIssueTypes(final JIRAProject project) {
         typeComboBox.setEnabled(false);
-        getOKAction().setEnabled(false);
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+
         return new UiTaskAdapter("retrieving issue types", getContentPane()) {
             private List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 
             public void run() throws Exception {
-                issueTypes = model.getIssueTypes(jiraServerData, project, true);
+                issueTypes = parentIssue == null
+                    ? model.getIssueTypes(jiraServerData, project, true)
+                    : model.getSubtaskIssueTypes(jiraServerData, project);
             }
 
             public void onSuccess() {
@@ -296,7 +330,9 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updateComponents(final JIRAProject project) {
         componentsList.setEnabled(false);
-        getOKAction().setEnabled(false);
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+
         return new UiTaskAdapter("fetching components", getContentPane()) {
             private List<JIRAComponentBean> components;
 
@@ -321,7 +357,9 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updateVersions(final JIRAProject project) {
         versionsList.setEnabled(false);
-        getOKAction().setEnabled(false);
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+
         return new UiTaskAdapter("fetching versions", getContentPane()) {
             private List<JIRAVersionBean> versions;
 
@@ -347,7 +385,10 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updateSecurityLevels(final JIRAProject project) {
         versionsList.setEnabled(false);
-        getOKAction().setEnabled(false);
+
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+
         return new UiTaskAdapter("fetching security levels", getContentPane()) {
 
             public void run() throws Exception {
@@ -383,7 +424,10 @@ public class IssueCreateDialog extends DialogWrapper {
 
     private UiTask updateFixVersions(final JIRAProject project) {
         fixVersionsList.setEnabled(false);
-        getOKAction().setEnabled(false);
+
+        createAction.setEnabled(false);
+        createAndOpenAction.setEnabled(false);
+
         return new UiTaskAdapter("fetching versions", getContentPane()) {
             private List<JIRAFixForVersionBean> versions;
 
@@ -416,7 +460,9 @@ public class IssueCreateDialog extends DialogWrapper {
         }
         versionsList.setModel(listModel);
         versionsList.setEnabled(true);
-        getOKAction().setEnabled(true);
+
+        createAction.setEnabled(true);
+        createAndOpenAction.setEnabled(true);
     }
 
     private void  addSecurityLevels(List<JIRASecurityLevelBean> levels) {
@@ -506,8 +552,7 @@ public class IssueCreateDialog extends DialogWrapper {
     }
 
 
-    @Override
-    protected void doOKAction() {
+    private void create(boolean andOpen) {
         JIRAIssueBean newIssue;
 
         newIssue = new JIRAIssueBean();
@@ -581,10 +626,10 @@ public class IssueCreateDialog extends DialogWrapper {
             jiraConfiguration.getView().addServerDefault(jiraServerData.getServerId(), p.getKey(), selectedComponents);
         }
 
-        createIssueAndCloseOnSuccess(newIssue);
+        createIssueAndCloseOnSuccess(newIssue, andOpen);
     }
 
-    private void createIssueAndCloseOnSuccess(final JIRAIssueBean newIssue) {
+    private void createIssueAndCloseOnSuccess(final JIRAIssueBean newIssue, final boolean openNewIssue) {
         Task createTask = new Task.Modal(project, "Creating Issue", false) {
 
             public void run(@NotNull final ProgressIndicator indicator) {
@@ -594,7 +639,9 @@ public class IssueCreateDialog extends DialogWrapper {
 
                 try {
                     final IntelliJJiraServerFacade jiraServerFacade = IntelliJJiraServerFacade.getInstance();
-                    final JiraIssueAdapter createdIssue = jiraServerFacade.createIssue(jiraServerData, newIssue);
+                    final JiraIssueAdapter createdIssue = parentIssue == null
+                            ? jiraServerFacade.createIssue(jiraServerData, newIssue)
+                            : jiraServerFacade.createSubtask(jiraServerData, parentIssue, newIssue);
 
                     IdeaHelper.getProjectCfgManager(project).addProjectConfigurationListener(createdIssue.getLocalConfigurationListener());
 
@@ -628,7 +675,14 @@ public class IssueCreateDialog extends DialogWrapper {
                         public void run() {
 
                             issueListToolWindowPanel.refreshIssues(true);
-                            issueListToolWindowPanel.openIssue(createdIssue, false);
+
+                            if (openNewIssue) {
+                                issueListToolWindowPanel.openIssue(createdIssue, false);
+                            } else {
+                                Color bg = new Color(192, 239, 192);
+                                IdeaVersionFacade.getInstance().fireNotification(project, new NotificationPopup(createdIssue, bg),
+                                        null, null, IdeaVersionFacade.OperationStatus.INFO, bg);
+                            }
 
                             close(0);
                         }
@@ -645,6 +699,29 @@ public class IssueCreateDialog extends DialogWrapper {
         };
 
         ProgressManager.getInstance().run(createTask);
+    }
+
+    public class NotificationPopup extends JPanel {
+        public NotificationPopup(final JiraIssueAdapter issue, Color background) {
+            setLayout(new GridBagLayout());
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.setBackground(background);
+            add(panel, new GridBagConstraints());
+            setPreferredSize(new Dimension(300, 30));
+            setMinimumSize(new Dimension(300, 30));
+
+            HyperlinkLabel label = new HyperlinkLabel(issue.getKey());
+            label.addHyperlinkListener(new HyperlinkAdapter() {
+                @Override
+                protected void hyperlinkActivated(HyperlinkEvent hyperlinkEvent) {
+                    issueListToolWindowPanel.openIssue(issue, true);
+                }
+            });
+            setBackground(background);
+            label.setOpaque(false);
+            panel.add(new JLabel("Created " + (issue.isSubTask() ? "subtask" : "issue")));
+            panel.add(label);
+        }
     }
 
     @Override

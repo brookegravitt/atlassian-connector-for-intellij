@@ -171,6 +171,12 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
     }
 
+    @Override
+    public JiraIssueAdapter createSubtask(JiraServerData jiraServerData, JIRAIssue parent, JIRAIssue issue) throws JIRAException {
+        JIRAIssue newIssue =  facade.createSubtask(jiraServerData, parent, issue);
+        return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
+    }
+
     public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, String key) throws JIRAException {
         JIRAIssue issue =  facade.getIssue(jiraServerData, key);
         serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());

@@ -896,9 +896,16 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         jiraWorkspaceConfiguration.getView().setGroupBy(groupBy);
     }
 
-    public void createIssue() {
+    public void createSubtask(JiraIssueAdapter issue) {
+        createIssueOrSubtask(issue);
+    }
 
-        if (jiraIssueListModelBuilder == null) {
+    public void createIssue() {
+        createIssueOrSubtask(null);
+    }
+
+    private void createIssueOrSubtask(@Nullable JiraIssueAdapter parent) {
+            if (jiraIssueListModelBuilder == null) {
             return;
         }
 
@@ -906,7 +913,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         if (jiraServerData != null) {
             final IssueCreateDialog issueCreateDialog =
-                    new IssueCreateDialog(this, project, jiraServerModel, jiraServerData, jiraWorkspaceConfiguration);
+                    new IssueCreateDialog(this, project, jiraServerModel, jiraServerData, jiraWorkspaceConfiguration, parent);
 
             issueCreateDialog.initData();
             issueCreateDialog.show();

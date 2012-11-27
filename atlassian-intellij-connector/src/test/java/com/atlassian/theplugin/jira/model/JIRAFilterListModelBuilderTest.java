@@ -320,7 +320,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-		public JiraIssueAdapter getIssueUpdate(final JiraServerData server, final JiraIssueAdapter issue) throws JIRAException {
+        public JiraIssueAdapter createSubtask(JiraServerData jiraServerData, JIRAIssue parent, JIRAIssue issue) throws JIRAException {
+            return null;
+        }
+
+        public JiraIssueAdapter getIssueUpdate(final JiraServerData server, final JiraIssueAdapter issue) throws JIRAException {
 			return null;
 		}
 
