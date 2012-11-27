@@ -1495,8 +1495,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         !dialog.getRemainingEstimateUpdateMode()
                                 .equals(RemainingEstimateUpdateMode.UNCHANGED),
                         newRemainingEstimate);
-                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
-                        jiraServerData, issue);
+                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServerData, issue);
+                jiraIssueListModelBuilder.updateIssue(jiraServerFacade.getIssue(jiraServerData, issue.getKey()));
+
                 setStatusInfoMessage("Logged work for issue " + issue.getKey(), true);
             }
         }
