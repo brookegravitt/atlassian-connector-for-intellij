@@ -619,6 +619,10 @@
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
 				icon="/icons/pin_assignuser.png"
 				text="Assign to User"/>
+        <action id="ThePlugin.JiraIssues.AddSubtask"
+                class="com.atlassian.theplugin.idea.action.issues.AddSubtaskAction"
+                text="Add Sub-task"
+                icon="/icons/add_jira.png"/>
 		<action id="ThePlugin.JiraIssues.AddComment"
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
 				text="Add Comment"
@@ -713,7 +717,8 @@
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.AddComment"/>
-			<reference id="ThePlugin.JiraIssues.AddAttachment"/>
+            <reference id="ThePlugin.JiraIssues.AddSubtask"/>
+            <reference id="ThePlugin.JiraIssues.AddAttachment"/>
 			<reference id="ThePlugin.JiraIssues.LogWork"/>
 			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
 			<separator/>
@@ -737,7 +742,8 @@
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.EditorAddComment"/>
 			<reference id="ThePlugin.JiraIssues.EditorAddAttachment"/>
-			<reference id="ThePlugin.JiraIssues.LogWork"/>
+            <reference id="ThePlugin.JiraIssues.AddSubtask"/>
+            <reference id="ThePlugin.JiraIssues.LogWork"/>
 			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>

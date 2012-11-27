@@ -74,6 +74,8 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     JiraIssueAdapter createIssue(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;
 
+    JiraIssueAdapter createSubtask(JiraServerData jiraServerData, JIRAIssue parent, JIRAIssue issue) throws JIRAException;
+
     JiraIssueAdapter getIssue(JiraServerData jiraServerData, String key) throws JIRAException;
 
     JiraIssueAdapter getIssueDetails(JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException;

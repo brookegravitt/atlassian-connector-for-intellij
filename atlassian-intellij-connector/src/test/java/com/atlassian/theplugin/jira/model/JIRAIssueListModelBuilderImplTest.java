@@ -391,7 +391,11 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-		public JiraIssueAdapter getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
+        public JiraIssueAdapter createSubtask(JiraServerData jiraServerData, JIRAIssue parent, JIRAIssue issue) throws JIRAException {
+            return null;
+        }
+
+        public JiraIssueAdapter getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException {
 			return null;
 		}
 
