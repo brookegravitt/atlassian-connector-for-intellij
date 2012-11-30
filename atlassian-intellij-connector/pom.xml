@@ -48,6 +48,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-apache-client</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
             <groupId>org.ddsteps</groupId>
             <artifactId>ddsteps-httpserver-mock</artifactId>
             <version>1.0-m1</version>
@@ -393,6 +403,36 @@
                                     <include>commons-codec:commons-codec</include>
                                     <!--<include>commons-logging:commons-logging</include>-->
                                     <include>com.atlassian.connector:atlassian-connector-commons</include>
+
+                                    <!--<include>com.atlassian.jira:jira-rest-java-client</include>-->
+                                    <!--<include>org.codehaus.jettison:jettison</include>-->
+                                    <!--<include>com.sun.jersey:jersey-core</include>-->
+                                    <!--<include>com.sun.jersey:jersey-client</include>-->
+                                    <!--<include>com.sun.jersey.contribs:jersey-apache-client</include>-->
+
+
+
+                                    <include>com.atlassian.jira:jira-rest-java-client</include>
+                                    <include>com.sun.jersey:jersey-core</include>
+                                    <include>com.sun.jersey:jersey-client</include>
+                                    <include>com.sun.jersey:jersey-json</include>
+                                    <include>org.codehaus.jettison:jettison</include>
+                                    <include>com.sun.xml.bind:jaxb-impl</include>
+                                    <include>javax.xml.bind:jaxb-api</include>
+                                    <include>javax.xml.stream:stax-api</include>
+                                    <include>javax.activation:activation</include>
+                                    <include>com.sun.jersey.contribs:jersey-multipart</include>
+                                    <include>com.sun.jersey.contribs:jersey-apache-client</include>
+                                    <include>org.jvnet:mimepull</include>
+                                    <include>org.codehaus.jackson:jackson-core-asl</include>
+                                    <include>org.codehaus.jackson:jackson-mapper-asl</include>
+                                    <include>org.codehaus.jackson:jackson-jaxrs</include>
+                                    <include>org.codehaus.jackson:jackson-xc</include>
+                                    <include>com.sun.jersey.contribs.jersey-oauth:oauth-client</include>
+                                    <include>com.sun.jersey.contribs.jersey-oauth:oauth-signature</include>
+
+
+
                                     <include>commons-httpclient:commons-httpclient</include>
                                     <include>commons-discovery:commons-discovery</include>
                                     <include>commons-io:commons-io</include>
@@ -477,6 +517,9 @@
                                     <shadedPattern>shadow.com.thoughtworks.xstream</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
                             <!--<filters>-->
                             <!--<filter>-->
                             <!--<artifact>com.thoughtworks.xstream:xstream</artifact>-->
