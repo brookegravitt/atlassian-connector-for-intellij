@@ -35,6 +35,8 @@ import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpClient;
@@ -200,7 +202,7 @@ public class JIRARssClientTest extends TestCase {
                     }
 
                     public HashMap<String, String> getMap() {
-                        return null;
+                        return Maps.newHashMap(ImmutableMap.of("name", "x", "id", "1"));
                     }
 
                     public JIRAQueryFragment getClone() {
