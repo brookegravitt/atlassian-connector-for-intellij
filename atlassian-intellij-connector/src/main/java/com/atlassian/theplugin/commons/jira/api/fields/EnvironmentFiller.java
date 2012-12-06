@@ -7,6 +7,7 @@ import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -29,7 +30,11 @@ public class EnvironmentFiller extends AbstractFieldFiller {
 
     @Override
     protected List<String> getFieldValues(String field, JIRAIssue detailedIssue, RemoteIssue apiIssueObject) {
-        return ImmutableList.of(apiIssueObject.getEnvironment());
+        String environment = apiIssueObject.getEnvironment();
+        if (environment == null) {
+            return Lists.newArrayList();
+        }
+        return ImmutableList.of(environment);
     }
 
     @Override
