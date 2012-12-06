@@ -58,7 +58,9 @@
 		<![CDATA[
 <h3>Change Notes</h3>
 <ol>
-	<li>Compatibility with IDEA 11</li>
+	<li>Compatibility with IDEA 12</li>
+	<li>Moved to JIRA REST API for JIRA 5.x servers, which gives more functionality and is more reliable</li>
+	<li>Implemented subtask creation (for JIRA 5.x)</li>
 </ol>
 
 
