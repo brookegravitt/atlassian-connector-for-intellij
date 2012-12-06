@@ -12,7 +12,8 @@ import java.awt.*;
 public class StackTracePanel extends JPanel {
 
 	public StackTracePanel(String stack, Project project) {
-        String fixedStack = stack.replaceAll("(\\(.+?\\.java:\\d+\\)) ?at", "$1\nat");
+        String fixedStack = stack.replaceAll("(\\(.+?\\.java:\\d+\\))\\s*at", "$1\nat");
+        fixedStack = fixedStack.replaceAll("[ \t]+at", "\nat");
 
         TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
 		TextConsoleBuilder builder = factory.createBuilder(project);
