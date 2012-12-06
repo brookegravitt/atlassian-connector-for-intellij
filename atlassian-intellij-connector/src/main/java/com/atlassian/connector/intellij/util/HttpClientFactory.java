@@ -31,7 +31,7 @@ public final class HttpClientFactory {
 
 	private static final int CONNECTION_MANAGER_TIMEOUT = 80000;
 	private static final int CONNECTION_TIMEOUT = 30000;
-	private static final int DATA_TIMOUT = 10000;
+	private static final int DATA_TIMOUT = 60000;
 
 	private static final int TOTAL_MAX_CONNECTIONS = 50;
 
