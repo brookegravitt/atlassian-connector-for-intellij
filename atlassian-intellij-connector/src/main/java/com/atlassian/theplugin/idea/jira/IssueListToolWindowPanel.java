@@ -343,11 +343,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         addIssueActionsSubmenu(actionGroup, popup, e);
 
         final JPopupMenu jPopupMenu = popup.getComponent();
-        try {
-            jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-        } catch (Throwable t) {
-            // this is evil. Very evil. But it fixes PL-2732
-        }
+        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
     private void addIssueActionsSubmenu(DefaultActionGroup actionGroup, final ActionPopupMenu popup, final MouseEvent e) {

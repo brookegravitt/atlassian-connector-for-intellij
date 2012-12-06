@@ -7,10 +7,13 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 
+import javax.swing.*;
+
 public class CreateChangeListAction extends JIRAAbstractAction {
-	@Override
+    @Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(anActionEvent);
 		final JiraIssueAdapter issue = anActionEvent.getData(Constants.ISSUE_KEY);
@@ -20,9 +23,20 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 	}
 
 	public void onUpdate(AnActionEvent event) {
+        maybeSetRubyMineIcon(event);
 	}
 
-	public void onUpdate(AnActionEvent event, boolean enabled) {
+    private void maybeSetRubyMineIcon(AnActionEvent event) {
+        Icon icon = IconLoader.findIcon("/toolwindows/toolWindowChanges.png");
+        if (icon != null) {
+            event.getPresentation().setIcon(icon);
+        }
+    }
+
+    public void onUpdate(AnActionEvent event, boolean enabled) {
+
+        maybeSetRubyMineIcon(event);
+
 //		if (enabled) {
 		final JiraIssueAdapter issue = event.getData(Constants.ISSUE_KEY);
 		event.getPresentation().setEnabled(issue != null);
