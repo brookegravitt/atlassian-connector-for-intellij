@@ -132,7 +132,7 @@ public class JIRAServerCache {
         return projects;
     }
 
-    public List<JIRAConstant> getStatuses() throws JIRAException {
+    public synchronized List<JIRAConstant> getStatuses() throws JIRAException {
         if (statuses == null) {
             try {
                 List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(jiraServerData);
