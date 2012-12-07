@@ -27,9 +27,13 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 	}
 
     private void maybeSetRubyMineIcon(AnActionEvent event) {
-        Icon icon = IconLoader.findIcon("/toolwindows/toolWindowChanges.png");
+        Icon icon = IconLoader.findIcon("/toolwindows/toolWindowChanges.png", Icon.class, true);
         if (icon != null) {
-            event.getPresentation().setIcon(icon);
+            try {
+                Icon disabledIcon = IconLoader.getDisabledIcon(icon);
+                event.getPresentation().setIcon(icon);
+            } catch (Throwable t) {
+            }
         }
     }
 
