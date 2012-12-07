@@ -41,11 +41,14 @@ import java.util.TimerTask;
  * Provides functionality to check for new version and update plugin
  */
 public final class NewVersionChecker implements SchedulableChecker {
-	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
+//	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
+    private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 10000; // every hour
 
 	private transient PluginConfiguration pluginConfiguration;
 
 	private static final String NAME = "New Version checker";
+
+    private boolean alreadyRunOnce = false;
 
 	public NewVersionChecker(final PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
@@ -90,16 +93,22 @@ public final class NewVersionChecker implements SchedulableChecker {
 		return NAME;
 	}
 
-	protected void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
-		doRun(action, showConfigPath, pluginConfiguration.getGeneralConfigurationData());
+	private void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
+		doRun(action, showConfigPath, pluginConfiguration.getGeneralConfigurationData(), false);
 	}
 
-	protected void doRun(UpdateActionHandler action, boolean showConfigPath, GeneralConfigurationBean configuration)
+	protected void doRun(UpdateActionHandler action, boolean showConfigPath, GeneralConfigurationBean configuration, boolean force)
 			throws ThePluginException {
 		if (!configuration.isAutoUpdateEnabled()) {
+            alreadyRunOnce = false;
 			return;
 		}
-		if (action == null) {
+        if (!force && alreadyRunOnce) {
+            return;
+        }
+        alreadyRunOnce = true;
+
+        if (action == null) {
 			throw new IllegalArgumentException("UpdateAction handler not provided.");
 		}
 
