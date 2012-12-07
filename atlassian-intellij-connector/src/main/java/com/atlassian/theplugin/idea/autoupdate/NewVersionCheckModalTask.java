@@ -125,7 +125,7 @@ class NewVersionCheckModalTask extends Task.Modal {
 							throws ThePluginException {
 						newVersion = versionInfo;
 					}
-				}, false, config);
+				}, false, config, true);
 			} catch (ThePluginException e) {
 				throw new RemoteApiException(e);
 			}
