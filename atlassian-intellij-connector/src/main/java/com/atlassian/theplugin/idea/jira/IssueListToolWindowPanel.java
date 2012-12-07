@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.jira.JiraCaptchaRequiredException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -26,6 +27,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.action.issues.RecentlyOpenIssuesAction;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.tasks.PluginTaskManagerHelper;
@@ -39,6 +41,7 @@ import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -48,6 +51,10 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
@@ -466,6 +473,83 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     public boolean isRefreshing() {
         return refreshing;
+    }
+
+    public void openTextQuery(JiraServerData server, String query) {
+        if (jiraServerFacade.usesRest(server)) {
+            getIssuesAndShowSelectionDialog(server, query);
+        } else {
+            BrowserUtil.launchBrowser(server.getUrl() + "/secure/QuickSearch.jspa?searchString=" + UrlUtil.encodeUrl(query));
+        }
+    }
+
+    private void getIssuesAndShowSelectionDialog(JiraServerData server, String query) {
+        final QueryFetcher fetcher = new QueryFetcher(server, query);
+        Task task = new Task.Modal(getProject(), "Fetching JIRA issues containing text: " + query, false) {
+            public void run(final ProgressIndicator indicator) {
+                indicator.setIndeterminate(true);
+                fetcher.run();
+            }
+
+            public void onSuccess() {
+                fetcher.onSuccess();
+            }
+        };
+        task.queue();
+    }
+
+    private class QueryFetcher {
+        private final JiraServerData server;
+        private final String query;
+        private Throwable exception;
+        private List<JiraIssueAdapter> foundIssues;
+
+        public QueryFetcher(JiraServerData server, String query) {
+            //To change body of created methods use File | Settings | File Templates.
+            this.server = server;
+            this.query = query;
+        }
+
+        public void run() {
+            try {
+                String jql = "summary ~ \"" + query + "\" OR description ~ \"" + query + "\" OR comment ~ \"" + query + "\"";
+                foundIssues = jiraServerFacade.getIssues(server, jql, "priority", "desc", 0, 11);
+            } catch (JIRAException e) {
+                exception = e;
+            }
+        }
+
+        public void onSuccess() {
+            if (getProject().isDisposed()) {
+                return;
+            }
+            if (exception != null) {
+                final String serverName = server != null ? server.getUrl() : "[UNDEFINED!]";
+                DialogWithDetails.showExceptionDialog(getProject(), "Cannot fetch issues from server " + serverName, exception);
+                return;
+            }
+            int size = foundIssues.size();
+            if (foundIssues == null || foundIssues.size() == 0) {
+                Messages.showMessageDialog("No issues found", "Information", Messages.getInformationIcon());
+            } else {
+                if (size > 10) {
+                    int answer = Messages.showYesNoDialog(
+                            "More than 10 issues found (" + size + "). Do you want to open query in the browser?", "Question", Messages.getQuestionIcon());
+                    if (answer == DialogWrapper.OK_EXIT_CODE) {
+                        BrowserUtil.launchBrowser(server.getUrl() + "/secure/QuickSearch.jspa?searchString=" + UrlUtil.encodeUrl(query));
+                    }
+                } else if (size == 1) {
+                    openIssue(foundIssues.get(0), true);
+                    if (jiraFilterTree.isRecentlyOpenSelected()) {
+                        refreshIssues(false);
+                    }
+                } else {
+                    ListPopup popup = JBPopupFactory.getInstance().createListPopup(
+                            new RecentlyOpenIssuesAction.IssueListPopupStep("Found " + size + " issues", foundIssues, IssueListToolWindowPanel.this));
+                    popup.showInCenterOf(IssueListToolWindowPanel.this.getRootPane());
+                }
+            }
+        }
     }
 
     private class IssueFetcher {

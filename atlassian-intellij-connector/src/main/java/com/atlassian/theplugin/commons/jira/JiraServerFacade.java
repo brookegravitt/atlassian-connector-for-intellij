@@ -30,6 +30,9 @@ public interface JiraServerFacade extends ProductServerFacade {
 //    List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, List<JIRAQueryFragment> query,
 //                                                String sort, String sortOrder, int start, int size) throws JIRAException;
 //
+
+    boolean usesRest(JiraServerData jiraServerData);
+
     List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, JiraFilter filter,
                                      String sort, String sortOrder, int start, int size) throws JIRAException;
 
@@ -117,4 +120,6 @@ public interface JiraServerFacade extends ProductServerFacade {
             throws RemoteApiException, JIRAException;
 
     void reset();
+
+    List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException;
 }

@@ -80,10 +80,22 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 //        return getJiraServerAdapterList(jiraServerData, list);
 //    }
 
+
+    @Override
+    public boolean usesRest(JiraServerData jiraServerData) {
+        return facade.usesRest(jiraServerData);
+    }
+
     @Override
     public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size) throws JIRAException {
         List<JIRAIssue> list = facade.getIssues(jiraServerData, filter, sort, sortOrder, start, size);
         return getJiraServerAdapterList(jiraServerData, list);
+    }
+
+    @Override
+    public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
+        List<JIRAIssue> list = facade.getIssues(server, query, sort, sortOrder, start, size);
+        return getJiraServerAdapterList(server, list);
     }
 
     @Override
