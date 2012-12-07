@@ -227,6 +227,16 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
         }
 
         @Override
+        public boolean usesRest(JiraServerData jiraServerData) {
+            return false;
+        }
+
+        @Override
+        public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
+            return createIssueList(size);
+        }
+
+        @Override
         public List<JiraIssueAdapter> getSavedFilterIssues(
                 JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {

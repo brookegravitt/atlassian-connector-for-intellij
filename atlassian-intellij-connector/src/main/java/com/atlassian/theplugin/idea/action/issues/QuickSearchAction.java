@@ -35,8 +35,7 @@ public class QuickSearchAction extends AnAction {
 						panel.openIssue(query.toUpperCase(), server, false);
 
 					} else {
-						BrowserUtil.launchBrowser(server.getUrl()
-								+ "/secure/QuickSearch.jspa?searchString=" + UrlUtil.encodeUrl(query));
+                        panel.openTextQuery(server, query);
 					}
 				}
 			}
