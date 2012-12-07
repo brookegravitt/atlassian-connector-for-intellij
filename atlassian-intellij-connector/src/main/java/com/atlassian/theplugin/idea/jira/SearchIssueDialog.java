@@ -21,7 +21,7 @@ public class SearchIssueDialog extends DialogWrapper {
 
 	private JTextField queryField;
 	private static final String PROMPT_TEXT =
-			"Quick Search (entering just issue key will open this issue directly in IDE):";
+			"Quick Search (enter issue key or a part of issue summary, description or comment):";
 
 	public SearchIssueDialog(Project project) {
 		super(project, true);
