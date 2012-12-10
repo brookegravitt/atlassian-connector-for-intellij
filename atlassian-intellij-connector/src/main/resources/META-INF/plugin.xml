@@ -639,8 +639,7 @@
 				text="Log Work"/>
 		<action id="ThePlugin.JiraIssues.CreateChangeList"
 				class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction"
-				text="Create Change List"
-				icon="/general/toolWindowChanges.png"/>
+				text="Create Change List" />
 
 		<action id="ThePlugin.JiraIssues.RefreshComments"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.RefreshCommentsAction"
