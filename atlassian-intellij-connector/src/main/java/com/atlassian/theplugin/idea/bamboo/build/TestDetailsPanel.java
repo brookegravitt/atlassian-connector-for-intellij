@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.StackTraceFixer;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -477,7 +478,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void selected() {
-			print(testDetails.getErrors());
+			print(StackTraceFixer.fixStackTrace(testDetails.getErrors()));
 		}
 
 		@Override

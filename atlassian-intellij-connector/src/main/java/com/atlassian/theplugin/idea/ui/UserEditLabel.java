@@ -58,8 +58,8 @@ public abstract class UserEditLabel extends JPanel {
         this.jiraIssue = jiraIssue;
         button = new EditIssueFieldButton();
         this.label = label;
-		setBackground(Color.WHITE);
-		button.setBackground(Color.WHITE);
+		setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
+		button.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
         setBorder(BorderFactory.createEmptyBorder());
         rebuild();
     }
@@ -100,7 +100,7 @@ public abstract class UserEditLabel extends JPanel {
     public abstract void doOkAction(String selectedUserLogin) throws JIRAException;
 
     private class EditIssueFieldButton extends JRadioButton {
-        private final Icon editIcon = IconLoader.getIcon("/icons/edit.png");
+        private final Icon editIcon = IconLoader.getIcon("/icons/edit-icon.png");
 
         public EditIssueFieldButton() {
             super();

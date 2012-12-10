@@ -18,14 +18,8 @@ package com.atlassian.theplugin.idea.ui;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.intellij.ide.BrowserUtil;
 
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -39,7 +33,7 @@ public class UserLabel extends JPanel {
 	}
 
 	public UserLabel(boolean fill) {
-		setOpaque(true);
+		setOpaque(false);
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -50,8 +44,9 @@ public class UserLabel extends JPanel {
 		gbc.fill = GridBagConstraints.NONE;
 
 		label = new JLabel();
-		setBackground(Color.WHITE);
+		setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 		label.setBorder(BorderFactory.createEmptyBorder());
+        label.setOpaque(false);
 		label.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 		add(label, gbc);
 		if (fill) {
@@ -62,7 +57,7 @@ public class UserLabel extends JPanel {
 	public void setUserName(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 		String userNameFixed = userName.replace(" ", "&nbsp;");
 		if (useLink) {
-			label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
+            label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
 					+ "</u></font></body></html>");
 			if (mouseListener != null) {
 				label.removeMouseListener(mouseListener);
