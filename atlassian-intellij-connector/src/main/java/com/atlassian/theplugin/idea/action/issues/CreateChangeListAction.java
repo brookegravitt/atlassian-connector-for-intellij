@@ -34,7 +34,7 @@ public class CreateChangeListAction extends JIRAAbstractAction {
             }
             if (icon != null && icon.getIconHeight() > 0) {
     //                Icon disabledIcon = IconLoader.getDisabledIcon(icon);
-                    event.getPresentation().setIcon(icon);
+                event.getPresentation().setIcon(icon);
             }
         } catch (Throwable t) {
         }
