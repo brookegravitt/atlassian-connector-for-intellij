@@ -651,7 +651,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
             protected EditableIssueField createEditableField(final JComponent component, final String fieldId,
                                                              final String displayName) {
-                component.setBackground(Color.WHITE);
+                component.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 return new EditableIssueField(component, new EditableIssueField.EditIssueFieldHandler() {
                     public void handleClickedEditButton() {
                         updateIssueField(params.issue, new JIRAActionFieldBean(fieldId, displayName));
@@ -700,7 +700,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 }
                 if (secondComponent != null) {
                     JScrollPane scrollPane = new JScrollPane(details);
-                    scrollPane.setBackground(Color.WHITE);
+                    scrollPane.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                     Splitter split = new Splitter(false, SPLIT_RATIO);
                     split.setFirstComponent(scrollPane);
                     split.setSecondComponent(secondComponent);
@@ -708,9 +708,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     panel.add(split, BorderLayout.CENTER);
                 } else {
                     panel.setOpaque(true);
-                    panel.setBackground(Color.WHITE);
+                    panel.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                     JScrollPane scrollPane = new JScrollPane(details);
-                    scrollPane.setBackground(Color.WHITE);
+                    scrollPane.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                     panel.add(scrollPane, BorderLayout.CENTER);
                 }
 
@@ -812,7 +812,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     super();
                     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
                     this.setOpaque(true);
-                    this.setBackground(Color.WHITE);
+                    this.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                     createSubPanels();
 
                     List<String> keys = new ArrayList<String>();
@@ -890,7 +890,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
 
                 panel.setOpaque(true);
-                panel.setBackground(Color.WHITE);
+                panel.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 
                 final java.util.List<String> keys = params.issue.getSubTaskKeys();
                 if (keys.size() > 0) {
@@ -940,11 +940,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
 
             private JPanel createDetailsPanel() {
+                putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
                 JPanel panel = new ScrollablePanel();
 
                 panel.setLayout(new GridBagLayout());
-                panel.setOpaque(true);
-                panel.setBackground(Color.WHITE);
+                panel.setOpaque(false);
+                panel.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 
                 GridBagConstraints gbc1 = new GridBagConstraints();
                 GridBagConstraints gbc2 = new GridBagConstraints();
@@ -1204,7 +1205,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                             fixVersionsEditLabel.setButtonVisible(!isError);
                             componentsEditLabel.setButtonVisible(!isError);
                             if (!isError) {
-                                colorLabels(Color.BLACK);
+                                colorLabels(com.intellij.util.ui.UIUtil.getLabelForeground());
 
                                 setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
                                 setFixVersions(getStringArray(params.issue.getFixVersions()));
@@ -1400,12 +1401,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 gbc.weighty = 1.0;
                 comments.setLayout(new VerticalFlowLayout());
                 comments.setOpaque(true);
-                comments.setBackground(Color.WHITE);
+                comments.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 scroll.setViewportView(comments);
                 scroll.getViewport().setOpaque(true);
-                scroll.getViewport().setBackground(Color.WHITE);
+                scroll.getViewport().setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 scroll.setOpaque(true);
-                scroll.setBackground(Color.WHITE);
+                scroll.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
                 scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -1748,7 +1749,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 previewEditor = new JEditorPane();
                 previewEditor.setEditable(false);
                 previewEditor.setOpaque(true);
-                previewEditor.setBackground(Color.WHITE);
+                previewEditor.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 previewEditor.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
                 previewEditor.addHyperlinkListener(new HyperlinkListener() {
                     public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -1887,7 +1888,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     }
                 });
                 body.setOpaque(true);
-                body.setBackground(Color.WHITE);
+                body.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
                 body.setMargin(new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2,
                         Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2));
                 body.setContentType("text/html");

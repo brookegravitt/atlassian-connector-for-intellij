@@ -12,13 +12,10 @@ import java.awt.*;
 public class StackTracePanel extends JPanel {
 
 	public StackTracePanel(String stack, Project project) {
-        String fixedStack = stack.replaceAll("(\\(.+?\\.java:\\d+\\))\\s*at", "$1\nat");
-        fixedStack = fixedStack.replaceAll("[ \t]+at", "\nat");
-
         TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
 		TextConsoleBuilder builder = factory.createBuilder(project);
 		ConsoleView console = builder.getConsole();
-		console.print(fixedStack, ConsoleViewContentType.NORMAL_OUTPUT);
+		console.print(StackTraceFixer.fixStackTrace(stack), ConsoleViewContentType.NORMAL_OUTPUT);
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

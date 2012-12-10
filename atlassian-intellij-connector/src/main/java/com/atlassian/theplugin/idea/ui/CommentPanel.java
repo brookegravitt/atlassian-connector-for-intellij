@@ -43,7 +43,7 @@ public class CommentPanel extends JPanel {
 	public CommentPanel(int cmtNumber, final JIRAComment comment, final ServerData server, JTabbedPane tabs,
 			IssueDetailsToolWindow.IssuePanel ip) {
 		setOpaque(true);
-		setBackground(Color.WHITE);
+		setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 
 		int upperMargin = cmtNumber == 1 ? 0 : COMMENT_GAP;
 
@@ -117,7 +117,7 @@ public class CommentPanel extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
 		JPanel filler = new JPanel();
-		filler.setBackground(Color.WHITE);
+		filler.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 		filler.setOpaque(true);
 		gbc.insets = new Insets(upperMargin, 0, 0, 0);
 		add(filler, gbc);
@@ -126,7 +126,7 @@ public class CommentPanel extends JPanel {
 
 		commentBody.setEditable(false);
 		commentBody.setOpaque(true);
-		commentBody.setBackground(Color.WHITE);
+		commentBody.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 		commentBody.setMargin(new Insets(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
 		commentBody.setContentType("text/html");
 		commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);

@@ -15,18 +15,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.HyperlinkLabel;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -70,7 +62,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
     public JPanel createBody() {
         body = new JPanel();
         body.setLayout(new GridBagLayout());
-        body.setBackground(Color.WHITE);
+        body.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
 
         GridBagConstraints gbc1 = new GridBagConstraints();
         GridBagConstraints gbc2 = new GridBagConstraints();
@@ -175,7 +167,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
         gbc1.fill = GridBagConstraints.VERTICAL;
         JPanel filler = new JPanel();
         filler.setOpaque(true);
-        filler.setBackground(Color.WHITE);
+        filler.setBackground(com.intellij.util.ui.UIUtil.getTextFieldBackground());
         body.add(filler, gbc1);
 
         return body;

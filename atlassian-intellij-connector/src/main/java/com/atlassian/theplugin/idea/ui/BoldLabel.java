@@ -12,7 +12,8 @@ public class BoldLabel extends JLabel {
 	public BoldLabel(String text) {
 		super(text);
 		setFont(getFont().deriveFont(Font.BOLD));
-	}
+        putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+    }
 
 	public BoldLabel() {
 		this("");
