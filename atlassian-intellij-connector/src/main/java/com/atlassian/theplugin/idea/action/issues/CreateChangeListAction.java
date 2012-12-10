@@ -23,23 +23,26 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 	}
 
 	public void onUpdate(AnActionEvent event) {
-        maybeSetRubyMineIcon(event);
+        setActionIcon(event);
 	}
 
-    private void maybeSetRubyMineIcon(AnActionEvent event) {
-        Icon icon = IconLoader.findIcon("/toolwindows/toolWindowChanges.png", Icon.class, true);
-        if (icon != null) {
-            try {
-                Icon disabledIcon = IconLoader.getDisabledIcon(icon);
-                event.getPresentation().setIcon(icon);
-            } catch (Throwable t) {
+    private void setActionIcon(AnActionEvent event) {
+        try {
+            Icon icon = IconLoader.getIcon("/general/toolWindowChanges.png");
+            if (icon == null || icon.getIconHeight() == 0) {
+                icon = IconLoader.getIcon("/toolwindows/toolWindowChanges.png");
             }
+            if (icon != null && icon.getIconHeight() > 0) {
+    //                Icon disabledIcon = IconLoader.getDisabledIcon(icon);
+                    event.getPresentation().setIcon(icon);
+            }
+        } catch (Throwable t) {
         }
     }
 
     public void onUpdate(AnActionEvent event, boolean enabled) {
 
-        maybeSetRubyMineIcon(event);
+        setActionIcon(event);
 
 //		if (enabled) {
 		final JiraIssueAdapter issue = event.getData(Constants.ISSUE_KEY);
