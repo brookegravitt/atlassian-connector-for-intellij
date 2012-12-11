@@ -167,18 +167,20 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                 case CUSTOM_FIELD:
                     for (JiraCustomField custom : issue.getCustomFields()) {
                         if (custom.getId().equals(field.getFieldId())) {
+                            List<String> values = custom.getValues();
+                            String val = values != null && values.size() > 0 ? values.get(0) : null;
                             switch (custom.getTypeKey()) {
                                 case NUMERIC:
-                                    editor = new FieldTextField(custom.getValues().get(0), field);
+                                    editor = new FieldTextField(val, field);
                                     row = ", p, 3dlu";
                                     break;
                                 case TEXT:
-                                    editor = new FieldTextField(custom.getValues().get(0), field);
+                                    editor = new FieldTextField(val, field);
                                     row = ", p, 3dlu";
                                     break;
                                 case TEXT_AREA:
 //                                    editor = new FieldEditorPane(custom.getValues().get(0).replaceAll("<br/>", "\n"), field, true);
-                                    editor = new FieldTextArea(custom.getValues().get(0).replaceAll("<br/>", ""), field);
+                                    editor = new FieldTextArea(val.replaceAll("<br/>", ""), field);
                                     row = ", p, 3dlu";
                                     break;
                                 case DATE_PICKER:
