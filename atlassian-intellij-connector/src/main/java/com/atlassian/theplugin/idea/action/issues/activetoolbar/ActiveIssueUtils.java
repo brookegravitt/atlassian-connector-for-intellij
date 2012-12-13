@@ -415,7 +415,8 @@ public final class ActiveIssueUtils {
         public void onSuccess() {
             if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
                 if (!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
-                        && !"-1".equals(jiraIssue.getAssigneeId())) {
+                        && !"-1".equals(jiraIssue.getAssigneeId())
+                        && jiraIssue.getAssigneeId() != null) {
                     isOk = Messages.showYesNoDialog(project,
                             "Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
                                     + ".\nDo you want to overwrite assignee and start progress?",

@@ -41,6 +41,7 @@ import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.base.Objects;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
@@ -792,7 +793,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         JiraIssueAdapter updatedIssue = issue;
         final JiraServerData jiraServerData = issue.getJiraServerData();
 
-        if (!issue.getAssigneeId().equals(jiraServerData.getUsername())) {
+        if (!Objects.equal(issue.getAssigneeId(), jiraServerData.getUsername())) {
             setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...", true);
             try {
                 jiraServerFacade.setAssignee(jiraServerData, issue, jiraServerData.getUsername());

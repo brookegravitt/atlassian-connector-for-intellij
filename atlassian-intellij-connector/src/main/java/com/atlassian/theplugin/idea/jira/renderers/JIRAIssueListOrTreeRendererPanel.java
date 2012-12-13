@@ -206,12 +206,12 @@ public class JIRAIssueListOrTreeRendererPanel extends JPanel {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
-		sb.append(issue.getReporter());
+		sb.append(issue.getReporter() != null ? issue.getReporter() : "Anonymous");
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Assignee:</b></td><td valign=\"top\">");
-		sb.append(issue.getAssignee());
+		sb.append(issue.getAssignee() != null ? issue.getAssignee() : "Unassigned");
 		sb.append("");
 		sb.append("</td></tr>");
 
