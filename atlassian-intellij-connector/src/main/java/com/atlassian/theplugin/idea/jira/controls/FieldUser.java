@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.ui.UserEditLabel;
+import com.google.common.base.Objects;
 import com.intellij.openapi.util.Pair;
 
 import javax.swing.*;
@@ -50,7 +51,7 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
                 continue;
             }
 	        comboBox.addItem(new UserEditLabel.UserComboBoxItem(new User((String) user.getFirst(), (String) user.getSecond())));
-			if (text.equals(user.getFirst())) {
+			if (Objects.equal(text, user.getFirst())) {
 				comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
 			}
         }

@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
@@ -88,6 +89,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {
             startHttpServer(configuration.getGeneralConfigurationData().getHttpServerPort());
         }
+
+        JiraActionFieldType.init();
 
         addActionToDiffToolbar();
         //FileContentCache.setCacheSize(configuration.getCrucibleConfigurationData().getReviewFileCacheSize());

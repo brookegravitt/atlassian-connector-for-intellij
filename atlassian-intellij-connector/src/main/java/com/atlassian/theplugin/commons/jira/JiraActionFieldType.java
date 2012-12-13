@@ -89,13 +89,15 @@ public final class JiraActionFieldType {
 
     private static FieldValueGeneratorFactoryImpl fvgFactory = new FieldValueGeneratorFactoryImpl();
 
+    public static void init() {
+        JIRAActionFieldBean.setGeneratorFactory(fvgFactory);
+    }
+
 	private static Map<String, WidgetTypeAndFieldFiller> typeMap = Maps.newHashMap();
 	private static CustomFieldFiller customFieldFiller = new CustomFieldFiller();
 
 	static {
 		int i = 0;
-
-        JIRAActionFieldBean.setGeneratorFactory(fvgFactory);
 
 		typeMap.put("summary", new WidgetTypeAndFieldFiller(WidgetType.SUMMARY, ++i, new SummaryFiller()));
 		typeMap.put("resolution", new WidgetTypeAndFieldFiller(WidgetType.RESOLUTION, ++i, new ResolutionFiller()));
