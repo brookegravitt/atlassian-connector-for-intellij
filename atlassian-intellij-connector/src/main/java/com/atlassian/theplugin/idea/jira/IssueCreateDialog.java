@@ -229,9 +229,11 @@ public class IssueCreateDialog extends DialogWrapper {
     private void addProjects(List<JIRAProject> projects) {
         projectComboBox.removeAllItems();
 
-        for (JIRAProject project : projects) {
-            if (project.getId() != CacheConstants.ANY_ID) {
-                projectComboBox.addItem(project);
+        if (projects != null) {
+            for (JIRAProject project : projects) {
+                if (project.getId() != CacheConstants.ANY_ID) {
+                    projectComboBox.addItem(project);
+                }
             }
         }
 

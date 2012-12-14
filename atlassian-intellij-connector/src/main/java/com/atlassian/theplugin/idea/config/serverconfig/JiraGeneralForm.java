@@ -57,7 +57,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		model = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		issuePageSize.setModel(model);
 		this.setLayout(new BorderLayout());
-		add(rootComponent, BorderLayout.WEST);
+		add(rootComponent, BorderLayout.CENTER);
 	}
 
 
