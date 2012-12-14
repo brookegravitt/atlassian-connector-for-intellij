@@ -31,7 +31,11 @@ public class AssigneeFiller extends AbstractFieldFiller {
 
     @Override
     protected List<String> getFieldValues(String field, JIRAIssue detailedIssue, RemoteIssue apiIssueObject) {
-        return ImmutableList.of(apiIssueObject.getAssignee());
+        String assignee = apiIssueObject.getAssignee();
+        if (assignee == null) {
+            return null;
+        }
+        return ImmutableList.of(assignee);
     }
 
     @Override

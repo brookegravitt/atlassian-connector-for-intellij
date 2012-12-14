@@ -9,7 +9,6 @@ import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -34,7 +33,7 @@ public class ReporterFiller extends AbstractFieldFiller {
     protected List<String> getFieldValues(String field, JIRAIssue detailedIssue, RemoteIssue apiIssueObject) {
         String reporter = apiIssueObject.getReporter();
         if (reporter == null) {
-            return Lists.newArrayList();
+            return null;
         }
         return ImmutableList.of(reporter);
     }
