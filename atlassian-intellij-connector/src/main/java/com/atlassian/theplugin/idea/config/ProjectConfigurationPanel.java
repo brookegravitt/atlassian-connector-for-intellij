@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
@@ -103,8 +102,8 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		setPreferredSize(getMinimumSize());
 
-		contentPanel.setOpaque(true);
-		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
+//		contentPanel.setOpaque(true);
+//		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
 		contentPanel.getModel().addChangeListener(new ChangeListener() {
 			public void stateChanged(final ChangeEvent e) {
 				if (contentPanel.getSelectedComponent() == defaultsConfigurationPanel) {

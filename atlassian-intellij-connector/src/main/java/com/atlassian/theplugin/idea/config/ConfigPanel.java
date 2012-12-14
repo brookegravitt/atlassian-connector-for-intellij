@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
@@ -57,8 +56,9 @@ public final class ConfigPanel extends JPanel {
 	private void initLayout() {
 		setLayout(new BorderLayout());
 
-		contentPanel.setOpaque(true);
-		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
+//		contentPanel.setOpaque(true);
+//        contentPanel.setBackground(com.intellij.util.ui.UIUtil.getControlColor());
+//		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
 
 		// add Bamboo option tab
 		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
@@ -73,7 +73,7 @@ public final class ConfigPanel extends JPanel {
 
 		add(contentPanel, BorderLayout.CENTER);
 		add(footerPanel, BorderLayout.SOUTH);
-	}
+    }
 
 
 	public boolean isModified() {
