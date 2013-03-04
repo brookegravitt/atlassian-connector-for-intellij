@@ -1,67 +1,55 @@
 <atlassian-ide-plugin>
   <project-configuration>
     <servers>
-      <jira>
-        <server-id>b7624d9e-fbe9-4220-846b-f96aebeb636c</server-id>
-        <name>Studio</name>
-        <url>https://studio.atlassian.com</url>
+      <bamboo>
+        <server-id>2af8f37a-4434-42cb-9bb5-36e412f04496</server-id>
+        <name>jbac</name>
+        <url>https://jira.bamboo.atlassian.com</url>
         <shared>false</shared>
-      </jira>
+        <use-favourites>false</use-favourites>
+        <bamboo2>false</bamboo2>
+        <plans>
+          <plan key="JIRAMASTER-RESTAPIGUARD" grouped="0" />
+          <plan key="JIRAFIVETWOSTABLE-RESTAPIGUARD" grouped="0" />
+          <plan key="PLUGINS-JRJC" grouped="1" />
+        </plans>
+      </bamboo>
       <jira>
-        <server-id>9c7fa385-faa9-4e9c-bfbb-85c71e33188e</server-id>
-        <name>xBox</name>
-        <url>http://192.168.157.158:8077</url>
+        <server-id>d40f0f5f-3dc9-4ae2-bb82-234625ea84ef</server-id>
+        <name>local</name>
+        <url>http://localhost:8083</url>
         <shared>false</shared>
       </jira>
       <bamboo>
-        <server-id>ea5dfd90-96f3-490c-9dff-7051aa2b59b6</server-id>
-        <name>gb2</name>
+        <server-id>f8f233c6-a9f8-4b7e-ad10-114f18b1ee90</server-id>
+        <name>gbac</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
         <bamboo2>true</bamboo2>
         <plans>
-          <plan key="ACC-CS" grouped="0" />
           <plan key="ACC-DPL" grouped="0" />
-          <plan key="ACC-TST" grouped="0" />
-          <plan key="INT-CS" grouped="0" />
+          <plan key="ACC-TST" grouped="1" />
           <plan key="INT-DPL" grouped="0" />
-          <plan key="INT-DPLFOUR" grouped="0" />
-          <plan key="INT-TKINT" grouped="0" />
           <plan key="INT-TST" grouped="0" />
         </plans>
       </bamboo>
-      <bamboo>
-        <server-id>47cb916b-267a-4a15-a87b-4bddadbb1b7f</server-id>
-        <name>tardigrade</name>
-        <url>http://tardigrade.sydney.atlassian.com:8085/bamboo</url>
+      <jira>
+        <server-id>1e263562-f741-4a9e-acbd-76bbe6d18d8a</server-id>
+        <name>stac</name>
+        <url>https://studio.atlassian.com</url>
         <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="BAM-FC" grouped="0" />
-          <plan key="BAM-HG" grouped="0" />
-        </plans>
-      </bamboo>
-      <bamboo>
-        <server-id>cdfb6fc5-0725-4eee-ab1f-fd132a6b3e01</server-id>
-        <name>jira</name>
-        <url>https://jira.bamboo.atlassian.com</url>
+      </jira>
+      <crucible>
+        <server-id>cbcb7e2b-01d3-4420-913c-ae558fce3474</server-id>
+        <name>atlaseye</name>
+        <url>https://atlaseye.atlassian.com</url>
         <shared>false</shared>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="PLUGINS-JIMTST" grouped="0" />
-          <plan key="PLUGINS-JIM4X2M" grouped="0" />
-          <plan key="PLUGINS-JIM4X3" grouped="0" />
-          <plan key="PLUGINS-JRJC" grouped="0" />
-          <plan key="PLUGINS-RPCHEAD" grouped="0" />
-          <plan key="PLUGINS-SUBPLUGBRA" grouped="0" />
-          <plan key="PLUGINS-SUBPLUGHEAD" grouped="0" />
-          <plan key="PLUGINS-TOOLKIT" grouped="0" />
-        </plans>
-      </bamboo>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
     </servers>
-    <default-crucible-server>2ac71492-324d-4bfa-8549-bd8bfe3ddd5b</default-crucible-server>
+    <default-crucible-server>cbcb7e2b-01d3-4420-913c-ae558fce3474</default-crucible-server>
+    <default-fisheye-server>cbcb7e2b-01d3-4420-913c-ae558fce3474</default-fisheye-server>
+    <default-fisheye-repo>connector-intellij</default-fisheye-repo>
   </project-configuration>
 </atlassian-ide-plugin>

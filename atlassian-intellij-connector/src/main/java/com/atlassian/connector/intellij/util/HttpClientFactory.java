@@ -29,9 +29,9 @@ import org.apache.commons.httpclient.auth.AuthScope;
 public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
 
-	private static final int CONNECTION_MANAGER_TIMEOUT = 80000;
-	private static final int CONNECTION_TIMEOUT = 30000;
-	private static final int DATA_TIMOUT = 10000;
+	private static final int CONNECTION_MANAGER_TIMEOUT = 120000;
+	private static final int CONNECTION_TIMEOUT = 120000;
+	private static final int DATA_TIMOUT = 120000;
 
 	private static final int TOTAL_MAX_CONNECTIONS = 50;
 
