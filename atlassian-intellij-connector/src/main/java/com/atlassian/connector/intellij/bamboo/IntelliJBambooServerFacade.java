@@ -150,13 +150,13 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 	}
 
 	public Collection<BambooBuildAdapter> getSubscribedPlansResults(BambooServerData bambooServer,
-			Collection<SubscribedPlan> plans, boolean isUseFavourities, int timezoneOffset)
+			Collection<SubscribedPlan> plans, boolean isUseFavourities, boolean showBranches, boolean myBranchesOnly, int timezoneOffset)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 
 		try {
 			return convertToBambooBuildAdapters(bambooServer,
 					facade.getSubscribedPlansResults(bambooServer,
-							plans, isUseFavourities, timezoneOffset));
+							plans, isUseFavourities, showBranches, myBranchesOnly, timezoneOffset));
 		} catch (RemoteApiLoginException e) {
 			Collection<BambooBuildAdapter> res = MiscUtil.buildArrayList(plans.size());
 			for (SubscribedPlan plan : plans) {

@@ -102,11 +102,11 @@ public final class BambooStatusChecker implements SchedulableChecker {
 					sb.append("last result time: ").append(dateFormat.format(lastActionRun));
 					sb.append(" current run time : ").append(dateFormat.format(newRun));
 					sb.append(" time difference: ")
-							.append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
+                        .append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 					LoggerImpl.getInstance().debug(sb.toString());
 
 					newServerBuildsStatus.addAll(bambooServerFacade.getSubscribedPlansResults(server, server.getPlans(),
-								server.isUseFavourites(), server.getTimezoneOffset()));
+                        server.isUseFavourites(), server.isShowBranches(), server.isMyBranchesOnly(), server.getTimezoneOffset()));
 
 					lastActionRun = newRun;
 

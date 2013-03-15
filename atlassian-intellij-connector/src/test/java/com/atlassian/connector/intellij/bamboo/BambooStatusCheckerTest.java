@@ -89,7 +89,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		final BambooBuildInfo build = new BambooBuildInfo.Builder("TP-DEF", null, server, "a project", 140, BuildStatus.SUCCESS).testsFailedCount(10).testsPassedCount(30).build();
 
 		IntelliJBambooServerFacade mockFacade = Mockito.mock(IntelliJBambooServerFacade.class);
-		Mockito.when(mockFacade.getSubscribedPlansResults(server, s.getPlans(), s.isUseFavourites(),
+		Mockito.when(mockFacade.getSubscribedPlansResults(server, s.getPlans(), s.isUseFavourites(), s.isShowBranches(), s.isMyBranchesOnly(),
 				s.getTimezoneOffset())).thenReturn(Collections.singleton(new BambooBuildAdapter(build, server)));        
         
 		EasyInvoker invoker = new EasyInvoker();
