@@ -19,12 +19,18 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.EffectType;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: pmaruszak
@@ -34,7 +40,9 @@ public class JiraURLTextRange {
 	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
 
-	private final Project project;
+    private static Map<Integer, JiraURLTextRange> userData = new HashMap<Integer, JiraURLTextRange>();
+
+    private final Project project;
 	private int startOffset;
 	private int endOffset;
 
@@ -46,7 +54,7 @@ public class JiraURLTextRange {
 
 	private RangeHighlighter rangeHighlighter = null;
 
-	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
+    public static final String JIRA_ISSUE_LINK_HIGHLIGHTER = "JiraIssueLinkHighlighter";
 
 	public JiraURLTextRange(@NotNull final Project project,
 			final int startOffset, final int endOffset, final String issueKey, final boolean isActive) {
@@ -103,8 +111,7 @@ public class JiraURLTextRange {
 				HighlighterLayer.WARNING - 1, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
 		rangeHighlighter.setErrorStripeMarkColor(LINK_COLOR);
 		rangeHighlighter.setErrorStripeTooltip("issue " + issueKey + " on " + getDefaultJiraServerUrl());
-		rangeHighlighter.putUserData(JIRA_ISSUE_LINK_HIGHLIGHTER_KEY, this);
-//        rangeHighlighter.setGutterIconRenderer(new JiraLinkGutterRenderer());
+        userData.put(rangeHighlighter.hashCode(), this);
 	}
 
 //    private class JiraLinkGutterRenderer extends GutterIconRenderer {
@@ -135,7 +142,7 @@ public class JiraURLTextRange {
 	}
 
 	public static JiraURLTextRange getFrom(final RangeHighlighter rangeHighlighter) {
-		return rangeHighlighter.getUserData(JIRA_ISSUE_LINK_HIGHLIGHTER_KEY);
+        return userData.get(rangeHighlighter.hashCode());
 	}
 
 	public void shift(final int shiftOffset) {

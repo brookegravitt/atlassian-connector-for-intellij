@@ -96,6 +96,7 @@ public interface BambooServerFacade extends ProductServerFacade {
 			throws ServerPasswordNotProvidedException, RemoteApiException;
 
 	boolean isBamboo2(BambooServerData serverData);
+    boolean isBamboo5(BambooServerData serverData);
 
     Collection<BuildIssue> getIssuesForBuild(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
             throws ServerPasswordNotProvidedException, RemoteApiException;

@@ -59,7 +59,6 @@ public class BambooServerConfigForm {
         genericServerConfigForm.setData(serverCfg);
         planList.setEnabled(!serverCfg.isUseFavourites());
         planList.setData(serverCfg);
-
     }
 
     public void finalizeData() {

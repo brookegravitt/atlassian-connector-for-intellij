@@ -64,12 +64,16 @@ public class BambooPlansForm extends JPanel {
     private final SpinnerModel timezoneOffsetSpinnerModel = new SpinnerNumberModel(0, MIN_TIMEZONE_DIFF, MAX_TIMEZONE_DIFF, 1);
     private JPanel timezonePanel;
     private JLabel bambooVersionNumberInfo;
+    private JCheckBox cbShowBranches;
+    private JCheckBox cbMyBranches;
     private final ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
     private DefaultListModel model;
 
     private boolean isListModified;
     private Boolean isUseFavourite;
+    private Boolean showBranches;
+    private Boolean myBranchesOnly;
     private transient BambooServerCfg bambooServerCfg;
     private static final int NUM_SERVERS = 10;
     private final Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
@@ -228,16 +232,26 @@ public class BambooPlansForm extends JPanel {
             int offs = bambooServerCfg.getTimezoneOffset();
             offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
             timezoneOffsetSpinnerModel.setValue(offs);
+            showBranches = serverCfg.isShowBranches();
+            myBranchesOnly = serverCfg.isMyBranchesOnly();
+            cbShowBranches.setSelected(showBranches);
+            cbMyBranches.setSelected(myBranchesOnly);
             if (bambooServerCfg.getUrl().length() > 0) {
                 retrievePlans(bambooServerCfg);
             } else {
                 model.removeAllElements();
+                cbShowBranches.setEnabled(true);
+                cbShowBranches.setSelected(true);
+                cbMyBranches.setEnabled(true);
             }
         }
     }
 
     private void retrievePlans(final BambooServerCfg queryServer) {
         list.setEnabled(false);
+        cbMyBranches.setEnabled(false);
+        cbShowBranches.setEnabled(false);
+
         if (isUseFavourite != null) {
             cbUseFavouriteBuilds.setSelected(isUseFavourite);
             isUseFavourite = null;
@@ -245,14 +259,13 @@ public class BambooPlansForm extends JPanel {
             cbUseFavouriteBuilds.setSelected(queryServer.isUseFavourites());
         }
 
-
         new Thread(new Runnable() {
             public void run() {
                 progressAnimation.startProgressAnimation();
                 BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
                 builder.defaultUser(defaultCredentials);
-                bambooServerCfg.setIsBamboo2(
-                        bambooServerFacade.isBamboo2(builder.build()));
+                bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(builder.build()));
+                final boolean bamboo5 = bambooServerFacade.isBamboo5(new BambooServerData.Builder(bambooServerCfg).build());
 
                 final StringBuilder msg = new StringBuilder();
                 try {
@@ -302,6 +315,13 @@ public class BambooPlansForm extends JPanel {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
+                            if (bamboo5) {
+                                cbShowBranches.setEnabled(true);
+                                cbMyBranches.setEnabled(true);
+                            } else {
+                                cbShowBranches.setSelected(false);
+                                cbMyBranches.setSelected(false);
+                            }
                             setBambooVersionNumberInfo(queryServer);
                             progressAnimation.stopProgressAnimation();
                             final String message = msg.toString();
@@ -403,6 +423,8 @@ public class BambooPlansForm extends JPanel {
             }
         }
         bambooServerCfg.setUseFavourites(cbUseFavouriteBuilds.isSelected());
+        bambooServerCfg.setShowBranches(cbShowBranches.isSelected());
+        bambooServerCfg.setMyBranchesOnly(cbMyBranches.isSelected());
         bambooServerCfg.setTimezoneOffset(((SpinnerNumberModel) spinnerTimeZoneDifference.getModel()).getNumber().intValue());
     }
 
