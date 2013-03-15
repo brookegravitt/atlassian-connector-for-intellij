@@ -75,9 +75,7 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
     }
 
     protected boolean isBamboo2(final AnActionEvent event, final BambooServerData serverData) {
-
         return serverData != null && serverData.isBamboo2();
-
     }
 
     @Override

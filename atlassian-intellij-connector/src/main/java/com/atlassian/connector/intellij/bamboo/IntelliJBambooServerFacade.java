@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.api.BambooServerVersionNumberConstants;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -180,7 +181,6 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 				message, exception).pollingTime(new Date()).build();
 	}
 
-
 	public boolean isBamboo2(final BambooServerData serverData) {
 		BambooSession session;
 		try {
@@ -195,6 +195,18 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		return false;
 	}
 
+    public boolean isBamboo5(BambooServerData serverData) {
+        BambooSession session;
+        try {
+            session = facade.getSession(serverData);
+            if (session != null && session.getBamboBuildNumber() >= BambooServerVersionNumberConstants.BAMBOO_3600_BUILD_NUMBER) {
+                return true;
+            }
+        } catch (RemoteApiException e) {
+            // not important == false
+        }
+        return false;
+    }
 
     public ServerType getServerType() {
 		return facade.getServerType();
