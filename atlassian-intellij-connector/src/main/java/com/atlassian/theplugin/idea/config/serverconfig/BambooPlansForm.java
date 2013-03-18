@@ -265,6 +265,7 @@ public class BambooPlansForm extends JPanel {
                 BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
                 builder.defaultUser(defaultCredentials);
                 bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(builder.build()));
+                final boolean bamboo4 = bambooServerFacade.isBamboo4(new BambooServerData.Builder(bambooServerCfg).build());
                 final boolean bamboo5 = bambooServerFacade.isBamboo5(new BambooServerData.Builder(bambooServerCfg).build());
 
                 final StringBuilder msg = new StringBuilder();
@@ -301,7 +302,7 @@ public class BambooPlansForm extends JPanel {
                                 }
                             }
                             if (!exists) {
-                                BambooPlan p = new BambooPlan(sPlan.getKey(), sPlan.getKey(), false, false);
+                                BambooPlan p = new BambooPlan(sPlan.getKey(), sPlan.getKey(), null, false, false);
                                 plansForServer.add(new BambooPlanItem(p, true, sPlan.isGrouped()));
                             }
                         }
@@ -315,9 +316,9 @@ public class BambooPlansForm extends JPanel {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                            if (bamboo5) {
+                            if (bamboo4) {
                                 cbShowBranches.setEnabled(true);
-                                cbMyBranches.setEnabled(true);
+                                cbMyBranches.setEnabled(bamboo5);
                             } else {
                                 cbShowBranches.setSelected(false);
                                 cbMyBranches.setSelected(false);
@@ -381,7 +382,7 @@ public class BambooPlansForm extends JPanel {
                 // for those servers for which we cannot fetch metadata, we just show current plans
                 List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
                 for (SubscribedPlan plan : server.getSubscribedPlans()) {
-                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()), true, plan.isGrouped());
+                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey(), null), true, plan.isGrouped());
                     model.addElement(bambooPlanItem);
                     modelPlans.add(bambooPlanItem);
                 }

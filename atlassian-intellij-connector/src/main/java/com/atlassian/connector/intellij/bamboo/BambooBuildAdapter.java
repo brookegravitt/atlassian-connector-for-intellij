@@ -93,6 +93,10 @@ public class BambooBuildAdapter extends ConfigurationListenerAdapter {
         return build.getPlanKey();
     }
 
+    public String getMasterPlanKey() {
+        return build.getMasterPlanKey();
+    }
+
     public boolean isEnabled() {
         return build.getEnabled();
     }

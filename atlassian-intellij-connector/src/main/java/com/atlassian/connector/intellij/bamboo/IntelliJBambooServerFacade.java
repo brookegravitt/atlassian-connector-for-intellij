@@ -41,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides simple wrapper around IDE-independent {@link BambooServerFacade} for use by IntelliJ Connector (it's mostly about
@@ -181,31 +183,38 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 				message, exception).pollingTime(new Date()).build();
 	}
 
-	public boolean isBamboo2(final BambooServerData serverData) {
-		BambooSession session;
-		try {
-			session = facade.getSession(serverData);
-			if (session != null && session.getBamboBuildNumber() > 0) {
-				return true;
-			}
+    private static final Map<String, Integer> buildNumberMap = new HashMap<String, Integer>();
 
-		} catch (RemoteApiException e) {
-			// not important == false
-		}
-		return false;
-	}
+    private int loadAndRememberBuildNumber(final BambooServerData serverData) {
+        synchronized (buildNumberMap) {
+            if (buildNumberMap.containsKey(serverData.getUrl())) {
+                return buildNumberMap.get(serverData.getUrl());
+            }
+            try {
+                BambooSession session = facade.getSession(serverData);
+                if (session != null) {
+                    int buildNumber = session.getBamboBuildNumber();
+                    buildNumberMap.put(serverData.getUrl(), buildNumber);
+                    return buildNumber;
+                }
+
+            } catch (RemoteApiException e) {
+                // not important == false
+            }
+            return -1;
+        }
+    }
+
+	public boolean isBamboo2(final BambooServerData serverData) {
+        return loadAndRememberBuildNumber(serverData) > 0;
+    }
+
+    public boolean isBamboo4(BambooServerData serverData) {
+        return loadAndRememberBuildNumber(serverData) >= BambooServerVersionNumberConstants.BAMBOO_2906_BUILD_NUMBER;
+    }
 
     public boolean isBamboo5(BambooServerData serverData) {
-        BambooSession session;
-        try {
-            session = facade.getSession(serverData);
-            if (session != null && session.getBamboBuildNumber() >= BambooServerVersionNumberConstants.BAMBOO_3600_BUILD_NUMBER) {
-                return true;
-            }
-        } catch (RemoteApiException e) {
-            // not important == false
-        }
-        return false;
+        return loadAndRememberBuildNumber(serverData) >= BambooServerVersionNumberConstants.BAMBOO_3600_BUILD_NUMBER;
     }
 
     public ServerType getServerType() {
