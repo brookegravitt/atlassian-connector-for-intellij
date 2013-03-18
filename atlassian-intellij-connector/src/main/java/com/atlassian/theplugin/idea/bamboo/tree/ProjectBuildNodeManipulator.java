@@ -75,7 +75,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<String> getDistinctProjects() {
+	protected List<String> getDistinctProjects() {
 		Set<String> projects = new TreeSet<String>(COMPARATOR);
 
 		for (BambooBuildAdapter build : buildModel.getBuilds()) {

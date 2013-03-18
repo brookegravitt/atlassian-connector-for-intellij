@@ -84,7 +84,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private final JComponent leftToolBar;
 	private final JComponent rightToolBar;
 	private final BambooWorkspaceConfiguration bambooConfiguration;
-	private BuildGroupBy groupBy = BuildGroupBy.NONE;
+	private BuildGroupBy groupBy = BuildGroupBy.PLAN_AND_BRANCH;
 	private final SearchBuildListModel searchBuildModel;
 	private final BuildHistoryPanel buildHistoryPanel;
 	private JLabel planHistoryListLabel;
@@ -318,7 +318,6 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 		if (checker.canSchedule()) {
 			Task.Backgroundable refresh = new Task.Backgroundable(project, "Refreshing Bamboo Panel", false) {
-				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
 					checker.newTimerTask().run();
 				}
@@ -517,7 +516,6 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			this.handler = handler;
 		}
 
-		@Override
 		public void run(@NotNull ProgressIndicator progressIndicator) {
 			progressIndicator.setIndeterminate(true);
 			try {

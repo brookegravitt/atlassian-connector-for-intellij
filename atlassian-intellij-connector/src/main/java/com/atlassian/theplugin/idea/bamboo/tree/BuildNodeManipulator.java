@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -35,4 +36,8 @@ public abstract class BuildNodeManipulator {
 	public abstract int getChildCount(Object parent);
 
 	public abstract Object getChild(Object parent, int index);
+
+    public int getIndexOfChild(Object parent, Object child) {
+        throw new NotImplementedException("Well, damn. Something went wrong");
+    }
 }

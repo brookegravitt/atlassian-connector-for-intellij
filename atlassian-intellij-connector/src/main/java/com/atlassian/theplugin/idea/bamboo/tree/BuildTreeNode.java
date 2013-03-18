@@ -43,7 +43,7 @@ import java.util.Iterator;
 /**
  * @author Jacek Jaroczynski, but totally messed up by jgorycki :)
  */
-public class BuildTreeNode extends AbstractBuildTreeNode {
+public class BuildTreeNode extends AbstractBuildTreeNode implements ComparingTreeNode {
 
     private static final int MAX_TOOLTIP_WIDTH = 500;
     private static final String BODY_WITH_STYLE =
@@ -426,4 +426,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
         return hover;
     }
 
+    public boolean isMe(Object child) {
+        return build.getPlanKey().equals(((BuildTreeNode) child).getBuild().getPlanKey());
+    }
 }

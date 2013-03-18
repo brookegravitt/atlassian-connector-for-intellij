@@ -15,19 +15,19 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-/**
- * @author Jacek Jaroczynski
- */
-public class BuildProjectTreeNode extends BuildGroupTreeNode implements ComparingTreeNode {
-	public BuildProjectTreeNode(String name) {
-		super(name);
-	}
+public class BuildPlanTreeNode extends BuildGroupTreeNode implements ComparingTreeNode {
+    private final String key;
 
-	public String getProject() {
-		return name;
+    public BuildPlanTreeNode(String key, String name) {
+		super(name);
+        this.key = key;
+    }
+
+	public String getPlanKey() {
+		return key;
 	}
 
     public boolean isMe(Object child) {
-        return getProject().equals(((BuildProjectTreeNode) child).getProject());
+        return getPlanKey().equals(((BuildPlanTreeNode) child).getPlanKey());
     }
 }

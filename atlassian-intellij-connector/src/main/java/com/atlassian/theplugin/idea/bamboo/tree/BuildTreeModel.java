@@ -34,13 +34,14 @@ public class BuildTreeModel extends DefaultTreeModel {
 
     private final BuildListModel buildListModel;
 
-    private BuildGroupBy groupBy = BuildGroupBy.NONE;
+    private BuildGroupBy groupBy = BuildGroupBy.PLAN_AND_BRANCH;
 
     private final BuildNodeManipulator generalNodeManipulator;
     private final BuildNodeManipulator stateNodeManipulator;
     private final BuildNodeManipulator serverNodeManipulator;
     private final BuildNodeManipulator dateNodeManipulator;
     private final BuildNodeManipulator projectNodeManipulator;
+    private final BuildNodeManipulator planAndBranchNodeManipulator;
 
     public BuildTreeModel(ProjectCfgManager projectCfgManager, final BuildListModel buildListModel) {
         super(new DefaultMutableTreeNode());
@@ -52,7 +53,7 @@ public class BuildTreeModel extends DefaultTreeModel {
         serverNodeManipulator = new ServerBuildNodeManipulator(projectCfgManager, buildListModel, getRoot());
         dateNodeManipulator = new DateBuildNodeManipulator(buildListModel, getRoot());
         projectNodeManipulator = new ProjectBuildNodeManipulator(buildListModel, getRoot());
-
+        planAndBranchNodeManipulator = new PlanAndBranchBuildNodeManipulator(buildListModel, getRoot());
     }
 
     /**
@@ -98,15 +99,17 @@ public class BuildTreeModel extends DefaultTreeModel {
         switch (groupBy) {
             case DATE:
                 return dateNodeManipulator.getChild(parent, index);
-            case PROJECT:
-                return projectNodeManipulator.getChild(parent, index);
             case SERVER:
                 return serverNodeManipulator.getChild(parent, index);
             case STATE:
                 return stateNodeManipulator.getChild(parent, index);
+            case PROJECT:
+                return projectNodeManipulator.getChild(parent, index);
             case NONE:
-            default:
                 return generalNodeManipulator.getChild(parent, index);
+            case PLAN_AND_BRANCH:
+            default:
+                return planAndBranchNodeManipulator.getChild(parent, index);
         }
     }
 
@@ -116,15 +119,17 @@ public class BuildTreeModel extends DefaultTreeModel {
         switch (groupBy) {
             case DATE:
                 return dateNodeManipulator.getChildCount(parent);
-            case PROJECT:
-                return projectNodeManipulator.getChildCount(parent);
             case SERVER:
                 return serverNodeManipulator.getChildCount(parent);
             case STATE:
                 return stateNodeManipulator.getChildCount(parent);
+            case PROJECT:
+                return projectNodeManipulator.getChildCount(parent);
             case NONE:
-            default:
                 return generalNodeManipulator.getChildCount(parent);
+            case PLAN_AND_BRANCH:
+            default:
+                return planAndBranchNodeManipulator.getChildCount(parent);
         }
     }
 
@@ -134,7 +139,8 @@ public class BuildTreeModel extends DefaultTreeModel {
                 || node instanceof BuildProjectTreeNode
                 || node instanceof BuildStateTreeNode
                 || node instanceof BuildDateTreeNode
-                || node instanceof BuildServerTreeNode) {
+                || node instanceof BuildServerTreeNode
+                || node instanceof BuildPlanTreeNode) {
             return false;
         }
 
@@ -149,13 +155,16 @@ public class BuildTreeModel extends DefaultTreeModel {
     @Override
     // todo add group by handling if necessary
     public int getIndexOfChild(Object parent, Object child) {
+        if (groupBy == BuildGroupBy.PLAN_AND_BRANCH) {
+            return planAndBranchNodeManipulator.getIndexOfChild(parent, child);
+        }
+
         if (parent == getRoot()) {
             if (child instanceof BuildTreeNode) {
                 BambooBuildAdapter build = ((BuildTreeNode) child).getBuild();
                 return new ArrayList<BambooBuildAdapter>(buildListModel.getBuilds()).indexOf(build);
             }
         }
-
         return -1;
     }
 

@@ -21,9 +21,10 @@ package com.atlassian.theplugin.idea.bamboo;
  * @author Jacek Jaroczynski
  */
 public enum BuildGroupBy {
+    PLAN_AND_BRANCH("Plan And Branch"),
 	NONE("None"),
+    PROJECT("Project"),
 	STATE("State"),
-	PROJECT("Project"),
 	SERVER("Server"),
 	DATE("Date");
 
