@@ -142,6 +142,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>13.0.1</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.intellij.idea</groupId>
@@ -253,10 +259,10 @@
                     <groupId>cglib</groupId>
                     <artifactId>cglib-nodep</artifactId>
                 </exclusion>
-                <!--<exclusion>-->
-                    <!--<groupId>com.google.collections</groupId>-->
-                    <!--<artifactId>google-collections</artifactId>-->
-                <!--</exclusion>-->
+                <exclusion>
+                    <groupId>com.google.collections</groupId>
+                    <artifactId>google-collections</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
@@ -431,7 +437,7 @@
 
 
 
-                                    <include>com.google.collections:google-collections</include>
+                                    <include>com.google.guava:guava</include>
 
                                     <include>com.atlassian.jira:jira-rest-java-client</include>
                                     <include>com.sun.jersey:jersey-core</include>
