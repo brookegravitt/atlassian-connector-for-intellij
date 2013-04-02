@@ -431,6 +431,8 @@
 
 
 
+                                    <include>com.google.collections:google-collections</include>
+
                                     <include>com.atlassian.jira:jira-rest-java-client</include>
                                     <include>com.sun.jersey:jersey-core</include>
                                     <include>com.sun.jersey:jersey-client</include>
@@ -467,6 +469,10 @@
                                 </includes>
                             </artifactSet>
                             <relocations>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>shadow.com.google.common</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>javax.xml.messaging</pattern>
                                     <shadedPattern>shadow.javax.xml.messaging</shadedPattern>
