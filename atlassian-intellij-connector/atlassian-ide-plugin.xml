@@ -7,6 +7,8 @@
         <url>https://jira.bamboo.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
+        <show-branches>false</show-branches>
+        <my-branches-only>false</my-branches-only>
         <bamboo2>true</bamboo2>
         <plans>
           <plan key="JIRAMASTER-RESTAPIGUARD" grouped="0" />
@@ -26,6 +28,8 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
+        <show-branches>false</show-branches>
+        <my-branches-only>false</my-branches-only>
         <bamboo2>true</bamboo2>
         <plans>
           <plan key="ACC-DPL" grouped="0" />
