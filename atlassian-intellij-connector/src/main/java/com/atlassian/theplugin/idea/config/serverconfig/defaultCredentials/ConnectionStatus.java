@@ -24,9 +24,9 @@ import javax.swing.*;
  */
 public enum ConnectionStatus {
     
-		NONE(IconLoader.getIcon("/actions/help.png")),
-		PASSED(IconLoader.getIcon("/actions/er-state.png")),
-		FAILED(IconLoader.getIcon("/actions/breakpoint.png"));
+		NONE(safeGetIcon("/actions/help.png", "/actions/help.png")),
+		PASSED(safeGetIcon("/actions/er-state.png", "/icons/icn_plan_passed.gif")),
+		FAILED(safeGetIcon("/actions/breakpoint.png", "/icons/icn_plan_failed.gif"));
 
 		private final Icon icon;
 
@@ -37,5 +37,17 @@ public enum ConnectionStatus {
 		ConnectionStatus(Icon icon) {
 			this.icon = icon;
 		}
-	}
+
+    private static Icon safeGetIcon(String icon, String backup) {
+        try {
+            return IconLoader.getIcon(icon);
+        } catch (Throwable t) {
+            try {
+                return IconLoader.getIcon(backup);
+            } catch (Throwable t2) {
+                return null;
+            }
+        }
+    }
+}
 
