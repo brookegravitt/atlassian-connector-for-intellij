@@ -94,7 +94,6 @@ public class QuickSearchBuildAction extends AnAction {
 			this.buildsWindow = buildsWindow;
 		}
 
-		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
 
 			indicator.setFraction(0);
