@@ -135,7 +135,7 @@ public class CommentPanel extends JPanel {
 		commentBody.setText("<html><head></head><body>" + bodyFixed + "</body></html>");
 		commentBody.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED && e.getURL() != null) {
 					BrowserUtil.launchBrowser(e.getURL().toString());
 				}
 			}
