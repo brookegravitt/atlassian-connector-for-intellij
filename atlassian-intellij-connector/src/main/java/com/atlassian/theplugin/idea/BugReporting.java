@@ -98,8 +98,8 @@ public final class BugReporting {
     }
 
     private static final int MAX_URI_LENGTH = 2048;
-	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
-	private static final String PROJECT_ID = "10024";
+	private static final String BASE = "https://ecosystem.atlassian.net/secure/CreateIssueDetails!init.jspa";
+	private static final String PROJECT_ID = "13772";
 	private static final String TICKET_TYPE_BUG = "1";
 	private static final String TICKET_TYPE_STORY = "5";
 	private static String storyUrl;
