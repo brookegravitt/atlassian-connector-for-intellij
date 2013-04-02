@@ -154,8 +154,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
         jiraFilterListModel = getJIRAFilterListModel();
         baseIssueListModel = issueModel;
-        JIRAIssueListModel sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
-        searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
+//        JIRAIssueListModel sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
+//        searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
+        searchingIssueListModel = new SearchingJIRAIssueListModel(baseIssueListModel);
         currentIssueListModel = searchingIssueListModel;
 
         issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel,

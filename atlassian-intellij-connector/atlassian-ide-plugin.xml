@@ -51,5 +51,6 @@
     <default-crucible-server>cbcb7e2b-01d3-4420-913c-ae558fce3474</default-crucible-server>
     <default-fisheye-server>cbcb7e2b-01d3-4420-913c-ae558fce3474</default-fisheye-server>
     <default-fisheye-repo>connector-intellij</default-fisheye-repo>
+    <default-jira-server>1e263562-f741-4a9e-acbd-76bbe6d18d8a</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
