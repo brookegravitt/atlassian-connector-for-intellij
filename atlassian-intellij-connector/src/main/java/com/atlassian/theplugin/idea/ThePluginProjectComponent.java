@@ -287,7 +287,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
             issuesToolWindowPanel.init();
             checkDefaultServerValues();
-            informAboutIdea9TaskIntegrationAsExperimental();
+            // PL-2789 - task integration is busted in recent IDEAs anyway.
+//            informAboutIdea9TaskIntegrationAsExperimental();
 
             IdeaVersionFacade.getInstance().registerCheckinHandler(project, jiraWorkspaceConfiguration);
 
