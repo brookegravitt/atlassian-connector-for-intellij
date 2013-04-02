@@ -180,7 +180,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
                                     break;
                                 case TEXT_AREA:
 //                                    editor = new FieldEditorPane(custom.getValues().get(0).replaceAll("<br/>", "\n"), field, true);
-                                    editor = new FieldTextArea(val.replaceAll("<br/>", ""), field);
+                                    editor = new FieldTextArea(val != null ? val.replaceAll("<br/>", "") : "", field);
                                     row = ", p, 3dlu";
                                     break;
                                 case DATE_PICKER:
