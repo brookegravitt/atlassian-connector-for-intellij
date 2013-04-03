@@ -115,7 +115,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
                 final String finalPassword = password;
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        PasswordStorage.setPassword(project, finalPassword);
+                        if (isGoodProject(project)) {
+                            PasswordStorage.setPassword(project, finalPassword);
+                        }
                     }
                 });
             }
