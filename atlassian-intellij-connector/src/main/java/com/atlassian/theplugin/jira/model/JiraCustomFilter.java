@@ -96,7 +96,6 @@ public final class JiraCustomFilter implements JiraFilter {
         this.uid = uid;
     }
 
-    @Override
     public List<JIRAQueryFragment> getQueryFragments() {
         return queryFragments;
     }
@@ -172,7 +171,6 @@ public final class JiraCustomFilter implements JiraFilter {
         }
     }
 
-    @Override
     public String getJql() {
         StringBuilder sb = new StringBuilder();
         int cnt = 0;
@@ -209,12 +207,17 @@ public final class JiraCustomFilter implements JiraFilter {
                 case AFFECTS_VERSIONS:
                 case FIX_FOR:
                 case COMPONENTS:
-                case STATUS:
-                case PRIORITIES:
+//                case STATUS:
+//                case PRIORITIES:
                     cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyName());
                     break;
+//                case RESOLUTIONS:
+//                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyResolution());
+//                    break;
+                case STATUS:
+                case PRIORITIES:
                 case RESOLUTIONS:
-                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyResolution());
+                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyId());
                     break;
                 case PROJECT:
                     cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyProjectKey());
@@ -227,25 +230,30 @@ public final class JiraCustomFilter implements JiraFilter {
     }
 
     private class CopyName implements Function<JIRAQueryFragment, String> {
-        @Override
         public String apply(@Nullable JIRAQueryFragment s) {
             return s.getName();
         }
     }
 
     private class CopyProjectKey implements Function<JIRAQueryFragment, String> {
-        @Override
         public String apply(@Nullable JIRAQueryFragment s) {
             JIRAProjectBean p = (JIRAProjectBean) s;
             return p.getKey();
         }
     }
-    private class CopyResolution implements Function<JIRAQueryFragment, String> {
-        @Override
+
+//    private class CopyResolution implements Function<JIRAQueryFragment, String> {
+//        public String apply(@Nullable JIRAQueryFragment s) {
+//            JIRAResolutionBean r = (JIRAResolutionBean) s;
+//            if (-1 == r.getId()) return "Unresolved";
+//            return r.getName();
+//        }
+//    }
+
+    private class CopyId implements Function<JIRAQueryFragment, String> {
         public String apply(@Nullable JIRAQueryFragment s) {
-            JIRAResolutionBean r = (JIRAResolutionBean) s;
-            if (-1 == r.getId()) return "Unresolved";
-            return r.getName();
+            JIRAConstant r = (JIRAConstant) s;
+            return "" + r.getId();
         }
     }
 
@@ -270,7 +278,6 @@ public final class JiraCustomFilter implements JiraFilter {
         return cnt;
     }
 
-    @Override
     public String getOldStyleQueryString() {
         StringBuilder query = new StringBuilder();
 
