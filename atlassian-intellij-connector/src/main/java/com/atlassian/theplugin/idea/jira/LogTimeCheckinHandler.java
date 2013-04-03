@@ -196,6 +196,7 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 		}
 
 		private void logWork() {
+            final String comment = checkinProjectPanel.getCommitMessage();
 			final Calendar cal = Calendar.getInstance();
 
 			final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(checkinProjectPanel.getProject());
@@ -220,7 +221,7 @@ public class LogTimeCheckinHandler /*extends CheckinHandlerFactor*/ {
 						public void run(@NotNull ProgressIndicator progressIndicator) {
 							try {
 								IntelliJJiraServerFacade.getInstance().logWork(server, issue,
-                                        txtTimeSpent.getText(), cal, null,
+                                        txtTimeSpent.getText(), cal, comment,
 										!config.getRemainingEstimateUpdateMode()
 												.equals(RemainingEstimateUpdateMode.UNCHANGED),
 										newRemainingEstimate);
