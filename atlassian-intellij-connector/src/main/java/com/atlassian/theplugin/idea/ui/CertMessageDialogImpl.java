@@ -192,7 +192,9 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			String[] lfields = name.split(",");
 			for (String field : lfields) {
 				String[] parts = field.trim().split("=");
-				result.put(parts[0], parts[1]);
+                if (parts.length > 0) {
+				    result.put(parts[0], parts.length > 1 ? parts[1] : "");
+                }
 			}
 			return result;
 		}
