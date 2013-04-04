@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.commons.jira.JiraServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -28,6 +29,9 @@ public class ProductConnector implements Connector {
 	}
 
 	public void connect(ServerData serverData) throws RemoteApiException {
+        if (facade instanceof JiraServerFacade) {
+            ((JiraServerFacade) facade).reset();
+        }
 		facade.testServerConnection(serverData);
 	}
 
