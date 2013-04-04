@@ -442,14 +442,32 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         });
     }
 
-    public void testServerConnection(JiraServerData jiraServerData) throws RemoteApiException {
-        facade.testServerConnection(jiraServerData);
-        bustedServers.remove(jiraServerData.getId());
+    public void testServerConnection(final JiraServerData jiraServerData) throws RemoteApiException {
+        try {
+            wrap(jiraServerData, new Callable<Object>() {
+                public Object call() throws Exception {
+                    facade.testServerConnection(jiraServerData);
+                    bustedServers.remove(jiraServerData.getId());
+                    return null;
+                }
+            });
+        } catch (JIRAException e) {
+            throw new RemoteApiException(e);
+        }
     }
 
     public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
-        facade.testServerConnection(connectionCfg);
-        bustedServers.remove(connectionCfg.getId());
+        Exception exception = bustedServers.get(connectionCfg.getId());
+        if (exception != null) {
+            throw new RemoteApiException(exception.getMessage(), exception);
+        }
+        try {
+            facade.testServerConnection(connectionCfg);
+            bustedServers.remove(connectionCfg.getId());
+        } catch (RemoteApiException e) {
+            bustedServers.put(connectionCfg.getId(), e);
+            throw e;
+        }
     }
 
     public ServerType getServerType() {
