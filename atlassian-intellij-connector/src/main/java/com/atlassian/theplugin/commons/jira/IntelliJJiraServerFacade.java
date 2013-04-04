@@ -7,7 +7,19 @@ import com.atlassian.connector.commons.jira.JIRAIssue;
 import com.atlassian.connector.commons.jira.JIRAIssueBean;
 import com.atlassian.connector.commons.jira.JIRAServerFacade2;
 import com.atlassian.connector.commons.jira.JIRAServerFacade2Impl;
-import com.atlassian.connector.commons.jira.beans.*;
+import com.atlassian.connector.commons.jira.beans.JIRAAttachment;
+import com.atlassian.connector.commons.jira.beans.JIRAComment;
+import com.atlassian.connector.commons.jira.beans.JIRAComponentBean;
+import com.atlassian.connector.commons.jira.beans.JIRAConstant;
+import com.atlassian.connector.commons.jira.beans.JIRAPriorityBean;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
+import com.atlassian.connector.commons.jira.beans.JIRAResolutionBean;
+import com.atlassian.connector.commons.jira.beans.JIRASavedFilter;
+import com.atlassian.connector.commons.jira.beans.JIRASecurityLevelBean;
+import com.atlassian.connector.commons.jira.beans.JIRAUserBean;
+import com.atlassian.connector.commons.jira.beans.JIRAVersionBean;
+import com.atlassian.connector.commons.jira.beans.JiraFilter;
 import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.connector.intellij.remoteapi.IntelliJAxisSessionCallback;
 import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallbackImpl;
@@ -15,11 +27,14 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.google.common.collect.Maps;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author pmaruszak
@@ -28,6 +43,8 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
     private final JIRAServerFacade2 facade;
 	private static IntelliJJiraServerFacade instance;
     private static JIRAServerModel serverModel;
+
+    private Map<String, Exception> bustedServers = Maps.newConcurrentMap();
 
     private IntelliJJiraServerFacade() {
 		this(new JIRAServerFacade2Impl(new IntelliJHttpSessionCallbackImpl(), new IntelliJAxisSessionCallback()));
@@ -44,8 +61,8 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return facade;
     }
 
-    @Override
     public void reset() {
+        bustedServers.clear();
         facade.reset();
     }
 
@@ -81,194 +98,371 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
 //    }
 
 
-    @Override
-    public boolean usesRest(JiraServerData jiraServerData) {
-        return facade.usesRest(jiraServerData);
+    public boolean usesRest(final JiraServerData jiraServerData) {
+        try {
+            return wrap(jiraServerData, new Callable<Boolean>() {
+                public Boolean call() throws Exception {
+                    return facade.usesRest(jiraServerData);
+                }
+            });
+        } catch (JIRAException e) {
+            return false;
+        }
     }
 
-    @Override
-    public List<JiraIssueAdapter> getIssues(JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size) throws JIRAException {
-        List<JIRAIssue> list = facade.getIssues(jiraServerData, filter, sort, sortOrder, start, size);
-        return getJiraServerAdapterList(jiraServerData, list);
+    public List<JiraIssueAdapter> getIssues(final JiraServerData jiraServerData, final JiraFilter filter, final String sort, final String sortOrder, final int start, final int size) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JiraIssueAdapter>>() {
+            public List<JiraIssueAdapter> call() throws Exception {
+                List<JIRAIssue> list = facade.getIssues(jiraServerData, filter, sort, sortOrder, start, size);
+                return getJiraServerAdapterList(jiraServerData, list);
+            }
+        });
     }
 
-    @Override
-    public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
-        List<JIRAIssue> list = facade.getIssues(server, query, sort, sortOrder, start, size);
-        return getJiraServerAdapterList(server, list);
+    public List<JiraIssueAdapter> getIssues(final JiraServerData server, final String query, final String sort, final String sortOrder, final int start, final int size) throws JIRAException {
+        return wrap(server, new Callable<List<JiraIssueAdapter>>() {
+            public List<JiraIssueAdapter> call() throws Exception {
+                List<JIRAIssue> list = facade.getIssues(server, query, sort, sortOrder, start, size);
+                return getJiraServerAdapterList(server, list);
+            }
+        });
     }
 
-    @Override
-    public List<JiraIssueAdapter> getSavedFilterIssues(JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size) throws JIRAException {
-        List<JIRAIssue> list = facade.getSavedFilterIssues(jiraServerData, filter, sort, sortOrder, start, size);
-        return getJiraServerAdapterList(jiraServerData, list);    }
+    public List<JiraIssueAdapter> getSavedFilterIssues(final JiraServerData jiraServerData, final JIRASavedFilter filter, final String sort, final String sortOrder, final int start, final int size) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JiraIssueAdapter>>() {
+            public List<JiraIssueAdapter> call() throws Exception {
+                List<JIRAIssue> list = facade.getSavedFilterIssues(jiraServerData, filter, sort, sortOrder, start, size);
+                return getJiraServerAdapterList(jiraServerData, list);
+            }
+        });
+    }
 
     public List<JIRAProject> getProjects(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getProjects(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAProject>>() {
+            public List<JIRAProject> call() throws Exception {
+                return facade.getProjects(jiraServerData);
+            }
+        });
     }
 
     public List<JIRAConstant> getStatuses(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getStatuses(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
+            public List<JIRAConstant> call() throws Exception {
+                return facade.getStatuses(jiraServerData);
+            }
+        });
     }
 
     public List<JIRAConstant> getIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getIssueTypes(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
+            public List<JIRAConstant> call() throws Exception {
+                return facade.getIssueTypes(jiraServerData);
+            }
+        });
     }
 
-    public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, long projectId, String projectKey)
+    public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, final long projectId, final String projectKey)
             throws JIRAException {
-        return facade.getIssueTypesForProject(jiraServerData, projectId, projectKey);
+        return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
+            public List<JIRAConstant> call() throws Exception {
+                return facade.getIssueTypesForProject(jiraServerData, projectId, projectKey);
+            }
+        });
     }
 
     public List<JIRAConstant> getSubtaskIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getSubtaskIssueTypes(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
+            public List<JIRAConstant> call() throws Exception {
+                return facade.getSubtaskIssueTypes(jiraServerData);
+            }
+        });
     }
 
-    public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, long projectId, String projectKey)
+    public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, final long projectId, final String projectKey)
             throws JIRAException {
-        return facade.getSubtaskIssueTypesForProject(jiraServerData, projectId, projectKey);
+        return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
+            public List<JIRAConstant> call() throws Exception {
+                return facade.getSubtaskIssueTypesForProject(jiraServerData, projectId, projectKey);
+            }
+        });
     }
 
     public List<JIRAQueryFragment> getSavedFilters(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getSavedFilters(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAQueryFragment>>() {
+            public List<JIRAQueryFragment> call() throws Exception {
+                return facade.getSavedFilters(jiraServerData);
+            }
+        });
     }
 
-    public List<JIRAComponentBean> getComponents(final JiraServerData jiraServerData, String projectKey) throws JIRAException {
-        return facade.getComponents(jiraServerData, projectKey);
+    public List<JIRAComponentBean> getComponents(final JiraServerData jiraServerData, final String projectKey) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRAComponentBean>>() {
+            public List<JIRAComponentBean> call() throws Exception {
+                return facade.getComponents(jiraServerData, projectKey);
+            }
+        });
     }
 
-    public List<JIRAVersionBean> getVersions(final JiraServerData jiraServerData, String projectKey) throws JIRAException {
-        return facade.getVersions(jiraServerData, projectKey);
+    public List<JIRAVersionBean> getVersions(final JiraServerData jiraServerData, final String projectKey) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRAVersionBean>>() {
+            public List<JIRAVersionBean> call() throws Exception {
+                return facade.getVersions(jiraServerData, projectKey);
+            }
+        });
     }
 
     public List<JIRAPriorityBean> getPriorities(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getPriorities(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAPriorityBean>>() {
+            public List<JIRAPriorityBean> call() throws Exception {
+                return facade.getPriorities(jiraServerData);
+            }
+        });
     }
 
     public List<JIRAResolutionBean> getResolutions(final JiraServerData jiraServerData) throws JIRAException {
-        return facade.getResolutions(jiraServerData);
+        return wrap(jiraServerData, new Callable<List<JIRAResolutionBean>>() {
+            public List<JIRAResolutionBean> call() throws Exception {
+                return facade.getResolutions(jiraServerData);
+            }
+        });
     }
 
-    public List<JIRAAction> getAvailableActions(final JiraServerData jiraServerData, JIRAIssue issue)
+    public List<JIRAAction> getAvailableActions(final JiraServerData jiraServerData, final JIRAIssue issue)
             throws JIRAException {
-        return facade.getAvailableActions(jiraServerData, issue);
+        return wrap(jiraServerData, new Callable<List<JIRAAction>>() {
+            public List<JIRAAction> call() throws Exception {
+                return facade.getAvailableActions(jiraServerData, issue);
+            }
+        });
     }
 
-    public List<JIRAActionField> getFieldsForAction(final JiraServerData jiraServerData, JIRAIssue issue,
-                                                    JIRAAction action) throws JIRAException {
-        return facade.getFieldsForAction(jiraServerData, issue, action);
+    public List<JIRAActionField> getFieldsForAction(final JiraServerData jiraServerData, final JIRAIssue issue,
+                                                    final JIRAAction action) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRAActionField>>() {
+            public List<JIRAActionField> call() throws Exception {
+                return facade.getFieldsForAction(jiraServerData, issue, action);
+            }
+        });
     }
 
-    public void progressWorkflowAction(final JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action)
+    public void progressWorkflowAction(final JiraServerData jiraServerData, final JIRAIssue issue, final JIRAAction action)
             throws JIRAException {
-        facade.progressWorkflowAction(jiraServerData, issue, action);
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.progressWorkflowAction(jiraServerData, issue, action);
+                return null;
+            }
+        });
     }
 
-    public void progressWorkflowAction(final JiraServerData jiraServerData, JIRAIssue issue, JIRAAction action,
-                                       List<JIRAActionField> fields) throws JIRAException {
-        facade.progressWorkflowAction(jiraServerData, issue, action, fields);
+    public void progressWorkflowAction(final JiraServerData jiraServerData, final JIRAIssue issue, final JIRAAction action,
+                                       final List<JIRAActionField> fields) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.progressWorkflowAction(jiraServerData, issue, action, fields);
+                return null;
+            }
+        });
     }
 
-    public void addComment(final JiraServerData jiraServerData, String issueKey, String comment) throws JIRAException {
-        facade.addComment(jiraServerData, issueKey, comment);
+    public void addComment(final JiraServerData jiraServerData, final String issueKey, final String comment) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.addComment(jiraServerData, issueKey, comment);
+                return null;
+            }
+        });
     }
 
 	public void addAttachment(final JiraServerData jiraServerData, final String issueKey, final String name,
 			final byte[] content) throws JIRAException {
-		facade.addAttachment(jiraServerData, issueKey, name, content);
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.addAttachment(jiraServerData, issueKey, name, content);
+                return null;
+            }
+        });
 	}
 
-    public JiraIssueAdapter createIssue(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-        JIRAIssue newIssue =  facade.createIssue(jiraServerData, issue);
-        return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
+    public JiraIssueAdapter createIssue(final JiraServerData jiraServerData, final JIRAIssue issue) throws JIRAException {
+        return wrap(jiraServerData, new Callable<JiraIssueAdapter>() {
+            public JiraIssueAdapter call() throws Exception {
+                JIRAIssue newIssue =  facade.createIssue(jiraServerData, issue);
+                return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
+            }
+        });
     }
 
-    @Override
-    public JiraIssueAdapter createSubtask(JiraServerData jiraServerData, JIRAIssue parent, JIRAIssue issue) throws JIRAException {
-        JIRAIssue newIssue =  facade.createSubtask(jiraServerData, parent, issue);
-        return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
+    public JiraIssueAdapter createSubtask(final JiraServerData jiraServerData, final JIRAIssue parent, final JIRAIssue issue) throws JIRAException {
+        return wrap(jiraServerData, new Callable<JiraIssueAdapter>() {
+            public JiraIssueAdapter call() throws Exception {
+                JIRAIssue newIssue =  facade.createSubtask(jiraServerData, parent, issue);
+                return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
+            }
+        });
     }
 
-    public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, String key) throws JIRAException {
+    public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, final String key) throws JIRAException {
+        Exception exception = bustedServers.get(jiraServerData.getId());
+        if (exception != null) {
+            throw new JIRAException(exception.getMessage(), exception);
+        }
         JIRAIssue issue =  facade.getIssue(jiraServerData, key);
         serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
         serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData);
     }
 
-    public JiraIssueAdapter getIssueDetails(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-         JIRAIssue i = facade.getIssueDetails(jiraServerData, issue);
+    public JiraIssueAdapter getIssueDetails(final JiraServerData jiraServerData, final JIRAIssue issue) throws JIRAException {
+        Exception exception = bustedServers.get(jiraServerData.getId());
+        if (exception != null) {
+            throw new JIRAException(exception.getMessage(), exception);
+        }
+        JIRAIssue i = facade.getIssueDetails(jiraServerData, issue);
         serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
         serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
         return new JiraIssueAdapter((JIRAIssueBean) i, jiraServerData);
     }
 
-    public void logWork(final JiraServerData jiraServerData, JIRAIssue issue, String timeSpent, Calendar startDate,
-                        String comment, boolean updateEstimate, String newEstimate) throws JIRAException {
-        facade.logWork(jiraServerData, issue, timeSpent, startDate, comment, updateEstimate,
-                newEstimate);
+    public void logWork(final JiraServerData jiraServerData, final JIRAIssue issue, final String timeSpent, final Calendar startDate,
+                        final String comment, final boolean updateEstimate, final String newEstimate) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.logWork(jiraServerData, issue, timeSpent, startDate, comment, updateEstimate, newEstimate);
+                return null;
+            }
+        });
     }
 
-    public void setAssignee(final JiraServerData jiraServerData, JIRAIssue issue, String assignee) throws JIRAException {
-        facade.setField(jiraServerData, issue, "assignee", assignee);
+    public void setAssignee(final JiraServerData jiraServerData, final JIRAIssue issue, final String assignee) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "assignee", assignee);
+                return null;
+            }
+        });
     }
 
-	public void setReporter(JiraServerData jiraServerData, JIRAIssue issue, String reporter) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "reporter", reporter);
+    public void setReporter(final JiraServerData jiraServerData, final JIRAIssue issue, final String reporter) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "reporter", reporter);
+                return null;
+            }
+        });
 	}
 
-	public void setSummary(JiraServerData jiraServerData, JIRAIssue issue, String summary) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "summary", summary);
+	public void setSummary(final JiraServerData jiraServerData, final JIRAIssue issue, final String summary) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "summary", summary);
+                return null;
+            }
+        });
 	}
 
-	public void setDescription(JiraServerData jiraServerData, JIRAIssue issue, String description) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "description", description);
+	public void setDescription(final JiraServerData jiraServerData, final JIRAIssue issue, final String description) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "description", description);
+                return null;
+            }
+        });
 	}
 
-	public void setType(JiraServerData jiraServerData, JIRAIssue issue, String type) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "issuetype", type);
+	public void setType(final JiraServerData jiraServerData, final JIRAIssue issue, final String type) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "issuetype", type);
+                return null;
+            }
+        });
 	}
 
-	public void setPriority(JiraServerData jiraServerData, JIRAIssue issue, String priority) throws JIRAException {
-		 facade.setField(jiraServerData, issue, "priority", priority);
+	public void setPriority(final JiraServerData jiraServerData, final JIRAIssue issue, final String priority) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "priority", priority);
+                return null;
+            }
+        });
 	}
 
-	public void setAffectedVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
-		facade.setField(jiraServerData, issue, "versions", versions);
+	public void setAffectedVersions(final JiraServerData jiraServerData, final JIRAIssue issue, final String[] versions) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "versions", versions);
+                return null;
+            }
+        });
 	}
 
-	public void setFixVersions(JiraServerData jiraServerData, JIRAIssue issue, String[] versions) throws JIRAException {
-		facade.setField(jiraServerData, issue, "fixVersions", versions);
+	public void setFixVersions(final JiraServerData jiraServerData, final JIRAIssue issue, final String[] versions) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setField(jiraServerData, issue, "fixVersions", versions);
+                return null;
+            }
+        });
 	}
 
-	public void setFields(JiraServerData jiraServerData, JIRAIssue issue, List<JIRAActionField> fields) throws JIRAException {
-		facade.setFields(jiraServerData, issue, fields);
+	public void setFields(final JiraServerData jiraServerData, final JIRAIssue issue, final List<JIRAActionField> fields) throws JIRAException {
+        wrap(jiraServerData, new Callable<Object>() {
+            public Object call() throws Exception {
+                facade.setFields(jiraServerData, issue, fields);
+                return null;
+            }
+        });
 	}
 
-    public JIRAUserBean getUser(final JiraServerData jiraServerData, String loginName)
+    public JIRAUserBean getUser(final JiraServerData jiraServerData, final String loginName)
             throws JIRAException, com.atlassian.connector.commons.jira.JiraUserNotFoundException {
-        return facade.getUser(jiraServerData, loginName);
+        return wrap(jiraServerData, new Callable<JIRAUserBean>() {
+            public JIRAUserBean call() throws Exception {
+                return facade.getUser(jiraServerData, loginName);
+            }
+        });
+
     }
 
-    public List<JIRAComment> getComments(final JiraServerData jiraServerData, JIRAIssue issue) throws JIRAException {
-        return facade.getComments(jiraServerData, issue);
+    public List<JIRAComment> getComments(final JiraServerData jiraServerData, final JIRAIssue issue) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRAComment>>() {
+            public List<JIRAComment> call() throws Exception {
+                return facade.getComments(jiraServerData, issue);
+            }
+        });
     }
 
-    public Collection<JIRAAttachment> getIssueAttachements(final JiraServerData jiraServerData, JIRAIssue issue)
+    public Collection<JIRAAttachment> getIssueAttachements(final JiraServerData jiraServerData, final JIRAIssue issue)
             throws JIRAException {
-        return facade.getIssueAttachements(jiraServerData, issue);
+        return wrap(jiraServerData, new Callable<Collection<JIRAAttachment>>() {
+            public Collection<JIRAAttachment> call() throws Exception {
+                return facade.getIssueAttachements(jiraServerData, issue);
+            }
+        });
     }
 
     public void testServerConnection(JiraServerData jiraServerData) throws RemoteApiException {
         facade.testServerConnection(jiraServerData);
+        bustedServers.remove(jiraServerData.getId());
     }
 
     public void testServerConnection(ConnectionCfg connectionCfg) throws RemoteApiException {
         facade.testServerConnection(connectionCfg);
+        bustedServers.remove(connectionCfg.getId());
     }
 
     public ServerType getServerType() {
         return facade.getServerType();
+    }
+
+    public List<JIRASecurityLevelBean> getSecurityLevels(final JiraServerData jiraServerData, final String projectKey)
+            throws RemoteApiException, JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRASecurityLevelBean>>() {
+            public List<JIRASecurityLevelBean> call() throws Exception {
+                return facade.getSecurityLevels(jiraServerData.toConnectionCfg(), projectKey);
+            }
+        });
     }
 
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {
@@ -277,13 +471,24 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             adapterList.add(new JiraIssueAdapter((JIRAIssueBean) issue, jiraServerData));
             serverModel.addUser(jiraServerData, issue.getAssigneeId(), issue.getAssignee());
             serverModel.addUser(jiraServerData, issue.getReporterId(), issue.getReporter());
-
         }
         return adapterList;
     }
 
-    public List<JIRASecurityLevelBean> getSecurityLevels(JiraServerData jiraServerData, String projectKey)
-            throws RemoteApiException, JIRAException {
-        return facade.getSecurityLevels(jiraServerData.toConnectionCfg(), projectKey);
+    private <T> T wrap(JiraServerData server, Callable<T> callable) throws JIRAException {
+        Exception ex = bustedServers.get(server.getId());
+        if (ex != null) {
+            if (ex instanceof JIRAException) {
+                throw (JIRAException) ex;
+            }
+            throw new JIRAException(ex.getMessage(), ex);
+        }
+        try {
+            return callable.call();
+        } catch (Exception e) {
+            JIRAException exception = new JIRAException(e.getMessage(), e);
+            bustedServers.put(server.getId(), exception);
+            throw exception;
+        }
     }
 }
