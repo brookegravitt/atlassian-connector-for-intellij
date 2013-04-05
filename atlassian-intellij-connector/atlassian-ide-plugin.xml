@@ -28,7 +28,7 @@
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <shared>false</shared>
         <use-favourites>false</use-favourites>
-        <show-branches>false</show-branches>
+        <show-branches>true</show-branches>
         <my-branches-only>false</my-branches-only>
         <bamboo2>true</bamboo2>
         <plans>
