@@ -216,8 +216,10 @@ public final class JiraCustomFilter implements JiraFilter {
 //                    break;
                 case STATUS:
                 case PRIORITIES:
-                case RESOLUTIONS:
                     cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyId());
+                    break;
+                case RESOLUTIONS:
+                    cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyResolution());
                     break;
                 case PROJECT:
                     cnt += joinJqlGroups(sb, key.jqlName(), groups.get(key), new CopyProjectKey());
@@ -231,14 +233,14 @@ public final class JiraCustomFilter implements JiraFilter {
 
     private class CopyName implements Function<JIRAQueryFragment, String> {
         public String apply(@Nullable JIRAQueryFragment s) {
-            return s.getName();
+            return " = " + s.getName();
         }
     }
 
     private class CopyProjectKey implements Function<JIRAQueryFragment, String> {
         public String apply(@Nullable JIRAQueryFragment s) {
             JIRAProjectBean p = (JIRAProjectBean) s;
-            return p.getKey();
+            return " = " + p.getKey();
         }
     }
 
@@ -253,7 +255,14 @@ public final class JiraCustomFilter implements JiraFilter {
     private class CopyId implements Function<JIRAQueryFragment, String> {
         public String apply(@Nullable JIRAQueryFragment s) {
             JIRAConstant r = (JIRAConstant) s;
-            return "" + r.getId();
+            return " = " + r.getId();
+        }
+    }
+
+    private class CopyResolution implements Function<JIRAQueryFragment, String> {
+        public String apply(@Nullable JIRAQueryFragment s) {
+            JIRAConstant r = (JIRAConstant) s;
+            return r.getId() == -1 ? " is empty" : " = " + r.getId();
         }
     }
 
@@ -263,7 +272,7 @@ public final class JiraCustomFilter implements JiraFilter {
             if (cnt++ > 0) {
                 sb.append(" or ");
             }
-            sb.append(jqlName).append(" = \"").append(getValue.apply(s)).append("\"");
+            sb.append(jqlName).append(getValue.apply(s));
         }
         return cnt;
     }
