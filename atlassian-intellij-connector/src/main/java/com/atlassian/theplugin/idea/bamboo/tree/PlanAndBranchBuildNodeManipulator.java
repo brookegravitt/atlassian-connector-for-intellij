@@ -151,6 +151,6 @@ public class PlanAndBranchBuildNodeManipulator extends ProjectBuildNodeManipulat
 			}
 		}
 
-		return array.get(index);
+		return index < array.size() ? array.get(index) : null;
 	}
 }
