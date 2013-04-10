@@ -178,6 +178,9 @@ public class BuildTreeModel extends DefaultTreeModel {
     }
 
     private void collectBuildingNodes(final DefaultMutableTreeNode node, Collection<BuildTreeNode> nodes) {
+        if (node == null) {
+            return;
+        }
         if (node instanceof BuildTreeNode) {
             BuildTreeNode buildNode = (BuildTreeNode) node;
             if (buildNode.getBuild().getBuild().getPlanState() == PlanState.BUILDING) {
