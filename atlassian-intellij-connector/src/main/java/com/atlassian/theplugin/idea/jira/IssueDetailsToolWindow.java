@@ -488,7 +488,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                     .addProjectConfigurationListener(params.issue.getLocalConfigurationListener());
                             retrieved = true;
                         } catch (final JIRAException e) {
-                            EventQueue.invokeLater(new Runnable() {
+                            SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     PluginUtil.getLogger().warn("Error retrieving issue in details panel", e);
                                     DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
@@ -499,7 +499,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
                     public void onSuccess() {
                         if (retrieved) {
-                            EventQueue.invokeLater(new Runnable() {
+                            SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
                                     //issueReloaded();
                                     jiraIssueListModelBuilder.updateIssue(params.issue);
