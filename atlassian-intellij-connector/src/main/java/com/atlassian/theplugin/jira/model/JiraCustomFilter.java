@@ -233,7 +233,7 @@ public final class JiraCustomFilter implements JiraFilter {
 
     private class CopyName implements Function<JIRAQueryFragment, String> {
         public String apply(@Nullable JIRAQueryFragment s) {
-            return " = " + s.getName();
+            return " = \"" + s.getName() + "\"";
         }
     }
 
