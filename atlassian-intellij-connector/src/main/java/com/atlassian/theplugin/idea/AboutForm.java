@@ -50,7 +50,7 @@ public class AboutForm {
 				"information right there in your development environment. " +
 				"<br><br><br><br>" + "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
 				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>" +
-				"<br><br><br><br>Licensed under the Apache License, Version 3.0.9 Copyright (c) Atlassian 2008-2012"
+				"<br><br><br><br>Licensed under the Apache License, Version 3.0.11 Copyright (c) Atlassian 2008-2013"
 				+ "</center></body></html>");
 	}
 
