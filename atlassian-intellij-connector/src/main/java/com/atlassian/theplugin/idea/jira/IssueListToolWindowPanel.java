@@ -530,7 +530,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 DialogWithDetails.showExceptionDialog(getProject(), "Cannot fetch issues from server " + serverName, exception);
                 return;
             }
-            int size = foundIssues.size();
+            int size = foundIssues != null ? foundIssues.size() : 0;
             if (foundIssues == null || foundIssues.size() == 0) {
                 Messages.showMessageDialog("No issues found", "Information", Messages.getInformationIcon());
             } else {
@@ -548,7 +548,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 } else {
                     ListPopup popup = JBPopupFactory.getInstance().createListPopup(
                             new RecentlyOpenIssuesAction.IssueListPopupStep("Found " + size + " issues", foundIssues, IssueListToolWindowPanel.this));
-                    popup.showInCenterOf(IssueListToolWindowPanel.this.getRootPane());
+                    JRootPane rootPane = IssueListToolWindowPanel.this.getRootPane();
+                    if (rootPane != null) {
+                        popup.showInCenterOf(rootPane);
+                    } else {
+                        popup.showCenteredInCurrentWindow(getProject());
+                    }
                 }
             }
         }
