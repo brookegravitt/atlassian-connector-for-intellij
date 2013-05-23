@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.ui.JBColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,8 +58,10 @@ public class UserLabel extends JPanel {
 	public void setUserName(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 		String userNameFixed = userName.replace(" ", "&nbsp;");
 		if (useLink) {
-            label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed
-					+ "</u></font></body></html>");
+            JBColor color = new JBColor(JBColor.BLUE, JBColor.CYAN);
+            String rgb = String.format("%02X", color.getRed()) + String.format("%02X", color.getGreen()) + String.format("%02X", color.getBlue());
+            label.setText("<html><body><font color=\"#" + rgb + "\"><u>" + userNameFixed
+                    + "</u></font></body></html>");
 			if (mouseListener != null) {
 				label.removeMouseListener(mouseListener);
 				mouseListener = null;

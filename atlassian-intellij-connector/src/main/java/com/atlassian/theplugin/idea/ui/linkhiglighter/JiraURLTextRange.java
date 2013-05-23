@@ -26,6 +26,7 @@ import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -36,7 +37,7 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JiraURLTextRange {
-	public static final Color LINK_COLOR = Color.BLUE;
+	public static final Color LINK_COLOR = new JBColor(JBColor.BLUE, JBColor.CYAN);
 	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
 
@@ -107,7 +108,7 @@ public class JiraURLTextRange {
 		if (rangeHighlighter != null) {
 			markupModel.removeHighlighter(rangeHighlighter);
 		}
-		rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
+        rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
 				HighlighterLayer.WARNING - 1, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
 		rangeHighlighter.setErrorStripeMarkColor(LINK_COLOR);
 		rangeHighlighter.setErrorStripeTooltip("issue " + issueKey + " on " + getDefaultJiraServerUrl());
