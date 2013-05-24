@@ -4,16 +4,13 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.IllegalFormatFlagsException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,9 +32,9 @@ public class PasswordStorage {
         }
         
         for (ServerCfg server : configuration.getServers()) {
-            if (!server.isPasswordStored()) {
-                continue;
-            }
+//            if (!server.isPasswordStored()) {
+//                continue;
+//            }
             String password = load(project, defaultProject, server.getServerId().toString());
             if (password != null) {
                 server.setPassword(password);
@@ -61,11 +58,11 @@ public class PasswordStorage {
 
         Map<String, String> tempPasswordMap = new HashMap<String, String>();
         for (ServerCfg server : configuration.getServers()) {
-            if (server.isPasswordStored()) {
+//            if (server.isPasswordStored()) {
                 store(project, defaultProject, server.getServerId().toString(), server.getPassword());
-            } else {
-                remove(project, defaultProject, server.getServerId().toString());
-            }
+//            } else {
+//                remove(project, defaultProject, server.getServerId().toString());
+//            }
             tempPasswordMap.put(server.getServerId().toString(), server.getPassword());
 
             // blank out password for storing configs in the config files. Real passwords are now kept in PasswordSafe

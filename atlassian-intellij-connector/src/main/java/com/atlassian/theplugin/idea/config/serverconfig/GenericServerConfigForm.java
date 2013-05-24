@@ -54,7 +54,6 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	private JTextField username;
 	private JPasswordField password;
 	private JButton testConnection;
-	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 	private JCheckBox useDefault;
     private DocumentListener listener;
@@ -154,11 +153,9 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		if (useDefault.isSelected()) {
 			username.setEnabled(false);
 			password.setEnabled(false);
-			chkPasswordRemember.setEnabled(false);
 		} else {
 			username.setEnabled(true);
 			password.setEnabled(true);
-			chkPasswordRemember.setEnabled(true);
 		}
 	}
 
@@ -198,7 +195,6 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
 		username.setText(server.getUsername());
-		chkPasswordRemember.setSelected(server.isPasswordStored());
 		password.setText(server.getPassword());
 		cbEnabled.setSelected(server.isEnabled());
 		useDefault.setSelected(server.isUseDefaultCredentials());
@@ -225,7 +221,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		serverCfg.setUrl(serverUrl.getText());
 		serverCfg.setUsername(username.getText());
 		serverCfg.setPassword(String.valueOf(password.getPassword()));
-		serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
+		serverCfg.setPasswordStored(true);
 		serverCfg.setEnabled(cbEnabled.isSelected());
 		serverCfg.setUseDefaultCredentials(useDefault.isSelected());
 		if (serverCfg.getUrl().length() > 0) {
@@ -364,14 +360,14 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		panel1.add(testConnection, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
-		chkPasswordRemember = new JCheckBox();
-		chkPasswordRemember.setSelected(true);
-		chkPasswordRemember.setText("Remember Password");
-		chkPasswordRemember.setMnemonic('R');
-		chkPasswordRemember.setDisplayedMnemonicIndex(0);
-		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				null, null, null, 0, false));
+//		chkPasswordRemember = new JCheckBox();
+//		chkPasswordRemember.setSelected(true);
+//		chkPasswordRemember.setText("Remember Password");
+//		chkPasswordRemember.setMnemonic('R');
+//		chkPasswordRemember.setDisplayedMnemonicIndex(0);
+//		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+//				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+//				null, null, null, 0, false));
 		cbEnabled = new JCheckBox();
 		cbEnabled.setEnabled(false);
 		cbEnabled.setHorizontalTextPosition(11);
