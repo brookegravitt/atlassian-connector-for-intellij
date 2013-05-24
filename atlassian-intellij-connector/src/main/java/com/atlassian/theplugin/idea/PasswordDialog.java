@@ -39,7 +39,7 @@ import java.awt.event.WindowEvent;
 public class PasswordDialog extends JDialog implements TestConnectionListener.ServerDataProvider {
 
 	private JPanel passwordPanel;
-	private JCheckBox chkRememberPassword;
+//	private JCheckBox chkRememberPassword;
 	private JPasswordField passwordField;
 	private JButton testConnectionButton;
 	private JLabel lblCommand;
@@ -118,7 +118,7 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	}
 
 	public Boolean getShouldPasswordBeStored() {
-		return chkRememberPassword.isSelected();
+		return true;//chkRememberPassword.isSelected();
 	}
 
 	public String getUserName() {
@@ -162,13 +162,13 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 		panel1.add(testConnectionButton, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
-		chkRememberPassword = new JCheckBox();
-		chkRememberPassword.setEnabled(true);
-		chkRememberPassword.setSelected(false);
-		chkRememberPassword.setText("Store password in configuration");
-		panel1.add(chkRememberPassword, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				null, null, null, 0, false));
+//		chkRememberPassword = new JCheckBox();
+//		chkRememberPassword.setEnabled(true);
+//		chkRememberPassword.setSelected(false);
+//		chkRememberPassword.setText("Store password in configuration");
+//		panel1.add(chkRememberPassword, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+//				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+//				null, null, null, 0, false));
 		lblCommand = new JLabel();
 		lblCommand.setText("");
 		panel1.add(lblCommand, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
