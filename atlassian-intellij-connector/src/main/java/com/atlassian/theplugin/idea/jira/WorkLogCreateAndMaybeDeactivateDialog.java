@@ -42,37 +42,14 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.management.timer.Timer;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -330,7 +307,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		changesetPanel.add(btnChangeSetRemove, cc.xy(2, 10));
 
 		UIUtil.setEnabled(changesetPanel, chkCommitChanges.isSelected() , true);
-		enableChangesetRadioButtons();
+		enableChangesetRadioButtons(true);
 
 		return changesetPanel;
 	}
@@ -605,7 +582,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 						}
 					} else {
 						//when synchronizing task with IDEA task then do not allow to manage changelists
-						enableChangesetRadioButtons();
+						enableChangesetRadioButtons(true);
 					}
 				}
 			});
@@ -679,7 +656,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			chkCommitChanges.addActionListener((new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					UIUtil.setEnabled(changesetPanel, chkCommitChanges.isSelected(), true);
-					enableChangesetRadioButtons();
+					enableChangesetRadioButtons(false);
 				}
 			}));
 		}
@@ -700,9 +677,9 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		updateOKAction();
 	}
 
-	private void enableChangesetRadioButtons() {
+	private void enableChangesetRadioButtons(boolean initEstimateButtons) {
 		boolean enable = !PluginTaskManagerHelper.isValidIdeaVersion();
-		if (enable) {
+		if (enable && initEstimateButtons) {
 			btnLeaveUnchanged.setSelected(true);
 		}
 		btnChangeSetDeactivate.setEnabled(enable);
