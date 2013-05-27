@@ -45,7 +45,7 @@ public class PasswordStorage {
             }
         }
         // save back to migrate passwords
-        savePasswordsToSecureStore(project, defaultProject, configuration, cfgFactory);
+//        savePasswordsToSecureStore(project, defaultProject, configuration, cfgFactory);
     }
 
     public static void savePasswordsToSecureStore(
