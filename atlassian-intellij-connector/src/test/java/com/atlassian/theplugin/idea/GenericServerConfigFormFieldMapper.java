@@ -46,15 +46,15 @@ class GenericServerConfigFormFieldMapper extends PrivateFieldMapper {
 		return testConnection;
 	}
 
-	public JCheckBox getChkPasswordRemember() {
-		return chkPasswordRemember;
-	}
+//	public JCheckBox getChkPasswordRemember() {
+//		return chkPasswordRemember;
+//	}
 
 	public JCheckBox getCbEnabled() {
 		return cbEnabled;
 	}
 
-	private JCheckBox chkPasswordRemember;
+//	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
 	public GenericServerConfigFormFieldMapper(GenericServerConfigForm pluginConfigurationForm) throws Exception {
