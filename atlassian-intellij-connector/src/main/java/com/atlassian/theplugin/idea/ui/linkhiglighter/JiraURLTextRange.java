@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
@@ -37,7 +38,7 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JiraURLTextRange {
-	public static final Color LINK_COLOR = new JBColor(JBColor.BLUE, JBColor.CYAN);
+	public static final Color LINK_COLOR = IdeaVersionFacade.getInstance().getJbColor(Color.BLUE, Color.CYAN);
 	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
 
