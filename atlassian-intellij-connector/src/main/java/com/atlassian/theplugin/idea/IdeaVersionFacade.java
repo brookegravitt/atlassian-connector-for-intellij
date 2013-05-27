@@ -14,8 +14,17 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.ui.*;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.execution.ui.ConsoleView;
+import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.ui.ExecutionConsole;
+import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.execution.ui.RunContentManager;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
 import com.intellij.openapi.diff.impl.patch.FilePatch;
@@ -49,7 +58,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -764,6 +777,15 @@ public final class IdeaVersionFacade {
         }
     }
 
+    public Color getJbColor(Color light, Color dark) {
+        try {
+            Class<?> jbColor = Class.forName("com.intellij.ui.JBColor");
+            Object color = jbColor.getConstructors()[0].newInstance(light, dark);
+            return (Color) color;
+        } catch (Exception e) {
+            return light;
+        }
+    }
 
     public enum OperationStatus {
         INFO,
