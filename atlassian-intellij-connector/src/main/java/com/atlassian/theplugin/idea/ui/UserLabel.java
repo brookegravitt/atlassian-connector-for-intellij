@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.ui;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ui.JBColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +58,7 @@ public class UserLabel extends JPanel {
 	public void setUserName(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 		String userNameFixed = userName.replace(" ", "&nbsp;");
 		if (useLink) {
-            Color color = IdeaVersionFacade.getInstance().getJbColor(JBColor.BLUE, JBColor.CYAN);
+            Color color = IdeaVersionFacade.getInstance().getJbColor(Color.BLUE, Color.CYAN);
             String rgb = String.format("%02X", color.getRed()) + String.format("%02X", color.getGreen()) + String.format("%02X", color.getBlue());
             label.setText("<html><body><font color=\"#" + rgb + "\"><u>" + userNameFixed
                     + "</u></font></body></html>");
