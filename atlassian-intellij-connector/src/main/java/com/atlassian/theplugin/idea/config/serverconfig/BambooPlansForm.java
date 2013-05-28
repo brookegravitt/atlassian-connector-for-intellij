@@ -264,9 +264,10 @@ public class BambooPlansForm extends JPanel {
                 progressAnimation.startProgressAnimation();
                 BambooServerData.Builder builder = new BambooServerData.Builder(bambooServerCfg);
                 builder.defaultUser(defaultCredentials);
-                bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(builder.build()));
-                final boolean bamboo4 = bambooServerFacade.isBamboo4(new BambooServerData.Builder(bambooServerCfg).build());
-                final boolean bamboo5 = bambooServerFacade.isBamboo5(new BambooServerData.Builder(bambooServerCfg).build());
+                BambooServerData bambooServerData = builder.build();
+                bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(bambooServerData));
+                final boolean bamboo4 = bambooServerFacade.isBamboo4(bambooServerData);
+                final boolean bamboo5 = bambooServerFacade.isBamboo5(bambooServerData);
 
                 final StringBuilder msg = new StringBuilder();
                 try {
