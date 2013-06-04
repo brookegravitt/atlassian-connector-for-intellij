@@ -51,10 +51,25 @@
         <shared>false</shared>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
+      <bamboo id="22">
+        <server-id id="23">d7e6f4ca-5fc1-4ecb-87e8-831a4cfa0540</server-id>
+        <name>devtools</name>
+        <url>https://devtools-bamboo.internal.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <show-branches>true</show-branches>
+        <my-branches-only>false</my-branches-only>
+        <bamboo2>true</bamboo2>
+        <plans id="24">
+          <plan id="25" key="ACC-DPL" grouped="0" />
+          <plan id="26" key="ACC-TST" grouped="0" />
+          <plan id="27" key="INT-DPL" grouped="0" />
+          <plan id="28" key="INT-TST" grouped="0" />
+        </plans>
+      </bamboo>
     </servers>
-    <default-crucible-server id="22">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-crucible-server>
-    <default-fisheye-server id="23">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-fisheye-server>
-    <default-fisheye-repo>connector-intellij</default-fisheye-repo>
-    <default-jira-server id="24">1e263562-f741-4a9e-acbd-76bbe6d18d8a</default-jira-server>
+    <default-crucible-server id="29">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-crucible-server>
+    <default-fisheye-server id="30">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-fisheye-server>
+    <default-jira-server id="31">1e263562-f741-4a9e-acbd-76bbe6d18d8a</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>

@@ -41,6 +41,8 @@ public interface JiraServerFacade extends ProductServerFacade {
 
     List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException;
 
+    List<JIRAProject> getProjectsForIssueCreation(JiraServerData jiraServerData) throws JIRAException;
+
     List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException;
 
     List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData) throws JIRAException;
