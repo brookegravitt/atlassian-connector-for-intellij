@@ -50,6 +50,7 @@ public class JIRAServerCache {
     private String errorMessage;
 
     private List<JIRAProject> projects;
+    private List<JIRAProject> projectsForIssueCreation;
     private List<JIRAConstant> statuses;
 
     private List<JIRAQueryFragment> savedFilters;
@@ -117,7 +118,21 @@ public class JIRAServerCache {
     }
 
 
-    public List<JIRAProject> getProjects(boolean fromCacheOnly) throws JIRAException {
+    public List<JIRAProject> getProjects(boolean fromCacheOnly, boolean forIssueCreation) throws JIRAException {
+        if (forIssueCreation) {
+            if (projectsForIssueCreation == null && !fromCacheOnly) {
+                try {
+                    List<JIRAProject> retrieved = jiraServerFacade.getProjectsForIssueCreation(jiraServerData);
+                    projectsForIssueCreation = new ArrayList<JIRAProject>();
+                    projectsForIssueCreation.add(new JIRAProjectBean(CacheConstants.ANY_ID, "Any"));
+                    projectsForIssueCreation.addAll(retrieved);
+                } catch (JIRAException e) {
+                    errorMessage = e.getMessage();
+                    throw e;
+                }
+            }
+            return projectsForIssueCreation;
+        }
         if (projects == null && !fromCacheOnly) {
             try {
                 List<JIRAProject> retrieved = jiraServerFacade.getProjects(jiraServerData);
@@ -129,7 +144,7 @@ public class JIRAServerCache {
                 throw e;
             }
         }
-        return projects;
+        return forIssueCreation ? projectsForIssueCreation : projects;
     }
 
     public synchronized List<JIRAConstant> getStatuses() throws JIRAException {

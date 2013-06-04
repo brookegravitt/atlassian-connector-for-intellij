@@ -174,13 +174,16 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		return "";
 	}
 
+    public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
+        return getProjects(jiraServerData, false);
+    }
 
-	public List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException {
+	public List<JIRAProject> getProjects(JiraServerData jiraServerData, boolean forIssueCreation) throws JIRAException {
 		if (jiraServerData == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(jiraServerData);
-		return (srv == null) ? null : srv.getProjects(nonResponsiveServers.contains(jiraServerData));
+		return (srv == null) ? null : srv.getProjects(nonResponsiveServers.contains(jiraServerData), forIssueCreation);
 	}
 
 	public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {

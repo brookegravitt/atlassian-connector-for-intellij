@@ -213,7 +213,7 @@ public class IssueCreateDialog extends DialogWrapper {
             private List<JIRAProject> projects = new ArrayList<JIRAProject>();
 
             public void run() throws JIRAException {
-                projects = model.getProjects(jiraServerData);
+                projects = model.getProjects(jiraServerData, true);
             }
 
             public void onSuccess() {

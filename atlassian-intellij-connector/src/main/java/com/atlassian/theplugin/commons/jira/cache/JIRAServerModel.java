@@ -34,7 +34,9 @@ public interface JIRAServerModel {
 
 	String getErrorMessage(JiraServerData jiraServerData);
 
-	List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException;
+    List<JIRAProject> getProjects(JiraServerData jiraServerData) throws JIRAException;
+
+    List<JIRAProject> getProjects(JiraServerData jiraServerData, boolean forIssueCreation) throws JIRAException;
 
 	List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException;
 

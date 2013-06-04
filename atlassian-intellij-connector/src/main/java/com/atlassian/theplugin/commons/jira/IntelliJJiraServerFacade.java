@@ -145,6 +145,14 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         });
     }
 
+    public List<JIRAProject> getProjectsForIssueCreation(final JiraServerData jiraServerData) throws JIRAException {
+        return wrap(jiraServerData, new Callable<List<JIRAProject>>() {
+            public List<JIRAProject> call() throws Exception {
+                return facade.getProjectsForIssueCreation(jiraServerData);
+            }
+        });
+    }
+
     public List<JIRAConstant> getStatuses(final JiraServerData jiraServerData) throws JIRAException {
         return wrap(jiraServerData, new Callable<List<JIRAConstant>>() {
             public List<JIRAConstant> call() throws Exception {
