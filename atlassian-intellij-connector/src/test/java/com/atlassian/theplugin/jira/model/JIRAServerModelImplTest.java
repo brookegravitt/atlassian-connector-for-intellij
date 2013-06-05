@@ -502,7 +502,11 @@ public class JIRAServerModelImplTest extends TestCase {
 			return projects;
 		}
 
-		public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
+        public List<JIRAProject> getProjectsForIssueCreation(JiraServerData jiraServerData) throws JIRAException {
+            return getProjects(jiraServerData);
+        }
+
+        public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");
 			}

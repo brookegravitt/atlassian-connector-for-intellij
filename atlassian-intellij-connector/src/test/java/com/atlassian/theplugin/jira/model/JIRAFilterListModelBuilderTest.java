@@ -247,7 +247,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData) throws JIRAException {
+        public List<JIRAProject> getProjectsForIssueCreation(JiraServerData jiraServerData) throws JIRAException {
+            return null;
+        }
+
+        public List<JIRAConstant> getIssueTypes(JiraServerData jiraServerData) throws JIRAException {
 			return null;
 		}
 

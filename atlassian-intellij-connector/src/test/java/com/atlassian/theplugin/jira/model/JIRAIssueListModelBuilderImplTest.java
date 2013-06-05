@@ -324,7 +324,11 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
+        public List<JIRAProject> getProjectsForIssueCreation(JiraServerData jiraServerData) throws JIRAException {
+            return null;
+        }
+
+        public List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException {
 			return null;
 		}
 
