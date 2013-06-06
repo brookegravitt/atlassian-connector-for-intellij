@@ -346,7 +346,8 @@
                                 ${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip
                             </resourceSrc>
                             <resourceDest>${pom.artifactId}/Downloads</resourceDest>
-                            <serverId>atlassian-documentation</serverId>
+                            <serverId>atlassian-private</serverId>
+                            <!--<serverId>atlassian-documentation</serverId>-->
                             <url>dav:https://update.atlassian.com/</url>
                         </configuration>
                     </execution>
@@ -361,7 +362,8 @@
                                 ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml
                             </resourceSrc>
                             <resourceDest>${pom.artifactId}</resourceDest>
-                            <serverId>atlassian-documentation</serverId>
+                            <serverId>atlassian-private</serverId>
+                            <!--<serverId>atlassian-documentation</serverId>-->
                             <url>dav:https://update.atlassian.com/</url>
                         </configuration>
                     </execution>
