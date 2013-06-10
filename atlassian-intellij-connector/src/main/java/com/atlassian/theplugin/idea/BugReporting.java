@@ -95,6 +95,7 @@ public final class BugReporting {
         versionMap.put("3.0.9", "17184");
         versionMap.put("3.0.10", "20339");
         versionMap.put("3.0.11", "20340");
+        versionMap.put("3.0.12", "23183");
     }
 
     private static final int MAX_URI_LENGTH = 2048;
