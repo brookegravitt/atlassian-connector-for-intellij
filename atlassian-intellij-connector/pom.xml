@@ -32,7 +32,9 @@
         <scpkey>bogus</scpkey>
         <scpuploadhost>update-fe.internal.atlassian.com</scpuploadhost>
         <scpdirbase>/var/www/domains/atlassian.com/update/htdocs/</scpdirbase>
-        <scpextraargs/>
+        <scpextraarg1/>
+        <scpextraarg2/>
+        <scpextraarg3/>
     </properties>
 
     <dependencies>
@@ -351,7 +353,7 @@
                         <configuration>
                             <executable>${scpexe}</executable>
                             <commandlineArgs>
-                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/Downloads/${pom.artifactId}-${pom.version}-plugin-zip.zip
+                                ${scpextraarg1} ${scpextraarg2} ${scpextraarg3} -v -i ${scpkey} ${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/Downloads/${pom.artifactId}-${pom.version}-plugin-zip.zip
                             </commandlineArgs>
                         </configuration>
                     </execution>
@@ -364,7 +366,7 @@
                         <configuration>
                             <executable>${scpexe}</executable>
                             <commandlineArgs>
-                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestStableVersion.xml
+                                ${scpextraarg1} ${scpextraarg2} ${scpextraarg3} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestStableVersion.xml
                             </commandlineArgs>
                         </configuration>
                     </execution>
@@ -377,7 +379,7 @@
                         <configuration>
                             <executable>${scpexe}</executable>
                             <commandlineArgs>
-                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestPossibleVersion.xml
+                                ${scpextraarg1} ${scpextraarg2} ${scpextraarg3} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestPossibleVersion.xml
                             </commandlineArgs>
                         </configuration>
                     </execution>
