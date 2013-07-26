@@ -21,11 +21,18 @@
     </scm>
     <issueManagement>
         <system>Jira</system>
-        <url>https://studio.atlassian.com/browse/PL</url>
+        <url>https://ecosystem.atlassian.net/browse/PL</url>
     </issueManagement>
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <buildNumber>${timestamp}</buildNumber>
+
+        <scpexe>scp</scpexe>
+        <scpuser>bogus</scpuser>
+        <scpkey>bogus</scpkey>
+        <scpuploadhost>update-fe.internal.atlassian.com</scpuploadhost>
+        <scpdirbase>/var/www/domains/atlassian.com/update/htdocs/</scpdirbase>
+        <scpextraargs/>
     </properties>
 
     <dependencies>
@@ -331,56 +338,47 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-upload-plugin</artifactId>
-                <version>1.1</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
                 <executions>
                     <execution>
-                        <id>upload-artifact</id>
+                        <id>upload-artifact-by-scp</id>
                         <phase>deploy</phase>
                         <goals>
-                            <goal>upload</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>
-                                ${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip
-                            </resourceSrc>
-                            <resourceDest>${pom.artifactId}/Downloads</resourceDest>
-                            <serverId>atlassian-private</serverId>
-                            <!--<serverId>atlassian-documentation</serverId>-->
-                            <url>dav:https://update.atlassian.com/</url>
+                            <executable>${scpexe}</executable>
+                            <commandlineArgs>
+                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}-plugin-zip.zip ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/Downloads/${pom.artifactId}-${pom.version}-plugin-zip.zip
+                            </commandlineArgs>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>upload-stable-metadata</id>
+                        <id>upload-stable-metadata-by-scp</id>
                         <phase>site-deploy</phase>
                         <goals>
-                            <goal>upload</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>
-                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml
-                            </resourceSrc>
-                            <resourceDest>${pom.artifactId}</resourceDest>
-                            <serverId>atlassian-private</serverId>
-                            <!--<serverId>atlassian-documentation</serverId>-->
-                            <url>dav:https://update.atlassian.com/</url>
+                            <executable>${scpexe}</executable>
+                            <commandlineArgs>
+                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestStableVersion.xml
+                            </commandlineArgs>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>upload-metadata</id>
+                        <id>upload-metadata-by-scp</id>
                         <phase>deploy</phase>
                         <goals>
-                            <goal>upload</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>
-                                ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml
-                            </resourceSrc>
-                            <resourceDest>${pom.artifactId}</resourceDest>
-                            <serverId>atlassian-private</serverId>
-                            <!--<serverId>atlassian-documentation</serverId>-->
-                            <url>dav:https://update.atlassian.com/</url>
+                            <executable>${scpexe}</executable>
+                            <commandlineArgs>
+                                ${scpextraargs} -v -i ${scpkey} ${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml ${scpuser}@${scpuploadhost}:${scpdirbase}${pom.artifactId}/latestPossibleVersion.xml
+                            </commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>
@@ -822,6 +820,4 @@
             <url>https://maven.atlassian.com/content/repositories/central/</url>
         </pluginRepository>
     </pluginRepositories>
-
-
 </project>
