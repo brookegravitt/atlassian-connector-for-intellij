@@ -9,7 +9,7 @@
         <use-favourites>false</use-favourites>
         <show-branches>false</show-branches>
         <my-branches-only>false</my-branches-only>
-        <bamboo2>true</bamboo2>
+        <bamboo2>false</bamboo2>
         <plans id="5">
           <plan id="6" key="JIRAMASTER-RESTAPIGUARD" grouped="0" />
           <plan id="7" key="JIRAFIVETWOSTABLE-RESTAPIGUARD" grouped="0" />
