@@ -7,6 +7,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.collect.Lists;
 
 import javax.swing.*;
 import java.util.List;
@@ -30,17 +31,21 @@ public class FieldIssueType extends AbstractFieldComboBox {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
+                    final List<JIRAConstant> issueTypes = Lists.newArrayList();
+                    List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
 					JIRAProject issueProject = null;
-					for (JIRAProject project : projects) {
-						if (issue.getProjectKey().equals(project.getKey())) {
-							issueProject = project;
-							break;
-						}
-					}
-					final List<JIRAConstant> issueTypes = issue.isSubTask()
-							? serverModel.getSubtaskIssueTypes(issue.getJiraServerData(), issueProject)
-							: serverModel.getIssueTypes(issue.getJiraServerData(), issueProject, false);
+                    if (projects != null) {
+                        for (JIRAProject project : projects) {
+                            if (issue.getProjectKey().equals(project.getKey())) {
+                                issueProject = project;
+                                break;
+                            }
+                        }
+                        issueTypes.addAll(issue.isSubTask()
+                                ? serverModel.getSubtaskIssueTypes(issue.getJiraServerData(), issueProject)
+                                : serverModel.getIssueTypes(issue.getJiraServerData(), issueProject, false)
+                        );
+                    }
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							comboModel.removeAllElements();
