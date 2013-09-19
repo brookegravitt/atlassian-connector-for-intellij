@@ -619,7 +619,7 @@ public class IssueCreateDialog extends DialogWrapper {
         }
         String assignTo = assigneeField.getSelectedUser();
         if (assignTo.length() > 0) {
-            newIssue.setAssignee(assignTo);
+            newIssue.setAssigneeId(assignTo);
         }
 
         // save selected project and components to the config
