@@ -1530,12 +1530,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 cmts = facade.getComments(params.issue.getJiraServerData(), params.issue);
                             }
                             for (JIRAComment c : cmts) {
+                                String author = c.getAuthor();
                                 try {
-                                    JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
-                                            .getUser(getJiraServerData(), c.getAuthor());
-                                    c.setAuthorFullName(u.getName());
+                                    if (author != null) {
+                                        JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
+                                                .getUser(getJiraServerData(), author);
+                                        c.setAuthorFullName(u.getName());
+                                    } else {
+                                        c.setAuthorFullName("Unknown");
+                                    }
                                 } catch (JiraUserNotFoundException e) {
-                                    c.setAuthorFullName(c.getAuthor());
+                                    c.setAuthorFullName(author);
                                 }
                             }
 
@@ -1554,9 +1559,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                                 }
                             });
                         }
-                    } catch (JIRAException e) {
-                        tabs.setTitleAt(tabIndex, "Unable to retrieve comments");
-                        statusBarPane.setErrorMessage("Unable to retrieve comments", e);
+                    } catch (final JIRAException e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                tabs.setTitleAt(tabIndex, "Unable to retrieve comments");
+                                statusBarPane.setErrorMessage("Unable to retrieve comments", e);
+                            }
+                        });
                     }
                 }
             }
