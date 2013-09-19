@@ -104,7 +104,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 public Boolean call() throws Exception {
                     return facade.usesRest(jiraServerData);
                 }
-            });
+            }, false);
         } catch (JIRAException e) {
             return false;
         }
@@ -116,7 +116,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 List<JIRAIssue> list = facade.getIssues(jiraServerData, filter, sort, sortOrder, start, size);
                 return getJiraServerAdapterList(jiraServerData, list);
             }
-        });
+        }, false);
     }
 
     public List<JiraIssueAdapter> getIssues(final JiraServerData server, final String query, final String sort, final String sortOrder, final int start, final int size) throws JIRAException {
@@ -125,7 +125,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 List<JIRAIssue> list = facade.getIssues(server, query, sort, sortOrder, start, size);
                 return getJiraServerAdapterList(server, list);
             }
-        });
+        }, false);
     }
 
     public List<JiraIssueAdapter> getSavedFilterIssues(final JiraServerData jiraServerData, final JIRASavedFilter filter, final String sort, final String sortOrder, final int start, final int size) throws JIRAException {
@@ -134,7 +134,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 List<JIRAIssue> list = facade.getSavedFilterIssues(jiraServerData, filter, sort, sortOrder, start, size);
                 return getJiraServerAdapterList(jiraServerData, list);
             }
-        });
+        }, false);
     }
 
     public List<JIRAProject> getProjects(final JiraServerData jiraServerData) throws JIRAException {
@@ -142,7 +142,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAProject> call() throws Exception {
                 return facade.getProjects(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAProject> getProjectsForIssueCreation(final JiraServerData jiraServerData) throws JIRAException {
@@ -150,7 +150,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAProject> call() throws Exception {
                 return facade.getProjectsForIssueCreation(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAConstant> getStatuses(final JiraServerData jiraServerData) throws JIRAException {
@@ -158,7 +158,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAConstant> call() throws Exception {
                 return facade.getStatuses(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAConstant> getIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
@@ -166,7 +166,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAConstant> call() throws Exception {
                 return facade.getIssueTypes(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAConstant> getIssueTypesForProject(final JiraServerData jiraServerData, final long projectId, final String projectKey)
@@ -175,7 +175,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAConstant> call() throws Exception {
                 return facade.getIssueTypesForProject(jiraServerData, projectId, projectKey);
             }
-        });
+        }, false);
     }
 
     public List<JIRAConstant> getSubtaskIssueTypes(final JiraServerData jiraServerData) throws JIRAException {
@@ -183,7 +183,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAConstant> call() throws Exception {
                 return facade.getSubtaskIssueTypes(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAConstant> getSubtaskIssueTypesForProject(final JiraServerData jiraServerData, final long projectId, final String projectKey)
@@ -192,7 +192,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAConstant> call() throws Exception {
                 return facade.getSubtaskIssueTypesForProject(jiraServerData, projectId, projectKey);
             }
-        });
+        }, false);
     }
 
     public List<JIRAQueryFragment> getSavedFilters(final JiraServerData jiraServerData) throws JIRAException {
@@ -200,7 +200,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAQueryFragment> call() throws Exception {
                 return facade.getSavedFilters(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAComponentBean> getComponents(final JiraServerData jiraServerData, final String projectKey) throws JIRAException {
@@ -208,7 +208,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAComponentBean> call() throws Exception {
                 return facade.getComponents(jiraServerData, projectKey);
             }
-        });
+        }, false);
     }
 
     public List<JIRAVersionBean> getVersions(final JiraServerData jiraServerData, final String projectKey) throws JIRAException {
@@ -216,7 +216,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAVersionBean> call() throws Exception {
                 return facade.getVersions(jiraServerData, projectKey);
             }
-        });
+        }, false);
     }
 
     public List<JIRAPriorityBean> getPriorities(final JiraServerData jiraServerData) throws JIRAException {
@@ -224,7 +224,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAPriorityBean> call() throws Exception {
                 return facade.getPriorities(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAResolutionBean> getResolutions(final JiraServerData jiraServerData) throws JIRAException {
@@ -232,7 +232,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAResolutionBean> call() throws Exception {
                 return facade.getResolutions(jiraServerData);
             }
-        });
+        }, false);
     }
 
     public List<JIRAAction> getAvailableActions(final JiraServerData jiraServerData, final JIRAIssue issue)
@@ -241,7 +241,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAAction> call() throws Exception {
                 return facade.getAvailableActions(jiraServerData, issue);
             }
-        });
+        }, false);
     }
 
     public List<JIRAActionField> getFieldsForAction(final JiraServerData jiraServerData, final JIRAIssue issue,
@@ -250,7 +250,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAActionField> call() throws Exception {
                 return facade.getFieldsForAction(jiraServerData, issue, action);
             }
-        });
+        }, false);
     }
 
     public void progressWorkflowAction(final JiraServerData jiraServerData, final JIRAIssue issue, final JIRAAction action)
@@ -260,7 +260,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.progressWorkflowAction(jiraServerData, issue, action);
                 return null;
             }
-        });
+        }, true);
     }
 
     public void progressWorkflowAction(final JiraServerData jiraServerData, final JIRAIssue issue, final JIRAAction action,
@@ -270,7 +270,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.progressWorkflowAction(jiraServerData, issue, action, fields);
                 return null;
             }
-        });
+        }, true);
     }
 
     public void addComment(final JiraServerData jiraServerData, final String issueKey, final String comment) throws JIRAException {
@@ -279,7 +279,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.addComment(jiraServerData, issueKey, comment);
                 return null;
             }
-        });
+        }, true);
     }
 
 	public void addAttachment(final JiraServerData jiraServerData, final String issueKey, final String name,
@@ -289,7 +289,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.addAttachment(jiraServerData, issueKey, name, content);
                 return null;
             }
-        });
+        }, true);
 	}
 
     public JiraIssueAdapter createIssue(final JiraServerData jiraServerData, final JIRAIssue issue) throws JIRAException {
@@ -298,7 +298,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 JIRAIssue newIssue =  facade.createIssue(jiraServerData, issue);
                 return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
             }
-        });
+        }, true);
     }
 
     public JiraIssueAdapter createSubtask(final JiraServerData jiraServerData, final JIRAIssue parent, final JIRAIssue issue) throws JIRAException {
@@ -307,7 +307,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 JIRAIssue newIssue =  facade.createSubtask(jiraServerData, parent, issue);
                 return new JiraIssueAdapter((JIRAIssueBean) newIssue, jiraServerData);
             }
-        });
+        }, true);
     }
 
     public JiraIssueAdapter getIssue(final JiraServerData jiraServerData, final String key) throws JIRAException {
@@ -339,7 +339,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.logWork(jiraServerData, issue, timeSpent, startDate, comment, updateEstimate, newEstimate);
                 return null;
             }
-        });
+        }, true);
     }
 
     public void setAssignee(final JiraServerData jiraServerData, final JIRAIssue issue, final String assignee) throws JIRAException {
@@ -348,7 +348,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "assignee", assignee);
                 return null;
             }
-        });
+        }, true);
     }
 
     public void setReporter(final JiraServerData jiraServerData, final JIRAIssue issue, final String reporter) throws JIRAException {
@@ -357,7 +357,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "reporter", reporter);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setSummary(final JiraServerData jiraServerData, final JIRAIssue issue, final String summary) throws JIRAException {
@@ -366,7 +366,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "summary", summary);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setDescription(final JiraServerData jiraServerData, final JIRAIssue issue, final String description) throws JIRAException {
@@ -375,7 +375,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "description", description);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setType(final JiraServerData jiraServerData, final JIRAIssue issue, final String type) throws JIRAException {
@@ -384,7 +384,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "issuetype", type);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setPriority(final JiraServerData jiraServerData, final JIRAIssue issue, final String priority) throws JIRAException {
@@ -393,7 +393,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "priority", priority);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setAffectedVersions(final JiraServerData jiraServerData, final JIRAIssue issue, final String[] versions) throws JIRAException {
@@ -402,7 +402,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "versions", versions);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setFixVersions(final JiraServerData jiraServerData, final JIRAIssue issue, final String[] versions) throws JIRAException {
@@ -411,7 +411,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setField(jiraServerData, issue, "fixVersions", versions);
                 return null;
             }
-        });
+        }, true);
 	}
 
 	public void setFields(final JiraServerData jiraServerData, final JIRAIssue issue, final List<JIRAActionField> fields) throws JIRAException {
@@ -420,7 +420,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                 facade.setFields(jiraServerData, issue, fields);
                 return null;
             }
-        });
+        }, true);
 	}
 
     public JIRAUserBean getUser(final JiraServerData jiraServerData, final String loginName)
@@ -429,7 +429,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public JIRAUserBean call() throws Exception {
                 return facade.getUser(jiraServerData, loginName);
             }
-        });
+        }, false);
 
     }
 
@@ -438,7 +438,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRAComment> call() throws Exception {
                 return facade.getComments(jiraServerData, issue);
             }
-        });
+        }, false);
     }
 
     public Collection<JIRAAttachment> getIssueAttachements(final JiraServerData jiraServerData, final JIRAIssue issue)
@@ -447,7 +447,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public Collection<JIRAAttachment> call() throws Exception {
                 return facade.getIssueAttachements(jiraServerData, issue);
             }
-        });
+        }, false);
     }
 
     public void testServerConnection(final JiraServerData jiraServerData) throws RemoteApiException {
@@ -458,7 +458,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
                     bustedServers.remove(jiraServerData.getId());
                     return null;
                 }
-            });
+            }, false);
         } catch (JIRAException e) {
             throw new RemoteApiException(e);
         }
@@ -488,7 +488,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             public List<JIRASecurityLevelBean> call() throws Exception {
                 return facade.getSecurityLevels(jiraServerData.toConnectionCfg(), projectKey);
             }
-        });
+        }, false);
     }
 
     private List<JiraIssueAdapter> getJiraServerAdapterList(JiraServerData jiraServerData, List<JIRAIssue> list) {
@@ -501,7 +501,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
         return adapterList;
     }
 
-    private <T> T wrap(JiraServerData server, Callable<T> callable) throws JIRAException {
+    private <T> T wrap(JiraServerData server, Callable<T> callable, boolean doNotBust) throws JIRAException {
         Exception ex = bustedServers.get(server.getId());
         if (ex != null) {
             if (ex instanceof JIRAException) {
@@ -513,7 +513,9 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             return callable.call();
         } catch (Exception e) {
             JIRAException exception = new JIRAException(e.getMessage(), e);
-            bustedServers.put(server.getId(), exception);
+            if (!doNotBust) {
+                bustedServers.put(server.getId(), exception);
+            }
             throw exception;
         }
     }
