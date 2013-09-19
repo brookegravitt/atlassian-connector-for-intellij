@@ -196,16 +196,17 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 	private void changeCancelActionName() {
 		if (isShowing() && progress.get() == servers.size()) {
-			setCancelButtonText("Close");
-
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    setCancelButtonText("Close");
+                }
+            });
 		}
 	}
 
 	public void setServerDataExt(ServerDataExt server) {
 		servers.add(server);
-
 	}
-
 
 	private class LocalTestConnectionProcessor implements TestConnectionProcessor {
 		final private ServerDataExt serverDataExt;

@@ -79,7 +79,7 @@ import java.util.Collection;
  */
 
 public class ThePluginProjectComponent implements ProjectComponent {
-    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
+    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_13.png";
 
     private final WorkspaceConfigurationBean projectConfigurationBean;
     private final Project project;
