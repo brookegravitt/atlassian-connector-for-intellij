@@ -95,7 +95,7 @@ public final class IdeaVersionFacade {
     private static final int IDEA_108_1333_GR6 = 108;
 
     // idea 13 EAP
-    private static final int IDEA_132_197_GR6 = 132;
+    private static final int IDEA_13_GR6 = 130;
 
     private boolean isIdea7;
     private boolean isIdea8;
@@ -133,7 +133,7 @@ public final class IdeaVersionFacade {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
         } else if (m.matches() && group5 >= IDEA_108_1333_GR6) {
-            if (group5 >= IDEA_132_197_GR6) {
+            if (group5 >= IDEA_13_GR6) {
                 isIdea13 = true;
             }
             isIdea11Or12 = true;
@@ -483,7 +483,11 @@ public final class IdeaVersionFacade {
             }
             Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
             Constructor[] constructors = browserClass.getConstructors();
-            if (isIdea11Or12) {
+            if (isIdea13) {
+                return (MultipleChangeListBrowser) constructors[0]
+                    .newInstance(project, changeListManager.getChangeLists(),
+                            changeList, project, changeListManager.getDefaultChangeList(), true, true, null, null, null);
+            } else if (isIdea11Or12) {
                 return (MultipleChangeListBrowser) constructors[0]
                         .newInstance(project, changeListManager.getChangeLists(),
                                 changeList, changeListManager.getDefaultChangeList(), true, true, null, null, null);
