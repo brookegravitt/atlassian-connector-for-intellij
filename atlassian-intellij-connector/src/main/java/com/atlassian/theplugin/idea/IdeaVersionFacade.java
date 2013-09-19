@@ -4,6 +4,7 @@ import com.atlassian.connector.intellij.tasks.PluginTaskManager;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.exception.PatchCreateErrorException;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueButtonAction;
 import com.atlassian.theplugin.idea.jira.LogTimeCheckinHandler;
 import com.atlassian.theplugin.idea.jira.logtime.LogTimeInvocationHandler;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -53,8 +54,13 @@ import com.intellij.util.ui.AnimatedIcon;
 import com.intellij.util.ui.AsyncProcessIcon;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Point;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -88,12 +94,15 @@ public final class IdeaVersionFacade {
     //idea 11 EAP
     private static final int IDEA_108_1333_GR6 = 108;
 
+    // idea 13 EAP
+    private static final int IDEA_132_197_GR6 = 132;
 
     private boolean isIdea7;
     private boolean isIdea8;
     private boolean isIdea9;
     private boolean isIdeaX;
     private boolean isIdea11Or12;
+    private boolean isIdea13;
 
     boolean isIdeaX5;
     private boolean communityEdition = false;
@@ -124,6 +133,9 @@ public final class IdeaVersionFacade {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
             communityEdition = m.group(3) != null;
         } else if (m.matches() && group5 >= IDEA_108_1333_GR6) {
+            if (group5 >= IDEA_132_197_GR6) {
+                isIdea13 = true;
+            }
             isIdea11Or12 = true;
             isIdeaX = true;
             isIdeaX5 = true;
@@ -158,7 +170,7 @@ public final class IdeaVersionFacade {
     }
 
     private boolean isIdea() {
-        return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11Or12;
+        return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11Or12 || isIdea13;
     }
 
     public static boolean isInstanceOfPsiDocToken(Object obj) {
@@ -784,6 +796,26 @@ public final class IdeaVersionFacade {
             return (Color) color;
         } catch (Exception e) {
             return light;
+        }
+    }
+
+    public String createActionTooltipText(String text, ActiveIssueButtonAction action) {
+        try {
+            Class<?> clazz;
+            if (isIdea13) {
+                clazz = Class.forName("com.intellij.openapi.keymap.KeymapUtil");
+            } else {
+                clazz = Class.forName("com.intellij.openapi.actionSystem.AnAction");
+            }
+            return clazz.getMethod("createTooltipText", String.class, AnAction.class).invoke(null, text, action).toString();
+        } catch (ClassNotFoundException e) {
+            return text;
+        } catch (InvocationTargetException e) {
+            return text;
+        } catch (NoSuchMethodException e) {
+            return text;
+        } catch (IllegalAccessException e) {
+            return text;
         }
     }
 

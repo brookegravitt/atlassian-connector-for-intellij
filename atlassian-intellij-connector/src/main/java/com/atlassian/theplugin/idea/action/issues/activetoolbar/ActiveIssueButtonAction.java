@@ -4,6 +4,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -16,8 +17,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.ImageLoader;
 import com.intellij.util.ui.EmptyIcon;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -133,7 +139,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         }
 
         private void updateTooltipText(String description) {
-            String tooltip = AnAction.createTooltipText(description, ActiveIssueButtonAction.this);
+            String tooltip = IdeaVersionFacade.getInstance().createActionTooltipText(description, ActiveIssueButtonAction.this);
             setToolTipText(tooltip.length() <= 0 ? null : tooltip);
         }
 
