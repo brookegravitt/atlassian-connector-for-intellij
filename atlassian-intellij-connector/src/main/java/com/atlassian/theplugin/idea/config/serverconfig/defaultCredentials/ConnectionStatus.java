@@ -24,19 +24,20 @@ import javax.swing.*;
  */
 public enum ConnectionStatus {
     
-		NONE(safeGetIcon("/actions/help.png", "/actions/help.png")),
-		PASSED(safeGetIcon("/actions/er-state.png", "/icons/icn_plan_passed.gif")),
-		FAILED(safeGetIcon("/actions/breakpoint.png", "/icons/icn_plan_failed.gif"));
+    NONE(safeGetIcon("/actions/help.png", "/actions/help.png")),
+    // stupid idea throws an exception internally anyway if there is no icon. please kill me
+    PASSED(safeGetIcon("/icons/icn_plan_passed.gif", "/icons/icn_plan_passed.gif")),
+    FAILED(safeGetIcon("/icons/icn_plan_failed.gif", "/icons/icn_plan_failed.gif"));
 
-		private final Icon icon;
+    private final Icon icon;
 
-		Icon getIcon() {
-			return icon;
-		}
+    Icon getIcon() {
+        return icon;
+    }
 
-		ConnectionStatus(Icon icon) {
-			this.icon = icon;
-		}
+    ConnectionStatus(Icon icon) {
+        this.icon = icon;
+    }
 
     private static Icon safeGetIcon(String icon, String backup) {
         try {
