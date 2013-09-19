@@ -23,8 +23,10 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.collect.Lists;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,16 +44,18 @@ public class FieldAffectsVersion extends AbstractFieldList {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
+                    final List<JIRAVersionBean> versions = Lists.newArrayList();
+                    List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
 					JIRAProject issueProject = null;
-					for (JIRAProject project : projects) {
-						if (issue.getProjectKey().equals(project.getKey())) {
-							issueProject = project;
-							break;
-						}
-					}
-					final List<JIRAVersionBean> versions =
-							serverModel.getVersions(issue.getJiraServerData(), issueProject, false);
+                    if (projects != null) {
+                        for (JIRAProject project : projects) {
+                            if (issue.getProjectKey().equals(project.getKey())) {
+                                issueProject = project;
+                                break;
+                            }
+                        }
+                        versions.addAll(serverModel.getVersions(issue.getJiraServerData(), issueProject, false));
+                    }
 					SwingUtilities.invokeLater(new LocalVersionListFiller(listModel, versions, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e.getMessage());

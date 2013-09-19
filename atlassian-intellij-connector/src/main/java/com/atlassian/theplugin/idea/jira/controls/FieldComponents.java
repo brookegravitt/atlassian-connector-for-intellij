@@ -23,6 +23,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.collect.Lists;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -43,16 +44,18 @@ public class FieldComponents extends AbstractFieldList {
 			public void run() {
 				try {
 					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
-					JIRAProject issueProject = null;
-					for (JIRAProject project : projects) {
-						if (issue.getProjectKey().equals(project.getKey())) {
-							issueProject = project;
-							break;
-						}
-					}
-					final List<JIRAComponentBean> versions =
-							serverModel.getComponents(issue.getJiraServerData(), issueProject, false);
-					SwingUtilities.invokeLater(new LocalComponentListFiller(listModel, versions, issue));
+                    final List<JIRAComponentBean> components = Lists.newArrayList();
+                    JIRAProject issueProject = null;
+                    if (projects != null) {
+                        for (JIRAProject project : projects) {
+                            if (issue.getProjectKey().equals(project.getKey())) {
+                                issueProject = project;
+                                break;
+                            }
+                        }
+                        components.addAll(serverModel.getComponents(issue.getJiraServerData(), issueProject, false));
+                    }
+					SwingUtilities.invokeLater(new LocalComponentListFiller(listModel, components, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e.getMessage());
 				}

@@ -22,6 +22,7 @@ import com.atlassian.connector.commons.jira.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JiraIssueAdapter;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.collect.Lists;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -42,16 +43,17 @@ public class FieldFixForVersion extends AbstractFieldList {
 			public void run() {
 				try {
 					List<JIRAProject> projects = serverModel.getProjects(issue.getJiraServerData());
+                    final List<JIRAFixForVersionBean> versions = Lists.newArrayList();
 					JIRAProject issueProject = null;
-					for (JIRAProject project : projects) {
-						if (issue.getProjectKey().equals(project.getKey())) {
-							issueProject = project;
-							break;
-						}
-					}
-					final List<JIRAFixForVersionBean> versions =
-							serverModel.getFixForVersions(issue.getJiraServerData(), issueProject, false);
-
+                    if (projects != null) {
+                        for (JIRAProject project : projects) {
+                            if (issue.getProjectKey().equals(project.getKey())) {
+                                issueProject = project;
+                                break;
+                            }
+                        }
+                        versions.addAll(serverModel.getFixForVersions(issue.getJiraServerData(), issueProject, false));
+                    }
 					SwingUtilities.invokeLater(new LocalVersionListFiller(listModel, versions, issue));
 
 				} catch (JIRAException e) {
