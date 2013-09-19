@@ -350,21 +350,22 @@ public final class ActiveIssueUtils {
         private final ActiveJiraIssue newActiveIssue;
         private final IssueListToolWindowPanel panel;
         private final IssueDetailsToolWindow detailsPanel;
-        private final AnActionEvent event;
+//        private final AnActionEvent event;
         private final ChangeList newDefaultList;
         private final ActiveIssueResultHandler activeIssueResultHandler;
+        private final StatusBarPane statusBarPane;
 
         public RefreshingIssueTask(Project project, JiraServerData jiraServerCfg,
                                    ActiveJiraIssue newActiveIssue, IssueListToolWindowPanel panel,
                                    IssueDetailsToolWindow detailsPanel, AnActionEvent event, ChangeList newDefaultList,
                                    ActiveIssueResultHandler activeIssueResultHandler) {
             super(project, "Refreshing Issue Information", false);
-            this.project = project;
+            this.project = project != null ? project : IdeaHelper.getCurrentProject(event);
             this.jiraServerCfg = jiraServerCfg;
             this.newActiveIssue = newActiveIssue;
             this.panel = panel;
             this.detailsPanel = detailsPanel;
-            this.event = event;
+            this.statusBarPane = ActiveIssueUtils.getStatusBarPane(event);
             this.newDefaultList = newDefaultList;
             this.activeIssueResultHandler = activeIssueResultHandler;
             jiraIssue = null;
@@ -394,9 +395,7 @@ public final class ActiveIssueUtils {
                     SwingUtilities.invokeLater(new Runnable() {
 
                         public void run() {
-                            DialogWithDetails.showExceptionDialog(
-                                    project != null ? project : IdeaHelper.getCurrentProject(event),
-                                    "Error starting work on issue:", e);
+                            DialogWithDetails.showExceptionDialog(project, "Error starting work on issue:", e);
                             //activeIssueResultHandler.cancel(e);
                         }
                     });
@@ -427,7 +426,7 @@ public final class ActiveIssueUtils {
                     //assign to me and start working
                     try {
                         panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
-                                ActiveIssueUtils.getStatusBarPane(event), newDefaultList, activeIssueResultHandler);
+                                statusBarPane, newDefaultList, activeIssueResultHandler);
                         //activeIssueResultHandler.success();
 
                     } catch (Exception e) {
