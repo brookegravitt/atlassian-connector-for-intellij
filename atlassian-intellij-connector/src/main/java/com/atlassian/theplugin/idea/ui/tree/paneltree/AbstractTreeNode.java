@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.google.common.base.Objects;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
@@ -87,7 +88,7 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 		}
 
 		public void setParameters(String name, int childCount, boolean selected, boolean enabled) {
-			if (name.equals(oldName) && childCount == oldChildCount && selected == oldSelected && enabled == oldEnabled) {
+			if (Objects.equal(name, oldName) && childCount == oldChildCount && selected == oldSelected && enabled == oldEnabled) {
 				return;
 			}
 			groupComponent.clear();
