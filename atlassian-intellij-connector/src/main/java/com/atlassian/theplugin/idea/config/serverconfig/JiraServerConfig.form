@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="2408" height="1788"/>
+      <xy x="20" y="20" width="3619" height="1788"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -36,7 +36,7 @@
               </grid>
             </constraints>
             <properties/>
-            <border type="etched" title="HTTP Authentication"/>
+            <border type="etched" title="Session Cookie Authentication"/>
             <children>
               <grid id="4578e" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
@@ -47,12 +47,12 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="1e980" class="javax.swing.JCheckBox" binding="cbUseBasicAuthentication" custom-create="true">
+                  <component id="1e980" class="javax.swing.JCheckBox" binding="cbUseSessionCookies" custom-create="true">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Enable HTTP Authentication"/>
+                      <text value="Enable Session Cookie Authentication"/>
                     </properties>
                   </component>
                   <component id="9fe55" class="javax.swing.JLabel">
@@ -61,12 +61,12 @@
                     </constraints>
                     <properties>
                       <font size="11"/>
-                      <text value="&lt;html&gt;HTTP Authentication is used by the Atlassian Connector for IntelliJ, if your JIRA server sits behind a web server that requires additional authentication first. The username and password below are used to authenticate against the web server only, not your JIRA server. You still need to enter a username and password for your JIRA server above, if you are using HTTP authentication.&lt;/html&gt;"/>
+                      <text value="&lt;html&gt;&#10;&lt;p&gt;&#10;By default, the connector uses Basic Authentication headers to authenticate with JIRA. &#10;This works properly in most cases. However, if your JIRA is fronted by an entity that &#10;strips Basic Authentication headers, this will cause authentication to fail and you will &#10;connect unauthenticated.&#10;&lt;/p&gt;&#10;&lt;br&gt;&#10;&lt;p&gt;&#10;In such cases, you may want to enable authentication using session cookies, &#10;which will make the connector log into JIRA just as a regular web browser does. &#10;This option can have unwanted side effects of logging your browsers out of JIRA, &#10;so it is not enabled by default.&#10;&lt;/p&gt;&#10;&lt;br&gt;&#10;&lt;p&gt;&#10;This option has no effect if your JIRA version is older than 5.0 - different type of remote &#10;communication is used in such cases.&#10;&lt;/p&gt;&#10;&lt;/html&gt;  "/>
                     </properties>
                   </component>
                 </children>
               </grid>
-              <grid id="b411d" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="b411d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -75,56 +75,11 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="54d7c" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <minimum-size width="145" height="-1"/>
-                        <preferred-size width="155" height="16"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <horizontalAlignment value="4"/>
-                      <horizontalTextPosition value="4"/>
-                      <labelFor value="49ef2"/>
-                      <text value="Web Server Username:"/>
-                    </properties>
-                  </component>
                   <vspacer id="16c88">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
                   </vspacer>
-                  <component id="5016a" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <minimum-size width="140" height="-1"/>
-                        <preferred-size width="155" height="16"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <enabled value="true"/>
-                      <horizontalAlignment value="4"/>
-                      <horizontalTextPosition value="4"/>
-                      <labelFor value="e16c2"/>
-                      <text value="Web Server Password:"/>
-                    </properties>
-                  </component>
-                  <component id="49ef2" class="javax.swing.JTextField" binding="tfBasicUserName">
-                    <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="e16c2" class="javax.swing.JPasswordField" binding="tfBasicPassword">
-                    <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties/>
-                  </component>
                 </children>
               </grid>
             </children>

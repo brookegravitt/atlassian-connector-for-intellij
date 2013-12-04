@@ -67,6 +67,10 @@ public class GenericServerConfigurationFormTest extends TestCase {
                 return null;
             }
 
+            public boolean isUseSessionCookies() {
+                return false;
+            }
+
             @Override
 			public ServerCfg getClone() {
 				throw new UnsupportedOperationException("not yet implemented");

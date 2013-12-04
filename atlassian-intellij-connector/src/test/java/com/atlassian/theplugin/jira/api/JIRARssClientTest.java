@@ -111,6 +111,10 @@ public class JIRARssClientTest extends TestCase {
                 return ServerType.JIRA_SERVER;
             }
 
+            public boolean isUseSessionCookies() {
+                return false;
+            }
+
             public boolean isDontUseBasicAuth() {
                 return false;
             }
@@ -160,7 +164,7 @@ public class JIRARssClientTest extends TestCase {
 
 		// for testing PL-2477
 	public void testBugPl2477() throws Exception {
-        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
+        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -218,7 +222,7 @@ public class JIRARssClientTest extends TestCase {
 	}
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
+        JiraServerCfg serverCfg = new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -255,7 +259,7 @@ public class JIRARssClientTest extends TestCase {
 
 	public void testBugPl941() throws Exception {
 		final JiraServerData server =
-                new JiraServerData(new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
+                new JiraServerData(new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -292,7 +296,7 @@ public class JIRARssClientTest extends TestCase {
 	// make a simple mock rss client that overrides URL loading with loading from a file
 	private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file)
 			throws RemoteApiMalformedUrlException {
-        final JiraServerCfg jiraCfg = new JiraServerCfg(true, "jira", url, new ServerIdImpl(), true) {
+        final JiraServerCfg jiraCfg = new JiraServerCfg(true, "jira", url, new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}

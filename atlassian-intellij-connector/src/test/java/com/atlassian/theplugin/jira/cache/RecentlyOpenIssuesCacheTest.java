@@ -18,7 +18,7 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 
 	public void setUp() throws Exception {
 		cache = new RecentlyOpenIssuesCache(null, new JiraWorkspaceConfiguration());
-		server = new JiraServerData(new JiraServerCfg(true, "server", "", new ServerIdImpl(), true) {
+		server = new JiraServerData(new JiraServerCfg(true, "server", "", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}

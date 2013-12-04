@@ -21,7 +21,7 @@ public class JIRAFilterListModelTest extends TestCase {
 	private int notifiedModelChanged = 0;
 	private int notifiedManualFilterChanged = 0;
 	private final JiraServerData jServer = new JiraServerData(
-            new JiraServerCfg(true, "DZira serwer", new ServerIdImpl(), true) {
+            new JiraServerCfg(true, "DZira serwer", new ServerIdImpl(), true, false) {
 		public ServerType getServerType() {
 			return null;
 		}

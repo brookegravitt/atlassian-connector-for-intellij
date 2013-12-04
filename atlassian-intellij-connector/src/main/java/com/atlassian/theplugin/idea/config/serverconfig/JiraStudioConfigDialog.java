@@ -220,7 +220,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         ServerIdImpl idJira = new ServerIdImpl();
 
         String name = serverName.getText().trim() + JIRA_STUDIO_SUFFIX;
-        JiraServerCfg jira = new JiraServerCfg(true, name, idJira, true);
+        JiraServerCfg jira = new JiraServerCfg(true, name, idJira, true, false);
 
         jira.setUrl(serverUrl.getText());
 

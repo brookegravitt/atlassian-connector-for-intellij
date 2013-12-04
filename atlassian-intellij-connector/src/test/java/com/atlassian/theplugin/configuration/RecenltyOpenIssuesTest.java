@@ -17,7 +17,7 @@ public class RecenltyOpenIssuesTest extends TestCase {
 
 	public void setUp() throws Exception {
 		conf = new JiraWorkspaceConfiguration();
-		server = new JiraServerData(new JiraServerCfg(true, "server", new ServerIdImpl(), true) {
+		server = new JiraServerData(new JiraServerCfg(true, "server", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}
