@@ -96,14 +96,14 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 			Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
 
 			fgColor = enabled ? fgColor : UIUtil.getInactiveTextColor();
-			groupComponent.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
+			groupComponent.append(name != null ? name : "", new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
 
 			panel.setBackground(bgColor);
 
 			groupComponent.append(" (" + childCount + ")",
 					new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
 
-			oldName = name;
+			oldName = name != null ? name : "";
 			oldChildCount = childCount;
 			oldSelected = selected;
 			oldEnabled = enabled;
