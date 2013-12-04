@@ -78,6 +78,10 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
                 return false;
             }
 
+            public boolean isUseSessionCookies() {
+                return false;
+            }
+
             public UserCfg getBasicHttpUser() {
                 return null;
             }
@@ -165,7 +169,6 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
             
         }
 
-        @Override
         public void reset() {
         }
 
@@ -219,24 +222,20 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 //		}
 
 
-        @Override
         public List<JiraIssueAdapter> getIssues(
                 JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
             return createIssueList(size);
         }
 
-        @Override
         public boolean usesRest(JiraServerData jiraServerData) {
             return false;
         }
 
-        @Override
         public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
             return createIssueList(size);
         }
 
-        @Override
         public List<JiraIssueAdapter> getSavedFilterIssues(
                 JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
@@ -255,7 +254,6 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-        @Override
         public List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
             return null;
         }
@@ -264,7 +262,6 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			return null;
 		}
 
-        @Override
         public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
             return null;
         }

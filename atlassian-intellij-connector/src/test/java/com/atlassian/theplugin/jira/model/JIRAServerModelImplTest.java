@@ -67,7 +67,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	private JiraServerData createServerData(final String serverName) {
-        return new JiraServerData(new JiraServerCfg(true, serverName, new ServerIdImpl(), true) {
+        return new JiraServerData(new JiraServerCfg(true, serverName, new ServerIdImpl(), true, false) {
             @Override
             public ServerType getServerType() {
                 return null;
@@ -462,31 +462,26 @@ public class JIRAServerModelImplTest extends TestCase {
 //		}
 
 
-        @Override
         public List<JiraIssueAdapter> getIssues(
                 JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
             return null;
         }
 
-        @Override
         public boolean usesRest(JiraServerData jiraServerData) {
             return false;
         }
 
-        @Override
         public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
             return null;
         }
 
-        @Override
         public List<JiraIssueAdapter> getSavedFilterIssues(
                 JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
             return null;
         }
 
-        @Override
         public void reset() {
         }
 

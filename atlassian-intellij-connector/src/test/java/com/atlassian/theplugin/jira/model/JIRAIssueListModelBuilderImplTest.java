@@ -84,7 +84,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	}
 
 	private JiraServerData createServerData() {
-		return new JiraServerData(new JiraServerCfg(true, "test", new ServerIdImpl(), true) {
+		return new JiraServerData(new JiraServerCfg(true, "test", new ServerIdImpl(), true, false) {
 			@Override
 			public ServerType getServerType() {
 				return null;
@@ -205,6 +205,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
                 return null;
             }
 
+            public boolean isUseSessionCookies() {
+                return false;
+            }
+
             public boolean isDontUseBasicAuth() {
                 return false;
             }
@@ -234,7 +238,6 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return list;
 		}
 
-        @Override
         public void reset() {
         }
 
@@ -289,19 +292,16 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 //        }
 
 
-        @Override
         public List<JiraIssueAdapter> getIssues(
                 JiraServerData jiraServerData, JiraFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
             return createIssueList(size);
         }
 
-        @Override
         public boolean usesRest(JiraServerData jiraServerData) {
             return false;
         }
 
-        @Override
         public List<JiraIssueAdapter> getIssues(JiraServerData server, String query, String sort, String sortOrder, int start, int size) throws JIRAException {
             return createIssueList(size);
         }
@@ -313,7 +313,6 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 //		}
 
 
-        @Override
         public List<JiraIssueAdapter> getSavedFilterIssues(
                 JiraServerData jiraServerData, JIRASavedFilter filter, String sort, String sortOrder, int start, int size)
                 throws JIRAException {
@@ -336,7 +335,6 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-        @Override
         public List<JIRAConstant> getIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
             return null;
         }
@@ -345,7 +343,6 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-        @Override
         public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData jiraServerData, long projectId, String projectKey) throws JIRAException {
             return null;
         }

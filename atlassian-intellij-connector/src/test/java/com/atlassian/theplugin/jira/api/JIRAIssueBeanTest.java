@@ -35,7 +35,7 @@ public class JIRAIssueBeanTest extends TestCase {
 	protected void setUp() throws Exception {
 		doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/single-issue.xml"));
 		server = new JiraServerData(
-                new JiraServerCfg(true, "name", "http://jira.com", new ServerIdImpl(), true) {
+                new JiraServerCfg(true, "name", "http://jira.com", new ServerIdImpl(), true, false) {
 			public ServerType getServerType() {
 				return null;
 			}

@@ -19,13 +19,11 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.cfg.xstream.BasePrivateConfigurationDao;
-import com.atlassian.theplugin.commons.cfg.xstream.HomeDirSharedConfigurationImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.model.RootNode;
@@ -40,29 +38,27 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.xpath.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
@@ -178,7 +174,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			case CRUCIBLE_SERVER:
 				return new CrucibleServerCfg(false, name, id);
 			case JIRA_SERVER:
-				return new JiraServerCfg(false, name, id, true);
+				return new JiraServerCfg(false, name, id, true, false);
 			case JIRA_STUDIO_SERVER:
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {

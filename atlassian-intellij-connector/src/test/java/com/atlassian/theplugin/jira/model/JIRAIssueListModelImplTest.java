@@ -70,6 +70,10 @@ public class JIRAIssueListModelImplTest extends TestCase {
                 return false;
             }
 
+            public boolean isUseSessionCookies() {
+                return false;
+            }
+
             public UserCfg getBasicHttpUser() {
                 return null;
             }

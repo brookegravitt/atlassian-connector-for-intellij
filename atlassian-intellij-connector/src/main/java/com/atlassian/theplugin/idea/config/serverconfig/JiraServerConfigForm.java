@@ -26,10 +26,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 
 /**
  * Plugin configuration form.
@@ -39,9 +45,7 @@ public class JiraServerConfigForm {
     private JPanel rootComponent;
 
     private transient GenericServerConfigForm genericServerConfigForm;
-    private JCheckBox cbUseBasicAuthentication;
-    private JTextField tfBasicUserName;
-    private JTextField tfBasicPassword;
+    private JCheckBox cbUseSessionCookies;
     private JPanel panelBasic;
     private final Project project;
     private final UserCfg defaultUser;
@@ -58,33 +62,17 @@ public class JiraServerConfigForm {
         this.defaultUser = defaultUser;
         this.jiraServerFacade = jiraServerFacade;
         $$$setupUI$$$();
-        cbUseBasicAuthentication.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent changeEvent) {
-                AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
-                enableDisableBasicAuth(abstractButton);
-            }
-        });
-
-       cbUseBasicAuthentication.setSelected(false);
-        enableDisableBasicAuth(cbUseBasicAuthentication);
+       cbUseSessionCookies.setSelected(false);
     }
 
-    private void enableDisableBasicAuth(AbstractButton button) {
+    private void enableDisableSessionCookies(AbstractButton button) {
         ButtonModel buttonModel = button.getModel();
-        tfBasicUserName.setEnabled(buttonModel.isSelected());
-        tfBasicPassword.setEnabled(buttonModel.isSelected());
     }
 
     public void setData(@NotNull final JiraServerCfg serverCfg) {
         jiraServerCfg = serverCfg;
-        cbUseBasicAuthentication.setSelected(!serverCfg.isDontUseBasicAuth());
-
+        cbUseSessionCookies.setSelected(serverCfg.isUseSessionCookies());
         genericServerConfigForm.setData(serverCfg);
-        if (serverCfg.getBasicHttpUser() != null) {
-            tfBasicUserName.setText(serverCfg.getBasicHttpUser().getUsername());
-            tfBasicPassword.setText(serverCfg.getBasicHttpUser().getPassword());
-        }
     }
 
     public void finalizeData() {
@@ -94,11 +82,9 @@ public class JiraServerConfigForm {
     public void saveData() {
         genericServerConfigForm.saveData();
         if (jiraServerCfg != null) {
-            jiraServerCfg.setDontUseBasicAuth(!cbUseBasicAuthentication.isSelected());
-            if (cbUseBasicAuthentication.isSelected()) {
-                jiraServerCfg.setBasicHttpUser(new UserCfg(tfBasicUserName.getText(), tfBasicPassword.getText(), true));                
+            jiraServerCfg.setDontUseBasicAuth(true);
+            jiraServerCfg.setUseSessionCookies(cbUseSessionCookies.isSelected());
         }
-    }
     }
 
     public JComponent getRootComponent() {
@@ -112,7 +98,7 @@ public class JiraServerConfigForm {
     private void createUIComponents() {
         genericServerConfigForm =
                 new GenericServerConfigForm(project, defaultUser, new ProductConnector(jiraServerFacade));
-        cbUseBasicAuthentication = new JCheckBox("Do not use HTTP authentication");
+        cbUseSessionCookies = new JCheckBox("Do not use HTTP authentication");
     }
 
     // CHECKSTYLE:OFF
@@ -145,9 +131,9 @@ public class JiraServerConfigForm {
         panel2.setLayout(new FormLayout("fill:262px:noGrow", "top:26px:noGrow,top:4dlu:noGrow,center:d:grow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
         panel1.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(1, 80), null, 0, false));
         panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Additional Configuration"));
-        cbUseBasicAuthentication.setText("Do not use HTTP authentication");
+        cbUseSessionCookies.setText("Do not use HTTP authentication");
         CellConstraints cc = new CellConstraints();
-        panel2.add(cbUseBasicAuthentication, new CellConstraints(1, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 12, 0, 0)));
+        panel2.add(cbUseSessionCookies, new CellConstraints(1, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 12, 0, 0)));
         final JTextArea textArea1 = new JTextArea();
         textArea1.setEditable(false);
         textArea1.setFont(new Font(textArea1.getFont().getName(), textArea1.getFont().getStyle(), 10));
