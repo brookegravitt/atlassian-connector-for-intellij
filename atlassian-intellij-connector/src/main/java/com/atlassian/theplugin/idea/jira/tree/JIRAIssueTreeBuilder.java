@@ -315,7 +315,7 @@ public class JIRAIssueTreeBuilder {
 		private JIRAIssueGroupTreeNode findGroupNode(String name) {
 			for (int i = 0; i < getChildCount(getRoot()); ++i) {
 				JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) getChild(getRoot(), i);
-				if (node.toString().equals(name)) {
+				if (node != null && name != null && node.toString().equals(name)) {
 					return node;
 				}
 			}
