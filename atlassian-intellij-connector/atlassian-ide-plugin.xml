@@ -21,6 +21,7 @@
         <name>local</name>
         <url>http://localhost:8083</url>
         <shared>false</shared>
+        <useSessionCookies>false</useSessionCookies>
       </jira>
       <bamboo id="11">
         <server-id id="12">f8f233c6-a9f8-4b7e-ad10-114f18b1ee90</server-id>
@@ -43,6 +44,7 @@
         <name>stac</name>
         <url>https://ecosystem.atlassian.net</url>
         <shared>false</shared>
+        <useSessionCookies>false</useSessionCookies>
       </jira>
       <crucible id="20">
         <server-id id="21">cbcb7e2b-01d3-4420-913c-ae558fce3474</server-id>
