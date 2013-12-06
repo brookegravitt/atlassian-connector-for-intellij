@@ -486,7 +486,7 @@ public final class IntelliJJiraServerFacade implements JiraServerFacade {
             throws RemoteApiException, JIRAException {
         return wrap(jiraServerData, new Callable<List<JIRASecurityLevelBean>>() {
             public List<JIRASecurityLevelBean> call() throws Exception {
-                return facade.getSecurityLevels(jiraServerData.toConnectionCfg(), projectKey);
+                return facade.getSecurityLevels(jiraServerData, projectKey);
             }
         }, false);
     }
