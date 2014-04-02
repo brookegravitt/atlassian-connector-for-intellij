@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.atlassian.connector</groupId>
             <artifactId>atlassian-connector-commons</artifactId>
-            <version>4.2.10-SNAPSHOT</version>
+            <version>4.2.11-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
