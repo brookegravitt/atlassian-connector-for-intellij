@@ -16,9 +16,16 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.commons.jira.beans.JIRAProject;
+import com.atlassian.connector.commons.jira.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.google.common.base.*;
+import com.google.common.collect.Collections2;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Editor;
@@ -29,8 +36,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +45,9 @@ import java.util.regex.Pattern;
  * User: pmaruszak
  */
 public final class JiraEditorLinkParser {
-	private static final Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
+    // adding numbers seems a "fairly" common pattern
+    private static final String JIRA_ISSUE_LINK_SEARCH_PATTERN = "\\b(([\\p{Upper}]{2,})\\-\\d+)\\b";
+
 	private final Project project;
 	private final ProjectCfgManager projectCfgManager;
 
@@ -95,24 +103,72 @@ public final class JiraEditorLinkParser {
 		return element instanceof PsiComment || IdeaVersionFacade.isInstanceOfPsiDocToken(element);
 	}
 
+
 	private List<JiraURLTextRange> getNewRanges(final CharSequence text) {
 		List<JiraURLTextRange> ranges = new ArrayList<JiraURLTextRange>();
 		String defaultServerurl = getDefaultJiraServerUrl();
 		if (defaultServerurl.length() > 0) {
+            List<String> jiraProjectKeys = getJiraProjectKeys();
+
+            String regex = createIssueKeyRegex(jiraProjectKeys);
+            Pattern pattern = Pattern.compile(regex);
+
 			Pattern replacePattern = Pattern.compile("$1");
-			Matcher matcher = JIRA_ISSUE_LINK_SEARCH_PATTERN.matcher(text);
-			while (matcher.find()) {
-				String url = JIRA_ISSUE_LINK_SEARCH_PATTERN.matcher(matcher.group()).replaceAll(replacePattern.toString());
-				JiraURLTextRange range = new JiraURLTextRange(project, matcher.start(), matcher.end(), url, true);
-				ranges.add(range);
+			Matcher matcher = pattern.matcher(text);
+
+            while (matcher.find()) {
+                String url = pattern.matcher(matcher.group()).replaceAll(replacePattern.toString());
+                JiraURLTextRange range = new JiraURLTextRange(project, matcher.start(), matcher.end(), url, true);
+                ranges.add(range);
 			}
 		}
 
 		return ranges;
 	}
 
+    private String createIssueKeyRegex(List<String> jiraProjectKeys) {
+        // fall back to default pattern if no keys are available - e.g. if they have not yet been loaded
+        if (jiraProjectKeys == null || jiraProjectKeys.size() == 0) {
+            return JIRA_ISSUE_LINK_SEARCH_PATTERN;
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("\\b((?:");
+            builder.append(Joiner.on("|").join(jiraProjectKeys));
+            builder.append(")-\\d+)\\b");
 
-	public JiraURLTextRange getJiraURLTextRange(final Editor editor, final PsiFile file, final Point point) {
+            return builder.toString();
+        }
+    }
+
+    private List<String> getJiraProjectKeys() {
+        JIRAServerModelIdea jiraServerModel = (JIRAServerModelIdea) IdeaHelper.getJIRAServerModel(project);
+        List<String> jiraProjectKeys = new ArrayList<String>();
+        try {
+            Collection<JiraServerData> servers = projectCfgManager.getAllEnabledJiraServerss();
+
+            for (JiraServerData jiraServer: servers) {
+                // we need to get projects from the cache only, as all of this is happening in the event thread
+                Collection<JIRAProject> jiraProjects = com.google.common.base.Objects.firstNonNull(jiraServerModel.getProjectsFromCache(jiraServer), new ArrayList<JIRAProject>());
+                jiraProjects = Collections2.filter(jiraProjects, new Predicate<JIRAProject>() {
+                    public boolean apply(JIRAProject jiraProject) {
+                        return jiraProject.getKey() != null;
+                    }
+                });
+                jiraProjectKeys.addAll(Collections2.transform(jiraProjects, new Function<JIRAProject, String>() {
+                    public String apply(JIRAProject jiraProject) {
+                        return jiraProject.getKey();
+                    }
+                }));
+            }
+        } catch (JIRAException e) {
+            // meh, IDEA catches and logs those anyway
+            throw new RuntimeException(e);
+        }
+        return jiraProjectKeys;
+    }
+
+
+    public JiraURLTextRange getJiraURLTextRange(final Editor editor, final PsiFile file, final Point point) {
 		if (editor == null || point == null) {
 			return null;
 		}

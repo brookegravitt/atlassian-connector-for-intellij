@@ -66,6 +66,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void fileClosed(final FileEditorManager fileEditorManager, final VirtualFile virtualFile) {
+        linkHighlighters.get(virtualFile).stopListening();
+        linkHighlighters.remove(virtualFile);
 		PluginUtil.getLogger()
 				.debug(" file closed: " + virtualFile.getPath() + ", source: " + fileEditorManager.getSelectedTextEditor());
 	}
@@ -85,14 +87,14 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			linkHighlighters.remove(oldFile);
 
 		} else if (newFile != null && !linkHighlighters.containsKey(newFile)) {
-			PsiFile psiFile = safeFindFile(newFile);
-			if (psiFile != null) {
-				Editor editor = editorManager.getSelectedTextEditor();
-				if (editor != null) {
-					addHighlighter(newFile, psiFile, editor);
-				}
-			}
-		}
+            PsiFile psiFile = safeFindFile(newFile);
+            if (psiFile != null) {
+                Editor editor = editorManager.getSelectedTextEditor();
+                if (editor != null) {
+                    addHighlighter(newFile, psiFile, editor);
+                }
+            }
+        }
 	}
 
     // PL-2570 - rather ugly workaround

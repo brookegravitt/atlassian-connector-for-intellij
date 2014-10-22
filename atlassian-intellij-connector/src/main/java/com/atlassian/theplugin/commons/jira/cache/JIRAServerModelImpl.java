@@ -186,6 +186,14 @@ public abstract class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getProjects(nonResponsiveServers.contains(jiraServerData), forIssueCreation);
 	}
 
+    public List<JIRAProject> getProjectsFromCache(JiraServerData jiraServerData) throws JIRAException {
+        if (jiraServerData == null) {
+            return null;
+        }
+        JIRAServerCache srv = getServer(jiraServerData);
+        return (srv == null) ? null : srv.getProjects(true, false);
+    }
+
 	public List<JIRAConstant> getStatuses(JiraServerData jiraServerData) throws JIRAException {
 		if (jiraServerData == null) {
 			return null;
