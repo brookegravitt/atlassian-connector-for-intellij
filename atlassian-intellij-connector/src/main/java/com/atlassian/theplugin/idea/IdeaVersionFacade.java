@@ -97,12 +97,16 @@ public final class IdeaVersionFacade {
     // idea 13 EAP
     private static final int IDEA_13_GR6 = 130;
 
+    // idea 14 EAP
+    private static final int IDEA_14_GR6 = 139;
+
     private boolean isIdea7;
     private boolean isIdea8;
     private boolean isIdea9;
     private boolean isIdeaX;
     private boolean isIdea11Or12;
     private boolean isIdea13;
+    private boolean isIdea14;
 
     boolean isIdeaX5;
     private boolean communityEdition = false;
@@ -135,6 +139,9 @@ public final class IdeaVersionFacade {
         } else if (m.matches() && group5 >= IDEA_108_1333_GR6) {
             if (group5 >= IDEA_13_GR6) {
                 isIdea13 = true;
+            }
+            if (group5 >= IDEA_14_GR6) {
+                isIdea14 = true;
             }
             isIdea11Or12 = true;
             isIdeaX = true;
@@ -460,6 +467,14 @@ public final class IdeaVersionFacade {
             return Color.WHITE;
         }
 
+    }
+
+    public String getSettingsMenuGlobalDisplayString() {
+        return isIdea14 ? "Atlassian Connector - Global" : "Atlassian Connector";
+    }
+
+    public String getSettingsMenuProjectDisplayString() {
+        return isIdea14 ? "Atlassian Connector - Project" : "Atlassian Connector";
     }
 
     public MultipleChangeListBrowser getChangesListBrowser(Project project, ChangeListManager changeListManager,

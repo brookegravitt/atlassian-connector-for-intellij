@@ -38,6 +38,7 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -368,10 +369,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 	}
 
-	@Nls
-	public String getDisplayName() {
-		return "Atlassian\nConnector";
-	}
+    @Nls
+    public String getDisplayName() {
+        return IdeaVersionFacade.getInstance().getSettingsMenuProjectDisplayString();
+    }
 
 	@Nullable
 	public Icon getIcon() {
