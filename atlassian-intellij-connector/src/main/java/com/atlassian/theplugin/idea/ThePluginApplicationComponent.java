@@ -126,7 +126,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
     @Nls
     public String getDisplayName() {
-        return "Atlassian\nConnector";
+        return IdeaVersionFacade.getInstance().getSettingsMenuGlobalDisplayString();
     }
 
     @Nullable
