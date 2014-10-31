@@ -66,10 +66,10 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void fileClosed(final FileEditorManager fileEditorManager, final VirtualFile virtualFile) {
-        linkHighlighters.get(virtualFile).stopListening();
+        removeHighlighter(virtualFile);
         linkHighlighters.remove(virtualFile);
-		PluginUtil.getLogger()
-				.debug(" file closed: " + virtualFile.getPath() + ", source: " + fileEditorManager.getSelectedTextEditor());
+        PluginUtil.getLogger()
+                .debug(" file closed: " + virtualFile.getPath() + ", source: " + fileEditorManager.getSelectedTextEditor());
 	}
 
 	public void selectionChanged(final FileEditorManagerEvent event) {
