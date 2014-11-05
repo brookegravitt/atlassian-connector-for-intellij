@@ -143,6 +143,9 @@ public final class JiraEditorLinkParser {
     private List<String> getJiraProjectKeys() {
         JIRAServerModelIdea jiraServerModel = (JIRAServerModelIdea) IdeaHelper.getJIRAServerModel(project);
         List<String> jiraProjectKeys = new ArrayList<String>();
+        if (jiraServerModel == null) {
+            return jiraProjectKeys;
+        }
         try {
             Collection<JiraServerData> servers = projectCfgManager.getAllEnabledJiraServerss();
 
