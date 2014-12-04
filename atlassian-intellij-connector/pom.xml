@@ -96,8 +96,8 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>util</artifactId>
-            <version>11.1.1</version>
-            <classifier>117.117</classifier>
+            <version>14.0.0</version>
+            <classifier>139.224</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -121,7 +121,6 @@
             <classifier>117.117</classifier>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>forms_rt</artifactId>
@@ -132,15 +131,15 @@
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
-            <version>11.1.1</version>
-            <classifier>117.117</classifier>
+            <version>14.0.0</version>
+            <classifier>139.224</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>openapi</artifactId>
-            <version>11.1.1</version>
-            <classifier>117.117</classifier>
+            <version>14.0.0</version>
+            <classifier>139.224</classifier>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -148,6 +147,13 @@
             <artifactId>bootstrap</artifactId>
             <version>11.1.1</version>
             <classifier>117.117</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea.plugins</groupId>
+            <artifactId>git4idea</artifactId>
+            <version>14.0.0</version>
+            <classifier>139.224</classifier>
             <scope>compile</scope>
         </dependency>
 
