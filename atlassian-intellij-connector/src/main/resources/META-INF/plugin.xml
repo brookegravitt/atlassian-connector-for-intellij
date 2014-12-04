@@ -71,8 +71,7 @@
 	<!-- FAKE DEPENDENCY FOR wEB ide -->
 	<depends optional="true">com.intellij.modules.lang</depends>
 	<depends optional="true">com.intellij.tasks</depends>
-
-
+	<depends>Git4Idea</depends>
 
 	<extensions defaultExtensionNs="com.intellij">		
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
@@ -176,6 +175,13 @@
 				text="Open File in FishEye"
 				description="Open File in FishEye">
 				<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</action>
+
+		<action id="OpenBitbucketLink"
+				class="com.atlassian.theplugin.idea.action.bitbucket.OpenBitbucketLinkInBrowserAction"
+				text="Open File in Bitbucket"
+				description="Open File in Bitbucket">
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 
 		<action id="ThePlugin.ShowHideMainToolWindow"
