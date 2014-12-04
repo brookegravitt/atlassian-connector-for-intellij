@@ -46,10 +46,17 @@ public class OpenCommitMessageInHipChat extends AnAction implements LineNumberLi
         int commitBlobLineNumber = IntelliJGitUtils.adjustSrcLineNumberToCommitBlobLineNumber(event, lineNumber);
         details.setLineNumber(commitBlobLineNumber);
 
-        String bitbucketUrl = IntelliJGitUtils.createBitbucketCommitUrl(details, revision.getHash());
-        //bitbucketUrl = IntelliJGitUtils.escapeFragment(bitbucketUrl);
+        String browserUrl = null;
+        if(details.getProduct().equals("bitbucket"))
+        {
+            browserUrl = IntelliJGitUtils.createBitbucketCommitUrl(details, revision.getHash());
+        }
+        else
+        {
+            browserUrl = IntelliJGitUtils.createStashCommitUrl(details, revision.getHash());
+        }
 
-        String message = String.format(MESSAGE, bitbucketUrl, revision.getCommitMessage());
+        String message = String.format(MESSAGE, browserUrl, revision.getCommitMessage());
         message = URLEncoder.encode(message);
         String hipChatUrl = String.format(HIPCHAT_URL, revision.getAuthorEmail(), message);
 

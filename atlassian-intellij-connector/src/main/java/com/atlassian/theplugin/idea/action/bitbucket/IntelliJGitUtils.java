@@ -31,7 +31,7 @@ public class IntelliJGitUtils
     public static final String BITBUCKET_COMMIT_URL = "https://bitbucket.org/%s/%s/commits/%s#chg-%s";
 
     // Example https://stash.atlassian.com/projects/JIRA/repos/jira/commits/63d84f14f821ad397ab8e1336dd59f34d130248e#jira-ondemand-project/jira-ondemand-plugins/jira-ondemand-bundled-plugins/pom.xml
-    public static final String STASH_COMMIT_URL = "https://stash.atlassian.com/projects/JIRA/repos/jira/commits/63d84f14f821ad397ab8e1336dd59f34d130248e#jira-ondemand-project/jira-ondemand-plugins/jira-ondemand-bundled-plugins/pom.xml";
+    public static final String STASH_COMMIT_URL = "https://stash.atlassian.com/projects/%s/repos/%s/commits/%s#%s";
 
     public static VcsActionDetails extractVcsActionDetails(AnActionEvent event)
     {
@@ -121,6 +121,14 @@ public class IntelliJGitUtils
         String bitbucketCommitUrl = String.format(BITBUCKET_COMMIT_URL, details.getRepoOwner(), details.getRepoName(),
                 commitSha, details.getSourcePath());
         return bitbucketCommitUrl;
+    }
+
+    public static String createStashCommitUrl(VcsActionDetails details, String commitSha)
+    {
+        String repoName = details.getRepoName().replace(".git", "");
+        String stashCommitUrl = String.format(STASH_COMMIT_URL, details.getRepoOwner(), repoName,
+                commitSha, details.getSourcePath());
+        return stashCommitUrl;
     }
 
     public static String escapeFragment(String urlString)
