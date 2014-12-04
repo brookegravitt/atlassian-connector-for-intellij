@@ -7,8 +7,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.localVcs.UpToDateLineNumberProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.history.VcsFileRevisionEx;
 import com.intellij.openapi.vcs.impl.UpToDateLineNumberProviderImpl;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.vcsUtil.VcsUtil;
+import git4idea.history.GitHistoryUtils;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 
@@ -53,6 +57,15 @@ public class IntelliJGitUtils
         String repoName = userAndRepo[1];
         String currentRevision = gitRepository.getCurrentRevision();
         int currentLine = editor.getCaretModel().getVisualPosition().getLine()+1;
+
+        try
+        {
+            VcsFileRevisionEx fileRevisionEx = (VcsFileRevisionEx) GitHistoryUtils.history(project, VcsUtil.getFilePath(virtualFile.getPath())).get(0);
+        }
+        catch (VcsException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         VcsActionDetails details = new VcsActionDetails(repoOwner, repoName, currentRevision, sourcePath, branchName, currentLine);
         return details;
