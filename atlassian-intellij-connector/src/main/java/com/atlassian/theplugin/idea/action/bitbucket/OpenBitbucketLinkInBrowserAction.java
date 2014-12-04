@@ -5,12 +5,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import git4idea.GitUtil;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 
+import java.awt.datatransfer.StringSelection;
 import java.util.Collection;
 
 public class OpenBitbucketLinkInBrowserAction extends AnAction
@@ -59,6 +61,8 @@ public class OpenBitbucketLinkInBrowserAction extends AnAction
         if (remoteUrl != null) {
             BrowserUtil.browse(remoteUrl);
         }
+
+        CopyPasteManager.getInstance().setContents(new StringSelection(remoteUrl));
 
         System.out.println("Performed bitbucket action");
     }
