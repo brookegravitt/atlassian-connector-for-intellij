@@ -8,6 +8,17 @@ public class OpenBitbucketLinkInBrowserAction extends AnAction
 {
 
     @Override
+    public void update(AnActionEvent event) {
+        VcsActionDetails details = IntelliJGitUtils.extractVcsActionDetails(event);
+        String text = "Open in Bitbucket";
+        if(details.getProduct().equals("stash"))
+        {
+            text = "Open in Stash";
+        }
+        event.getPresentation().setText(text);
+    }
+
+    @Override
     public void actionPerformed(final AnActionEvent event)
     {
         VcsActionDetails details = IntelliJGitUtils.extractVcsActionDetails(event);

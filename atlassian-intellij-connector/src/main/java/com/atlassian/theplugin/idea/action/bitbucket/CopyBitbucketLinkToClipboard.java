@@ -10,11 +10,31 @@ public class CopyBitbucketLinkToClipboard extends AnAction
 {
 
     @Override
+    public void update(AnActionEvent event) {
+        VcsActionDetails details = IntelliJGitUtils.extractVcsActionDetails(event);
+        String text = "Copy Bitbucket link to clipboard";
+        if(details.getProduct().equals("stash"))
+        {
+            text = "Copy Stash link to clipboard";
+        }
+        event.getPresentation().setText(text);
+    }
+
+    @Override
     public void actionPerformed(final AnActionEvent event)
     {
         VcsActionDetails details = IntelliJGitUtils.extractVcsActionDetails(event);
-        String bitbucketUrl = IntelliJGitUtils.createBitbucketUrl(details);
-        CopyPasteManager.getInstance().setContents(new StringSelection(bitbucketUrl));
+
+        String remoteUrl = null;
+        if(details.getProduct().equals("bitbucket"))
+        {
+            remoteUrl = IntelliJGitUtils.createBitbucketUrl(details);
+        }
+        else
+        {
+            remoteUrl = IntelliJGitUtils.createStashUrl(details);
+        }
+        CopyPasteManager.getInstance().setContents(new StringSelection(remoteUrl));
     }
 
 }
