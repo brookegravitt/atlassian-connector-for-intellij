@@ -49,4 +49,9 @@ public class VcsActionDetails
     {
         return lineNumber;
     }
+
+    public void setLineNumber(final int lineNumber)
+    {
+        this.lineNumber = lineNumber;
+    }
 }

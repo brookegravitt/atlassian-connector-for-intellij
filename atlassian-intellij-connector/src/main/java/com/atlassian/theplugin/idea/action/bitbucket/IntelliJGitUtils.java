@@ -2,8 +2,12 @@ package com.atlassian.theplugin.idea.action.bitbucket;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.localVcs.UpToDateLineNumberProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.impl.UpToDateLineNumberProviderImpl;
 import com.intellij.openapi.vfs.VirtualFile;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
@@ -14,7 +18,10 @@ public class IntelliJGitUtils
 {
 
     // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master#cl-4
-    public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s#cl-%d";
+    public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s%%23cl-%d";
+
+    // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/commits/d6063c213c2c7b5fefbf7152d6f7e3a01b057432#Lsrc/Main.javaT7
+    public static final String BITBUCKET_COMMIT_URL = "https://bitbucket.org/%s/%s/commits/%s%%23L%sT%d";
 
     public static VcsActionDetails extractVcsActionDetails(AnActionEvent event)
     {
@@ -51,10 +58,29 @@ public class IntelliJGitUtils
         return details;
     }
 
+    public static int adjustSrcLineNumberToCommitBlobLineNumber(AnActionEvent event, int srcLineNumber)
+    {
+        Project project = event.getData(CommonDataKeys.PROJECT);
+        VirtualFile virtualFile = event.getData(CommonDataKeys.VIRTUAL_FILE);
+        Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
+
+        final UpToDateLineNumberProvider upToDateLineNumberProvider = new UpToDateLineNumberProviderImpl(document, project);
+        int commitBlobLineNumber = upToDateLineNumberProvider.getLineNumber(srcLineNumber);
+        return commitBlobLineNumber;
+    }
+
     public static String createBitbucketUrl(VcsActionDetails details)
     {
         String bitbucketUrl = String.format(BITBUCKET_URL, details.getRepoOwner(), details.getRepoName(),
                 details.getRevision(), details.getSourcePath(), details.getBranchName(), details.getLineNumber());
         return bitbucketUrl;
     }
+
+    public static String createBitbucketCommitUrl(VcsActionDetails details, String commitSha)
+    {
+        String bitbucketCommitUrl = String.format(BITBUCKET_COMMIT_URL, details.getRepoOwner(), details.getRepoName(),
+                commitSha, details.getSourcePath(), details.getLineNumber());
+        return bitbucketCommitUrl;
+    }
+
 }

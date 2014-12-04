@@ -11,7 +11,7 @@ public class GitAnnotationProvider implements AnnotationGutterActionProvider
     @NotNull
     public AnAction createAction(final FileAnnotation fileAnnotation)
     {
-        return new OpenCommitMessageInHipChat("Talk about this in HipChat");
+        return new OpenCommitMessageInHipChat(fileAnnotation);
     }
 
 }
