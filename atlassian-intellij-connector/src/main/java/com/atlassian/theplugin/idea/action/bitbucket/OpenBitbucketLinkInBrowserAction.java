@@ -11,7 +11,15 @@ public class OpenBitbucketLinkInBrowserAction extends AnAction
     public void actionPerformed(final AnActionEvent event)
     {
         VcsActionDetails details = IntelliJGitUtils.extractVcsActionDetails(event);
-        String remoteUrl = IntelliJGitUtils.createBitbucketUrl(details);
+        String remoteUrl = null;
+        if(details.getProduct().equals("bitbucket"))
+        {
+            remoteUrl = IntelliJGitUtils.createBitbucketUrl(details);
+        }
+        else
+        {
+            remoteUrl = IntelliJGitUtils.createStashUrl(details);
+        }
 
         if (remoteUrl != null) {
             BrowserUtil.browse(remoteUrl);
