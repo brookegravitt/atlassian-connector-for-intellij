@@ -15,6 +15,8 @@ import java.util.Collection;
 
 public class OpenBitbucketLinkInBrowserAction extends AnAction
 {
+    // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master#cl-4
+    public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s#cl-%d";
 
     @Override
     public void update(final AnActionEvent event) {
@@ -30,12 +32,6 @@ public class OpenBitbucketLinkInBrowserAction extends AnAction
         if (virtualFile == null || project == null || project.isDisposed()) {
             return;
         }
-
-        // What I need:
-        // https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master
-        // https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master#cl-4
-
-        String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s";
 
         GitRepository gitRepository = GitUtil.getRepositoryManager(project).getRepositoryForFile(virtualFile);
 
@@ -56,9 +52,10 @@ public class OpenBitbucketLinkInBrowserAction extends AnAction
         String username = userAndRepo[0];
         String repo = userAndRepo[1];
         String currentRevision = gitRepository.getCurrentRevision();
+        int currentLine = editor.getCaretModel().getVisualPosition().getLine()+1;
 
 
-        String remoteUrl = String.format(BITBUCKET_URL, username, repo, currentRevision, sourcePath, branchName);
+        String remoteUrl = String.format(BITBUCKET_URL, username, repo, currentRevision, sourcePath, branchName, currentLine);
         if (remoteUrl != null) {
             BrowserUtil.browse(remoteUrl);
         }
