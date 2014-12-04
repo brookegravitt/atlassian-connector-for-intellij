@@ -39,6 +39,7 @@ public class OpenCommitMessageInHipChat extends AnAction implements LineNumberLi
 
         String bitbucketUrl = IntelliJGitUtils.createBitbucketCommitUrl(details, commitRevision.asString());
         String hipChatUrl = "hipchat://www.hipchat.com/user/mscriven@atlassian.com?message=" + bitbucketUrl;
+        hipChatUrl = IntelliJGitUtils.escapeFragment(hipChatUrl);
 
         BrowserUtil.browse(hipChatUrl);
     }

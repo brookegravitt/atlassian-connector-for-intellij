@@ -18,10 +18,10 @@ public class IntelliJGitUtils
 {
 
     // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master#cl-4
-    public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s%%23cl-%d";
+    public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s#cl-%d";
 
-    // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/commits/d6063c213c2c7b5fefbf7152d6f7e3a01b057432#Lsrc/Main.javaT7
-    public static final String BITBUCKET_COMMIT_URL = "https://bitbucket.org/%s/%s/commits/%s%%23L%sT%d";
+    // Example https://bitbucket.org/marcosscriven/intellij-plugin-test.git/commits/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83#chg-src/Main.java
+    public static final String BITBUCKET_COMMIT_URL = "https://bitbucket.org/%s/%s/commits/%s#chg-%s";
 
     public static VcsActionDetails extractVcsActionDetails(AnActionEvent event)
     {
@@ -38,7 +38,7 @@ public class IntelliJGitUtils
         String branchName = gitRepository.getCurrentBranchName();
         String localGitRoot = gitRepository.getRoot().getPath();
         String localFilePath = virtualFile.getPath();
-        String sourcePath = localFilePath.substring(localGitRoot.length());
+        String sourcePath = localFilePath.substring(localGitRoot.length()+1);
 
         Collection<GitRemote> remotes = gitRepository.getRemotes();
 
@@ -79,8 +79,13 @@ public class IntelliJGitUtils
     public static String createBitbucketCommitUrl(VcsActionDetails details, String commitSha)
     {
         String bitbucketCommitUrl = String.format(BITBUCKET_COMMIT_URL, details.getRepoOwner(), details.getRepoName(),
-                commitSha, details.getSourcePath(), details.getLineNumber());
+                commitSha, details.getSourcePath());
         return bitbucketCommitUrl;
+    }
+
+    public static String escapeFragment(String urlString)
+    {
+        return urlString.replace("#", "%23");
     }
 
 }
