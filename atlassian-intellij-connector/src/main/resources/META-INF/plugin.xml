@@ -143,6 +143,7 @@
         <applicationService serviceInterface="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"
                             serviceImplementation="com.atlassian.theplugin.idea.autoupdate.NewVersionChecker"/>
 
+		<vcsAnnotationGutterActionProvider implementation="com.atlassian.theplugin.idea.action.bitbucket.GitAnnotationProvider" />
 
 	</extensions>
 
@@ -181,6 +182,13 @@
 				class="com.atlassian.theplugin.idea.action.bitbucket.OpenBitbucketLinkInBrowserAction"
 				text="Open File in Bitbucket"
 				description="Open File in Bitbucket">
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</action>
+
+		<action id="CopyBitbucketLink"
+				class="com.atlassian.theplugin.idea.action.bitbucket.CopyBitbucketLinkToClipboard"
+				text="Copy Bitbucket link to clipboard"
+				description="Copy Bitbucket link to clipboard">
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 

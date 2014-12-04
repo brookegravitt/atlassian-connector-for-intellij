@@ -10,6 +10,11 @@ import java.awt.datatransfer.StringSelection;
 public class OpenCommitMessageInHipChat extends AnAction
 {
 
+    public OpenCommitMessageInHipChat(final String text)
+    {
+        super(text);
+    }
+
     @Override
     public void actionPerformed(final AnActionEvent event)
     {
