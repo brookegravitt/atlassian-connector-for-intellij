@@ -24,8 +24,14 @@ public class IntelliJGitUtils
     // Example https://bitbucket.org/marcosscriven/intellij-plugin-test/src/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83/src/Main.java?at=master#cl-4
     public static final String BITBUCKET_URL = "https://bitbucket.org/%s/%s/src/%s/%s?at=%s#cl-%d";
 
+    // Example https://stash.atlassian.com/projects/JIRA/repos/jira/browse/pom.xml?at=refs%2Fheads%2Fissue%2FJDEV-30979-background-upgrades#12
+    public static final String STASH_URL = "https://stash.atlassian.com/projects/%s/repos/%s/browse/%s?at=refs/heads/%s#%d";
+
     // Example https://bitbucket.org/marcosscriven/intellij-plugin-test.git/commits/6c30aff3cc1fa9c2f1d31836707e2a2023b43d83#chg-src/Main.java
     public static final String BITBUCKET_COMMIT_URL = "https://bitbucket.org/%s/%s/commits/%s#chg-%s";
+
+    // Example https://stash.atlassian.com/projects/JIRA/repos/jira/commits/63d84f14f821ad397ab8e1336dd59f34d130248e#jira-ondemand-project/jira-ondemand-plugins/jira-ondemand-bundled-plugins/pom.xml
+    public static final String STASH_COMMIT_URL = "https://stash.atlassian.com/projects/JIRA/repos/jira/commits/63d84f14f821ad397ab8e1336dd59f34d130248e#jira-ondemand-project/jira-ondemand-plugins/jira-ondemand-bundled-plugins/pom.xml";
 
     public static VcsActionDetails extractVcsActionDetails(AnActionEvent event)
     {
@@ -47,9 +53,22 @@ public class IntelliJGitUtils
         Collection<GitRemote> remotes = gitRepository.getRemotes();
 
         String remoteString = null;
+        String product = "bitbucket";
+
         for(GitRemote remote : remotes)
         {
             remoteString = remote.getFirstUrl();
+        }
+
+        if(remoteString.contains("stash"))
+        {
+            product = "stash";
+            remoteString = remoteString.substring(remoteString.lastIndexOf(":"));
+            remoteString = remoteString.substring(remoteString.indexOf("/") + 1);
+        }
+        else
+        {
+            remoteString = remoteString.substring(remoteString.lastIndexOf(":") + 1);
         }
 
         String[] userAndRepo = remoteString.substring(remoteString.lastIndexOf(":")+1).split("/");
@@ -67,7 +86,7 @@ public class IntelliJGitUtils
             throw new RuntimeException(e);
         }
 
-        VcsActionDetails details = new VcsActionDetails(repoOwner, repoName, currentRevision, sourcePath, branchName, currentLine);
+        VcsActionDetails details = new VcsActionDetails(repoOwner, repoName, currentRevision, sourcePath, branchName, product, currentLine);
         return details;
     }
 
@@ -87,6 +106,14 @@ public class IntelliJGitUtils
         String bitbucketUrl = String.format(BITBUCKET_URL, details.getRepoOwner(), details.getRepoName(),
                 details.getRevision(), details.getSourcePath(), details.getBranchName(), details.getLineNumber());
         return bitbucketUrl;
+    }
+
+    public static String createStashUrl(VcsActionDetails details)
+    {
+        String repoName = details.getRepoName().replace(".git", "");
+        String stashUrl = String.format(STASH_URL, details.getRepoOwner(), repoName, details.getSourcePath(),
+                details.getBranchName(), details.getLineNumber());
+        return stashUrl;
     }
 
     public static String createBitbucketCommitUrl(VcsActionDetails details, String commitSha)
