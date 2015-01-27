@@ -53,6 +53,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -159,6 +160,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 
 	public boolean load() {
+		migrateFileFromProjectRootToIdeaDirectory();
+
         Element rootElement = new Element("atlassian-ide-plugin");
         Element pc = new Element("project-configuration");
         pc.getChildren().add(new Element("servers"));
@@ -234,6 +237,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			}
 		}
 
+
+
 		if (someMigrationHappened) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -254,7 +259,33 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				}
 			});
 		}
+	}
 
+	private void migrateFileFromProjectRootToIdeaDirectory() {
+		boolean migrationHappened = false;
+
+		final File cfgFileInProjectRoot = new File(getCfgFilePathInProjectRootDirectory());
+		if (cfgFileInProjectRoot.exists()) {
+			try {
+				FileUtils.moveFile(cfgFileInProjectRoot, new File(getCfgFilePath()));
+				migrationHappened = true;
+			} catch (IOException e) {
+				handleServerCfgFactoryException(project, e);
+			}
+		}
+
+		if (migrationHappened) {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					Messages.showInfoMessage(project,
+							"The Atlassian IDE Connector configuration file has been moved from "
+								+ getCfgFilePathInProjectRootDirectory() + " to "
+								+ getCfgFilePath() + ". If it was under version control, please make "
+								+ "the appropriate changes to reflect this.",
+							PluginUtil.PRODUCT_NAME + " upgrade process");
+				}
+			});
+		}
 	}
 
 	/**
@@ -300,12 +331,21 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	@Nullable
-	private String getCfgFilePath() {
+	private String getCfgFilePathInProjectRootDirectory() {
 		final VirtualFile baseDir = project.getBaseDir();
 		if (baseDir == null) {
 			return null;
 		}
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.xml";
+	}
+
+	@Nullable
+	private String getCfgFilePath() {
+		final VirtualFile baseDir = project.getBaseDir();
+		if (baseDir == null) {
+			return null;
+		}
+		return baseDir.getPath() + File.separator + ".idea" + File.separator + "atlassian-ide-plugin.xml";
 	}
 
 
