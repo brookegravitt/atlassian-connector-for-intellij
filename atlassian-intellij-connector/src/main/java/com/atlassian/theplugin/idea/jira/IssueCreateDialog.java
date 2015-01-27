@@ -242,8 +242,9 @@ public class IssueCreateDialog extends DialogWrapper {
             boolean defaultSelected = false;
 
             // select default project
-            if (jiraConfiguration != null &&
-                    jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServerData.getServerId())) {
+            if ((parentIssue != null && parentIssue.getProjectKey() != null) ||
+                    (jiraConfiguration != null &&
+                    jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServerData.getServerId()))) {
 
                 String project = parentIssue == null
                     ? jiraConfiguration.getView().getServerDefaultss().get(jiraServerData.getServerId()).getProject()
