@@ -794,7 +794,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
      * @param newActiveIssue
      * @return modified issue or the same issue if no modification performed
      */
-    private JiraIssueAdapter assignIssueAndPutInProgress(@NotNull final JiraIssueAdapter issue, StatusBarPane statusBarPane,
+    private JiraIssueAdapter assignIssueAndPutInProgress(@NotNull final JiraIssueAdapter issue,
                                                          ActiveIssueResultHandler handler, ActiveJiraIssue newActiveIssue) {
         JiraIssueAdapter updatedIssue = issue;
         final JiraServerData jiraServerData = issue.getJiraServerData();
@@ -890,8 +890,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     }
 
     public void startWorkingOnIssueAndActivate(@NotNull final JiraIssueAdapter issue, final ActiveJiraIssue newActiveIssue,
-                                               final StatusBarPane statusBarPane, ChangeList newDefaultList,
-                                               final ActiveIssueResultHandler handler) {
+                                               ChangeList newDefaultList, final ActiveIssueResultHandler handler) {
 
         boolean isOk = true;
 
@@ -906,7 +905,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 private JiraIssueAdapter updatedIssue = issue;
 
                 public void run(@NotNull final ProgressIndicator indicator) {
-                    updatedIssue = assignIssueAndPutInProgress(issue, statusBarPane, handler, newActiveIssue);
+                    updatedIssue = assignIssueAndPutInProgress(issue, handler, newActiveIssue);
                     jiraIssueListModelBuilder.updateIssue(updatedIssue);
 
                     SwingUtilities.invokeLater(new Runnable() {
