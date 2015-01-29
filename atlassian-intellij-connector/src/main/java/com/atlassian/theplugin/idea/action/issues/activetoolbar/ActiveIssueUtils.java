@@ -353,7 +353,6 @@ public final class ActiveIssueUtils {
 //        private final AnActionEvent event;
         private final ChangeList newDefaultList;
         private final ActiveIssueResultHandler activeIssueResultHandler;
-        private final StatusBarPane statusBarPane;
 
         public RefreshingIssueTask(Project project, JiraServerData jiraServerCfg,
                                    ActiveJiraIssue newActiveIssue, IssueListToolWindowPanel panel,
@@ -365,7 +364,6 @@ public final class ActiveIssueUtils {
             this.newActiveIssue = newActiveIssue;
             this.panel = panel;
             this.detailsPanel = detailsPanel;
-            this.statusBarPane = ActiveIssueUtils.getStatusBarPane(event);
             this.newDefaultList = newDefaultList;
             this.activeIssueResultHandler = activeIssueResultHandler;
             jiraIssue = null;
@@ -426,7 +424,7 @@ public final class ActiveIssueUtils {
                     //assign to me and start working
                     try {
                         panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
-                                statusBarPane, newDefaultList, activeIssueResultHandler);
+                                newDefaultList, activeIssueResultHandler);
                         //activeIssueResultHandler.success();
 
                     } catch (Exception e) {
