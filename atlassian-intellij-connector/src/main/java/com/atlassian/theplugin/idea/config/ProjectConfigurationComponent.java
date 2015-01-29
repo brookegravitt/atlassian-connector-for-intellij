@@ -265,9 +265,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		boolean migrationHappened = false;
 
 		final File cfgFileInProjectRoot = new File(getCfgFilePathInProjectRootDirectory());
-		if (cfgFileInProjectRoot.exists()) {
+		final File newCfgFile = new File(getCfgFilePath());
+
+        // note that this will always be false when using file-based project configuration, as both paths are equal
+		if (cfgFileInProjectRoot.exists() && !newCfgFile.exists()) {
 			try {
-				FileUtils.moveFile(cfgFileInProjectRoot, new File(getCfgFilePath()));
+				FileUtils.moveFile(cfgFileInProjectRoot, newCfgFile);
 				migrationHappened = true;
 			} catch (IOException e) {
 				handleServerCfgFactoryException(project, e);
@@ -345,7 +348,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		if (baseDir == null) {
 			return null;
 		}
-		return baseDir.getPath() + File.separator + ".idea" + File.separator + "atlassian-ide-plugin.xml";
+        File dotIdeaDirectory = new File(baseDir.getPath() + File.separator + ".idea");
+        if (dotIdeaDirectory.exists() && dotIdeaDirectory.isDirectory()) {
+            return baseDir.getPath() + File.separator + ".idea" + File.separator + "atlassian-ide-plugin.xml";
+        } else {
+            return getCfgFilePathInProjectRootDirectory();
+        }
 	}
 
 
