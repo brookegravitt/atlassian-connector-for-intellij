@@ -6,6 +6,7 @@ import com.atlassian.connector.commons.jira.beans.JIRAQueryFragment;
 import com.atlassian.connector.commons.jira.beans.JiraFilter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
+import com.atlassian.theplugin.util.JQLUtil;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +77,7 @@ public abstract class JiraPresetFilter implements JiraFilter {
         if (jiraProject == null) {
             return query;
         }
-        return query + " and project = " + jiraProject.getKey();
+        return query + " and project = " + JQLUtil.escapeReservedJQLKeyword(jiraProject.getKey());
     }
 
     public String getProjectKey() {
