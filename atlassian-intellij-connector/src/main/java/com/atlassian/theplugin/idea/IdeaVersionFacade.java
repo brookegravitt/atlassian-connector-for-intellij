@@ -100,6 +100,8 @@ public final class IdeaVersionFacade {
     // idea 14 EAP
     private static final int IDEA_14_GR6 = 139;
 
+    private static final int IDEA_903_GR5 = 429;
+
     private boolean isIdea7;
     private boolean isIdea8;
     private boolean isIdea9;
@@ -113,10 +115,11 @@ public final class IdeaVersionFacade {
 
     private boolean checkinHandlerRegistered = false;
 
-    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS)|(RM)|(PY))-(\\d+)\\.(\\d+)";
+    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC)|(PS)|(WS)|(RM)|(PY)|(AC)|(CL))-(\\d+)\\.(\\d+)";
     private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
 
     private boolean havePlatformIcons = false;
+    private boolean hasPasswordSafe = false;
 
     private IdeaVersionFacade() {
         // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
@@ -130,8 +133,8 @@ public final class IdeaVersionFacade {
             ver = "IU-103.255";
         }
         Matcher m = IDEA_9_REGEX.matcher(ver);
-        final int group5 = m.matches() && m.group(8) != null ? Integer.parseInt(m.group(8)) : 0;
-        final int group6 = m.matches() && m.group(9) != null ? Integer.parseInt(m.group(9)) : 0;
+        final int group5 = m.matches() && m.group(10) != null ? Integer.parseInt(m.group(10)) : 0;
+        final int group6 = m.matches() && m.group(11) != null ? Integer.parseInt(m.group(11)) : 0;
 
         if (m.matches() && (group5 == IDEA_9_GR6 || group5 == IDEA_9_COMMUNITY_1)) {
             isIdea9 = true; // hmm, actually we should check if m.group(4) is 90. But let's leave it for now
@@ -168,6 +171,8 @@ public final class IdeaVersionFacade {
             }
         }
 
+        hasPasswordSafe = hasPasswordSafeCheck(m);
+
         try {
             Icon icon = PlatformIcons.DIRECTORY_OPEN_ICON;
             havePlatformIcons = true;
@@ -178,6 +183,20 @@ public final class IdeaVersionFacade {
 
     private boolean isIdea() {
         return isIdea7 || isIdea8 || isIdea9 || isIdeaX || isIdea11Or12 || isIdea13;
+    }
+
+    private boolean hasPasswordSafeCheck(@NotNull Matcher m) {
+        boolean hasSafe = false;
+        final int group4 = m.matches() && m.group(10) != null ? Integer.parseInt(m.group(10)) : 0;
+
+        if (m.matches() && group4 == IDEA_9_GR6) {
+            final int group5 = m.group(11) != null ? Integer.parseInt(m.group(11)) : 0;
+            hasSafe = group5 >= IDEA_903_GR5;
+        } else {
+            hasSafe = m.matches() && group4 > IDEA_9_GR6;
+        }
+
+        return hasSafe;
     }
 
     public static boolean isInstanceOfPsiDocToken(Object obj) {
@@ -922,6 +941,10 @@ public final class IdeaVersionFacade {
 
     public boolean isCommunityEdition() {
         return communityEdition;
+    }
+
+    public boolean hasPasswordSafe() {
+        return hasPasswordSafe;
     }
 
     public boolean openStackTrace(@NotNull Project project, String stracktrace, String title) {

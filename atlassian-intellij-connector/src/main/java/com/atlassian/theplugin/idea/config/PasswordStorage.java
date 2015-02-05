@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.intellij.openapi.application.ApplicationInfo;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,8 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * User: kalamon
@@ -91,32 +89,9 @@ public class PasswordStorage {
         return load(project, null, project.getLocationHash());
     }
 
-    private static final String IDEA_9_REGEX_STRING = "((IU)|(IC))-(\\d+)\\.(\\d+)";
-    private static final Pattern IDEA_9_REGEX = Pattern.compile(IDEA_9_REGEX_STRING);
-    private static final int IDEA_9_GR4 = 95;
-    private static final int IDEA_903_GR5 = 429;
-
     private static boolean hasPasswordSafe() {
-        if (haveSafe != null) {
-            return haveSafe;
-        }
-
-        // there is no getBuild().asString() in IDEA 8.0 and older, so we need to use
-        // deprecated getBuildNumber() method here...
-        @SuppressWarnings("deprecation")
-        String ver = ApplicationInfo.getInstance().getBuildNumber();
-        Matcher m = IDEA_9_REGEX.matcher(ver);
-
-        final int group4 = m.matches() && m.group(4) != null ? Integer.parseInt(m.group(4)) : 0;
-
-        if (m.matches() && group4 == IDEA_9_GR4) {
-            final int group5 = m.group(5) != null ? Integer.parseInt(m.group(5)) : 0;
-            haveSafe = group5 >= IDEA_903_GR5;
-        } else {
-            haveSafe = m.matches() && group4 > IDEA_9_GR4;
-        }
-
-        return haveSafe;
+        IdeaVersionFacade versionFacade = IdeaVersionFacade.getInstance();
+        return versionFacade.hasPasswordSafe();
     }
 
     private static void store(Project project, @Nullable Project defaultProject, String key, String value) {
