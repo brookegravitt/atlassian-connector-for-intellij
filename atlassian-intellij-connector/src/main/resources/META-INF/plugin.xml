@@ -573,7 +573,7 @@
 		<action id="ThePlugin.JiraIssues.GroupSubtasks"
 				class="com.atlassian.theplugin.idea.action.issues.GroupSubtasksAction"
 				text="Collapse Sub Issues Under Parent"
-				icon="/icons/inspector/sortByCategory.png"/>
+				icon="/objectBrowser/compactEmptyPackages.png"/>
 		<action id="ThePlugin.JiraIssues.Refresh"
 				class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction"
 				text="Refresh Issue List"
