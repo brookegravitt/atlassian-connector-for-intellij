@@ -3,8 +3,11 @@ package com.atlassian.connector.intellij.stash.impl;
 import com.atlassian.connector.intellij.stash.Comment;
 import com.atlassian.connector.intellij.stash.PullRequest;
 import com.atlassian.connector.intellij.stash.StashServerFacade;
+import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.codehaus.jettison.json.JSONArray;
@@ -29,8 +32,24 @@ public class StashServerFacadeImpl implements StashServerFacade
         });
     }
 
-    public List<Comment> getComments(String path) {
-        return null;
+    public List<Comment> getComments(PullRequest pr, final String path) {
+        String comments = serverJson.getComments();
+
+        List<Comment> allComments = Lists.transform(getValues(comments), new Function<String, Comment>() {
+            public Comment apply(String s) {
+                return gson.fromJson(s, CommentBean.class);
+            }
+        });
+
+        return new ArrayList<Comment>(Collections2.filter(allComments, new Predicate<Comment>() {
+            public boolean apply(Comment comment) {
+                return comment.getAnchor().getPath().equals(path);
+            }
+        }));
+    }
+
+    public void addComment(Comment comment) {
+
     }
 
     private List<String> getValues(String json) {
