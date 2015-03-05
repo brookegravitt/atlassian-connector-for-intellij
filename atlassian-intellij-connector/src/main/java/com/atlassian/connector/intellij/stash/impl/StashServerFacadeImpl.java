@@ -8,7 +8,9 @@ import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -17,42 +19,76 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StashServerFacadeImpl implements StashServerFacade
 {
-    private final StashServerJson serverJson = new StashServerJson();
     private static final Gson gson = new Gson();
 
-    public List<PullRequest> getPullRequests() {
-        String pullRequests = serverJson.getPullRequests();
+    public static final String PROJECT_KEY = "GM";
+    public static final String REPO = "gitmilk";
 
-        return Lists.transform(getValues(pullRequests), new Function<String, PullRequest>() {
-            public PullRequest apply(String s) {
-                return gson.fromJson(s, PullRequestBean.class);
-            }
-        });
+    private Optional<PullRequest> currentPullRequest = Optional.absent();
+
+    private final StashRestSession stashRestSession = new StashRestSession();
+
+    public StashServerFacadeImpl() {
+        try {
+            stashRestSession.login("blewandowski", "blewandowski".toCharArray());
+        } catch (RemoteApiLoginException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<Comment> getComments(PullRequest pr, final String path) {
-        String comments = serverJson.getComments();
+    public List<PullRequest> getPullRequests() {
+        try {
+            String pullRequests = stashRestSession.getPullRequests(PROJECT_KEY, REPO);
+            return Lists.transform(getValues(pullRequests), new Function<String, PullRequest>() {
+                public PullRequest apply(String s) {
+                    return gson.fromJson(s, PullRequestBean.class);
+                }
+            });
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
+    }
 
-        List<Comment> allComments = Lists.transform(getValues(comments), new Function<String, Comment>() {
-            public Comment apply(String s) {
-                return gson.fromJson(s, CommentBean.class);
-            }
-        });
+    public List<Comment> getCommentsForCurrentPR(final String path) {
 
-        return new ArrayList<Comment>(Collections2.filter(allComments, new Predicate<Comment>() {
-            public boolean apply(Comment comment) {
-                return comment.getAnchor().getPath().equals(path);
+        if (currentPullRequest.isPresent()) {
+            try {
+                String comments = stashRestSession.getComments(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), path);
+                List<Comment> allComments = Lists.transform(getValues(comments), new Function<String, Comment>() {
+                    public Comment apply(String s) {
+                        return gson.fromJson(s, CommentBean.class);
+                    }
+                });
+
+                return new ArrayList<Comment>(Collections2.filter(allComments, new Predicate<Comment>() {
+                    public boolean apply(Comment comment) {
+                        return comment.getAnchor().getPath().equals(path);
+                    }
+                }));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }));
+        }
+        return Collections.emptyList();
     }
 
     public void addComment(Comment comment) {
 
+    }
+
+    public Optional<PullRequest> getCurrentPullRequest() {
+        return currentPullRequest;
+    }
+
+    public void setCurrentPullRequest(PullRequest pr) {
+        currentPullRequest = Optional.fromNullable(pr);
     }
 
     private List<String> getValues(String json) {

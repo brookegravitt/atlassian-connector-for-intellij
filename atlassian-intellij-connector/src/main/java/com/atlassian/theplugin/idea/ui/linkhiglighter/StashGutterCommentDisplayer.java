@@ -5,15 +5,10 @@ import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
 import com.atlassian.theplugin.idea.jira.IssueCommentDialog;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.impl.ApplicationImpl;
-import com.intellij.openapi.components.ComponentManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.TextAnnotationGutterProvider;
 import com.intellij.openapi.editor.colors.ColorKey;
@@ -59,7 +54,7 @@ public class StashGutterCommentDisplayer {
 
         final List<Comment> comments;
         try {
-            comments = stashFacade.getComments(null, getRelativePath(psiFile));
+            comments = stashFacade.getCommentsForCurrentPR(getRelativePath(psiFile));
         } catch (URISyntaxException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

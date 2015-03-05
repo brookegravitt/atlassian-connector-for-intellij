@@ -6,4 +6,5 @@ package com.atlassian.connector.intellij.stash;
 public interface PullRequest {
     String getTitle();
     Author getAuthor();
+    Long getId();
 }

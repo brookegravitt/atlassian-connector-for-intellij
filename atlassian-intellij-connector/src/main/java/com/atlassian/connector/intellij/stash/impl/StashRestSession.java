@@ -40,8 +40,6 @@ public class StashRestSession implements StashSession {
     }
 
     public void login(String name, char[] aPassword) throws RemoteApiLoginException {
-
-
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials("blewandowski", "blewandowski"));
@@ -57,12 +55,20 @@ public class StashRestSession implements StashSession {
         return context.getCredentialsProvider().getCredentials(AuthScope.ANY) != null;
     }
 
-
-
     public String getPullRequests(String projectKey, String repo) throws IOException {
-        String path = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests", projectKey, repo);
+        String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests", projectKey, repo);
 
-        HttpResponse response = client.execute(new HttpGet(baseUrl + path), context);
+        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
+
+        int statusCode = response.getStatusLine().getStatusCode();
+
+        return IOUtils.toString(response.getEntity().getContent());
+    }
+
+    public String getComments(String projectKey, String repo, String pullRequestId, String path) throws IOException {
+        String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments?path=%s", projectKey, repo, pullRequestId, path);
+
+        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
 
         int statusCode = response.getStatusLine().getStatusCode();
 

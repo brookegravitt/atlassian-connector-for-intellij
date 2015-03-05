@@ -1,6 +1,7 @@
 package com.atlassian.connector.intellij.stash;
 
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -11,7 +12,11 @@ public interface StashServerFacade extends ProductServerFacade{
 
     public List<PullRequest> getPullRequests();
 
-    public List<Comment> getComments(PullRequest pr, String path);
+    public List<Comment> getCommentsForCurrentPR(String path);
 
     public void addComment(Comment comment);
+
+    public Optional<PullRequest> getCurrentPullRequest();
+
+    public void setCurrentPullRequest(PullRequest pr);
 }
