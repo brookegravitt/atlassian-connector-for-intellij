@@ -101,31 +101,33 @@ public class StashGutterCommentDisplayer {
 
             public List<AnAction> getPopupActions(final int i, final Editor editor) {
                 List<AnAction> l = new ArrayList<AnAction>();
-                l.add(new AnAction("Add comment") {
-                    @Override
-                    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                        final IssueCommentDialog issueCommentDialog = new IssueCommentDialog("line " + Integer.toString(i + 1));
-                        issueCommentDialog.show();
-                        if (issueCommentDialog.isOK()) {
-                            Task.Backgroundable task = new Task.Backgroundable(project, "Adding comment to Stash", false) {
+                if (i <= editor.getDocument().getLineCount()) {
+                    l.add(new AnAction("Add comment") {
+                        @Override
+                        public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                            final IssueCommentDialog issueCommentDialog = new IssueCommentDialog("line " + Integer.toString(i + 1));
+                            issueCommentDialog.show();
+                            if (issueCommentDialog.isOK()) {
+                                Task.Backgroundable task = new Task.Backgroundable(project, "Adding comment to Stash", false) {
 
-                                public void run(@NotNull ProgressIndicator progressIndicator) {
-                                    Comment comment = new SimpleComment();
-                                    try {
-                                        stashFacade.addComment(new SimpleComment(issueCommentDialog.getComment(), "zbysiu", getRelativePath(psiFile), i + 1));
-                                        reparseAll();
-                                    } catch (URISyntaxException e) {
-                                        e.printStackTrace();
-                                        throw new RuntimeException(e);
+                                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                                        Comment comment = new SimpleComment();
+                                        try {
+                                            stashFacade.addComment(new SimpleComment(issueCommentDialog.getComment(), "zbysiu", getRelativePath(psiFile), i + 1));
+                                            reparseAll();
+                                        } catch (URISyntaxException e) {
+                                            e.printStackTrace();
+                                            throw new RuntimeException(e);
+                                        }
                                     }
-                                }
-                            };
+                                };
 
-                            ProgressManager.getInstance().run(task);
+                                ProgressManager.getInstance().run(task);
+                            }
                         }
-                    }
 
-                });
+                    });
+                }
                 return l;
             }
 
