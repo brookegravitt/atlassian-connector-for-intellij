@@ -49,7 +49,7 @@ import java.util.Timer;
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
 
-    private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
+    private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin_16.png");
     private static DisplayChangeHandler displayChangeHandler = new DisplayChangeHandler();
     private ConfigPanel configPanel;
 

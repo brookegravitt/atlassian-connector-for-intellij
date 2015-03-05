@@ -86,7 +86,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private static final String CFG_LOAD_ERROR_MSG =
 			"Error while loading the configuration of " + PluginUtil.PRODUCT_NAME;
-	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
+	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin_16.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	/**
