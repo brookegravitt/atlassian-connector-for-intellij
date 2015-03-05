@@ -21,4 +21,9 @@ public class PullRequestBean implements PullRequest{
     {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }

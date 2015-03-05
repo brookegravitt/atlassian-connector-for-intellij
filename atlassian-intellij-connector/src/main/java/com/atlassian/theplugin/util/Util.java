@@ -49,6 +49,8 @@ public final class Util {
 				return ServerType.BAMBOO_SERVER;
 			case ISSUES:
 				return ServerType.JIRA_SERVER;
+            case PULL_REQUESTS:
+                return ServerType.STASH_SERVER;
 			default:
 				throw new ThePluginException("Unrecognized tool window type");
 		}
