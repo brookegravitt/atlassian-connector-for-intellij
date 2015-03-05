@@ -6,7 +6,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -83,11 +82,7 @@ public class StashRestSession implements StashSession {
     public String getChangedFiles(String projectKey, String repo, String pullRequestId) throws IOException{
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/changes", projectKey, repo, pullRequestId);
 
-        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
-
-        int statusCode = response.getStatusLine().getStatusCode();
-
-        return IOUtils.toString(response.getEntity().getContent());
+        return executeGet(url);
     }
 
     private String executeGet(String url) throws IOException {
