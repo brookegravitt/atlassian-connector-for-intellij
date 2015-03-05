@@ -212,6 +212,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
             case JIRA_STUDIO_SERVER:
             case FISHEYE_SERVER:
                 break;
+            case STASH_SERVER:
+                break;
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
