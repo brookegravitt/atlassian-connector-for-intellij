@@ -1,5 +1,8 @@
 package com.atlassian.connector.intellij.stash;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +18,7 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
         instance = new StashArrayListBackedServerFacade();
     }
 
-    private HashMap<String, List<Comment>> pathToCommentsMap = new HashMap<String, List<Comment>>();
+    private ArrayListMultimap<String, Comment> pathToCommentsMap = ArrayListMultimap.create();
 
     public StashArrayListBackedServerFacade() {
         fillInitialData();
@@ -33,6 +36,12 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
         return pathToCommentsMap.get(path);
     }
 
+    public void addComment(Comment comment) {
+        String path = comment.getAnchor().getPath();
+
+        pathToCommentsMap.put(path, comment);
+    }
+
     private void fillInitialData() {
         SimpleAuthor author = new SimpleAuthor();
         author.setName("Zbigniew");
@@ -45,9 +54,6 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
         comment.setText("Very insightful comment.");
         comment.setAnchor(anchor);
 
-        ArrayList<Comment> comments = new ArrayList<Comment>();
-        comments.add(comment);
-
-        pathToCommentsMap.put("readme.txt", comments);
+        pathToCommentsMap.put("readme.txt", comment);
     }
 }

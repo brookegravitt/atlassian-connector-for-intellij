@@ -6,4 +6,7 @@ package com.atlassian.connector.intellij.stash;
 public interface Anchor {
     public int getLine();
     public void setLine(int i);
+
+    public String getPath();
+    public void setPath(String path);
 }
