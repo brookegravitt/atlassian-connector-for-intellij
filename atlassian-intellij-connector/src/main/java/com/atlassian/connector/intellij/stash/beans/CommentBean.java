@@ -9,6 +9,14 @@ public class CommentBean implements Comment{
     private UserBean author;
     private AnchorBean anchor;
 
+    public CommentBean() {}
+
+    public CommentBean(String text, Anchor anchor)
+    {
+        this.text = text;
+        this.anchor = (AnchorBean)anchor;
+    }
+
     public String getText() {
         return text;
     }
