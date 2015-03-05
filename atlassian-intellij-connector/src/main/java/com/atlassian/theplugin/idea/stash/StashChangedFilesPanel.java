@@ -14,7 +14,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class StashChangedFilesPanel extends JPanel {
@@ -28,7 +28,7 @@ public class StashChangedFilesPanel extends JPanel {
         this.add(tree);
         this.add(new JLabel("Changed files"), BorderLayout.NORTH);
 
-        changeContents(Arrays.asList("a"));
+        changeContents(Collections.<String>emptyList());
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
