@@ -66,23 +66,6 @@ public class StashRestSession implements StashSession {
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests", projectKey, repo);
 
         return executeGet(url);
-
-
-    }
-
-    private String executeGet(String url) throws IOException {
-        CloseableHttpResponse response = null;
-
-        try {
-            response = (CloseableHttpResponse) client.execute(new HttpGet(baseUrl + url), context);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            return IOUtils.toString(response.getEntity().getContent());
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
     }
 
     public String getComments(String projectKey, String repo, String pullRequestId, String path) throws IOException {
@@ -94,25 +77,7 @@ public class StashRestSession implements StashSession {
     public void postComment(String projectKey, String repo, String pullRequestId, Comment comment) throws IOException {
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments", projectKey, repo, pullRequestId);
 
-        HttpPost post = new HttpPost(baseUrl + url);
-
-        StringEntity entity = new StringEntity(gson.toJson(comment));
-        post.setEntity(entity);
-        post.setHeader("Content-type", "application/json");
-        CloseableHttpResponse response = null;
-
-        try {
-            response = (CloseableHttpResponse) client.execute(post, context);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
-
-
-        //return IOUtils.toString(response.getEntity().getContent());
+        executePost(gson.toJson(comment), url);
     }
 
     public String getChangedFiles(String projectKey, String repo, String pullRequestId) throws IOException{
@@ -123,5 +88,36 @@ public class StashRestSession implements StashSession {
         int statusCode = response.getStatusLine().getStatusCode();
 
         return IOUtils.toString(response.getEntity().getContent());
+    }
+
+    private String executeGet(String url) throws IOException {
+        CloseableHttpResponse response = null;
+        try {
+            response = (CloseableHttpResponse) client.execute(new HttpGet(baseUrl + url), context);
+            int statusCode = response.getStatusLine().getStatusCode();
+            return IOUtils.toString(response.getEntity().getContent());
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+    }
+
+    private void executePost(String entityString, String url) throws IOException {
+        HttpPost post = new HttpPost(baseUrl + url);
+
+        StringEntity entity = new StringEntity(entityString);
+        post.setEntity(entity);
+        post.setHeader("Content-type", "application/json");
+        CloseableHttpResponse response = null;
+
+        try {
+            response = (CloseableHttpResponse) client.execute(post, context);
+            int statusCode = response.getStatusLine().getStatusCode();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 }

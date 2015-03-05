@@ -23,9 +23,13 @@ import java.awt.*;
 public class StashToolWindowPanel extends ThreePanePanel implements DataProvider {
 
 
+    private StashServerFacade stashServerFacade;
+    private StashChangedFilesPanel stashChangedFilesPanel;
 
     public StashToolWindowPanel() {
         final JPanel toolBarPanel = new JPanel(new GridBagLayout());
+        stashServerFacade = StashServerFacadeImpl.getInstance();
+        stashChangedFilesPanel = new StashChangedFilesPanel();
         init();
     }
 
@@ -36,7 +40,6 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
 
     @Override
     protected JTree getRightTree() {
-        StashServerFacade stashServerFacade = StashServerFacadeImpl.getInstance();
         JTree tree = new JTree(stashServerFacade.getPullRequests().toArray());
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -48,10 +51,17 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
                 ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(project);
 
                 projectComponent.getFileEditorListener().scanOpenEditors();
+
+                loadChangedFiles();
             }
         });
 
         return tree;
+    }
+
+    private void loadChangedFiles()
+    {
+        stashChangedFilesPanel.changeContents(stashServerFacade.getChangedFiles());
     }
 
     @Override
@@ -66,7 +76,7 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
 
     @Override
     protected JComponent getRightMostPanel() {
-        return new JPanel(new GridBagLayout());
+        return stashChangedFilesPanel;
     }
 
     @Override
