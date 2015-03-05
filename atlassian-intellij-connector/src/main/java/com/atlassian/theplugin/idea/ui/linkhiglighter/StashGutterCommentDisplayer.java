@@ -17,11 +17,13 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,12 +47,12 @@ public class StashGutterCommentDisplayer {
         this.psiFile = psiFile;
         this.editor = editor;
 
-        registerTextAnnotationProvider(psiFile, editor);
+        reparseAll();
     }
 
     private void registerTextAnnotationProvider(final PsiFile psiFile, Editor editor) {
         //final StashServerFacade stashFacade = StashArrayListBackedServerFacade.getInstance();
-        final StashServerFacade stashFacade = new StashServerFacadeImpl();
+        final StashServerFacade stashFacade = StashServerFacadeImpl.getInstance();
 
         final List<Comment> comments;
         try {
@@ -137,6 +139,7 @@ public class StashGutterCommentDisplayer {
     }
 
     public void reparseAll() {
+
 
         ApplicationManager.getApplication().runReadAction(new Runnable() {
             public void run() {

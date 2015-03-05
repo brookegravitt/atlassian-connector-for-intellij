@@ -34,13 +34,22 @@ public class StashServerFacadeImpl implements StashServerFacade
     private Optional<PullRequest> currentPullRequest = Optional.absent();
 
     private final StashRestSession stashRestSession = new StashRestSession();
+    private static StashServerFacadeImpl instance;
 
-    public StashServerFacadeImpl() {
+    static {
+        instance = new StashServerFacadeImpl();
+    }
+
+    private StashServerFacadeImpl() {
         try {
             stashRestSession.login("blewandowski", "blewandowski".toCharArray());
         } catch (RemoteApiLoginException e) {
             e.printStackTrace();
         }
+    }
+
+    public static StashServerFacade getInstance() {
+        return instance;
     }
 
     public List<PullRequest> getPullRequests() {
@@ -60,7 +69,10 @@ public class StashServerFacadeImpl implements StashServerFacade
 
         if (currentPullRequest.isPresent()) {
             try {
-                String comments = stashRestSession.getComments(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), path);
+                String comments;
+                synchronized (this) {
+                    comments = stashRestSession.getComments(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), path);
+                }
                 List<Comment> allComments = Lists.transform(getValues(comments), new Function<String, Comment>() {
                     public Comment apply(String s) {
                         return gson.fromJson(s, CommentBean.class);

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class StashServerFacadeTest {
 
-    private StashServerFacade facade = new StashServerFacadeImpl();
+    private StashServerFacade facade = StashServerFacadeImpl.getInstance();
     @Test
     public void testGetPullRequests() throws Exception {
         List<PullRequest> pullRequests = facade.getPullRequests();

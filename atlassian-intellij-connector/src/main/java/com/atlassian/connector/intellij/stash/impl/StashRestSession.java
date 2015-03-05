@@ -10,6 +10,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
@@ -68,10 +69,17 @@ public class StashRestSession implements StashSession {
     public String getComments(String projectKey, String repo, String pullRequestId, String path) throws IOException {
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments?path=%s", projectKey, repo, pullRequestId, path);
 
-        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
+        CloseableHttpResponse response = null;
 
-        int statusCode = response.getStatusLine().getStatusCode();
+        try {
+            response = (CloseableHttpResponse) client.execute(new HttpGet(baseUrl + url), context);
 
-        return IOUtils.toString(response.getEntity().getContent());
+            int statusCode = response.getStatusLine().getStatusCode();
+            return IOUtils.toString(response.getEntity().getContent());
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 }

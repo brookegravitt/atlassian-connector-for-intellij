@@ -1,9 +1,15 @@
 package com.atlassian.theplugin.idea.stash;
 
 import com.atlassian.connector.intellij.stash.StashServerFacade;
+import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.ThreePanePanel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -30,12 +36,18 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
 
     @Override
     protected JTree getRightTree() {
-        StashServerFacade stashServerFacade = new StashServerFacadeImpl();
+        StashServerFacade stashServerFacade = StashServerFacadeImpl.getInstance();
         JTree tree = new JTree(stashServerFacade.getPullRequests().toArray());
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                
+                PullRequestBean pullRequest = (PullRequestBean) ((JTree.DynamicUtilTreeNode)e.getNewLeadSelectionPath().getLastPathComponent()).getUserObject();
+                StashServerFacadeImpl.getInstance().setCurrentPullRequest(pullRequest);
+
+                Project project = ProjectManager.getInstance().getOpenProjects()[0];
+                ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(project);
+
+                projectComponent.getFileEditorListener().scanOpenEditors();
             }
         });
 
