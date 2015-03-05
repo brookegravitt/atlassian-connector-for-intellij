@@ -1,0 +1,26 @@
+<response>
+	<version>
+		<number>${project.version}, SVN:${buildNumber}</number>
+        <downloadUrl>http://update.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}-plugin-zip.zip</downloadUrl>
+        <releaseNotes><![CDATA[
+   <html><body>
+
+<h3>New features</h3>
+<ol>
+    <li>Compatibility with Intellij IDEA 11 (EAP)</li>
+</ol>
+
+<h3>Change Notes</h3>
+<ol>
+	<li>Bug fixes</li>
+</ol>
+
+
+<p>Fore more information please see the <a target="_blank" href="q" rel="nofollow">Release Notes</a>.</p>
+
+  </body></html>
+
+        ]]></releaseNotes>
+<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+Connector+for+IntelliJ+IDEA+-+v3.0.12+Release+Notes</releaseNotesUrl>
+</version>
+</response>
