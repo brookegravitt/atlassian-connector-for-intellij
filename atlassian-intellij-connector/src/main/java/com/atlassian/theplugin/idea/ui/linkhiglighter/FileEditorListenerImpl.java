@@ -233,18 +233,26 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 
 			final JiraServerCfg currentJiraServer = aProjectConfiguration.getDefaultJiraServer();
-			if (currentJiraServer == null) {
-				FileEditorListenerImpl.this.deactivate();
-				removeAllLinkHighlighers();
-			} else if (!currentJiraServer.equals(lastJiraServer)) {
-				final Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
-				FileEditorListenerImpl.this.activate();
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						ProgressManager.getInstance().run(task);
-					}
-				});
-			}
+//			if (currentJiraServer == null) {
+//                FileEditorListenerImpl.this.deactivate();
+//                removeAllLinkHighlighers();
+//            }
+//			} else if (!currentJiraServer.equals(lastJiraServer)) {
+//				final Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+//				FileEditorListenerImpl.this.activate();
+//				SwingUtilities.invokeLater(new Runnable() {
+//					public void run() {
+//						ProgressManager.getInstance().run(task);
+//					}
+//				});
+//			}
+            final Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+            FileEditorListenerImpl.this.activate();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    ProgressManager.getInstance().run(task);
+                }
+            });
 
 			lastJiraServer = currentJiraServer;
 		}
