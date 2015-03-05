@@ -54,7 +54,7 @@ public class JiraLinkHighlighter {
 		this.psiFile = psiFile;
 		this.editor = editor;
 		this.jiraEditorLinkParser = jiraEditorLinkParser;
-	}
+    }
 
 	public void stopListening() {
 		if (isListening) {
