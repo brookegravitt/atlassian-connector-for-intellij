@@ -2,14 +2,24 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.intellij.stash.*;
 import com.atlassian.theplugin.idea.jira.IssueCommentDialog;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.impl.ApplicationImpl;
+import com.intellij.openapi.components.ComponentManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.TextAnnotationGutterProvider;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -55,45 +65,22 @@ public class StashGutterCommentDisplayer {
 
         editor.getGutter().registerTextAnnotation(new TextAnnotationGutterProvider() {
 
-
             @Nullable
             public String getLineText(final int i, Editor editor) {
-                Collection<Comment> commentsForLine = Collections2.filter(comments, new Predicate<Comment>() {
-                    public boolean apply(@Nullable Comment comment) {
-                        return comment.getAnchor().getLine() == i + 1;
+                return Joiner.on(", ").skipNulls().join(Iterables.transform(comments, new Function<Comment, Object>() {
+                    public Object apply(@Nullable Comment comment) {
+                        return comment.getAnchor().getLine() == i + 1 ? comment.getAuthor().getName() : null;
                     }
-                });
-
-                if (commentsForLine.size() > 0) {
-                    StringBuilder authorsSb = new StringBuilder();
-                    for (Comment c: commentsForLine) {
-                        authorsSb.append(c.getAuthor().getName());
-                    }
-
-                    return authorsSb.toString();
-                }
-
-                return "";
+                }));
             }
 
             @Nullable
             public String getToolTip(final int i, Editor editor) {
-                Collection<Comment> commentsForLine = Collections2.filter(comments, new Predicate<Comment>() {
-                    public boolean apply(@Nullable Comment comment) {
-                        return comment.getAnchor().getLine() == i + 1;
+                return Joiner.on("\n\n").skipNulls().join(Iterables.transform(comments, new Function<Comment, Object>() {
+                    public Object apply(@Nullable Comment comment) {
+                        return comment.getAnchor().getLine() == i + 1 ? comment.getText() : null;
                     }
-                });
-
-                if (commentsForLine.size() > 0) {
-                    StringBuilder authorsSb = new StringBuilder();
-                    for (Comment c: commentsForLine) {
-                        authorsSb.append(c.getText());
-                    }
-
-                    return authorsSb.toString();
-                }
-
-                return "";
+                }));
             }
 
             public EditorFontType getStyle(int i, Editor editor) {
@@ -102,12 +89,12 @@ public class StashGutterCommentDisplayer {
 
             @Nullable
             public ColorKey getColor(int i, Editor editor) {
-                return ColorKey.createColorKey("", Color.white);
+                return ColorKey.createColorKey("", Color.black);
             }
 
             @Nullable
             public Color getBgColor(int i, Editor editor) {
-                return Color.black;
+                return Color.LIGHT_GRAY;
             }
 
             public List<AnAction> getPopupActions(final int i, final Editor editor) {
@@ -118,24 +105,25 @@ public class StashGutterCommentDisplayer {
                         final IssueCommentDialog issueCommentDialog = new IssueCommentDialog("line " + Integer.toString(i + 1));
                         issueCommentDialog.show();
                         if (issueCommentDialog.isOK()) {
-                            // TODO asynchronously
+                            Task.Backgroundable task = new Task.Backgroundable(project, "Adding comment to Stash", false) {
 
-                            Comment comment = new SimpleComment();
+                                public void run(@NotNull ProgressIndicator progressIndicator) {
+                                    Comment comment = new SimpleComment();
+                                    try {
+                                        stashFacade.addComment(new SimpleComment(issueCommentDialog.getComment(), "zbysiu", getRelativePath(psiFile), i + 1));
+                                        reparseAll();
+                                    } catch (URISyntaxException e) {
+                                        e.printStackTrace();
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            };
 
-                            try {
-                                stashFacade.addComment(new SimpleComment(issueCommentDialog.getComment(), "zbysiu", getRelativePath(psiFile), i + 1));
-                                reparseAll();
-                            } catch (URISyntaxException e) {
-                                e.printStackTrace();
-                                throw new RuntimeException(e);
-
-                            }
+                            ProgressManager.getInstance().run(task);
                         }
                     }
 
                 });
-
-
                 return l;
             }
 
@@ -150,7 +138,12 @@ public class StashGutterCommentDisplayer {
     }
 
     public void reparseAll() {
-        editor.getGutter().closeAllAnnotations();
-        registerTextAnnotationProvider(psiFile, editor);
+
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
+            public void run() {
+                editor.getGutter().closeAllAnnotations();
+                registerTextAnnotationProvider(psiFile, editor);
+            }
+        });
     }
 }
