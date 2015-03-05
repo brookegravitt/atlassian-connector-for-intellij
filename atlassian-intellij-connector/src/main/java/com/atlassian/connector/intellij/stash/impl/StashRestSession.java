@@ -65,16 +65,12 @@ public class StashRestSession implements StashSession {
     public String getPullRequests(String projectKey, String repo) throws IOException {
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests", projectKey, repo);
 
-        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
+        return executeGet(url);
 
-        int statusCode = response.getStatusLine().getStatusCode();
 
-        return IOUtils.toString(response.getEntity().getContent());
     }
 
-    public String getComments(String projectKey, String repo, String pullRequestId, String path) throws IOException {
-        String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments?path=%s", projectKey, repo, pullRequestId, path);
-
+    private String executeGet(String url) throws IOException {
         CloseableHttpResponse response = null;
 
         try {
@@ -89,6 +85,12 @@ public class StashRestSession implements StashSession {
         }
     }
 
+    public String getComments(String projectKey, String repo, String pullRequestId, String path) throws IOException {
+        String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments?path=%s", projectKey, repo, pullRequestId, path);
+
+        return executeGet(url);
+    }
+
     public void postComment(String projectKey, String repo, String pullRequestId, Comment comment) throws IOException {
         String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/comments", projectKey, repo, pullRequestId);
 
@@ -97,10 +99,17 @@ public class StashRestSession implements StashSession {
         StringEntity entity = new StringEntity(gson.toJson(comment));
         post.setEntity(entity);
         post.setHeader("Content-type", "application/json");
+        CloseableHttpResponse response = null;
 
-        HttpResponse response = client.execute(post, context);
+        try {
+            response = (CloseableHttpResponse) client.execute(post, context);
 
-        int statusCode = response.getStatusLine().getStatusCode();
+            int statusCode = response.getStatusLine().getStatusCode();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
 
 
         //return IOUtils.toString(response.getEntity().getContent());
