@@ -7,4 +7,5 @@ public interface PullRequest {
     String getTitle();
     Author getAuthor();
     Long getId();
+    String getRef();
 }

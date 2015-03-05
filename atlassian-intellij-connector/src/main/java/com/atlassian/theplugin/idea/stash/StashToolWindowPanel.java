@@ -1,21 +1,25 @@
 package com.atlassian.theplugin.idea.stash;
 
+import com.atlassian.connector.intellij.stash.PullRequest;
 import com.atlassian.connector.intellij.stash.StashServerFacade;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.ThreePanePanel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by klopacinski on 2015-03-05.
@@ -50,6 +54,7 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
                 Project project = ProjectManager.getInstance().getOpenProjects()[0];
                 ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(project);
 
+                stashAndCheckoutPR(pullRequest);
                 projectComponent.getFileEditorListener().scanOpenEditors();
 
                 loadChangedFiles();
@@ -62,6 +67,28 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
     private void loadChangedFiles()
     {
         stashChangedFilesPanel.changeContents(stashServerFacade.getChangedFiles());
+    }
+
+    private void stashAndCheckoutPR(PullRequest pullRequest)
+    {
+        try {
+            Project project = ProjectManager.getInstance().getOpenProjects()[0];
+            File root = new File(project.getBasePath());
+
+            Process fetch = Runtime.getRuntime().exec("git fetch", null, root);
+            fetch.waitFor();
+
+            Process checkout = Runtime.getRuntime().exec("git checkout " + pullRequest.getRef(), null, root);
+            checkout.waitFor();
+            String s = IOUtils.toString(checkout.getInputStream());
+
+            LocalFileSystem.getInstance().refresh(false);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

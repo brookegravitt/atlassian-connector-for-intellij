@@ -8,6 +8,7 @@ public class PullRequestBean implements PullRequest{
     private String title;
     private AuthorBean author;
     private Long id;
+    private GitRef fromRef;
 
     public String getTitle() {
         return title;
@@ -17,13 +18,21 @@ public class PullRequestBean implements PullRequest{
         return author;
     }
 
-    public Long getId()
-    {
+    public Long getId() {
         return id;
+    }
+
+    public String getRef() {
+        return fromRef.id.replaceAll("refs/heads/", "");
     }
 
     @Override
     public String toString() {
-        return title;
+        return title + " -> " + fromRef.id + " (by " + author.getName() + ")";
+    }
+
+    private static class GitRef
+    {
+        String id;
     }
 }
