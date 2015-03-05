@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class StashServerFacadeTest {
 
@@ -16,7 +17,7 @@ public class StashServerFacadeTest {
     public void testGetPullRequests() throws Exception {
         List<PullRequest> pullRequests = facade.getPullRequests();
         assertEquals("no milk", pullRequests.get(0).getTitle());
-        assertEquals("Admin Adminiev", pullRequests.get(0).getAuthor().getName());
+        assertEquals("Bartlomiej Lewandowski", pullRequests.get(0).getAuthor().getName());
     }
 
     @Test
@@ -25,7 +26,7 @@ public class StashServerFacadeTest {
         PullRequest request = pullRequests.get(0);
         facade.setCurrentPullRequest(request);
         List<Comment> comments = facade.getCommentsForCurrentPR("readme.txt");
-        assertEquals("wtf?", comments.get(0).getText());
+        assertEquals("Leo, why?", comments.get(0).getText());
     }
 
     @Test
@@ -35,6 +36,15 @@ public class StashServerFacadeTest {
         facade.setCurrentPullRequest(request);
 
         facade.addComment(new CommentBean("comment from facade", new AnchorBean(3, "test.java")));
+    }
 
+    @Test
+    public void testGetChangedFiles() throws Exception {
+        List<PullRequest> pullRequests = facade.getPullRequests();
+        PullRequest request = pullRequests.get(0);
+        facade.setCurrentPullRequest(request);
+
+        List<String> changedFiles = facade.getChangedFiles();
+        assertFalse(changedFiles.isEmpty());
     }
 }
