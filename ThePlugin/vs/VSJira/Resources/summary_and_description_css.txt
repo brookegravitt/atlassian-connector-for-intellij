@@ -1,0 +1,7 @@
+<style type="text/css">
+.summary, .description 
+{ 
+	font-size:"10pt";
+	font-family:"Arial"; 
+}
+</style>

@@ -1,0 +1,426 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <StartupObject>
+    </StartupObject>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>pazunet</AssemblyName>
+    <RootNamespace>PaZu</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <IncrementalBuild>false</IncrementalBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <IncrementalBuild>false</IncrementalBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aga.Controls, Version=1.7.0.0, Culture=neutral, PublicKeyToken=fcc90fbf924463a3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>third party\treeviewadv\Aga.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="api\JiraField.cs" />
+    <Compile Include="dialogs\About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\AddOrEditJiraServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\AddOrEditJiraServer.Designer.cs">
+      <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="api\JiraServerFacade.cs" />
+    <Compile Include="api\soap\SoapSession.cs" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CommandBar.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CommandBar.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Connect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="api\JiraIssue.cs" />
+    <Compile Include="api\JiraNamedEntity.cs" />
+    <Compile Include="api\JiraProject.cs" />
+    <Compile Include="api\JiraSavedFilter.cs" />
+    <Compile Include="api\JiraServer.cs" />
+    <Compile Include="dialogs\EditCustomFilter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\EditCustomFilter.Designer.cs">
+      <DependentUpon>EditCustomFilter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\GlobalSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\GlobalSettings.Designer.cs">
+      <DependentUpon>GlobalSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\NewIssueComment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\NewIssueComment.Designer.cs">
+      <DependentUpon>NewIssueComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\SearchIssue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\SearchIssue.Designer.cs">
+      <DependentUpon>SearchIssue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\TestJiraConnection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\TestJiraConnection.Designer.cs">
+      <DependentUpon>TestJiraConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IssueDetailsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="IssueDetailsPanel.Designer.cs">
+      <DependentUpon>IssueDetailsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IssueDetailsWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="IssueDetailsWindow.Designer.cs">
+      <DependentUpon>IssueDetailsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="models\CredentialsVault.cs" />
+    <Compile Include="models\JiraCustomFilter.cs" />
+    <Compile Include="models\ImageCache.cs" />
+    <Compile Include="models\JiraIssueListModelBuilder.cs" />
+    <Compile Include="models\JiraIssueListModel.cs" />
+    <Compile Include="models\JiraIssueListModelListener.cs" />
+    <Compile Include="models\JiraServerCache.cs" />
+    <Compile Include="models\JiraServerModel.cs" />
+    <Compile Include="models\RecentlyViewedIssue.cs" />
+    <Compile Include="models\RecentlyViewedIssuesModel.cs" />
+    <Compile Include="PaZuWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PaZuWindow.Designer.cs">
+      <DependentUpon>PaZuWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dialogs\ProjectConfiguration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\ProjectConfiguration.Designer.cs">
+      <DependentUpon>ProjectConfiguration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="api\RssClient.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="ui\CustomFilterTreeNode.cs" />
+    <Compile Include="ui\issues\FilterContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\issues\FlatIssueTreeModel.cs" />
+    <Compile Include="ui\issues\IssueContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\issues\IssueNode.cs" />
+    <Compile Include="ui\IssueTypeListViewItem.cs" />
+    <Compile Include="ui\RecentlyOpenIssuesTreeNode.cs" />
+    <Compile Include="ui\TreeNodeWithServer.cs" />
+    <Compile Include="ui\JiraSavedFilterTreeNode.cs" />
+    <Compile Include="ui\JiraServerTreeNode.cs" />
+    <Compile Include="ui\StatusLabel.cs">
+    </Compile>
+    <Compile Include="util\ParameterSerializer.cs" />
+    <Compile Include="Web References\JIRA\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="dialogs\About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\AddOrEditJiraServer.resx">
+      <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandBar.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\EditCustomFilter.resx">
+      <DependentUpon>EditCustomFilter.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\GlobalSettings.resx">
+      <DependentUpon>GlobalSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\NewIssueComment.resx">
+      <DependentUpon>NewIssueComment.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\SearchIssue.resx">
+      <DependentUpon>SearchIssue.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\TestJiraConnection.resx">
+      <DependentUpon>TestJiraConnection.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueDetailsPanel.resx">
+      <DependentUpon>IssueDetailsPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueDetailsWindow.resx">
+      <DependentUpon>IssueDetailsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaZuWindow.resx">
+      <DependentUpon>PaZuWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\ProjectConfiguration.resx">
+      <DependentUpon>ProjectConfiguration.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="EnvDTE">
+      <Guid>{80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="EnvDTE80">
+      <Guid>{1A31287A-4D7D-413E-8E32-3B374931BD89}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="EnvDTE90">
+      <Guid>{2CE2370E-D744-4936-A090-3FFFE667B0E1}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="Microsoft.VisualStudio.CommandBars">
+      <Guid>{1CBA492E-7263-47BB-87FE-639000619B15}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="config\pazunet-for-testing.AddIn" />
+    <Content Include="icons\about.png" />
+    <Content Include="icons\atlassian-538x235.png" />
+    <Content Include="icons\atlassian-installer.bmp" />
+    <Content Include="icons\Atlassian.png" />
+    <None Include="icons\close.png" />
+    <None Include="icons\collapse_all.png" />
+    <None Include="icons\expand_all.png" />
+    <None Include="icons\edit_in_browser.png" />
+    <None Include="icons\find-jira.png" />
+    <Content Include="icons\global_properties.png" />
+    <None Include="icons\ico_jira_saved_filter.png" />
+    <None Include="icons\ico_jira_recent_issues.png" />
+    <None Include="icons\ico_jira_custom_filter.png" />
+    <Content Include="icons\ide_plugin_16.bmp" />
+    <Content Include="icons\ide_plugin_16.ico" />
+    <Content Include="icons\ide_plugin_300.png" />
+    <Content Include="icons\ide_plugin_32.ico" />
+    <None Include="icons\new_comment.png" />
+    <None Include="icons\open_in_ide.png" />
+    <None Include="icons\jira-blue-16.png" />
+    <Content Include="icons\pazu.bmp" />
+    <Content Include="icons\pazu_32.ico" />
+    <Content Include="icons\projectsettings.png" />
+    <Content Include="icons\refresh.png" />
+    <None Include="icons\unknown.png" />
+    <None Include="icons\view_in_browser.png" />
+    <Content Include="icons\search-jira.png" />
+    <Content Include="pazunet.AddIn" />
+    <None Include="Resources\comments_css.txt" />
+    <None Include="Resources\toggler_javascript.txt" />
+    <None Include="Resources\summary_and_description_css.txt" />
+    <None Include="Resources\about_html.txt" />
+    <Content Include="third party\treeviewadv\Aga.Controls.dll" />
+    <Content Include="third party\treeviewadv\license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="C:\Documents and Settings\kalamon\Pulpit\jirasoapservice-v2.xml">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\JIRA\</RelPath>
+      <UpdateFromURL>C:\Documents and Settings\kalamon\Pulpit\jirasoapservice-v2.xml</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>VSJira_WebReference_JiraSoapServiceService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="LICENSE" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="setup.nsi" />
+    <None Include="Web References\JIRA\jirasoapservice-v2.wsdl" />
+    <None Include="Web References\JIRA\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\JIRA\RemoteAttachment.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteComment.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteComponent.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteConfiguration.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteField.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteFilter.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteGroup.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteIssue.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteIssueType.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteNamedObject.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemotePermission.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemotePermissionScheme.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemotePriority.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteProject.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteProjectRole.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteProjectRoleActors.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteResolution.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteRoleActors.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteScheme.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteServerInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteStatus.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteUser.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteVersion.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\JIRA\RemoteWorklog.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>"c:\Program Files\NSIS\makensis.exe" $(ProjectDir)\setup.nsi</PostBuildEvent>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

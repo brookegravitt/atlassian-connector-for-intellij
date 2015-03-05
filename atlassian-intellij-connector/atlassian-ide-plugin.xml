@@ -1,0 +1,77 @@
+<atlassian-ide-plugin>
+  <project-configuration id="1">
+    <servers id="2">
+      <bamboo id="3">
+        <server-id id="4">2af8f37a-4434-42cb-9bb5-36e412f04496</server-id>
+        <name>jbac</name>
+        <url>https://jira.bamboo.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <show-branches>false</show-branches>
+        <my-branches-only>false</my-branches-only>
+        <bamboo2>false</bamboo2>
+        <plans id="5">
+          <plan id="6" key="JIRAMASTER-RESTAPIGUARD" grouped="0" />
+          <plan id="7" key="JIRAFIVETWOSTABLE-RESTAPIGUARD" grouped="0" />
+          <plan id="8" key="PLUGINS-JRJC" grouped="1" />
+        </plans>
+      </bamboo>
+      <jira id="9">
+        <server-id id="10">d40f0f5f-3dc9-4ae2-bb82-234625ea84ef</server-id>
+        <name>local</name>
+        <url>http://localhost:8083</url>
+        <shared>false</shared>
+        <useSessionCookies>false</useSessionCookies>
+      </jira>
+      <bamboo id="11">
+        <server-id id="12">f8f233c6-a9f8-4b7e-ad10-114f18b1ee90</server-id>
+        <name>gbac</name>
+        <url>https://gdansk.bamboo2.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <show-branches>true</show-branches>
+        <my-branches-only>false</my-branches-only>
+        <bamboo2>true</bamboo2>
+        <plans id="13">
+          <plan id="14" key="ACC-DPL" grouped="0" />
+          <plan id="15" key="ACC-TST" grouped="1" />
+          <plan id="16" key="INT-DPL" grouped="0" />
+          <plan id="17" key="INT-TST" grouped="0" />
+        </plans>
+      </bamboo>
+      <jira id="18">
+        <server-id id="19">1e263562-f741-4a9e-acbd-76bbe6d18d8a</server-id>
+        <name>stac</name>
+        <url>https://ecosystem.atlassian.net</url>
+        <shared>false</shared>
+        <useSessionCookies>false</useSessionCookies>
+      </jira>
+      <crucible id="20">
+        <server-id id="21">cbcb7e2b-01d3-4420-913c-ae558fce3474</server-id>
+        <name>atlaseye</name>
+        <url>https://atlaseye.atlassian.com</url>
+        <shared>false</shared>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <bamboo id="22">
+        <server-id id="23">d7e6f4ca-5fc1-4ecb-87e8-831a4cfa0540</server-id>
+        <name>devtools</name>
+        <url>https://devtools-bamboo.internal.atlassian.com</url>
+        <shared>false</shared>
+        <use-favourites>false</use-favourites>
+        <show-branches>true</show-branches>
+        <my-branches-only>false</my-branches-only>
+        <bamboo2>true</bamboo2>
+        <plans id="24">
+          <plan id="25" key="ACC-DPL" grouped="0" />
+          <plan id="26" key="ACC-TST" grouped="0" />
+          <plan id="27" key="INT-DPL" grouped="0" />
+          <plan id="28" key="INT-TST" grouped="0" />
+        </plans>
+      </bamboo>
+    </servers>
+    <default-crucible-server id="29">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-crucible-server>
+    <default-fisheye-server id="30">cbcb7e2b-01d3-4420-913c-ae558fce3474</default-fisheye-server>
+    <default-jira-server id="31">1e263562-f741-4a9e-acbd-76bbe6d18d8a</default-jira-server>
+  </project-configuration>
+</atlassian-ide-plugin>
