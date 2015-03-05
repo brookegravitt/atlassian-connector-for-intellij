@@ -33,6 +33,7 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
     }
 
     public List<Comment> getComments(PullRequest pr, String path) {
+
         return pathToCommentsMap.get(path);
     }
 
