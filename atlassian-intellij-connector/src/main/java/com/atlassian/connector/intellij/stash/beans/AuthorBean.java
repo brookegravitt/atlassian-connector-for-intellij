@@ -6,16 +6,11 @@ public class AuthorBean implements Author{
     private UserBean user;
 
     public String getName() {
-        return user.displayName;
+        return user.getDisplayName();
     }
 
     public void setName(String name) {
     }
 
 
-    private static class UserBean
-    {
-        private String displayName;
-        private String name;
-    }
 }

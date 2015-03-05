@@ -1,10 +1,12 @@
 package com.atlassian.connector.intellij.stash;
 
+import com.atlassian.connector.intellij.stash.beans.UserBean;
+
 /**
  * Created by klopacinski on 2015-03-05.
  */
 public class SimpleComment implements Comment {
-    private Author author;
+    private UserBean author;
     private String text;
     private Anchor anchor;
 
@@ -13,8 +15,8 @@ public class SimpleComment implements Comment {
     }
 
     public SimpleComment(String text, String author, String path, int line) {
-        this.author = new SimpleAuthor();
-        this.author.setName(author);
+        this.author = new UserBean();
+//        this.author.setName(author);
 
         this.anchor = new SimpleAnchor();
         this.anchor.setLine(line);
@@ -27,7 +29,7 @@ public class SimpleComment implements Comment {
         return text;
     }
 
-    public Author getAuthor() {
+    public UserBean getAuthor() {
         return author;
     }
 
@@ -40,7 +42,7 @@ public class SimpleComment implements Comment {
         this.text = text;
     }
 
-    public void setAuthor(Author author) {
+    public void setAuthor(UserBean author) {
         this.author = author;
     }
 

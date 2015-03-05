@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.intellij.stash.*;
+import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
 import com.atlassian.theplugin.idea.jira.IssueCommentDialog;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -53,7 +54,8 @@ public class StashGutterCommentDisplayer {
     }
 
     private void registerTextAnnotationProvider(final PsiFile psiFile, Editor editor) {
-        final StashServerFacade stashFacade = StashArrayListBackedServerFacade.getInstance();
+        //final StashServerFacade stashFacade = StashArrayListBackedServerFacade.getInstance();
+        final StashServerFacade stashFacade = new StashServerFacadeImpl();
 
         final List<Comment> comments;
         try {
@@ -69,7 +71,7 @@ public class StashGutterCommentDisplayer {
             public String getLineText(final int i, Editor editor) {
                 return Joiner.on(", ").skipNulls().join(Iterables.transform(comments, new Function<Comment, Object>() {
                     public Object apply(@Nullable Comment comment) {
-                        return comment.getAnchor().getLine() == i + 1 ? comment.getAuthor().getName() : null;
+                        return comment.getAnchor().getLine() == i + 1 ? comment.getAuthor().getDisplayName() : null;
                     }
                 }));
             }

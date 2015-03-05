@@ -51,7 +51,7 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
         anchor.setLine(2);
 
         SimpleComment comment = new SimpleComment();
-        comment.setAuthor(author);
+//        comment.setAuthor(author);
         comment.setText("Very insightful comment.");
         comment.setAnchor(anchor);
 
