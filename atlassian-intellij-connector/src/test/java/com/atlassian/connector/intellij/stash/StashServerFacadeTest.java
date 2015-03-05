@@ -1,5 +1,7 @@
 package com.atlassian.connector.intellij.stash;
 
+import com.atlassian.connector.intellij.stash.beans.AnchorBean;
+import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
 import org.junit.Test;
 
@@ -24,5 +26,15 @@ public class StashServerFacadeTest {
         facade.setCurrentPullRequest(request);
         List<Comment> comments = facade.getCommentsForCurrentPR("readme.txt");
         assertEquals("wtf?", comments.get(0).getText());
+    }
+
+    @Test
+    public void testAddComment() throws Exception {
+        List<PullRequest> pullRequests = facade.getPullRequests();
+        PullRequest request = pullRequests.get(0);
+        facade.setCurrentPullRequest(request);
+
+        facade.addComment(new CommentBean("comment from facade", new AnchorBean(3, "test.java")));
+
     }
 }
