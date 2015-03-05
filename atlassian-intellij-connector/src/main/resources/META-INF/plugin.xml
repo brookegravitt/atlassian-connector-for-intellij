@@ -118,6 +118,9 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"/>
 
+        <projectService serviceInterface="com.atlassian.theplugin.idea.stash.StashToolWindowPanel"
+                        serviceImplementation="com.atlassian.theplugin.idea.stash.StashToolWindowPanel"/>
+
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"
 						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"/>
 

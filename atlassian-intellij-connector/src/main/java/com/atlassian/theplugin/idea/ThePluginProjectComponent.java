@@ -227,6 +227,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.PULL_REQUESTS);
 
             IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
             // add tool window bamboo content listener to bamboo checker thread
