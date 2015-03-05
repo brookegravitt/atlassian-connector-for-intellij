@@ -19,4 +19,6 @@ public interface StashServerFacade extends ProductServerFacade{
     public Optional<PullRequest> getCurrentPullRequest();
 
     public void setCurrentPullRequest(PullRequest pr);
+
+    public List<String> getChangedFiles();
 }
