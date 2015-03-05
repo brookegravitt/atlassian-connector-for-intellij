@@ -53,7 +53,7 @@ public class StashGutterCommentDisplayer {
     }
 
     private void registerTextAnnotationProvider(final PsiFile psiFile, Editor editor) {
-        final StashArrayListBackedServerFacade stashFacade = StashArrayListBackedServerFacade.getInstance();
+        final StashServerFacade stashFacade = StashArrayListBackedServerFacade.getInstance();
 
         final List<Comment> comments;
         try {
@@ -99,7 +99,7 @@ public class StashGutterCommentDisplayer {
 
             public List<AnAction> getPopupActions(final int i, final Editor editor) {
                 List<AnAction> l = new ArrayList<AnAction>();
-                l.add(new AnAction("an action!") {
+                l.add(new AnAction("Add comment") {
                     @Override
                     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
                         final IssueCommentDialog issueCommentDialog = new IssueCommentDialog("line " + Integer.toString(i + 1));
