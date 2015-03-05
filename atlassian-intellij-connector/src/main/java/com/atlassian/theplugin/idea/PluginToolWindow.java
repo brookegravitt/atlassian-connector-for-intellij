@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.idea.stash.StashToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -57,6 +58,7 @@ public class PluginToolWindow {
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
 	private final ProjectCfgManager cfgManager;
 	private final BambooToolWindowPanel bambooToolWindowPanel;
+    private final StashToolWindowPanel stashToolWindowPanel;
 
 
 	public static void showHidePluginWindow(AnActionEvent event) {
@@ -81,9 +83,11 @@ public class PluginToolWindow {
 
 	public PluginToolWindow(@NotNull Project project, @NotNull ProjectCfgManager cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
+            @NotNull StashToolWindowPanel stashToolWindowPanel,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
+        this.stashToolWindowPanel = stashToolWindowPanel;
 		this.project = project;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 	}
@@ -145,7 +149,7 @@ public class PluginToolWindow {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (!cfgManager.getAllEnabledServerss(serverType).isEmpty()) {
+				if (!cfgManager.getAllEnabledServerss(serverType).isEmpty() || serverType == ServerType.STASH_SERVER) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 						// show tab
@@ -293,13 +297,25 @@ public class PluginToolWindow {
 				return createBamboo2Content();
 			case ISSUES:
 				return createIssuesContent();
+            case PULL_REQUESTS:
+                return createPullRequestsContent();
 			default:
 				return null;
 		}
 	}
 
+    private Content createPullRequestsContent() {
+        final ContentManager contentManager = ideaToolWindow.getContentManager();
+        final Content content = contentManager.getFactory().createContent(stashToolWindowPanel,
+                ToolWindowPanels.PULL_REQUESTS.toString(), false);
+//		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo-white.png"));
+        content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+        content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+        return content;
+    }
 
-	public Content createBamboo2Content() {
+
+    public Content createBamboo2Content() {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
@@ -335,7 +351,8 @@ public class PluginToolWindow {
 	 */
 	public enum ToolWindowPanels {
 		ISSUES("Issues - JIRA", 1),
-		BUILDS("Builds - Bamboo", 2);
+		BUILDS("Builds - Bamboo", 2),
+        PULL_REQUESTS("Pull requests - Stash", 3);
 //		CRUCIBLE("Reviews - Crucible", 3);
 
 		private final String title;
