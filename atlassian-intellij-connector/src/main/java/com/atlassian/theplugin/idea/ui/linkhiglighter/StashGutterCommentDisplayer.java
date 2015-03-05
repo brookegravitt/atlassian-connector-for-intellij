@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.intellij.stash.*;
+import com.atlassian.connector.intellij.stash.beans.AnchorBean;
+import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
 import com.atlassian.theplugin.idea.jira.IssueCommentDialog;
 import com.google.common.base.Function;
@@ -108,9 +110,8 @@ public class StashGutterCommentDisplayer {
                                 Task.Backgroundable task = new Task.Backgroundable(project, "Adding comment to Stash", false) {
 
                                     public void run(@NotNull ProgressIndicator progressIndicator) {
-                                        Comment comment = new SimpleComment();
                                         try {
-                                            stashFacade.addComment(new SimpleComment(issueCommentDialog.getComment(), "zbysiu", getRelativePath(psiFile), i + 1));
+                                            stashFacade.addComment(new CommentBean(issueCommentDialog.getComment(), new AnchorBean(i + 1, getRelativePath(psiFile))));
                                             reparseAll();
                                         } catch (URISyntaxException e) {
                                             e.printStackTrace();
