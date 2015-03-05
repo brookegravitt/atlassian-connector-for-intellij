@@ -4,6 +4,7 @@ import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.intellij.stash.Comment;
 import com.atlassian.connector.intellij.stash.PullRequest;
 import com.atlassian.connector.intellij.stash.StashServerFacade;
+import com.atlassian.connector.intellij.stash.StashSession;
 import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.atlassian.theplugin.commons.ServerType;
@@ -33,7 +34,7 @@ public class StashServerFacadeImpl implements StashServerFacade
 
     private Optional<PullRequest> currentPullRequest = Optional.absent();
 
-    private final StashRestSession stashRestSession = new StashRestSession();
+    private final StashSession stashRestSession = new StashRestSession();
     private static StashServerFacadeImpl instance;
 
     static {
@@ -69,10 +70,7 @@ public class StashServerFacadeImpl implements StashServerFacade
 
         if (currentPullRequest.isPresent()) {
             try {
-                String comments;
-                synchronized (this) {
-                    comments = stashRestSession.getComments(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), path);
-                }
+                String comments = stashRestSession.getComments(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), path);
                 List<Comment> allComments = Lists.transform(getValues(comments), new Function<String, Comment>() {
                     public Comment apply(String s) {
                         return gson.fromJson(s, CommentBean.class);
@@ -92,7 +90,13 @@ public class StashServerFacadeImpl implements StashServerFacade
     }
 
     public void addComment(Comment comment) {
-
+        if (currentPullRequest.isPresent()) {
+            try {
+                stashRestSession.postComment(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString(), comment);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Optional<PullRequest> getCurrentPullRequest() {
