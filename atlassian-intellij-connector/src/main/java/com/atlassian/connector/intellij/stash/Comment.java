@@ -9,7 +9,11 @@ public interface Comment {
 
     public Author getAuthor();
 
+    public Anchor getAnchor();
+
     public void setText(String text);
 
     public void setAuthor(Author author);
+
+    public void setAnchor(Anchor anchor);
 }

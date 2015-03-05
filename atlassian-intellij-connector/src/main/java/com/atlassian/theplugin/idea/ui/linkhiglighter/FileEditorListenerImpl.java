@@ -43,6 +43,7 @@ import java.util.Map;
  */
 public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
+    private final Map<VirtualFile, StashGutterCommentDisplayer> commentDisplayers = new java.util.HashMap<VirtualFile, StashGutterCommentDisplayer>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
 	private final ProjectCfgManager projectCfgManager;
@@ -68,6 +69,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	public void fileClosed(final FileEditorManager fileEditorManager, final VirtualFile virtualFile) {
         removeHighlighter(virtualFile);
         linkHighlighters.remove(virtualFile);
+        commentDisplayers.remove(virtualFile);
         PluginUtil.getLogger()
                 .debug(" file closed: " + virtualFile.getPath() + ", source: " + fileEditorManager.getSelectedTextEditor());
 	}
@@ -92,6 +94,20 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
                 Editor editor = editorManager.getSelectedTextEditor();
                 if (editor != null) {
                     addHighlighter(newFile, psiFile, editor);
+                }
+            }
+        }
+
+        if (oldFile != null && newFile == null) {
+            removeHighlighter(oldFile);
+            commentDisplayers.remove(oldFile);
+
+        } else if (newFile != null && !commentDisplayers.containsKey(newFile)) {
+            PsiFile psiFile = safeFindFile(newFile);
+            if (psiFile != null) {
+                Editor editor = editorManager.getSelectedTextEditor();
+                if (editor != null) {
+                    addCommentDisplayer(newFile, psiFile, editor);
                 }
             }
         }
@@ -167,7 +183,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 				if (psiFile != null) {
 					Editor editor = editorManager.getSelectedTextEditor();
 					if (editor != null) {
-						addHighlighter(openFile, psiFile, editor);
+                        addCommentDisplayer(openFile, psiFile, editor);
 					}
 				}
 
@@ -177,9 +193,34 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			}
 		}
 
+        for (VirtualFile openFile : editorManager.getSelectedFiles()) {
+            if (!commentDisplayers.containsKey(openFile)) {
+                PsiFile psiFile = safeFindFile(openFile);
+                if (psiFile != null) {
+                    Editor editor = editorManager.getSelectedTextEditor();
+                    if (editor != null) {
+                        addHighlighter(openFile, psiFile, editor);
+                    }
+                }
+
+            } else {
+                commentDisplayers.get(openFile).reparseAll();
+            }
+        }
+
 	}
 
-	public void removeAllLinkHighlighers() {
+    private void addCommentDisplayer(final VirtualFile newFile, final PsiFile psiFile, final Editor editor) {
+        StashGutterCommentDisplayer displayer = new StashGutterCommentDisplayer(project, newFile, psiFile, editor);
+
+        //highlighter.startListeninig();
+        //linkHighlighters.put(newFile, highlighter);
+        commentDisplayers.put(newFile, displayer);
+        //highlighter.reparseAll();
+        //highlighter.checkComments();
+    }
+
+    public void removeAllLinkHighlighers() {
 		for (VirtualFile vf : linkHighlighters.keySet()) {
 			removeHighlighter(vf);
 		}
