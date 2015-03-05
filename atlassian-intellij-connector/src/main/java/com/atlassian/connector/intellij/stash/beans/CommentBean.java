@@ -1,7 +1,6 @@
 package com.atlassian.connector.intellij.stash.beans;
 
 import com.atlassian.connector.intellij.stash.Anchor;
-import com.atlassian.connector.intellij.stash.Author;
 import com.atlassian.connector.intellij.stash.Comment;
 
 public class CommentBean implements Comment{

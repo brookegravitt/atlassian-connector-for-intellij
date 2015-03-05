@@ -1,10 +1,13 @@
 package com.atlassian.connector.intellij.stash.impl;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.intellij.stash.Comment;
 import com.atlassian.connector.intellij.stash.PullRequest;
 import com.atlassian.connector.intellij.stash.StashServerFacade;
 import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -66,5 +69,13 @@ public class StashServerFacadeImpl implements StashServerFacade
             e.printStackTrace();
         }
         return stringValues;
+    }
+
+    public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
+
+    }
+
+    public ServerType getServerType() {
+        return ServerType.STASH_SERVER;
     }
 }

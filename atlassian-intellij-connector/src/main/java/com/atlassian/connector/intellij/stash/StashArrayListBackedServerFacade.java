@@ -1,5 +1,8 @@
 package com.atlassian.connector.intellij.stash;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 
@@ -56,5 +59,13 @@ public class StashArrayListBackedServerFacade implements StashServerFacade {
         comment.setAnchor(anchor);
 
         pathToCommentsMap.put("readme.txt", comment);
+    }
+
+    public void testServerConnection(ConnectionCfg httpConnectionCfg) throws RemoteApiException {
+
+    }
+
+    public ServerType getServerType() {
+        return null;
     }
 }
