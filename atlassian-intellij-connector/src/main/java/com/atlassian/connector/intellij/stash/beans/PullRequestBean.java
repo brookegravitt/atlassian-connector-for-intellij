@@ -15,4 +15,9 @@ public class PullRequestBean implements PullRequest{
     public Author getAuthor() {
         return author;
     }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }
