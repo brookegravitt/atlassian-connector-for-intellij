@@ -27,7 +27,7 @@ import java.io.IOException;
 public class StashRestSession implements StashSession {
 
     String protocol = "http";
-    String host = "192.168.157.159";
+    String host = "localhost";//"192.168.157.159";
     Integer port = 7990;
     String baseUrl = protocol + "://" + host + ":" + port;
     private HttpClientContext context;
@@ -113,5 +113,15 @@ public class StashRestSession implements StashSession {
 
 
         //return IOUtils.toString(response.getEntity().getContent());
+    }
+
+    public String getChangedFiles(String projectKey, String repo, String pullRequestId) throws IOException{
+        String url = String.format("/rest/api/1.0/projects/%s/repos/%s/pull-requests/%s/changes", projectKey, repo, pullRequestId);
+
+        HttpResponse response = client.execute(new HttpGet(baseUrl + url), context);
+
+        int statusCode = response.getStatusLine().getStatusCode();
+
+        return IOUtils.toString(response.getEntity().getContent());
     }
 }

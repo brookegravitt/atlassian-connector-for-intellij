@@ -10,6 +10,8 @@ import static org.junit.Assert.assertFalse;
 
 public class StashConnectionTest {
 
+    public static final String PROJECT_KEY = "GM";
+    public static final String REPO = "gitmilk";
     private StashRestSession stashRestSession;
 
     @Before
@@ -20,13 +22,13 @@ public class StashConnectionTest {
 
     @Test
     public void testCanGetPullRequests() throws Exception {
-        String pullRequests = stashRestSession.getPullRequests("GM", "gitmilk");
+        String pullRequests = stashRestSession.getPullRequests(PROJECT_KEY, REPO);
         assertFalse(pullRequests.isEmpty());
     }
 
     @Test
     public void testCanGetComments() throws Exception {
-        String pullRequests = stashRestSession.getComments("GM", "gitmilk", "1", "readme.txt");
+        String pullRequests = stashRestSession.getComments(PROJECT_KEY, REPO, "1", "readme.txt");
         assertFalse(pullRequests.isEmpty());
     }
 
@@ -34,14 +36,19 @@ public class StashConnectionTest {
     public void testCanPostComments() throws Exception {
         Comment comment = new CommentBean("test", new AnchorBean(3, "test.java"));
 
-        stashRestSession.postComment("GM", "gitmilk", "1", comment);
+        stashRestSession.postComment(PROJECT_KEY, REPO, "1", comment);
     }
 
     @Test
     public void testCanGetCommentsTwice() throws Exception {
-        String pullRequests = stashRestSession.getComments("GM", "gitmilk", "1", "readme.txt");
-        stashRestSession.getComments("GM", "gitmilk", "1", "readme.txt");
+        String pullRequests = stashRestSession.getComments(PROJECT_KEY, REPO, "1", "readme.txt");
+        stashRestSession.getComments(PROJECT_KEY, REPO, "1", "readme.txt");
         assertFalse(pullRequests.isEmpty());
     }
 
+    @Test
+    public void testCanListChangedFiles() throws Exception {
+        String changedFiles = stashRestSession.getChangedFiles(PROJECT_KEY, REPO, "1");
+        assertFalse(changedFiles.isEmpty());
+    }
 }
