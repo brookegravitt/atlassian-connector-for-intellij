@@ -8,6 +8,21 @@ public class SimpleComment implements Comment {
     private String text;
     private Anchor anchor;
 
+    public SimpleComment() {
+
+    }
+
+    public SimpleComment(String text, String author, String path, int line) {
+        this.author = new SimpleAuthor();
+        this.author.setName(author);
+
+        this.anchor = new SimpleAnchor();
+        this.anchor.setLine(line);
+        this.anchor.setPath(path);
+
+        this.text = text;
+    }
+
     public String getText() {
         return text;
     }

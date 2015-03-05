@@ -10,4 +10,6 @@ public interface StashServerFacade {
     public List<PullRequest> getPullRequests();
 
     public List<Comment> getComments(PullRequest pr, String path);
+
+    public void addComment(Comment comment);
 }

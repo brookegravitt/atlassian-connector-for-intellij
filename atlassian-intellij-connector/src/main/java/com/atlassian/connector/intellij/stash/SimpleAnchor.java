@@ -5,12 +5,21 @@ package com.atlassian.connector.intellij.stash;
  */
 public class SimpleAnchor implements Anchor {
     private int line;
+    private String path;
 
     public int getLine() {
         return line;
     }
 
     public void setLine(int i) {
-        this.line = line;
+        this.line = i;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }
