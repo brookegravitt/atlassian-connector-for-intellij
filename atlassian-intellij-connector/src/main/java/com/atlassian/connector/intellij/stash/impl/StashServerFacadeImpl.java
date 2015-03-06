@@ -27,8 +27,8 @@ public class StashServerFacadeImpl implements StashServerFacade
 {
     private static final Gson gson = new Gson();
 
-    public static final String PROJECT_KEY = "GM";
-    public static final String REPO = "gitmilk";
+    public static final String PROJECT_KEY = "SJP";
+    public static final String REPO = "simple-java";
 
     private Optional<PullRequest> currentPullRequest = Optional.absent();
 
