@@ -44,7 +44,7 @@ public class StashServerFacadeTest {
         PullRequest request = pullRequests.get(0);
         facade.setCurrentPullRequest(request);
 
-        List<String> changedFiles = facade.getChangedFiles();
+        List<Change> changedFiles = facade.getChangedFiles();
         assertFalse(changedFiles.isEmpty());
     }
 }

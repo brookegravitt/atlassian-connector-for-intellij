@@ -53,25 +53,36 @@ public class StashChangedFilesPanel extends JPanel {
 
         tree.setCellRenderer(new TreeCellRenderer() {
             public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+                Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
 
                 JLabel label = new JLabel();
-                label.setText(userObject.toString());
+
+                if (userObject instanceof Change)
+                {
+                    Change change = (Change) userObject;
+                    label.setText(change.getFilePath());
+
+                    String changeType = change.getChangeType();
+                    if (changeType.equals("ADD")) {
+                        label.setForeground(Color.GREEN);
+                    } else if(changeType.equals("MODIFY"))
+                        label.setForeground(Color.BLUE);
+                }
 
                 return label;
             }
         });
     }
 
-    public void changeContents(List<Change> paths)
+    public void changeContents(List<Change> changes)
     {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("");
 
         tree.expandRow(0);
         tree.setRootVisible(false);
 
-        for (Change path : paths) {
-            DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(path.getFilePath());
+        for (Change change : changes) {
+            DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(change);
             rootNode.add(newChild);
         }
 
