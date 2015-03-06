@@ -1,10 +1,7 @@
 package com.atlassian.connector.intellij.stash.impl;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
-import com.atlassian.connector.intellij.stash.Comment;
-import com.atlassian.connector.intellij.stash.PullRequest;
-import com.atlassian.connector.intellij.stash.StashServerFacade;
-import com.atlassian.connector.intellij.stash.StashSession;
+import com.atlassian.connector.intellij.stash.*;
 import com.atlassian.connector.intellij.stash.beans.ChangeBean;
 import com.atlassian.connector.intellij.stash.beans.CommentBean;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
@@ -108,12 +105,12 @@ public class StashServerFacadeImpl implements StashServerFacade
         currentPullRequest = Optional.fromNullable(pr);
     }
 
-    public List<String> getChangedFiles() {
+    public List<Change> getChangedFiles() {
         try {
             String changedFiles = stashSession.getChangedFiles(PROJECT_KEY, REPO, currentPullRequest.get().getId().toString());
-            return Lists.transform(getValues(changedFiles), new Function<String, String>() {
-                public String apply(String s) {
-                    return gson.fromJson(s, ChangeBean.class).getFilePath();
+            return Lists.transform(getValues(changedFiles), new Function<String, Change>() {
+                public Change apply(String s) {
+                    return gson.fromJson(s, ChangeBean.class);
                 }
             });
         } catch (IOException e) {

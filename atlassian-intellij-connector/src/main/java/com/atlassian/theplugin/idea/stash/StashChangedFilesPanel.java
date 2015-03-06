@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.stash;
 
+import com.atlassian.connector.intellij.stash.Change;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataConstants;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -28,7 +29,7 @@ public class StashChangedFilesPanel extends JPanel {
         this.add(tree);
         this.add(new JLabel("Changed files"), BorderLayout.NORTH);
 
-        changeContents(Collections.<String>emptyList());
+        changeContents(Collections.<Change>emptyList());
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
@@ -50,15 +51,16 @@ public class StashChangedFilesPanel extends JPanel {
         });
     }
 
-    public void changeContents(List<String> paths)
+    public void changeContents(List<Change> paths)
     {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("");
 
         tree.expandRow(0);
         tree.setRootVisible(false);
 
-        for (String path : paths) {
-            rootNode.add(new DefaultMutableTreeNode(path));
+        for (Change path : paths) {
+            DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(path.getFilePath());
+            rootNode.add(newChild);
         }
 
         tree.setModel(new DefaultTreeModel(rootNode));
