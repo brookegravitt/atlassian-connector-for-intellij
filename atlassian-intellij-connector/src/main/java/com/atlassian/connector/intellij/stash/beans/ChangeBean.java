@@ -16,8 +16,18 @@ public class ChangeBean  implements Change {
         return type;
     }
 
+    @Override
+    public String toString() {
+        return path != null ? path.toString() : "";
+    }
+
     private static class Path
     {
         String toString;
+
+        @Override
+        public String toString() {
+            return toString;
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.atlassian.connector.intellij.stash.PullRequest;
 import com.atlassian.connector.intellij.stash.StashServerFacade;
 import com.atlassian.connector.intellij.stash.beans.PullRequestBean;
 import com.atlassian.connector.intellij.stash.impl.StashServerFacadeImpl;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.ThreePanePanel;
@@ -12,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -54,7 +56,15 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
             public void valueChanged(TreeSelectionEvent e) {
                 PullRequestBean pullRequest = (PullRequestBean) ((JTree.DynamicUtilTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getUserObject();
                 StashServerFacadeImpl.getInstance().setCurrentPullRequest(pullRequest);
-                leftPanelLabel.setText("<html>" + pullRequest.getTitle() + "<br/> fsadfasd</html>");
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("<html>");
+                sb.append("Title: " + StringEscapeUtils.escapeHtml(pullRequest.getTitle()) + "<br>");
+                sb.append("Description: " + StringEscapeUtils.escapeHtml(pullRequest.getDescription()) + "<br>");
+                sb.append("Created: " + StringEscapeUtils.escapeHtml(pullRequest.getCreationDate().toString()) + "<br>");
+                sb.append("</html>");
+
+                leftPanelLabel.setText(sb.toString());
 
                 Project project = ProjectManager.getInstance().getOpenProjects()[0];
                 ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(project);
@@ -122,3 +132,4 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
         return new JPanel(new GridBagLayout());
     }
 }
+
