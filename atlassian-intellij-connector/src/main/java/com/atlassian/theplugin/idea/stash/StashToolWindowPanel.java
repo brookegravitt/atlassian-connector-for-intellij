@@ -44,11 +44,12 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
 
     @Override
     protected JTree getRightTree() {
-        JTree tree = new JTree(stashServerFacade.getPullRequests().toArray());
+        Object[] pullRequestArray = stashServerFacade.getPullRequests().toArray();
+        JTree tree = new JTree(pullRequestArray);
 
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                PullRequestBean pullRequest = (PullRequestBean) ((JTree.DynamicUtilTreeNode)e.getNewLeadSelectionPath().getLastPathComponent()).getUserObject();
+                PullRequestBean pullRequest = (PullRequestBean) ((JTree.DynamicUtilTreeNode) e.getNewLeadSelectionPath().getLastPathComponent()).getUserObject();
                 StashServerFacadeImpl.getInstance().setCurrentPullRequest(pullRequest);
 
                 Project project = ProjectManager.getInstance().getOpenProjects()[0];
@@ -75,8 +76,8 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
             Project project = ProjectManager.getInstance().getOpenProjects()[0];
             File root = new File(project.getBasePath());
 
-            Process fetch = Runtime.getRuntime().exec("git fetch", null, root);
-            fetch.waitFor();
+//            Process fetch = Runtime.getRuntime().exec("git fetch", null, root);
+//            fetch.waitFor();
 
             Process checkout = Runtime.getRuntime().exec("git checkout " + pullRequest.getRef(), null, root);
             checkout.waitFor();
@@ -93,12 +94,16 @@ public class StashToolWindowPanel extends ThreePanePanel implements DataProvider
 
     @Override
     protected JComponent getLeftToolBar() {
-        return new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
     }
 
     @Override
     protected JComponent getLeftPanel() {
-        return new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
     }
 
     @Override

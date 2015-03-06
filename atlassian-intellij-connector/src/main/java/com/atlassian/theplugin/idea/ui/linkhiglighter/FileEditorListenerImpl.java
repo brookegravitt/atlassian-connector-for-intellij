@@ -110,6 +110,15 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
                     addCommentDisplayer(newFile, psiFile, editor);
                 }
             }
+        } else if (newFile != null && commentDisplayers.containsKey(newFile)) {
+            PsiFile psiFile = safeFindFile(newFile);
+            if (psiFile != null) {
+                commentDisplayers.remove(oldFile);
+                Editor editor = editorManager.getSelectedTextEditor();
+                if (editor != null) {
+                    addCommentDisplayer(newFile, psiFile, editor);
+                }
+            }
         }
 	}
 
