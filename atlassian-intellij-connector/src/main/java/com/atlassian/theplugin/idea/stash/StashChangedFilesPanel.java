@@ -12,6 +12,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.Collections;
@@ -40,12 +41,23 @@ public class StashChangedFilesPanel extends JPanel {
                 Object nodeInfo = node.getUserObject();
                 String path = nodeInfo.toString();
 
-                DataContext dataContext = DataManager.getInstance().getDataContext();
+                DataContext dataContext = DataManager.getInstance().getDataContext(tree);
                 Project project = (Project) dataContext.getData(DataConstants.PROJECT);
 
                 VirtualFile fileByRelativePath = project.getBaseDir().findFileByRelativePath(path);
 
                 FileEditorManager.getInstance(project).openFile(fileByRelativePath, true);
+            }
+        });
+
+        tree.setCellRenderer(new TreeCellRenderer() {
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+
+                JLabel label = new JLabel();
+                label.setText(userObject.toString());
+
+                return label;
             }
         });
     }
@@ -58,7 +70,10 @@ public class StashChangedFilesPanel extends JPanel {
         tree.setRootVisible(false);
 
         for (String path : paths) {
-            rootNode.add(new DefaultMutableTreeNode(path));
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(path);
+
+
+            rootNode.add(node);
         }
 
         tree.setModel(new DefaultTreeModel(rootNode));

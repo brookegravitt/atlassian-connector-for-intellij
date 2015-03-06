@@ -68,11 +68,13 @@ public class StashGutterCommentDisplayer {
 
             @Nullable
             public String getLineText(final int i, Editor editor) {
-                return Joiner.on(", ").skipNulls().join(Iterables.transform(comments, new Function<Comment, Object>() {
+                String lineText = Joiner.on(", ").skipNulls().join(Iterables.transform(comments, new Function<Comment, Object>() {
                     public Object apply(@Nullable Comment comment) {
                         return comment.getAnchor().getLine() == i + 1 ? comment.getAuthor().getDisplayName() : null;
                     }
                 }));
+
+                return lineText.equals("") ? " " : lineText;
             }
 
             @Nullable
