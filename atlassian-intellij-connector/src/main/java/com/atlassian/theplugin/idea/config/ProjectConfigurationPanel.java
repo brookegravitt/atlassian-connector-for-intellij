@@ -129,11 +129,15 @@ public class ProjectConfigurationPanel extends ScrollablePanel {
 
 		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
 			projectConfiguration.setDefaultFishEyeServerId(null);
-			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
+			if (this.isShowing()) {
+				Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
+			}
 		}
 		if (!projectConfiguration.isDefaultJiraServerValid()) {
 			projectConfiguration.setDefaultJiraServerId(null);
-			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
+			if (this.isShowing()) {
+				Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
+			}
 		}
 
 
